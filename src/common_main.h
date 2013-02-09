@@ -25,8 +25,8 @@ prop property;
 
 /* Mesh matrix */
 mesh_type *mesh;
-surf_type *nS_over_V;
 vector *center_V;
+pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 
 /* Populations */
 int NPOP;
@@ -40,8 +40,15 @@ vector *force;
 my_double wgt[19]; 
 vector c[19];
 my_double dirp[19] ,inv[19];
-my_double cs , cs2 , cs4 , twocs2 , twocs4;
-my_double invcs , invcs2 ,  invcs4 , invtwocs2 , invtwocs4;
+my_double twocs2 , twocs4;
+my_double invtwocs2 , invtwocs4;
+my_double cs, cs2 , cs4 , cs22 , cssq;
+my_double invcs, invcs2, invcs4;
+
+#ifdef LB_FLUID
+vector *u;
+#endif
+
 
 /* time */
 int itime;

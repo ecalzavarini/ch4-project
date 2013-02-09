@@ -25,9 +25,8 @@ extern prop property;
 
 /* mesh */
 extern mesh_type *mesh;
-extern surf_type *nS_over_V;
 extern vector *center_V;
-
+extern pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 
 
 /* Populations */
@@ -42,8 +41,14 @@ extern vector *force;
 extern my_double wgt[19]; 
 extern vector c[19];
 extern my_double dirp[19] ,inv[19];
-extern my_double cs , cs2 , cs4 , twocs2 , twocs4;
-extern my_double invcs , invcs2 ,  invcs4 , invtwocs2 , invtwocs4;
+extern my_double twocs2 , twocs4;
+extern my_double invtwocs2 , invtwocs4;
+extern my_double cs, cs2 , cs4 , cs22 , cssq;
+extern my_double invcs, invcs2, invcs4;
+
+#ifdef LB_FLUID
+extern vector *u;
+#endif
 
 /* time */
 extern int itime;

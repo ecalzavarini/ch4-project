@@ -61,5 +61,117 @@ void design_lb(){
   inv[17] = 16;
   inv[18] = 15;
 
+  /* speed of sound constants */
+  cs=1.0/sqrt(3.0);   invcs = 1.0/cs;
+  cs2=(1.0 / 3.0);    invcs2 = 1.0/cs2;
+  cs4=(1.0 / 9.0);    invcs4 = 1.0/cs4;
+  twocs2=2.0*cs2; invtwocs2 = 1.0/twocs2;
+  twocs4=2.0*cs4; invtwocs4 = 1.0/twocs4;
+
 
 }
+
+
+pop equilibrium(pop *f, int i, int j, int k) {
+  int pp;
+  my_double ux, uy,uz;
+  my_double rhof;
+  my_double cu, u2;
+  pop f_eq;
+
+  rhof = m(f[IDX(i,j,k)]);
+
+      ux = u[IDX(i,j,k)].x;
+      uy = u[IDX(i,j,k)].y;
+      uy = u[IDX(i,j,k)].z;
+
+      u2 = (ux*ux +  uy*uy + uz*uz);
+  
+      /* equilibrium distribution */
+      for (pp=0; pp<9; pp++){
+	cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
+	f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2*cu  + invtwocs4*cu*cu - invtwocs2*u2 );
+      }
+
+      return f_eq;    
+}
+
+
+#ifdef TOBEDONE
+/**************************************************/
+void hydro_fields(int i){
+  int x,y;
+  my_double tmpx, tmpy;
+  FILE *ferr;
+  my_double error;
+
+  for (y=1; y<NY+1; y++) 
+    for (x=1; x<NX+1; x++) {
+
+#ifdef FLUID
+      dens[IDX(y,x)] = m(p[IDX(y,x)]);
+      #ifdef METHOD_FORCING_GUO
+      v[IDX(y,x)].vx = ( vx(p[IDX(y,x)]) + 0.5*force[IDX(y,x)].x )/dens[IDX(y,x)];
+      v[IDX(y,x)].vy = ( vy(p[IDX(y,x)]) + 0.5*force[IDX(y,x)].y )/dens[IDX(y,x)];
+     /* set to zero after computing velocity */
+      force[IDX(y,x)].x = force[IDX(y,x)].y = 0.0;
+      #else
+      v[IDX(y,x)].vx = vx(p[IDX(y,x)])/dens[IDX(y,x)];
+      v[IDX(y,x)].vy = vy(p[IDX(y,x)])/dens[IDX(y,x)];
+      #endif
+#endif
+
+#ifdef FLUID_POROSITY
+      /* following Guo & Zhao , PHYSICAL REVIEW E 66, 036304 (2002) */
+#ifdef METHOD_FORCING_GUO
+      eps=porosity[IDX(y,x)];
+      vx_temp = ( vx(p[IDX(y,x)]) + 0.5*eps*force[IDX(y,x)].x )/dens[IDX(y,x)];
+      vy_temp = ( vy(p[IDX(y,x)]) + 0.5*eps*force[IDX(y,x)].y )/dens[IDX(y,x)];
+      v_amp = sqrt(vx_temp*vx_temp + vy_temp*vy_temp); 
+      c0 = 0.5 + 0.25*porperty.nu*(1-eps*eps)/(eps*eps);
+      c1 = 0.0; 	
+      v[IDX(y,x)].vx = vx_temp/(c0+sqrt(c0*c0 + c1*v_amp));
+      v[IDX(y,x)].vy = vy_temp/(c0+sqrt(c0*c0 + c1*v_amp));
+      /* set to zero after computing velocity */
+      force[IDX(y,x)].x = force[IDX(y,x)].y = 0.0;
+#endif
+#endif
+
+#ifdef TEMPERATURE
+      tt[IDX(y,x)]    =  t(g[IDX(y,x)]);
+#endif
+
+#ifdef SALT
+      ss[IDX(y,x)]    =  t(s[IDX(y,x)]);
+#endif
+    }
+
+  /* check thermalization */
+  if (i%500 == 0) {
+    ferr  = fopen("error.dat","a");
+    error = 0.0;
+    for (y=1; y<NY+1; y++) 
+      for (x=1; x<NX+1; x++) {
+	tmpx = v[IDX(y,x)].vx - vold[IDX(y,x)].vx;
+	tmpy = v[IDX(y,x)].vy - vold[IDX(y,x)].vy;  
+	error += (tmpx * tmpx + tmpy * tmpy);
+      }
+    fprintf(ferr,"%d %g\n",i,error);
+    fflush(ferr);
+
+    if ((error < 10e-11) && (i!=0)) {
+      fprintf(stderr,"Run termalized\n");
+      fclose(ferr);
+    }
+  }/* if */
+
+  for (y=1; y<NY+1; y++) 
+    for (x=1; x<NX+1; x++) {
+      vold[IDX(y,x)].vx = v[IDX(y,x)].vx;
+      vold[IDX(y,x)].vy = v[IDX(y,x)].vy;
+#ifdef TEMPERATURE
+      ttold[IDX(y,x)] = tt[IDX(y,x)];
+#endif
+    }
+}
+#endif

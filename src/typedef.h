@@ -9,9 +9,6 @@ typedef struct {
   int flag;
 } mesh_type;
 
-typedef struct {
-	vector xp, xm , yp , ym,  zp , zm;
-} surf_type;
 
 typedef struct {
   my_double p[19];

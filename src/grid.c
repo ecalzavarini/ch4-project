@@ -127,7 +127,7 @@ for(k=0;k<LNZ+BZ;k++)
 
 
 void compute_volumes(){ 
-  int i,j,k;
+  int i,j,k, pp;
 
  /* Allocating array for storing information of control volume */
  my_double P0[3],P1[3],P2[3],P3[3],P4[3],P5[3],P6[3],P7[3],P8[3];
@@ -140,9 +140,9 @@ void compute_volumes(){
 
 
 
- for(i=0;i<LNX+BX;i++){
-   for(j=0;j<LNY+BY;j++){
-     for(k=0;k<LNZ+BZ;k++){
+ for(i=0;i<LNX+BX-1;i++){
+   for(j=0;j<LNY+BY-1;j++){
+     for(k=0;k<LNZ+BZ-1;k++){
 
 /* points definition */
 /*    
@@ -260,7 +260,7 @@ Ref:  Jeffrey Grandy, Efficient Computation of Volume of Hexahedral Cells, Lawre
  /* testing volume */ 
  fprintf(stdout,"%e \n",V);
 
-
+ /*
  nS_over_V[IDX(i,j,k)].xp.x = N1357[0]/V; 
  nS_over_V[IDX(i,j,k)].xp.y = N1357[1]/V;
  nS_over_V[IDX(i,j,k)].xp.z = N1357[2]/V;
@@ -284,10 +284,23 @@ Ref:  Jeffrey Grandy, Efficient Computation of Volume of Hexahedral Cells, Lawre
  nS_over_V[IDX(i,j,k)].zm.x = N0123[0]/V;
  nS_over_V[IDX(i,j,k)].zm.y = N0123[1]/V;
  nS_over_V[IDX(i,j,k)].zm.z = N0123[2]/V;
+ */
 
  center_V[IDX(i,j,k)].x = P8[0];
  center_V[IDX(i,j,k)].y = P8[1];
  center_V[IDX(i,j,k)].z = P8[2];
+
+
+ for(pp=0;pp<NPOP;pp++){
+ coeff_xp[IDX(i,j,k)].p[pp] = (N1357[0]*c[pp].x + N1357[1]*c[pp].y + N1357[2]*c[pp].z)/V;
+ coeff_xm[IDX(i,j,k)].p[pp] = (N0246[0]*c[pp].x + N0246[1]*c[pp].y + N0246[2]*c[pp].z)/V;
+ coeff_yp[IDX(i,j,k)].p[pp] = (N2367[0]*c[pp].x + N2367[1]*c[pp].y + N2367[2]*c[pp].z)/V;
+ coeff_ym[IDX(i,j,k)].p[pp] = (N0145[0]*c[pp].x + N0145[1]*c[pp].y + N0145[2]*c[pp].z)/V;
+ coeff_zp[IDX(i,j,k)].p[pp] = (N4567[0]*c[pp].x + N4567[1]*c[pp].y + N4567[2]*c[pp].z)/V;
+ coeff_zm[IDX(i,j,k)].p[pp] = (N0123[0]*c[pp].x + N0123[1]*c[pp].y + N0123[2]*c[pp].z)/V;
+   
+   }
+
      }
    }
  }/* for i , j , k */
