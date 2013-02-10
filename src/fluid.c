@@ -1,0 +1,88 @@
+#include "common_object.h"
+
+
+void compute_advection(){
+
+  int i,j,k,pp;
+  pop adv;
+
+  /* check this index */
+  for(k=1;k<LNZ;k++)
+    for(j=1;j<LNY;j++)
+      for(i=1;i<LNX;i++){ 
+
+ 	for(pp=0;pp<NPOP;pp++){
+
+#ifndef METHOD_UPWIND
+ /* centered difference scheme */
+	  adv.p[pp] = coeff_xp[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i+1,j,k)].p[pp] + p[IDX(i,j,k)].p[pp])+ 
+                      coeff_xm[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i-1,j,k)].p[pp] + p[IDX(i,j,k)].p[pp])+
+                      coeff_yp[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j+1,k)].p[pp] + p[IDX(i,j,k)].p[pp])+
+                      coeff_ym[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j-1,k)].p[pp] + p[IDX(i,j,k)].p[pp])+
+                      coeff_zp[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j,k+1)].p[pp] + p[IDX(i,j,k)].p[pp])+
+                      coeff_zm[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j,k-1)].p[pp] + p[IDX(i,j,k)].p[pp]);
+#elseif
+ /* first order upwind scheme */
+ if(coeff_xp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_xp[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_xp[IDX(i,j,k)].p[pp]*p[IDX(i+1,j,k)].p[pp];
+
+ if(coeff_xm[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_xm[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_xm[IDX(i,j,k)].p[pp]*p[IDX(i-1,j,k)].p[pp];
+
+ if(coeff_yp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_yp[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_yp[IDX(i,j,k)].p[pp]*p[IDX(i,j+1,k)].p[pp];
+
+ if(coeff_ym[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_ym[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_ym[IDX(i,j,k)].p[pp]*p[IDX(i,j-1,k)].p[pp];
+
+ if(coeff_zp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_zp[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_zp[IDX(i,j,k)].p[pp]*p[IDX(i,j,k+1)].p[pp];
+
+ if(coeff_zm[IDX(i,j,k)].p[pp] >= 0.0)
+   adv.p[pp] += coeff_zm[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
+ else
+   adv.p[pp] += coeff_zm[IDX(i,j,k)].p[pp]*p[IDX(i,j,k-1)].p[pp];
+
+#endif
+
+ rhs_p[IDX(i,j,k)].p[pp] = adv.p[pp];
+
+	}/* for pp */
+      }/* for i, j , k */
+}
+
+
+
+void compute_collision(){
+  int i, j, k, pp;
+  my_double invtau , one_minus_invtau;
+  pop f_eq;
+
+  one_minus_invtau = (1.0 - invtau);
+
+ for(k=1;k<LNZ;k++)
+    for(j=1;j<LNY;j++)
+      for(i=1;i<LNX;i++){
+      
+	f_eq=equilibrium(f,i,j,k);
+      /* collision */
+	for (pp=0; pp<NPOP; pp++){
+      /* original */
+       //	f[IDX(y,x)].p[pp] = f[IDX(y,x)].p[pp] - invtau * (f[IDX(y,x)].p[pp] - f_eq.p[pp]);
+      /* compact */
+	f[IDX(i,j,k)].p[pp] =  one_minus_invtau * f[IDX(i,j,k)].p[pp] + invtau * f_eq.p[pp];
+	}
+      }/* i,j,k*/
+
+
+}
