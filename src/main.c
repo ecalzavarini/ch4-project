@@ -21,6 +21,22 @@ main(int argc, char **argv)
 	design_lb();
 #endif
 
+	/*
+	initial_conditions(); 
+	boundary_conditions(); 
+	*/
+
+#ifdef FLUID
+	/*
+	hydro_fields();
+	compute_advection();
+	compute_collision();
+	add_forcing();
+	boundary_conditions();
+	time_stepping();
+	 */
+#endif
+
 	/* Shut down MPI */
 	MPI_Finalize();
 	return 0;

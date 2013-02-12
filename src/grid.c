@@ -235,12 +235,12 @@ These vector are constructed in a way to have their norms equal to the surface S
       if (n==0) {x= 1; y= 2;}
       if (n==1) {x= 2; y= 0;}
       if (n==2) {x= 0; y= 1;}
-      N1357[n]= 0.5*(D17[x]*D35[y]-D17[y]*D35[x]);
-      N0145[n]= 0.5*(D05[x]*D14[y]-D05[y]*D14[x]);
-      N0246[n]= 0.5*(D06[x]*D24[y]-D06[y]*D24[x]);
-      N2367[n]= 0.5*(D27[x]*D36[y]-D27[y]*D36[x]);
-      N0123[n]= 0.5*(D03[x]*D12[y]-D03[y]*D12[x]);
-      N4567[n]= 0.5*(D47[x]*D56[y]-D47[y]*D56[x]);
+      N1357[n]=  0.5*(D17[x]*D35[y]-D17[y]*D35[x]);
+      N0145[n]= -0.5*(D05[x]*D14[y]-D05[y]*D14[x]);
+      N0246[n]= -0.5*(D06[x]*D24[y]-D06[y]*D24[x]);
+      N2367[n]=  0.5*(D27[x]*D36[y]-D27[y]*D36[x]);
+      N0123[n]= -0.5*(D03[x]*D12[y]-D03[y]*D12[x]);
+      N4567[n]=  0.5*(D47[x]*D56[y]-D47[y]*D56[x]);
     }
 
 /* volume definition 
