@@ -53,7 +53,7 @@ typedef struct {
 #define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
 
 /* index on the grid */
-#define IDXG(i,j,k) ( (int)(k)*(LNY+1+BY)*(LNX+1+BX)+(int)(j)*(LNX+1+BX)+(int)(i) )
+#define IDXG(i,j,k) ( (int)(k)*(LNYG+BY)*(LNXG+BX)+(int)(j)*(LNXG+BX)+(int)(i) )
 /* index on the vertices */
 #define IDX(i,j,k) ( (int)(k)*(LNY+BY)*(LNX+BX)+(int)(j)*(LNX+BX)+(int)(i) )
 

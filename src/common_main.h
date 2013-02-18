@@ -16,11 +16,17 @@ int nxprocs, nyprocs, nzprocs;
 MPI_Datatype MPI_Property_type;
 
 
-/* System size */
+/* System size , for the nodes*/
 int NX , NY , NZ;
 int LNX , LNY , LNZ;
 int LNX_END , LNY_END , LNZ_END;
 int LNX_START , LNY_START , LNZ_START;
+/* for the grid */
+int NXG , NYG , NZG;
+int LNXG , LNYG , LNZG;
+int LNXG_END , LNYG_END , LNZG_END;
+int LNXG_START , LNYG_START , LNZG_START;
+
 
 /* Array of properties*/
 prop property;

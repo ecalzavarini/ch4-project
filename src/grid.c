@@ -89,13 +89,27 @@ processor_splitting()
 	fprintf(stderr, "me %d , mex %d  mey %d mez %d\n", me, mex, mey, mez);
 #endif
 
-	/* processor rulers */
+	/* processor rulers for vertices */
 	LNX_START = LNX * mex;
 	LNX_END = LNX * (mex + 1);
 	LNY_START = LNY * mey;
 	LNY_END = LNY * (mey + 1);
 	LNZ_START = LNZ * mez;
 	LNZ_END = LNZ * (mez + 1);
+
+	/* processor rulers for the grid */
+	NXG=NX+1;
+	NYG=NY+1;
+	NZG=NZ+1;
+	LNXG=LNX+1;
+	LNYG=LNY+1;
+	LNZG=LNZ+1;
+	LNXG_START = LNXG * mex;
+	LNXG_END = LNXG * (mex + 1);
+	LNYG_START = LNYG * mey;
+	LNYG_END = LNYG * (mey + 1);
+	LNZG_START = LNZG * mez;
+	LNZG_END = LNZG * (mez + 1);
 
 }
 
@@ -118,12 +132,12 @@ void read_mesh()
 		fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
 		/* moving on the bulk only */
-		for (k = 1; k < (LNZ + 1)+BZ-1; k++)
-			for (j = 1; j < (LNY+1)+BY-1; j++)
-				for (i = 1; i < (LNX + 1)+BX-1; i++) {
-					mesh[IDXG(i, j, k)].x = (my_double) (i + LNX_START- BX/2);
-					mesh[IDXG(i, j, k)].y = (my_double) (j + LNY_START- BY/2);
-					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZ_START- BZ/2);
+		for (k = 1; k < LNZG+BZ-1; k++)
+			for (j = 1; j < LNYG+BY-1; j++)
+				for (i = 1; i < LNXG+BX-1; i++) {
+					mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-1);
+					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-1);
+					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-1);
 					/*
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient
@@ -138,9 +152,9 @@ void read_mesh()
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
-	for (k = 0; k < LNZ + 1 + BX; k++)
-		for (j = 0; j < LNY+ 1 + BY; j++)
-			for (i = 0; i < LNX + 1 + BZ; i++)
+	for (k = 0; k < LNZG + BX; k++)
+		for (j = 0; j < LNYG + BY; j++)
+			for (i = 0; i < LNXG + BZ; i++)
 				fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
 	fclose(fout);
 #endif

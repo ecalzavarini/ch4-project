@@ -15,11 +15,17 @@ extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
 extern MPI_Datatype MPI_Property_type;
 
-/* System size */
+/* System size , center nodes */
 extern int NX , NY , NZ;
 extern int LNX , LNY , LNZ;
 extern int LNX_END , LNY_END , LNZ_END;
 extern int LNX_START , LNY_START , LNZ_START;
+/* for the grid */
+extern int NXG , NYG , NZG;
+extern int LNXG , LNYG , LNZG;
+extern int LNXG_END , LNYG_END , LNZG_END;
+extern int LNXG_START , LNYG_START , LNZG_START;
+
 
 /* Array of properties*/
 extern prop property;
