@@ -7,9 +7,9 @@ void compute_advection(){
   pop adv;
 
   /* check this index */
-  for(k=1;k<LNZ;k++)
-    for(j=1;j<LNY;j++)
-      for(i=1;i<LNX;i++){ 
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
 
  	for(pp=0;pp<NPOP;pp++){
 
@@ -70,15 +70,15 @@ void compute_collision(){
 
   one_minus_invtau = (1.0 - invtau);
 
- for(k=1;k<LNZ;k++)
-    for(j=1;j<LNY;j++)
-      for(i=1;i<LNX;i++){
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
       
 	f_eq=equilibrium(f,i,j,k);
       /* collision */
 	for (pp=0; pp<NPOP; pp++){
       /* original */
-       //	f[IDX(y,x)].p[pp] = f[IDX(y,x)].p[pp] - invtau * (f[IDX(y,x)].p[pp] - f_eq.p[pp]);
+       //	f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp] - invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
       /* compact */
 	f[IDX(i,j,k)].p[pp] =  one_minus_invtau * f[IDX(i,j,k)].p[pp] + invtau * f_eq.p[pp];
 	}
@@ -88,9 +88,3 @@ void compute_collision(){
 }
 
 
-void add_forcing(){
-
-
-
-
-}

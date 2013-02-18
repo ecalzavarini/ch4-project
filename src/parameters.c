@@ -127,42 +127,42 @@ void assign_parameters(){
 
 
 void allocate_fields(){
- mesh  = (mesh_type*) malloc(sizeof(mesh_type)*(LNX+1+BX)*(LNY+1+BY)*(LNZ+1+BZ)); 
+ mesh  = (mesh_type*) malloc(sizeof(mesh_type)*(LNX+1+TWO_BRD)*(LNY+1+TWO_BRD)*(LNZ+1+TWO_BRD)); 
  if(mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
 #ifdef LB
- coeff_xp = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_xp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_xp == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- coeff_xm = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_xm = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_xm == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- coeff_yp = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_yp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_yp == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- coeff_ym = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_ym = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_ym == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- coeff_zp = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_zp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_zp == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- coeff_zm = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ coeff_zm = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_zm == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 #endif
 
- center_V = (vector*) malloc(sizeof(vector)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ center_V = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
 #ifdef LB_FLUID
- p  = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(p == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
- rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
- u = (vector*) malloc(sizeof(vector)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ u = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(u == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
- dens  = (my_double*) malloc(sizeof(my_double)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ dens  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(dens == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
 
 #ifdef LB_FLUID_FORCING
- force  = (vector*) malloc(sizeof(vector)*(LNX+BX)*(LNY+BY)*(LNZ+BZ)); 
+ force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(force == NULL){ fprintf(stderr,"Not enough memory to allocate force\n"); exit(-1);}
 #endif
 

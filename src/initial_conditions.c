@@ -17,9 +17,9 @@ void initial()
   //  srand( time(NULL) );
 
   /* this is the loop to run over the bulk of all the vertices */
-   for(k=1;k<LNZ+BZ-1;k++)
-    for(j=1;j<LNY+BY-1;j++)
-      for(i=1;i<LNX+BX-1;i++){ 
+   for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
 
 #ifdef LB_FLUID
 	/* constant density */
@@ -28,7 +28,7 @@ void initial()
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.00000000001;
     kn=10.0;
-    j_global= LNY_START-1;
+    j_global= j-BRD+LNY_START;
 
 	/* along x */  
         p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*2.*3.14*j_global/NY); 

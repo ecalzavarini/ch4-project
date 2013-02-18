@@ -115,8 +115,7 @@ processor_splitting()
 
 
 
-void read_mesh()
-{
+void read_mesh(){
 
 	char            fnamein[256], fnameout[256];
 	char            name[256] = "NULL";
@@ -132,12 +131,12 @@ void read_mesh()
 		fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
 		/* moving on the bulk only */
-		for (k = 1; k < LNZG+BZ-1; k++)
-			for (j = 1; j < LNYG+BY-1; j++)
-				for (i = 1; i < LNXG+BX-1; i++) {
-					mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-1);
-					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-1);
-					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-1);
+		for (k = BRD; k < LNZG+BRD; k++)
+			for (j = BRD; j < LNYG+BRD; j++)
+				for (i = BRD; i < LNXG+BRD; i++) {
+					mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD);
+					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-BRD);
+					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD);
 					/*
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient
@@ -152,9 +151,9 @@ void read_mesh()
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
-	for (k = 0; k < LNZG + BX; k++)
-		for (j = 0; j < LNYG + BY; j++)
-			for (i = 0; i < LNXG + BZ; i++)
+	for (k = 0; k < LNZG + TWO_BRD; k++)
+		for (j = 0; j < LNYG + TWO_BRD; j++)
+			for (i = 0; i < LNXG + TWO_BRD; i++)
 				fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
 	fclose(fout);
 #endif
@@ -182,9 +181,9 @@ compute_volumes()
 
 
 
-	for (i = 0; i < LNX + BX ; i++) {
-		for (j = 0; j < LNY + BY; j++) {
-			for (k = 0; k < LNZ + BZ; k++) {
+	for (i = 0; i < LNXG + TWO_BRD ; i++) {
+		for (j = 0; j < LNYG + TWO_BRD; j++) {
+			for (k = 0; k < LNZG + BRD; k++) {
 
 /* points definition */
 /*    

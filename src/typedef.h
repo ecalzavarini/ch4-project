@@ -52,18 +52,15 @@ typedef struct {
 #define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
 #define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
 
-/* index on the grid */
-#define IDXG(i,j,k) ( (int)(k)*(LNYG+BY)*(LNXG+BX)+(int)(j)*(LNXG+BX)+(int)(i) )
-/* index on the vertices */
-#define IDX(i,j,k) ( (int)(k)*(LNY+BY)*(LNX+BX)+(int)(j)*(LNX+BX)+(int)(i) )
-
 #define ROOT (!me)
 
 /* total frame size */
-#define BX 2
-#define BY 2
-#define BZ 2
+#define BRD 1
+#define TWO_BRD 2*BRD
 
-
+/* index on the grid */
+#define IDXG(i,j,k) ( (int)(k)*(LNYG+TWO_BRD)*(LNXG+TWO_BRD)+(int)(j)*(LNXG+TWO_BRD)+(int)(i) )
+/* index on the vertices */
+#define IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 
 

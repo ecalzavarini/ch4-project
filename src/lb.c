@@ -132,9 +132,9 @@ void hydro_fields()
 	FILE           *ferr;
 	my_double       error;
 
-	for (i = 1; i < LNX + BX - 1; i++)
-		for (j = 1; j < LNY + BY - 1; j++)
-			for (k = 1; k < LNZ + BZ - 1; k++) {
+	for (i = BRD; i < LNX+BRD; i++)
+		for (j = BRD; j < LNY+BRD; j++)
+			for (k = BRD; k < LNZ+BRD; k++) {
 
 #ifdef FLUID
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
