@@ -117,17 +117,18 @@ void read_mesh()
 
 		fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
-		for (k = 0; k < LNZ + BZ; k++)
-			for (j = 0; j < LNY + BY; j++)
-				for (i = 0; i < LNX + BX; i++) {
-					mesh[IDX(i, j, k)].x = (my_double) (i + LNX_START - BX / 2);
-					mesh[IDX(i, j, k)].y = (my_double) (j + LNY_START - BY / 2);
-					mesh[IDX(i, j, k)].z = (my_double) (k + LNZ_START - BZ / 2);
+		/* moving on the bulk only */
+		for (k = 1; k < (LNZ + 1)+BZ-1; k++)
+			for (j = 1; j < (LNY+1)+BY-1; j++)
+				for (i = 1; i < (LNX + 1)+BX-1; i++) {
+					mesh[IDXG(i, j, k)].x = (my_double) (i + LNX_START- BX/2);
+					mesh[IDXG(i, j, k)].y = (my_double) (j + LNY_START- BY/2);
+					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZ_START- BZ/2);
 					/*
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient
 					 */
-					mesh[IDX(i, j, k)].flag = 1;
+					mesh[IDXG(i, j, k)].flag = 1;
 				}	/* for ijk */
 
 	}			/* endif */
@@ -137,10 +138,10 @@ void read_mesh()
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
-	for (k = 0; k < LNZ + BX; k++)
-		for (j = 0; j < LNY + BY; j++)
-			for (i = 0; i < LNX + BZ; i++)
-				fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDX(i, j, k)].x, mesh[IDX(i, j, k)].y, mesh[IDX(i, j, k)].z);
+	for (k = 0; k < LNZ + 1 + BX; k++)
+		for (j = 0; j < LNY+ 1 + BY; j++)
+			for (i = 0; i < LNX + 1 + BZ; i++)
+				fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
 	fclose(fout);
 #endif
 
@@ -167,9 +168,9 @@ compute_volumes()
 
 
 
-	for (i = 0; i < LNX + BX - 1; i++) {
-		for (j = 0; j < LNY + BY - 1; j++) {
-			for (k = 0; k < LNZ + BZ - 1; k++) {
+	for (i = 0; i < LNX + BX ; i++) {
+		for (j = 0; j < LNY + BY; j++) {
+			for (k = 0; k < LNZ + BZ; k++) {
 
 /* points definition */
 /*    
@@ -186,30 +187,30 @@ compute_volumes()
 
  */
 
-				P0[0] = mesh[IDX(i, j, k)].x;
-				P0[1] = mesh[IDX(i, j, k)].y;
-				P0[2] = mesh[IDX(i, j, k)].z;
-				P1[0] = mesh[IDX(i + 1, j, k)].x;
-				P1[1] = mesh[IDX(i + 1, j, k)].y;
-				P1[2] = mesh[IDX(i + 1, j, k)].z;
-				P2[0] = mesh[IDX(i, j + 1, k)].x;
-				P2[1] = mesh[IDX(i, j + 1, k)].y;
-				P2[2] = mesh[IDX(i, j + 1, k)].z;
-				P3[0] = mesh[IDX(i + 1, j + 1, k)].x;
-				P3[1] = mesh[IDX(i + 1, j + 1, k)].y;
-				P3[2] = mesh[IDX(i + 1, j + 1, k)].z;
-				P4[0] = mesh[IDX(i, j, k + 1)].x;
-				P4[1] = mesh[IDX(i, j, k + 1)].y;
-				P4[2] = mesh[IDX(i, j, k + 1)].z;
-				P5[0] = mesh[IDX(i + 1, j, k + 1)].x;
-				P5[1] = mesh[IDX(i + 1, j, k + 1)].y;
-				P5[2] = mesh[IDX(i + 1, j, k + 1)].z;
-				P6[0] = mesh[IDX(i, j + 1, k + 1)].x;
-				P6[1] = mesh[IDX(i, j + 1, k + 1)].y;
-				P6[2] = mesh[IDX(i, j + 1, k + 1)].z;
-				P7[0] = mesh[IDX(i + 1, j + 1, k + 1)].x;
-				P7[1] = mesh[IDX(i + 1, j + 1, k + 1)].y;
-				P7[2] = mesh[IDX(i + 1, j + 1, k + 1)].z;
+				P0[0] = mesh[IDXG(i, j, k)].x;
+				P0[1] = mesh[IDXG(i, j, k)].y;
+				P0[2] = mesh[IDXG(i, j, k)].z;
+				P1[0] = mesh[IDXG(i + 1, j, k)].x;
+				P1[1] = mesh[IDXG(i + 1, j, k)].y;
+				P1[2] = mesh[IDXG(i + 1, j, k)].z;
+				P2[0] = mesh[IDXG(i, j + 1, k)].x;
+				P2[1] = mesh[IDXG(i, j + 1, k)].y;
+				P2[2] = mesh[IDXG(i, j + 1, k)].z;
+				P3[0] = mesh[IDXG(i + 1, j + 1, k)].x;
+				P3[1] = mesh[IDXG(i + 1, j + 1, k)].y;
+				P3[2] = mesh[IDXG(i + 1, j + 1, k)].z;
+				P4[0] = mesh[IDXG(i, j, k + 1)].x;
+				P4[1] = mesh[IDXG(i, j, k + 1)].y;
+				P4[2] = mesh[IDXG(i, j, k + 1)].z;
+				P5[0] = mesh[IDXG(i + 1, j, k + 1)].x;
+				P5[1] = mesh[IDXG(i + 1, j, k + 1)].y;
+				P5[2] = mesh[IDXG(i + 1, j, k + 1)].z;
+				P6[0] = mesh[IDXG(i, j + 1, k + 1)].x;
+				P6[1] = mesh[IDXG(i, j + 1, k + 1)].y;
+				P6[2] = mesh[IDXG(i, j + 1, k + 1)].z;
+				P7[0] = mesh[IDXG(i + 1, j + 1, k + 1)].x;
+				P7[1] = mesh[IDXG(i + 1, j + 1, k + 1)].y;
+				P7[2] = mesh[IDXG(i + 1, j + 1, k + 1)].z;
 				P8[0] = (P0[0] + P1[0] + P2[0] + P3[0] + P4[0] + P5[0] + P6[0] + P7[0]) / 8;
 				P8[1] = (P0[1] + P1[1] + P2[1] + P3[1] + P4[1] + P5[1] + P6[1] + P7[1]) / 8;
 				P8[2] = (P0[2] + P1[2] + P2[2] + P3[2] + P4[2] + P5[2] + P6[2] + P7[2]) / 8;

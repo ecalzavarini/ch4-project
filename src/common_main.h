@@ -32,11 +32,6 @@ pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 
 /* Populations */
 int NPOP;
-pop *p;
-pop *p_old;
-vector *v,*vold;
-my_double *dens;
-vector *force;
 
 /* LB speeds & weights */
 my_double wgt[19]; 
@@ -47,9 +42,16 @@ my_double invtwocs2 , invtwocs4;
 my_double cs, cs2 , cs4 , cs22 , cssq;
 my_double invcs, invcs2, invcs4;
 
+
 #ifdef LB_FLUID
+pop *p, *rhs_p;
+my_double *dens;
 vector *u;
+#ifdef LB_FLUID_FORCING
+vector *force;
 #endif
+#endif
+
 
 
 /* time */

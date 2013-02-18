@@ -31,75 +31,32 @@ design_lb()
 
 
 	/* Lattice speeds, D3Q19 */
-	c[0].x = 0.;
-	c[0].y = 0.;
-	c[0].z = 0.;
-	c[1].x = 1.;
-	c[1].y = 0.;
-	c[1].z = 0.;
-	c[2].x = -1.;
-	c[2].y = 0.;
-	c[2].z = 0.;
-	c[3].x = 0.;
-	c[3].y = 1.;
-	c[3].z = 0.;
-	c[4].x = 0.;
-	c[4].y = -1.;
-	c[4].z = 0.;
-	c[5].x = 0.;
-	c[5].y = 0.;
-	c[5].z = 1.;
-	c[6].x = 0.;
-	c[6].y = 0.;
-	c[6].z = -1.;
-	c[7].x = 1.;
-	c[7].y = 1.;
-	c[7].z = 0.;
-	c[8].x = 1.;
-	c[8].y = -1.;
-	c[8].z = 0.;
-	c[9].x = -1.;
-	c[9].y = 1.;
-	c[9].z = 0.;
-	c[10].x = -1.;
-	c[10].y = -1.;
-	c[10].z = 0.;
-	c[11].x = 1.;
-	c[11].y = 0.;
-	c[11].z = 1.;
-	c[12].x = -1.;
-	c[12].y = 0.;
-	c[12].z = 1.;
-	c[13].x = 1.;
-	c[13].y = 0.;
-	c[13].z = -1.;
-	c[14].x = -1.;
-	c[14].y = 0.;
-	c[14].z = -1.;
-	c[15].x = 0.;
-	c[15].y = 1.;
-	c[15].z = 1.;
-	c[16].x = 0.;
-	c[16].y = 1.;
-	c[16].z = -1.;
-	c[17].x = 0.;
-	c[17].y = -1.;
-	c[17].z = 1.;
-	c[18].x = 0.;
-	c[18].y = -1.;
-	c[18].z = -1.;
+	c[0].x = 0.;	c[0].y = 0.;	c[0].z = 0.;
+	c[1].x = 1.;	c[1].y = 0.;	c[1].z = 0.;
+	c[2].x = -1.;	c[2].y = 0.;	c[2].z = 0.;
+	c[3].x = 0.;	c[3].y = 1.;	c[3].z = 0.;
+	c[4].x = 0.;	c[4].y = -1.;	c[4].z = 0.;
+	c[5].x = 0.;	c[5].y = 0.;	c[5].z = 1.;
+	c[6].x = 0.;	c[6].y = 0.;	c[6].z = -1.;
+	c[7].x = 1.;	c[7].y = 1.;	c[7].z = 0.;
+	c[8].x = 1.;	c[8].y = -1.;	c[8].z = 0.;
+	c[9].x = -1.;	c[9].y = 1.;	c[9].z = 0.;
+	c[10].x = -1.;	c[10].y = -1.;	c[10].z = 0.;
+	c[11].x = 1.;	c[11].y = 0.;	c[11].z = 1.;
+	c[12].x = -1.;	c[12].y = 0.;	c[12].z = 1.;
+	c[13].x = 1.;	c[13].y = 0.;	c[13].z = -1.;
+	c[14].x = -1.;	c[14].y = 0.;	c[14].z = -1.;
+	c[15].x = 0.;	c[15].y = 1.;	c[15].z = 1.;
+	c[16].x = 0.;	c[16].y = 1.;	c[16].z = -1.;
+	c[17].x = 0.;	c[17].y = -1.;	c[17].z = 1.;
+	c[18].x = 0.;	c[18].y = -1.;	c[18].z = -1.;
 
 
-	/*
-	 * in typedef.h #define vx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]
-	 * -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14]) #define vy(a)
-	 * (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15]
-	 * +a.p[16]-a.p[17]-a.p[18]) #define vz(a) (a.p[5] -a.p[6] +a.p[11]
-	 * +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
-	 * #define m(a)
-	 * (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p
-	 * [9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]
-	 * +a.p[18])
+	/* in typedef.h  
+#define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8] -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14]) 
+#define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15]+a.p[16]-a.p[17]-a.p[18]) 
+#define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
 	 */
 
 	/*
@@ -139,12 +96,10 @@ design_lb()
 	twocs4 = 2.0 * cs4;
 	invtwocs4 = 1.0 / twocs4;
 
-
 }
 
 
-pop 
-equilibrium(pop * f, int i, int j, int k)
+pop equilibrium(pop * f, int i, int j, int k)
 {
 	int             pp;
 	my_double       ux, uy, uz;
@@ -170,8 +125,7 @@ equilibrium(pop * f, int i, int j, int k)
 }
 
 /**************************************************/
-void 
-hydro_fields()
+void hydro_fields()
 {
 	int             i, j, k;
 	my_double       tmpx, tmpy;
@@ -185,15 +139,15 @@ hydro_fields()
 #ifdef FLUID
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
 #ifdef METHOD_FORCING_GUO
-				v[IDX(i, j, k)].x = (vx(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].x) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].y = (vy(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].y) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].z = (vz(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].z) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].x = (mvx(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].x) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].y = (mvy(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].y) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].z = (mvz(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].z) / dens[IDX(i, j, k)];
 				/* set to zero after computing velocity */
 				force[IDX(i, j, k)].x = force[IDX(i, j, k)].y = force[IDX(i, j, k)].y = 0.0;
 #else
-				v[IDX(i, j, k)].x = vx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].y = vy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].z = vz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				v[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 #endif
 #endif
 
