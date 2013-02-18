@@ -86,3 +86,11 @@ void compute_collision(){
 
 
 }
+
+
+void add_forcing(){
+
+
+
+
+}

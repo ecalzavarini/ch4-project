@@ -1,3 +1,10 @@
-NX 32
-NY 32
-NZ 32
+NX 4
+NY 4
+NZ 4
+
+time_dt 1.0
+time_max 100.
+time_dump_field 10.0
+time_dump_diagn 1.0
+
+tau_u 1.0

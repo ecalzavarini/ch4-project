@@ -13,6 +13,7 @@ extern int me;
 extern int mex,mey,mez;
 extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
+extern MPI_Datatype MPI_Property_type;
 
 /* System size */
 extern int NX , NY , NZ;
@@ -52,8 +53,6 @@ extern vector *u;
 
 /* time */
 extern int itime;
-extern int max_step;
-extern int time_dump_field;
 extern char OutDir[256];
 
 

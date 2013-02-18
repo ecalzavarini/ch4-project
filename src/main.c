@@ -26,7 +26,7 @@ main(int argc, char **argv)
 	boundary_conditions(); 
 	*/
 
-#ifdef FLUID
+#ifdef LB_FLUID
 	/*
 	hydro_fields();
 	compute_advection();

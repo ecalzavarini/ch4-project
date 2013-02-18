@@ -13,6 +13,8 @@ int me;
 int mex,mey,mez;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
+MPI_Datatype MPI_Property_type;
+
 
 /* System size */
 int NX , NY , NZ;
@@ -52,8 +54,6 @@ vector *u;
 
 /* time */
 int itime;
-int max_step;
-int time_dump_field;
 char OutDir[256];
 
 

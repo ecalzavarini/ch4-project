@@ -20,8 +20,24 @@ typedef struct {
 } param;
 
 typedef struct {
-  int NX , NY , NZ;
+  double NX , NY , NZ;
+  double time_dt, time_max, time_dump_field, time_dump_diagn;
+#ifdef LB_FLUID
+  double tau_u , nu;
+#ifdef LB_FLUID_FORCING_POISEUILLE
+  double gradP;
+#endif
+#endif
 } prop;
+
+
+#define NPROP 7
+#ifdef LB_FLUID
+#define NPROP 9
+#ifdef LB_FLUID_FORCING_POISEUILLE
+#define NPROP 10
+#endif
+#endif
 
 typedef struct {
   my_double x;
@@ -31,9 +47,10 @@ typedef struct {
 
 
 /* WARNING vx means rho*vx */
-#define vx(a) (a.p[1]+a.p[5]+a.p[8]-a.p[3]-a.p[6]-a.p[7])
-#define vy(a) (a.p[2]+a.p[5]+a.p[6]-a.p[4]-a.p[7]-a.p[8])
-#define  m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8])
+#define vx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]  -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14])
+#define vy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15] +a.p[16]-a.p[17]-a.p[18])
+#define vz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
 
 
 #define IDX(i,j,k) ( (int)(k)*(LNY+BY)*(LNX+BX)+(int)(j)*(LNX+BX)+(int)(i) )
