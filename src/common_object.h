@@ -11,6 +11,7 @@
 /* MPI variables */
 extern int me;
 extern int mex,mey,mez;
+extern int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
 extern MPI_Datatype MPI_Property_type;

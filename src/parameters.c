@@ -127,7 +127,7 @@ void assign_parameters(){
 
 
 void allocate_fields(){
- mesh  = (mesh_type*) malloc(sizeof(mesh_type)*(LNX+1+TWO_BRD)*(LNY+1+TWO_BRD)*(LNZ+1+TWO_BRD)); 
+ mesh  = (mesh_type*) malloc(sizeof(mesh_type)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
 #ifdef LB

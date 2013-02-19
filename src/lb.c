@@ -175,24 +175,83 @@ time_stepping(){
 
 
 /********************************************/ 
-void _pop(pop_type *f)
+void sendrecv_borders_pop(pop_type *f)
 {
+
   MPI_Status status1;
 
+MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_Poptype);
+MPI_Type_commit(&MPI_Poptype);
 
-  MPI_Sendrecv( f + NZP2*NYP2*NX + NZP2+1     , 1, MPI_X_PopPlane, pxp, 10,
-                f                + NZP2+1     , 1, MPI_X_PopPlane, pxm, 10, MPI_COMM_ALONG_X, &status1);
-  MPI_Sendrecv( f + NZP2*NYP2        + NZP2+1 , 1, MPI_X_PopPlane, pxm, 11,
-                f + NZP2*NYP2*(NX+1) + NZP2+1 , 1, MPI_X_PopPlane, pxp, 11, MPI_COMM_ALONG_X, &status1);
+  /* copy x borders */
+  for(k=0;k<LNZ+BRD;k++)
+    for(j=0;j<LNY+BRD;j++)
+      for(i=0;i<BRD;i++){ 
+        xp_p[IDX_XBRD(i,j,k)] = f[IDX(i+LNX,j,k)];
+	xm_p[IDX_XBRD(i,j,k)] = f[IDX(i,j,k)]; 
+      }
 
-  MPI_Sendrecv( f + NZP2*(NY) + 1             , 1, MPI_Y_PopPlane, pyp, 12,
-                f + 1                         , 1, MPI_Y_PopPlane, pym, 12, MPI_COMM_ALONG_Y, &status1);
-  MPI_Sendrecv( f + NZP2 + 1                  , 1, MPI_Y_PopPlane, pym, 13,
-                f + NZP2*(NY+1) + 1           , 1, MPI_Y_PopPlane, pyp, 13, MPI_COMM_ALONG_Y, &status1);
+  /* copy y borders */
+  for(k=0;k<LNZ+BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<LNX+BRD;i++){ 
+        yp_p[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
+	ym_p[IDX_YBRD(i,j,k)] = f[IDX(i,j,k)]; 
+      }
 
-  MPI_Sendrecv( f + NZ                        , 1, MPI_Z_PopPlane, pzp, 14,
-                f                             , 1, MPI_Z_PopPlane, pzm, 14, MPI_COMM_ALONG_Z, &status1);
-  MPI_Sendrecv( f + 1                         , 1, MPI_Z_PopPlane, pzm, 15,
-                f + NZ+1                      , 1, MPI_Z_PopPlane, pzp, 15, MPI_COMM_ALONG_Z, &status1);
+  /* copy z borders */
+  for(k=0;k<BRD;k++)
+    for(j=0;j<LNY+BRD;j++)
+      for(i=0;i<LNX+BRD;i++){ 
+        zp_p[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
+	zm_p[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k)]; 
+      }      
+
+  /* communicate x */
+  MPI_Sendrecv( xp_p,  BRD*(LNY+BRD)*(LNZ+BRD), MPI_Poptype, me, 10,
+                xm_p,  BRD*(LNY+BRD)*(LNZ+BRD), MPI_Poptype, me_xp, 10, MPI_COMM_WORLD, &status1);
+
+  MPI_Sendrecv( xm_p,  BRD*(LNY+BRD)*(LNZ+BRD), MPI_Poptype, me, 20,
+                xp_p,  BRD*(LNY+BRD)*(LNZ+BRD), MPI_Poptype, me_xm, 20, MPI_COMM_WORLD, &status1);
+
+  /* communicate y */
+  MPI_Sendrecv( yp_p,  BRD*(LNX+BRD)*(LNZ+BRD), MPI_Poptype, me, 30,
+                ym_p,  BRD*(LNX+BRD)*(LNZ+BRD), MPI_Poptype, me_yp, 30, MPI_COMM_WORLD, &status1);
+
+  MPI_Sendrecv( ym_p,  BRD*(LNX+BRD)*(LNZ+BRD), MPI_Poptype, me, 40,
+                yp_p,  BRD*(LNX+BRD)*(LNZ+BRD), MPI_Poptype, me_ym, 40, MPI_COMM_WORLD, &status1);
+
+  /* communicate z */
+  MPI_Sendrecv( zp_p,  BRD*(LNX+BRD)*(LNY+BRD), MPI_Poptype, me, 50,
+                zm_p,  BRD*(LNX+BRD)*(LNY+BRD), MPI_Poptype, me_zp, 50, MPI_COMM_WORLD, &status1);
+
+  MPI_Sendrecv( zm_p,  BRD*(LNX+BRD)*(LNY+BRD), MPI_Poptype, me, 60,
+                zp_p,  BRD*(LNX+BRD)*(LNY+BRD), MPI_Poptype, me_zm, 60, MPI_COMM_WORLD, &status1);
+
+
+  /* copy back x borders */
+  for(k=0;k<LNZ+BRD;k++)
+    for(j=0;j<LNY+BRD;j++)
+      for(i=0;i<BRD;i++){ 
+        f[IDX(i+LNX,j,k)] = xp_p[IDX_XBRD(i,j,k)];
+	f[IDX(i,j,k)] = xm_p[IDX_XBRD(i,j,k)]; 
+      }
+
+  /* copy back y borders */
+  for(k=0;k<LNZ+BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<LNX+BRD;i++){ 
+        f[IDX(i,j+LNY,k)] = yp_p[IDX_YBRD(i,j,k)] ;
+	f[IDX(i,j,k)] = ym_p[IDX_YBRD(i,j,k)]; 
+      }
+
+  /* copy back z borders */
+  for(k=0;k<BRD;k++)
+    for(j=0;j<LNY+BRD;j++)
+      for(i=0;i<LNX+BRD;i++){ 
+        f[IDX(i,j,k+LNZ)] = zp_p[IDX_ZBRD(i,j,k)];
+	f[IDX(i,j,k)] = zm_p[IDX_ZBRD(i,j,k)]; 
+      }      
+
 
 }
