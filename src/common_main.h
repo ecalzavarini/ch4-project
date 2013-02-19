@@ -11,6 +11,7 @@
 /* MPI variables */
 int me;
 int mex,mey,mez;
+int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
 MPI_Datatype MPI_Property_type;
