@@ -23,16 +23,17 @@ main(int argc, char **argv)
 	initial_conditions(); 
 	/*
 	boundary_conditions(); 
+	hydro_fields();
 	*/
 
 #ifdef LB_FLUID
 	/*
-	hydro_fields();
+	boundary_conditions();
 	compute_advection();
 	compute_collision();
 	add_forcing();
-	boundary_conditions();
 	time_stepping();
+	hydro_fields();
 	 */
 #endif
 

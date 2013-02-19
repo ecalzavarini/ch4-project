@@ -151,14 +151,12 @@ void hydro_fields()
 #endif
 #endif
 
-			}
+			}/* for i,j,k */
 }
 
-
-
-
-
+/********************************************/
 time_stepping(){
+  int i,j,k,pp;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -167,8 +165,34 @@ time_stepping(){
 	for(pp=0;pp<NPOP;pp++){
 
 	  /* Euler first order */
-
 	  p[IDX(i,j,k)].p[pp] += property.time_dt*rhs_p[IDX(i,j,k)].p[pp];
+
 	}
-      }
+
+      }/* for i,j,k */
+}
+
+
+
+/********************************************/ 
+void _pop(pop_type *f)
+{
+  MPI_Status status1;
+
+
+  MPI_Sendrecv( f + NZP2*NYP2*NX + NZP2+1     , 1, MPI_X_PopPlane, pxp, 10,
+                f                + NZP2+1     , 1, MPI_X_PopPlane, pxm, 10, MPI_COMM_ALONG_X, &status1);
+  MPI_Sendrecv( f + NZP2*NYP2        + NZP2+1 , 1, MPI_X_PopPlane, pxm, 11,
+                f + NZP2*NYP2*(NX+1) + NZP2+1 , 1, MPI_X_PopPlane, pxp, 11, MPI_COMM_ALONG_X, &status1);
+
+  MPI_Sendrecv( f + NZP2*(NY) + 1             , 1, MPI_Y_PopPlane, pyp, 12,
+                f + 1                         , 1, MPI_Y_PopPlane, pym, 12, MPI_COMM_ALONG_Y, &status1);
+  MPI_Sendrecv( f + NZP2 + 1                  , 1, MPI_Y_PopPlane, pym, 13,
+                f + NZP2*(NY+1) + 1           , 1, MPI_Y_PopPlane, pyp, 13, MPI_COMM_ALONG_Y, &status1);
+
+  MPI_Sendrecv( f + NZ                        , 1, MPI_Z_PopPlane, pzp, 14,
+                f                             , 1, MPI_Z_PopPlane, pzm, 14, MPI_COMM_ALONG_Z, &status1);
+  MPI_Sendrecv( f + 1                         , 1, MPI_Z_PopPlane, pzm, 15,
+                f + NZ+1                      , 1, MPI_Z_PopPlane, pzp, 15, MPI_COMM_ALONG_Z, &status1);
+
 }
