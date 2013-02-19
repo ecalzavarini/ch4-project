@@ -63,4 +63,4 @@ typedef struct {
 /* index on the vertices */
 #define IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 
-
+#define two_pi 2*3.14159265359

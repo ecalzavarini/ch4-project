@@ -153,3 +153,22 @@ void hydro_fields()
 
 			}
 }
+
+
+
+
+
+time_stepping(){
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+	for(pp=0;pp<NPOP;pp++){
+
+	  /* Euler first order */
+
+	  p[IDX(i,j,k)].p[pp] += property.time_dt*rhs_p[IDX(i,j,k)].p[pp];
+	}
+      }
+}

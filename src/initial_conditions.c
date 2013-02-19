@@ -1,10 +1,11 @@
 #include "common_object.h"
 
-void initial() 
+void initial_conditions() 
 {
   int i,j,k, pp;
   my_double nu,gradP;
   my_double fn,kn;
+  my_double x,y,z;
 
 #ifdef LB_FLUID
   nu = (my_double)property.nu;
@@ -23,25 +24,26 @@ void initial()
 
 #ifdef LB_FLUID
 	/* constant density */
-  for (pp = 0; pp < NPOP; pp++)  p[IDX(y,x)].p[pp] = wgt[pp];
+	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
   
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
-    fn=0.00000000001;
-    kn=10.0;
-    j_global= j-BRD+LNY_START;
+    fn=0.1;
+    kn=1.0;
+    y = (my_double)centerV[IDX(i,j,k)].y
 
 	/* along x */  
-        p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[2]  += -wgt[2]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[7]  +=  wgt[7]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[8]  +=  wgt[8]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[9]  += -wgt[9]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[10] += -wgt[10]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[11] +=  wgt[11]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[12] += -wgt[12]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[13] +=  wgt[13]*fn*sin(kn*2.*3.14*j_global/NY); 
-	p[IDX(i,j,k)].p[14] += -wgt[14]*fn*sin(kn*2.*3.14*j_global/NY); 
+        p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[2]  += -wgt[2]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[7]  +=  wgt[7]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[8]  +=  wgt[8]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[9]  += -wgt[9]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[10] += -wgt[10]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[11] +=  wgt[11]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[12] += -wgt[12]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[13] +=  wgt[13]*fn*sin(kn*two_pi*y/NY); 
+	p[IDX(i,j,k)].p[14] += -wgt[14]*fn*sin(kn*two_pi*y/NY); 
 #endif  
+#endif
 
  }/* for i,j,k */
 

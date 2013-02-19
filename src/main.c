@@ -19,10 +19,9 @@ main(int argc, char **argv)
 	compute_volumes();
 #ifdef LB
 	design_lb();
-#endif
-
-	/*
+#endif	
 	initial_conditions(); 
+	/*
 	boundary_conditions(); 
 	*/
 
