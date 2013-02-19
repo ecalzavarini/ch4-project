@@ -181,9 +181,9 @@ compute_volumes()
 
 
 
-	for (i = 0; i < LNXG + TWO_BRD ; i++) {
-		for (j = 0; j < LNYG + TWO_BRD; j++) {
-			for (k = 0; k < LNZG + BRD; k++) {
+	for (i = 0; i < LNXG + TWO_BRD - 1 ; i++) {
+		for (j = 0; j < LNYG + TWO_BRD - 1; j++) {
+			for (k = 0; k < LNZG + TWO_BRD - 1; k++) {
 
 /* points definition */
 /*    
