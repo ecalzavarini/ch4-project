@@ -134,22 +134,22 @@ void allocate_fields(){
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
  /* borders mesh */
- xp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+BRD)*(LNZG+BRD)); 
- xm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+BRD)*(LNZG+BRD));
- xp_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+BRD)*(LNZG+BRD)); 
- xm_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+BRD)*(LNZG+BRD)); 
+ xp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ xm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
+ xp_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ xm_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(xp_mesh == NULL || xm_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  if(xp_flag == NULL || xm_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- yp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+BRD)*(LNZG+BRD)); 
- ym_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+BRD)*(LNZG+BRD)); 
- yp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+BRD)*(LNZG+BRD)); 
- ym_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+BRD)*(LNZG+BRD));
+ yp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ ym_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ yp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ ym_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD));
  if(yp_mesh == NULL || ym_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  if(yp_flag == NULL || ym_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- zp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+BRD)*(LNYG+BRD)); 
- zm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+BRD)*(LNYG+BRD)); 
- zp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+BRD)*(LNYG+BRD)); 
- zm_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+BRD)*(LNYG+BRD)); 
+ zp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
+ zm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
+ zp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
+ zm_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
  if(zp_mesh == NULL || zm_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  if(zp_flag == NULL || zm_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
@@ -190,14 +190,14 @@ void allocate_fields(){
 
 
  /* borders pop */
- xp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+BRD)*(LNZ+BRD)); 
- xm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+BRD)*(LNZ+BRD));
+ xp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  if(xp_pop == NULL || xm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- yp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+BRD)*(LNZ+BRD)); 
- ym_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+BRD)*(LNZ+BRD)); 
+ yp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(yp_pop == NULL || ym_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- zp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+BRD)*(LNY+BRD)); 
- zm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+BRD)*(LNY+BRD)); 
+ zp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_pop == NULL || zm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
 
 #endif

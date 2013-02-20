@@ -39,7 +39,7 @@ processor_splitting()
 
 	int             tnprocs, nleft, ncubic;
 	int             sort3d[3], sort2d[2];
-	int             i, j, k, ami;
+	int             i, j, k, ami, next;
 
 	/* grid processor splitting */
 	LNX = NX;
@@ -137,12 +137,16 @@ processor_splitting()
 	LNZG_END = LNZG * (mez + 1);
 
 	/* every procs finds it neighbors */
-	me_xp = (mex+1+nxprocs) % nxprocs;  
-	me_xm = (mex-1+nxprocs) % nxprocs;
-	me_yp = (mey+1+nyprocs) % nyprocs;  
-	me_ym = (mey-1+nyprocs) % nyprocs;
-	me_zp = (mez+1+nzprocs) % nzprocs;  
-	me_zm = (mez-1+nzprocs) % nzprocs;
+	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
+	next = (mex-1+nxprocs) % nxprocs; me_xm = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
+	next = (mey+1+nyprocs) % nyprocs; me_yp = mez * (nyprocs * nxprocs) + next * nxprocs + mex; 
+	next = (mey-1+nyprocs) % nyprocs; me_ym = mez * (nyprocs * nxprocs) + next * nxprocs + mex;
+	next = (mez+1+nzprocs) % nzprocs; me_zp = next * (nyprocs * nxprocs) + mey * nxprocs + mex; 
+	next = (mez-1+nzprocs) % nzprocs; me_zm = next * (nyprocs * nxprocs) + mey * nxprocs + mex;
+
+#ifdef DEBUG
+	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
 
 }
 

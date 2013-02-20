@@ -7,11 +7,11 @@ int main(int argc, char **argv){
 	processor_splitting();
 	allocate_fields();
 	read_mesh();
-	compute_volumes();
+	//compute_volumes();
 #ifdef LB
-	design_lb();
+	//design_lb();
 #endif	
-	initial_conditions(); 
+	//initial_conditions(); 
 	/*
 	boundary_conditions(); 
 	hydro_fields();

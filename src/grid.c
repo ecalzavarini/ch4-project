@@ -2,115 +2,121 @@
 
 /********************************************/ 
 void sendrecv_borders_mesh(vector *f , int *g){
-  int i,j,k;
+  int i,j,k,brd_size;
   MPI_Status status1;
 
-  /* copy x borders */
-  for(k=0;k<LNZG+BRD;k++)
-    for(j=0;j<LNYG+BRD;j++)
+  /*     BRD|LNXG|BRD     */
+
+  /* Copy borders along x */
+  brd_size = BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD);
+
+  for(k=0;k<LNZG+TWO_BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
       for(i=0;i<BRD;i++){ 
         xp_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i+LNXG,j,k)];
-	xm_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i,j,k)]; 
-
         xp_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i+LNXG,j,k)];
-	xm_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i,j,k)]; 
       }
 
-  /* copy y borders */
-  for(k=0;k<LNZG+BRD;k++)
-    for(j=0;j<BRD;j++)
-      for(i=0;i<LNXG+BRD;i++){ 
-        yp_mesh[IDXG_YBRD(i,j,k)] = f[IDXG(i,j+LNYG,k)];
-	ym_mesh[IDXG_YBRD(i,j,k)] = f[IDXG(i,j,k)]; 
+  MPI_Sendrecv( xp_mesh, brd_size, MPI_vector_type, me_xp, 10,
+                xm_mesh, brd_size, MPI_vector_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_flag, brd_size, MPI_INT, me_xp, 10,
+                xm_flag, brd_size, MPI_INT, me_xm, 10, MPI_COMM_WORLD, &status1);     
 
-        yp_flag[IDXG_YBRD(i,j,k)] = g[IDXG(i,j+LNYG,k)];
-	ym_flag[IDXG_YBRD(i,j,k)] = g[IDXG(i,j,k)]; 
+  for(k=0;k<LNZG+TWO_BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
+      for(i=0;i<BRD;i++) {
+        f[IDXG(i,j,k)] = xm_mesh[IDXG_XBRD(i,j,k)];
+        xm_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i+BRD,j,k)];
+        g[IDXG(i,j,k)] = xm_flag[IDXG_XBRD(i,j,k)];
+        xm_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i+BRD,j,k)];
       }
+ MPI_Sendrecv( xm_mesh, brd_size, MPI_vector_type, me_xm, 10,
+               xp_mesh, brd_size, MPI_vector_type, me_xp, 10, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_flag, brd_size, MPI_INT, me_xm, 10,
+               xp_flag, brd_size, MPI_INT, me_xp, 10, MPI_COMM_WORLD, &status1);      
 
-  /* copy z borders */
-  for(k=0;k<BRD;k++)
-    for(j=0;j<LNYG+BRD;j++)
-      for(i=0;i<LNXG+BRD;i++){ 
-        zp_mesh[IDXG_ZBRD(i,j,k)] = f[IDXG(i,j,k+LNZG)];
-	zm_mesh[IDXG_ZBRD(i,j,k)] = f[IDXG(i,j,k)]; 
-
-        zp_flag[IDXG_ZBRD(i,j,k)] = g[IDXG(i,j,k+LNZG)];
-	zm_flag[IDXG_ZBRD(i,j,k)] = g[IDXG(i,j,k)];
-      }      
-
-  /* communicate x */
-  MPI_Sendrecv( xp_mesh,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_vector_type, me, 10,
-                xm_mesh,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_vector_type, me_xp, 10, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( xm_mesh,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_vector_type, me, 20,
-                xp_mesh,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_vector_type, me_xm, 20, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( xp_flag,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_INT, me, 11,
-                xm_flag,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_INT, me_xp, 11, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( xm_flag,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_INT, me, 21,
-                xp_flag,  BRD*(LNYG+BRD)*(LNZG+BRD), MPI_INT, me_xm, 21, MPI_COMM_WORLD, &status1);
-
-  /* communicate y */
-  MPI_Sendrecv( yp_mesh,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_vector_type, me, 30,
-                ym_mesh,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_vector_type, me_yp, 30, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( ym_mesh,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_vector_type, me, 40,
-                yp_mesh,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_vector_type, me_ym, 40, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( yp_flag,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_INT, me, 31,
-                ym_flag,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_INT, me_yp, 31, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( ym_flag,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_INT, me, 41,
-                yp_flag,  BRD*(LNXG+BRD)*(LNZG+BRD), MPI_INT, me_ym, 41, MPI_COMM_WORLD, &status1);
-
-  /* communicate z */
-  MPI_Sendrecv( zp_mesh,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_vector_type, me, 50,
-                zm_mesh,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_vector_type, me_zp, 50, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( zm_mesh,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_vector_type, me, 60,
-                zp_mesh,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_vector_type, me_zm, 60, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( zp_flag,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_INT, me, 51,
-                zm_flag,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_INT, me_zp, 51, MPI_COMM_WORLD, &status1);
-
-  MPI_Sendrecv( zm_flag,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_INT, me, 61,
-                zp_flag,  BRD*(LNXG+BRD)*(LNYG+BRD), MPI_INT, me_zm, 61, MPI_COMM_WORLD, &status1);
-
-
-  /* copy back x borders */
-  for(k=0;k<LNZG+BRD;k++)
-    for(j=0;j<LNYG+BRD;j++)
+ for(k=0;k<LNZG+TWO_BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
       for(i=0;i<BRD;i++){ 
-        f[IDXG(i+LNX,j,k)] = xp_mesh[IDXG_XBRD(i,j,k)];
-	f[IDXG(i,j,k)] = xm_mesh[IDXG_XBRD(i,j,k)];
-
-        g[IDXG(i+LNX,j,k)] = xp_flag[IDXG_XBRD(i,j,k)];
-	g[IDXG(i,j,k)] = xm_flag[IDXG_XBRD(i,j,k)]; 
+	f[IDXG(i+LNXG,j,k)] = xp_mesh[IDXG_XBRD(i,j,k)];
+	g[IDXG(i+LNXG,j,k)] = xp_flag[IDXG_XBRD(i,j,k)];
       }
 
-  /* copy back y borders */
-  for(k=0;k<LNZG+BRD;k++)
+  /* Copy borders along y */
+  brd_size = BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD);
+
+  for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<BRD;j++)
-      for(i=0;i<LNXG+BRD;i++){ 
-        f[IDXG(i,j+LNYG,k)] = yp_mesh[IDXG_YBRD(i,j,k)] ;
-	f[IDXG(i,j,k)] = ym_mesh[IDXG_YBRD(i,j,k)]; 
-
-        g[IDXG(i,j+LNYG,k)] = yp_flag[IDXG_YBRD(i,j,k)] ;
-	g[IDXG(i,j,k)] = ym_flag[IDXG_YBRD(i,j,k)];
+      for(i=0;i<LNYG+TWO_BRD;i++){ 
+        yp_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i,j+LNYG,k)];
+        yp_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i,j+LNYG,k)];
       }
 
-  /* copy back z borders */
-  for(k=0;k<BRD;k++)
-    for(j=0;j<LNYG+BRD;j++)
-      for(i=0;i<LNXG+BRD;i++){ 
-        f[IDXG(i,j,k+LNZ)] = zp_mesh[IDXG_ZBRD(i,j,k)];
-	f[IDXG(i,j,k)] = zm_mesh[IDXG_ZBRD(i,j,k)]; 
+  MPI_Sendrecv( yp_mesh, brd_size, MPI_vector_type, me_yp, 10,
+                ym_mesh, brd_size, MPI_vector_type, me_ym, 10, MPI_COMM_WORLD, &status1);  
+  MPI_Sendrecv( yp_flag, brd_size, MPI_INT, me_yp, 10,
+                ym_flag, brd_size, MPI_INT, me_ym, 10, MPI_COMM_WORLD, &status1);      
 
-        g[IDXG(i,j,k+LNZ)] = zp_flag[IDXG_ZBRD(i,j,k)];
-	g[IDXG(i,j,k)] = zm_flag[IDXG_ZBRD(i,j,k)]; 
-      }      
-}
+  for(k=0;k<LNZG+TWO_BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<LNXG+TWO_BRD;i++) {
+        f[IDXG(i,j,k)] = xm_mesh[IDXG_XBRD(i,j,k)];
+        ym_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i,j+BRD,k)];
+        g[IDXG(i,j,k)] = xm_flag[IDXG_XBRD(i,j,k)];
+        ym_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i,j+BRD,k)];
+      }
+
+ MPI_Sendrecv( ym_mesh, brd_size, MPI_vector_type, me_ym, 10,
+               yp_mesh, brd_size, MPI_vector_type, me_yp, 10, MPI_COMM_WORLD, &status1);    
+ MPI_Sendrecv( ym_flag, brd_size, MPI_INT, me_ym, 10,
+               yp_flag, brd_size, MPI_INT, me_yp, 10, MPI_COMM_WORLD, &status1);    
+  
+
+ for(k=0;k<LNZG+TWO_BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<LNXG+TWO_BRD;i++){ 
+	f[IDXG(i,j+LNYG,k)] = yp_mesh[IDXG_XBRD(i,j,k)];
+	g[IDXG(i,j+LNYG,k)] = yp_flag[IDXG_XBRD(i,j,k)];
+      }
+
+  /* Copy borders along z */
+  /*     BRD|LNXG|BRD     */
+  brd_size = BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD);
+
+  for(k=0;k<BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
+      for(i=0;i<LNXG+TWO_BRD;i++){ 
+        zp_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i,j,k+LNZG)];
+        zp_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i,j,k+LNZG)];
+      }
+
+  MPI_Sendrecv( zp_mesh, brd_size, MPI_vector_type, me_zp, 10,
+                zm_mesh, brd_size, MPI_vector_type, me_zm, 10, MPI_COMM_WORLD, &status1);   
+  MPI_Sendrecv( zp_flag, brd_size, MPI_INT, me_zp, 10,
+                zm_flag, brd_size, MPI_INT, me_zm, 10, MPI_COMM_WORLD, &status1);      
+
+  for(k=0;k<BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
+      for(i=0;i<LNXG+TWO_BRD;i++) {
+        f[IDXG(i,j,k)] = zm_mesh[IDXG_XBRD(i,j,k)];
+        zm_mesh[IDXG_XBRD(i,j,k)] = f[IDXG(i,j,k+BRD)];
+        g[IDXG(i,j,k)] = zm_flag[IDXG_XBRD(i,j,k)];
+        zm_flag[IDXG_XBRD(i,j,k)] = g[IDXG(i,j,k+BRD)];
+      }
+
+ MPI_Sendrecv( zm_mesh, brd_size, MPI_vector_type, me_zm, 10,
+               zp_mesh, brd_size, MPI_vector_type, me_zp, 10, MPI_COMM_WORLD, &status1); 
+ MPI_Sendrecv( zm_flag, brd_size, MPI_INT, me_zm, 10,
+               zp_flag, brd_size, MPI_INT, me_zp, 10, MPI_COMM_WORLD, &status1);      
+
+ for(k=0;k<BRD;k++)
+    for(j=0;j<LNYG+TWO_BRD;j++)
+      for(i=0;i<LNXG+TWO_BRD;i++){ 
+	f[IDXG(i,j,k+LNZG)] = zp_mesh[IDXG_XBRD(i,j,k)];
+	g[IDXG(i,j,k+LNZG)] = zp_flag[IDXG_XBRD(i,j,k)];
+      }
+
+}/* end send rcv */
 
 /*************************************************************************************************/
 
@@ -149,7 +155,7 @@ void read_mesh(){
 
 
 	/* here we copy the borders from the neighbors */
-	sendrecv_borders_mesh(mesh , mesh_flag);
+		sendrecv_borders_mesh(mesh , mesh_flag);
 
 #ifdef DEBUG
 	/* Each processor prints its mesh */
@@ -158,7 +164,7 @@ void read_mesh(){
 	for (k = 0; k < LNZG + TWO_BRD; k++)
 		for (j = 0; j < LNYG + TWO_BRD; j++)
 			for (i = 0; i < LNXG + TWO_BRD; i++)
-				fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
+			  fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
 	fclose(fout);
 #endif
 }
