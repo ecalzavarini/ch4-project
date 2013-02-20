@@ -12,6 +12,9 @@ void initialization_MPI(int *argc, char ***argv){
 
 
 	/* commit types */
+ MPI_Type_contiguous(NPROP, MPI_DOUBLE , &MPI_Property_type);
+ MPI_Type_commit(&MPI_Property_type);
+
 MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
 MPI_Type_commit(&MPI_pop_type);
 

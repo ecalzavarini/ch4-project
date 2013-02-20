@@ -14,7 +14,8 @@ extern int mex,mey,mez;
 extern int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
-extern MPI_Datatype MPI_Property_type;
+extern MPI_Datatype MPI_Property_type , MPI_pop_type , MPI_vector_type;
+
 
 /* System size , center nodes */
 extern int NX , NY , NZ;
@@ -32,9 +33,13 @@ extern int LNXG_START , LNYG_START , LNZG_START;
 extern prop property;
 
 /* mesh */
-extern mesh_type *mesh;
-extern vector *center_V;
+extern vector *mesh, *center_V;
+extern int *mesh_flag;
+extern vector *xp_mesh,*xm_mesh,*yp_mesh,*ym_mesh,*zp_mesh,*zm_mesh;
+extern int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
 extern pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
+
+extern pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
 
 
 /* Populations */

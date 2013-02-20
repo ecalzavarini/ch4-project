@@ -5,7 +5,7 @@ void initial_conditions()
   int i,j,k, pp;
   my_double nu,gradP;
   my_double fn,kn;
-  my_double x,y,z;
+  my_double y;
 
 #ifdef LB_FLUID
   nu = (my_double)property.nu;
@@ -29,7 +29,7 @@ void initial_conditions()
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.1;
     kn=1.0;
-    y = (my_double)centerV[IDX(i,j,k)].y
+    y = (my_double)center_V[IDX(i,j,k)].y;
 
 	/* along x */  
         p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*two_pi*y/NY); 

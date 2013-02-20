@@ -1,5 +1,8 @@
 #include "define.h"
 
+/* parallel.c */
+void initialization_MPI();
+
 /* parameters.c */
 my_double read_parameter();
 void assign_parameters();

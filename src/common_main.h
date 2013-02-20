@@ -14,7 +14,7 @@ int mex,mey,mez;
 int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
-MPI_Datatype MPI_Property_type;
+MPI_Datatype MPI_Property_type , MPI_pop_type , MPI_vector_type;
 
 
 /* System size , for the nodes*/
@@ -33,9 +33,13 @@ int LNXG_START , LNYG_START , LNZG_START;
 prop property;
 
 /* Mesh matrix */
-mesh_type *mesh;
-vector *center_V;
+vector *mesh, *center_V;
+int *mesh_flag;
+vector *xp_mesh,*xm_mesh,*yp_mesh,*ym_mesh,*zp_mesh,*zm_mesh;
+int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
 pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
+
+pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
 
 /* Populations */
 int NPOP;

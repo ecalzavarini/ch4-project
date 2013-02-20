@@ -5,10 +5,10 @@
 
 /* Useful structures */
 typedef struct {
-  my_double x , y , z;
-  int flag;
-} mesh_type;
-
+  my_double x;
+  my_double y;
+  my_double z;
+} vector;
 
 typedef struct {
   my_double p[19];
@@ -39,11 +39,7 @@ typedef struct {
 #endif
 #endif
 
-typedef struct {
-  my_double x;
-  my_double y;
-  my_double z;
-} vector;
+
 
 
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
