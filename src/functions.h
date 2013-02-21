@@ -15,6 +15,7 @@ void compute_volumes();
 
 /* lb.c */
 void design_lb();
+void sendrecv_borders_pop(pop *f);
 
 /* initial_conditions.c */
 void initial_conditions();

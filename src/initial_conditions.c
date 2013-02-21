@@ -44,7 +44,9 @@ void initial_conditions()
 	p[IDX(i,j,k)].p[14] += -wgt[14]*fn*sin(kn*two_pi*y/NY); 
 #endif  
 #endif
-
  }/* for i,j,k */
 
+
+   /* communicate borders for populations */
+   sendrecv_borders_pop(p);
 }
