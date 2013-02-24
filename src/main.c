@@ -30,9 +30,10 @@ int main(int argc, char **argv){
 	compute_collision(p);
 	/*
 	add_forcing();
-	time_stepping();
+	*/
+	time_stepping(p,rhs_p);
 	hydro_fields();
-	 */
+	 
 #endif
 	/*
    }

@@ -146,7 +146,7 @@ void hydro_fields(){
 }
 
 /********************************************/
-void time_stepping(){
+void time_stepping(pop *f, pop *rhs_f){
   int i,j,k,pp;
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -156,7 +156,7 @@ void time_stepping(){
 	for(pp=0;pp<NPOP;pp++){
 
 	  /* Euler first order */
-	  p[IDX(i,j,k)].p[pp] += property.time_dt*rhs_p[IDX(i,j,k)].p[pp];
+	  f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 
 	}
 

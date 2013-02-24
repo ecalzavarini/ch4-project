@@ -1,6 +1,6 @@
-NX 2
-NY 2
-NZ 2
+NX 16
+NY 16
+NZ 16
 
 time_dt 1.0
 time_max 100.

@@ -17,6 +17,7 @@ void compute_volumes();
 void design_lb();
 void sendrecv_borders_pop(pop *f);
 pop equilibrium(pop * f, int i, int j, int k);
+void time_stepping(pop *f, pop *rhs_f);
 
 /* initial_conditions.c */
 
