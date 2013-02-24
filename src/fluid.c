@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-void compute_advection(){
+void compute_advection(pop * f){
 
   int i,j,k,pp;
   pop adv;
@@ -13,7 +13,7 @@ void compute_advection(){
 
  	for(pp=0;pp<NPOP;pp++){
 
-#ifndef METHOD_UPWIND
+#ifdef METHOD_CENTERED
  /* centered difference scheme */
 	  adv.p[pp] = coeff_xp[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i+1,j,k)].p[pp] + p[IDX(i,j,k)].p[pp])+ 
                       coeff_xm[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i-1,j,k)].p[pp] + p[IDX(i,j,k)].p[pp])+
@@ -21,7 +21,8 @@ void compute_advection(){
                       coeff_ym[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j-1,k)].p[pp] + p[IDX(i,j,k)].p[pp])+
                       coeff_zp[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j,k+1)].p[pp] + p[IDX(i,j,k)].p[pp])+
                       coeff_zm[IDX(i,j,k)].p[pp]*0.5*(p[IDX(i,j,k-1)].p[pp] + p[IDX(i,j,k)].p[pp]);
-#elseif
+#endif
+#ifdef METHOD_UPWIND
  /* first order upwind scheme */
  if(coeff_xp[IDX(i,j,k)].p[pp] >= 0.0)
    adv.p[pp] += coeff_xp[IDX(i,j,k)].p[pp]*p[IDX(i,j,k)].p[pp];
@@ -62,8 +63,7 @@ void compute_advection(){
 }
 
 
-
-void compute_collision(){
+void compute_collision(pop * f){
   int i, j, k, pp;
   my_double invtau , one_minus_invtau;
   pop f_eq;

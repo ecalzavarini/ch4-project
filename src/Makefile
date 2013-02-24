@@ -1,7 +1,7 @@
 CC=mpicc 
 CFLAGS= -Wall  
 LFLAGS= -lm 
-SOURCES= parallel.c grid.c parameters.c lb.c initial_conditions.c #fluid.c
+SOURCES= parallel.c grid.c parameters.c lb.c initial_conditions.c fluid.c #output.c
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS= common_object.h common_main.h typedef.h functions.h define.h
 EXECUTABLE= ch4

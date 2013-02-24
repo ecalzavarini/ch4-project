@@ -16,6 +16,13 @@ void compute_volumes();
 /* lb.c */
 void design_lb();
 void sendrecv_borders_pop(pop *f);
+pop equilibrium(pop * f, int i, int j, int k);
 
 /* initial_conditions.c */
+
 void initial_conditions();
+
+/* fluid.c */
+void compute_collision(pop * f);
+void compute_advection(pop * f);
+void hydro_fields();

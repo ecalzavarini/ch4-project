@@ -16,19 +16,27 @@ int main(int argc, char **argv){
 	boundary_conditions(); 
 	*/
 	hydro_fields();
-	
+
+	/*	
+  for (itime=0; itime<max_step; itime++) {
+    if(itime%100==0) fprintf(stderr,"time step %d\n",itime);
+	*/
 
 #ifdef LB_FLUID
 	/*
 	boundary_conditions();
-	compute_advection();
-	compute_collision();
+	*/
+	compute_advection(p);
+	compute_collision(p);
+	/*
 	add_forcing();
 	time_stepping();
 	hydro_fields();
 	 */
 #endif
-
+	/*
+   }
+	*/
 	/* Shut down MPI */
 	MPI_Finalize();
 	return 0;
