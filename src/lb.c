@@ -127,18 +127,18 @@ void hydro_fields(){
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
 
-#ifdef FLUID
+#ifdef LB_FLUID
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
 #ifdef METHOD_FORCING_GUO
-				v[IDX(i, j, k)].x = (mvx(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].x) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].y = (mvy(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].y) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].z = (mvz(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].z) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].x = (mvx(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].x) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].y = (mvy(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].y) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].z = (mvz(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].z) / dens[IDX(i, j, k)];
 				/* set to zero after computing velocity */
 				force[IDX(i, j, k)].x = force[IDX(i, j, k)].y = force[IDX(i, j, k)].y = 0.0;
 #else
-				v[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				v[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 #endif
 #endif
 

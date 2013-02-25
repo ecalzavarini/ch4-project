@@ -33,7 +33,9 @@ int main(int argc, char **argv){
 	*/
 	time_stepping(p,rhs_p);
 	hydro_fields();
-	 
+	/*
+	dump_averages(int tstep);
+	*/
 #endif
 	/*
    }
