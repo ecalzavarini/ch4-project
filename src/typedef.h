@@ -30,6 +30,14 @@ typedef struct {
 #endif
 } prop;
 
+typedef struct {
+#ifdef LB_FLUID
+  my_double ux,uy,uz,ux2,uy2,uz2;
+  my_double rho,ene,eps;
+#endif
+} output;
+
+
 
 #define NPROP 7
 #ifdef LB_FLUID

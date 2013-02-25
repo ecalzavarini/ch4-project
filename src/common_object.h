@@ -32,6 +32,9 @@ extern int LNXG_START , LNYG_START , LNZG_START;
 /* Array of properties*/
 extern prop property;
 
+/* Array of outputs */
+extern output out;
+
 /* mesh */
 extern vector *mesh, *center_V;
 extern int *mesh_flag;

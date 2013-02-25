@@ -32,10 +32,9 @@ int main(int argc, char **argv){
 	add_forcing();
 	*/
 	time_stepping(p,rhs_p);
-	hydro_fields();
-	/*
-	dump_averages(int tstep);
-	*/
+	hydro_fields();	
+	dump_averages(itime);
+
 #endif
 	/*
    }

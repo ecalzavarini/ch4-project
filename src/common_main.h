@@ -32,6 +32,9 @@ int LNXG_START , LNYG_START , LNZG_START;
 /* Array of properties*/
 prop property;
 
+/* Array of outputs */
+output out;
+
 /* Mesh matrix */
 vector *mesh, *center_V;
 int *mesh_flag;
