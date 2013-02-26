@@ -233,7 +233,7 @@ void sendrecv_borders_pop(pop *f){
   for(k=0;k<LNZ+TWO_BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<LNX+TWO_BRD;i++) {
-        f[IDX(i,j,k)] = xm_pop[IDX_YBRD(i,j,k)];
+        f[IDX(i,j,k)] = ym_pop[IDX_YBRD(i,j,k)];
         ym_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
       }
  MPI_Sendrecv( ym_pop, brd_size, MPI_vector_type, me_ym, 10,

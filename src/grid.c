@@ -44,7 +44,7 @@ void sendrecv_borders_mesh(vector *f , int *g){
 
 
 
-  /* Copy borders along x */
+  /* Copy borders along y */
   brd_size = BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD);
 
   for(k=0;k<LNZG+TWO_BRD;k++)
@@ -62,11 +62,12 @@ void sendrecv_borders_mesh(vector *f , int *g){
   for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<LNXG+TWO_BRD;i++) {
-        f[IDXG(i,j,k)] = xm_mesh[IDXG_YBRD(i,j,k)];
+        f[IDXG(i,j,k)] = ym_mesh[IDXG_YBRD(i,j,k)];
         ym_mesh[IDXG_YBRD(i,j,k)] = f[IDXG(i,j+BRD,k)];
         g[IDXG(i,j,k)] = ym_flag[IDXG_YBRD(i,j,k)];
         ym_flag[IDXG_YBRD(i,j,k)] = g[IDXG(i,j+BRD,k)];
       }
+  
  MPI_Sendrecv( ym_mesh, brd_size, MPI_vector_type, me_ym, 10,
                yp_mesh, brd_size, MPI_vector_type, me_yp, 10, MPI_COMM_WORLD, &status1);
  MPI_Sendrecv( ym_flag, brd_size, MPI_INT, me_ym, 11,
@@ -78,9 +79,9 @@ void sendrecv_borders_mesh(vector *f , int *g){
 	f[IDXG(i,j+LNYG+BRD,k)] = yp_mesh[IDXG_YBRD(i,j,k)];
 	g[IDXG(i,j+LNYG+BRD,k)] = yp_flag[IDXG_YBRD(i,j,k)];
       }
+  
 
-
-  /* Copy borders along x */
+  /* Copy borders along z */
   brd_size = BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD);
 
   for(k=0;k<BRD;k++)
@@ -161,13 +162,13 @@ void read_mesh(){
 					 * is dormient
 					 */
 					mesh_flag[IDXG(i, j, k)] = 1;
-				}	/* for ijk */
+				} /* for ijk */
 
-	}			/* endif */
+	} /* end else */
 
 
 	/* here we copy the borders from the neighbors */
-       	sendrecv_borders_mesh(mesh , mesh_flag);
+		sendrecv_borders_mesh(mesh , mesh_flag);
 
 #ifdef DEBUG
 	/* Each processor prints its mesh */
@@ -179,8 +180,8 @@ void read_mesh(){
 				for (i = BRD; i < LNXG+BRD; i++) 
 				  */
 	for (k = 0; k < LNZG + TWO_BRD; k++)
-		for (j = 0; j < LNYG + TWO_BRD; j++)
-		for (i = 0; i < LNXG + TWO_BRD; i++)
+	  for (j = 0; j < LNYG + TWO_BRD; j++)
+	    for (i = 0; i < LNXG + TWO_BRD; i++)
 			  fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
 	fclose(fout);
 #endif
