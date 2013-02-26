@@ -26,14 +26,14 @@ int main(int argc, char **argv){
 	/*
 	boundary_conditions();
 	*/
-	compute_advection(p);
-	compute_collision(p);
+	//compute_advection(p);
+	//compute_collision(p);
 	/*
 	add_forcing();
 	*/
-	time_stepping(p,rhs_p);
-	hydro_fields();	
-	dump_averages(itime);
+	//time_stepping(p,rhs_p);
+	//hydro_fields();	
+	//dump_averages(itime);
 
 #endif
 	/*
