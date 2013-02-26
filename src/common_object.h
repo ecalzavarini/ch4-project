@@ -61,6 +61,7 @@ extern my_double invcs, invcs2, invcs4;
 extern pop *p, *rhs_p;
 extern my_double *dens;
 extern vector *u;
+extern vector *ruler_x, *ruler_y, *ruler_z;
 #ifdef LB_FLUID_FORCING
 extern vector *force;
 #endif

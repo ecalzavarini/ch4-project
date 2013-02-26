@@ -19,8 +19,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
 
   MPI_Sendrecv( xp_mesh, brd_size, MPI_vector_type, me_xp, 10,
                 xm_mesh, brd_size, MPI_vector_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xp_flag, brd_size, MPI_INT, me_xp, 10,
-                xm_flag, brd_size, MPI_INT, me_xm, 10, MPI_COMM_WORLD, &status1);     
+  MPI_Sendrecv( xp_flag, brd_size, MPI_INT, me_xp, 11,
+                xm_flag, brd_size, MPI_INT, me_xm, 11, MPI_COMM_WORLD, &status1);     
 
   for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<LNYG+TWO_BRD;j++)
@@ -32,8 +32,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
       }
  MPI_Sendrecv( xm_mesh, brd_size, MPI_vector_type, me_xm, 10,
                xp_mesh, brd_size, MPI_vector_type, me_xp, 10, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xm_flag, brd_size, MPI_INT, me_xm, 10,
-               xp_flag, brd_size, MPI_INT, me_xp, 10, MPI_COMM_WORLD, &status1);      
+ MPI_Sendrecv( xm_flag, brd_size, MPI_INT, me_xm, 11,
+               xp_flag, brd_size, MPI_INT, me_xp, 11, MPI_COMM_WORLD, &status1);      
 
  for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<LNYG+TWO_BRD;j++)
@@ -56,8 +56,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
 
   MPI_Sendrecv( yp_mesh, brd_size, MPI_vector_type, me_yp, 10,
                 ym_mesh, brd_size, MPI_vector_type, me_ym, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( yp_flag, brd_size, MPI_INT, me_yp, 10,
-                ym_flag, brd_size, MPI_INT, me_ym, 10, MPI_COMM_WORLD, &status1);     
+  MPI_Sendrecv( yp_flag, brd_size, MPI_INT, me_yp, 11,
+                ym_flag, brd_size, MPI_INT, me_ym, 11, MPI_COMM_WORLD, &status1);     
 
   for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<BRD;j++)
@@ -69,8 +69,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
       }
  MPI_Sendrecv( ym_mesh, brd_size, MPI_vector_type, me_ym, 10,
                yp_mesh, brd_size, MPI_vector_type, me_yp, 10, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( ym_flag, brd_size, MPI_INT, me_ym, 10,
-               yp_flag, brd_size, MPI_INT, me_yp, 10, MPI_COMM_WORLD, &status1);      
+ MPI_Sendrecv( ym_flag, brd_size, MPI_INT, me_ym, 11,
+               yp_flag, brd_size, MPI_INT, me_yp, 11, MPI_COMM_WORLD, &status1);      
 
  for(k=0;k<LNZG+TWO_BRD;k++)
     for(j=0;j<BRD;j++)
@@ -92,8 +92,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
 
   MPI_Sendrecv( zp_mesh, brd_size, MPI_vector_type, me_zp, 10,
                 zm_mesh, brd_size, MPI_vector_type, me_zm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( zp_flag, brd_size, MPI_INT, me_zp, 10,
-                zm_flag, brd_size, MPI_INT, me_zm, 10, MPI_COMM_WORLD, &status1);     
+  MPI_Sendrecv( zp_flag, brd_size, MPI_INT, me_zp, 11,
+                zm_flag, brd_size, MPI_INT, me_zm, 11, MPI_COMM_WORLD, &status1);     
 
   for(k=0;k<BRD;k++)
     for(j=0;j<LNYG+TWO_BRD;j++)
@@ -105,8 +105,8 @@ void sendrecv_borders_mesh(vector *f , int *g){
       }
  MPI_Sendrecv( zm_mesh, brd_size, MPI_vector_type, me_zm, 10,
                zp_mesh, brd_size, MPI_vector_type, me_zp, 10, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( zm_flag, brd_size, MPI_INT, me_zm, 10,
-               zp_flag, brd_size, MPI_INT, me_zp, 10, MPI_COMM_WORLD, &status1);      
+ MPI_Sendrecv( zm_flag, brd_size, MPI_INT, me_zm, 11,
+               zp_flag, brd_size, MPI_INT, me_zp, 11, MPI_COMM_WORLD, &status1);      
 
  for(k=0;k<BRD;k++)
     for(j=0;j<LNYG+TWO_BRD;j++)
@@ -167,7 +167,7 @@ void read_mesh(){
 
 
 	/* here we copy the borders from the neighbors */
-		sendrecv_borders_mesh(mesh , mesh_flag);
+       	sendrecv_borders_mesh(mesh , mesh_flag);
 
 #ifdef DEBUG
 	/* Each processor prints its mesh */

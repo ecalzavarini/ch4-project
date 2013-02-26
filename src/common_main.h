@@ -61,6 +61,7 @@ my_double invcs, invcs2, invcs4;
 pop *p, *rhs_p;
 my_double *dens;
 vector *u;
+vector *ruler_x, *ruler_y, *ruler_z;
 #ifdef LB_FLUID_FORCING
 vector *force;
 #endif

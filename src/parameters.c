@@ -202,4 +202,11 @@ void allocate_fields(){
 
 #endif
 
+
+#ifdef LB_FLUID
+ ruler_x  = (vector*) malloc(sizeof(vector)*NX);
+ ruler_y  = (vector*) malloc(sizeof(vector)*NY);
+ ruler_z  = (vector*) malloc(sizeof(vector)*NZ);
+#endif
+
 }

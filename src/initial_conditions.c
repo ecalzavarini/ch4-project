@@ -29,6 +29,8 @@ void initial_conditions()
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.1;
     kn=1.0;
+
+    fn*=3.0; /* to get the correct amplitude */  
     y = (my_double)center_V[IDX(i,j,k)].y;
 
 	/* along x */  
