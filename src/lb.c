@@ -152,10 +152,15 @@ void hydro_fields(){
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "velocity.%d.out", me);
 	fout = fopen(fnamein, "w");
-
+	
 	for (k = BRD; k < LNZ + BRD; k++)
 		for (j = BRD; j < LNY + BRD; j++)
 		for (i = BRD; i < LNX + BRD; i++)
+		/*
+	for (k = 0; k < LNZ + TWO_BRD; k++)
+	     for (j = 0; j < LNY + TWO_BRD; j++)
+		  for (i = 0; i < LNX + TWO_BRD; i++)
+		    */
 		  fprintf(fout, "%d %d %d %e %e %e %e\n", i, j, k, center_V[IDX(i, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i, j, k)].z, 
 			                                           u[IDX(i, j, k)].x, u[IDX(i, j, k)].y, u[IDX(i, j, k)].z , dens[IDX(i, j, k)]);
 	fclose(fout);

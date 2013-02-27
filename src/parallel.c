@@ -134,12 +134,21 @@ processor_splitting()
 	LNXG=LNX+1;
 	LNYG=LNY+1;
 	LNZG=LNZ+1;
+	/*
 	LNXG_START = LNXG * mex;
 	LNXG_END = LNXG * (mex + 1);
 	LNYG_START = LNYG * mey;
 	LNYG_END = LNYG * (mey + 1);
 	LNZG_START = LNZG * mez;
 	LNZG_END = LNZG * (mez + 1);
+	*/	
+	LNXG_START = LNX * mex;
+	LNXG_END = LNXG * (mex + 1);
+	LNYG_START = LNY * mey;
+	LNYG_END = LNYG * (mey + 1);
+	LNZG_START = LNZ * mez;
+	LNZG_END = LNZG * (mez + 1);
+
 
 #ifdef DEBUG
 	fprintf(stderr, "me %d LNXG_START %d , LNYG_START %d  LNZG_START %d\n", me, LNXG_START ,LNYG_START, LNZG_START);
