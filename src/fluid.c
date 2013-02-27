@@ -56,7 +56,8 @@ void compute_advection(pop * f, pop *rhs_f){
 
 #endif
 
- rhs_f[IDX(i,j,k)].p[pp] = adv.p[pp];
+ /* with minus sign because we add it to the right hand side */
+ rhs_f[IDX(i,j,k)].p[pp] = -adv.p[pp];
 
 	}/* for pp */
       }/* for i, j , k */
@@ -76,7 +77,7 @@ void add_collision(pop * f, pop *rhs_f){
       for(i=BRD;i<LNX+BRD;i++){ 
       
 	f_eq=equilibrium(f,i,j,k);
-     
+
 	for (pp=0; pp<NPOP; pp++){
 	/* collision */
 	rhs_f[IDX(i,j,k)].p[pp] =  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);

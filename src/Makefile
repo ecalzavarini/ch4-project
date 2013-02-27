@@ -13,7 +13,7 @@ $(EXECUTABLE):  main.c $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) main.c $(OBJECTS) $(LFLAGS)
 
 clean:
-	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./RUN
+	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN
 
 tar:
 	tar cvzf ch4-project_backup.tgz ./*.c ./*.h ./*.sh Makefile 

@@ -29,7 +29,7 @@ int main(int argc, char **argv){
 	/*
 	boundary_conditions();
 	*/
-	//  compute_advection(p,rhs_p);
+	 compute_advection(p,rhs_p);
 	 add_collision(p,rhs_p);
 	/*
 	add_forcing();

@@ -38,8 +38,9 @@ typedef struct {
 } output;
 
 
-
+#ifndef LB_FLUID
 #define NPROP 7
+#endif
 #ifdef LB_FLUID
 #define NPROP 9
 #ifdef LB_FLUID_FORCING_POISEUILLE
