@@ -24,6 +24,6 @@ void time_stepping(pop *f, pop *rhs_f);
 void initial_conditions();
 
 /* fluid.c */
-void compute_collision(pop * f);
-void compute_advection(pop * f);
+void add_collision(pop * f, pop *rhs_f);
+void compute_advection(pop * f, pop *rhs_f);
 void hydro_fields();
