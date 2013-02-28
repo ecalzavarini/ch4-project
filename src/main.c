@@ -8,11 +8,12 @@ int main(int argc, char **argv){
 	assign_parameters();
 	processor_splitting();
 	allocate_fields();
-	read_mesh();
-	compute_volumes();
 #ifdef LB
 	design_lb();
-#endif	
+#endif
+	read_mesh();
+	compute_volumes();
+	
 	initial_conditions(); 
 	/*
 	boundary_conditions(); 
@@ -21,7 +22,7 @@ int main(int argc, char **argv){
 
 	///*
 	//for (time_now=0.0; time_now<max_max; time_now += time_dt) {
-	  for (i=0; i<=1; i++) {
+	  for (i=0; i<1; i++) {
 	  if(i%10==0 && ROOT) fprintf(stderr,"time step %d\n",i);
     //*/
 
@@ -29,8 +30,8 @@ int main(int argc, char **argv){
 	/*
 	boundary_conditions();
 	*/
-	 compute_advection(p,rhs_p);
-	 add_collision(p,rhs_p);
+	  compute_advection(p,rhs_p);
+	  add_collision(p,rhs_p);
 	/*
 	add_forcing();
 	*/

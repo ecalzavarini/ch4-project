@@ -189,17 +189,14 @@ void read_mesh(){
 
 /**************************************************************************************************/
 
-void 
-compute_volumes()
-{
-	int             i, j, k, pp;
+void compute_volumes(){
+  int i,j,k,n,pp;
 
 	/* Allocating array for storing information of control volume */
 	my_double       P0[3], P1[3], P2[3], P3[3], P4[3], P5[3], P6[3],
 	                P7[3], P8[3];
 	my_double       D17[3], D35[3], D03[3], D12[3], D05[3], D14[3],
 	                D06[3], D24[3], D27[3], D36[3], D47[3], D56[3];
-	int             n;
 	my_double       S1357, S0145, S0246, S0123, S4567, S2367;
 	my_double       N1357[3], N0145[3], N0246[3], N0123[3], N4567[3],
 	                N2367[3];
@@ -207,10 +204,10 @@ compute_volumes()
 	my_double       V, V1, V2, V3;
 
 
-
-	for (i = 0; i < LNXG + TWO_BRD - 1 ; i++) {
-		for (j = 0; j < LNYG + TWO_BRD - 1; j++) {
+	for (i = 0; i < LNXG + TWO_BRD - 1 ; i++) 
+		for (j = 0; j < LNYG + TWO_BRD - 1; j++) 
 			for (k = 0; k < LNZG + TWO_BRD - 1; k++) {
+
 
 /* points definition */
 /*    
@@ -384,21 +381,18 @@ compute_volumes()
 				center_V[IDX(i, j, k)].z = P8[2];
 
 
-				for (pp = 0; pp < NPOP; pp++) {
+	for(pp=0;pp<NPOP;pp++){	
 					coeff_xp[IDX(i, j, k)].p[pp] = (N1357[0] * c[pp].x + N1357[1] * c[pp].y + N1357[2] * c[pp].z) / V;
 					coeff_xm[IDX(i, j, k)].p[pp] = (N0246[0] * c[pp].x + N0246[1] * c[pp].y + N0246[2] * c[pp].z) / V;
 					coeff_yp[IDX(i, j, k)].p[pp] = (N2367[0] * c[pp].x + N2367[1] * c[pp].y + N2367[2] * c[pp].z) / V;
 					coeff_ym[IDX(i, j, k)].p[pp] = (N0145[0] * c[pp].x + N0145[1] * c[pp].y + N0145[2] * c[pp].z) / V;
 					coeff_zp[IDX(i, j, k)].p[pp] = (N4567[0] * c[pp].x + N4567[1] * c[pp].y + N4567[2] * c[pp].z) / V;
 					coeff_zm[IDX(i, j, k)].p[pp] = (N0123[0] * c[pp].x + N0123[1] * c[pp].y + N0123[2] * c[pp].z) / V;
-
-				}
-
-			}
-		}
-	}			/* for i , j , k */
-
-
-
+	
+ #ifdef DEBUG_HARD
+	if(ROOT) fprintf(stderr, "coeff_xp %e %d %d %d %d\n",coeff_xp[IDX(i, j, k)].p[pp], i , j ,k , pp);
+ #endif 
+ 			}/* for pp */	
+	}  /* for i , j , k */
 
 }

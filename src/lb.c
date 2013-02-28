@@ -111,7 +111,7 @@ pop equilibrium(pop * f, int i, int j, int k){
 	u2 = (ux * ux + uy * uy + uz * uz);
 
 	/* equilibrium distribution */
-	for (pp = 0; pp < 9; pp++) {
+	for (pp = 0; pp < NPOP; pp++) {
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 		f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
 	}
@@ -161,7 +161,7 @@ void hydro_fields(){
 	     for (j = 0; j < LNY + TWO_BRD; j++)
 		  for (i = 0; i < LNX + TWO_BRD; i++)
 		    */
-		  fprintf(fout, "%d %d %d %e %e %e %e\n", i, j, k, center_V[IDX(i, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i, j, k)].z, 
+		  fprintf(fout, "%d %d %d %e %e %e %e %e %e %e\n", i, j, k, center_V[IDX(i, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i, j, k)].z, 
 			                                           u[IDX(i, j, k)].x, u[IDX(i, j, k)].y, u[IDX(i, j, k)].z , dens[IDX(i, j, k)]);
 	fclose(fout);
 #endif
