@@ -21,21 +21,21 @@ int main(int argc, char **argv){
 
 	///*
 	//for (time_now=0.0; time_now<max_max; time_now += time_dt) {
-	  for (i=0; i<1; i++) {
+	  for (i=0; i<100; i++) {
 	  if(i%10==0 && ROOT) fprintf(stderr,"time step %d\n",i);
     //*/
 
 #ifdef LB_FLUID
-	/*
-	boundary_conditions();
-	*/
+	  sendrecv_borders_pop(p);
+	  /*
+	  boundary_conditions();
+	  */
 	  compute_advection(p,rhs_p);
-	  //   add_collision(p,rhs_p);
-	/*
-	add_forcing();
-	*/
+	  add_collision(p,rhs_p);
+	  /*
+	  add_forcing();
+	  */
 	 time_stepping(p,rhs_p);
-	 sendrecv_borders_pop(p);
 	 hydro_fields();	
 	//dump_averages(itime);
 

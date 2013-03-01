@@ -339,7 +339,22 @@ void compute_volumes(){
 				N2367 =  vector_product(D36 , D27);
 				N0123 =  vector_product(D12 , D03);
 				N4567 =  vector_product(D47 , D56);			       	       
-				
+
+ #ifdef DEBUG_HARD
+	/* Each processor prints its mesh */
+
+	  if(ROOT){ 
+	sprintf(fnamein, "normal.%d.out", me);
+	fout = fopen(fnamein, "a");
+	fprintf(fout, "N1357 %e %e %e\n", N1357.x , N1357.y , N1357.z); fflush(fout);
+	fprintf(fout, "N0145 %e %e %e\n", N0145.x , N0145.y , N0145.z); fflush(fout);
+	fprintf(fout, "N0246 %e %e %e\n", N0246.x , N0246.y , N0246.z); fflush(fout);
+	fprintf(fout, "N2367 %e %e %e\n", N2367.x , N2367.y , N2367.z); fflush(fout);
+	fprintf(fout, "N0123 %e %e %e\n", N0123.x , N0123.y , N0123.z); fflush(fout);
+	fprintf(fout, "N4567 %e %e %e\n", N4567.x , N4567.y , N4567.z); fflush(fout);
+		    fclose(fout);
+	  }
+ #endif 				
 
 				/*
 				 * volume definition Ref:  Jeffrey Grandy,
@@ -356,7 +371,7 @@ void compute_volumes(){
 	V1 = fabs(M0167.x * (D27.y * D03.z - D27.z * D03.y) - D27.x * (M0167.y * D03.z - M0167.z * D03.y) + D03.x * (M0167.y * D27.z - M0167.z * D27.y));			
 	V2 = fabs(D06.x * (M0257.y * D47.z - M0257.z * D47.y) - M0257.x * (D06.y * D47.z - D06.z * D47.y) + D47.x * (D06.y * M0257.z - D06.z * M0257.y));			
 	V3 = fabs(D17.x * (D05.y * M0347.z - D05.z * M0347.y) - D05.x * (D17.y * M0347.z - D17.z * M0347.y) + M0347.x * (D17.y * D05.z - D17.z * D05.y));			
-	V = (V1 + V2 + V3) / 12;
+	V = (V1 + V2 + V3)/12.0;
 
 				/* testing volume */
 				fprintf(stdout, "%e \n", V);
@@ -376,7 +391,7 @@ void compute_volumes(){
 	/* Each processor prints its mesh */
 
 	  if(ROOT){ 
-	sprintf(fnamein, "coeff.out", me);
+	sprintf(fnamein, "coeff.%d.out", me);
 	fout = fopen(fnamein, "a");
 	fprintf(fout, "%d %d %d %d coeff_xp %e coeff_xm %e\n",i,j,k,pp,coeff_xp[IDX(i, j, k)].p[pp], coeff_xm[IDX(i, j, k)].p[pp] ); fflush(fout);
 	fprintf(fout, "%d %d %d %d coeff_yp %e coeff_ym %e\n",i,j,k,pp,coeff_yp[IDX(i, j, k)].p[pp], coeff_ym[IDX(i, j, k)].p[pp] ); fflush(fout);
