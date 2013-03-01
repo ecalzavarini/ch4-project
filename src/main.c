@@ -3,7 +3,7 @@
 int main(int argc, char **argv){
 
   int i;
-
+ 
         initialization_MPI(&argc, &argv);
 	assign_parameters();
 	processor_splitting();
@@ -13,7 +13,6 @@ int main(int argc, char **argv){
 #endif
 	read_mesh();
 	compute_volumes();
-	
 	initial_conditions(); 
 	/*
 	boundary_conditions(); 
@@ -31,11 +30,12 @@ int main(int argc, char **argv){
 	boundary_conditions();
 	*/
 	  compute_advection(p,rhs_p);
-	  add_collision(p,rhs_p);
+	  //   add_collision(p,rhs_p);
 	/*
 	add_forcing();
 	*/
 	 time_stepping(p,rhs_p);
+	 sendrecv_borders_pop(p);
 	 hydro_fields();	
 	//dump_averages(itime);
 
