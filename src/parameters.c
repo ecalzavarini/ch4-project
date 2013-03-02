@@ -210,6 +210,10 @@ void allocate_fields(){
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  set_to_zero_pop( rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
+ old_rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
+ set_to_zero_pop( old_rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
  u = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(u == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  set_to_zero_vector( u,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));

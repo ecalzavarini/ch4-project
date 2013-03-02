@@ -5,6 +5,28 @@ void compute_advection(pop *f, pop *rhs_f){
 
   int i,j,k,pp;
   my_double adv;
+#ifdef DEBUG
+	char            fnamein[256], fnameout[256];
+	char            name[256] = "NULL";
+	FILE           *fin, *fout;
+#endif
+
+#ifdef DEBUG
+	/* Each processor prints its mesh */
+	sprintf(fnamein, "pop_p.%d.out", me);
+	fout = fopen(fnamein, "w");
+	
+	for (k = 0; k < LNZ + TWO_BRD; k++)
+	     for (j = 0; j < LNY + TWO_BRD; j++)
+	       for (i = 0; i < LNX + TWO_BRD; i++){
+		    //for(pp=0;pp<NPOP;pp++)
+		    pp=0;
+	fprintf(fout, "%d %d %d %d %e\n", i, j, k, pp, f[IDX(i,j,k)].p[pp] );
+	       }
+	fclose(fout);
+#endif
+
+
 
   /* check this index */
   for(k=BRD;k<LNZ+BRD;k++)
@@ -76,9 +98,9 @@ void compute_advection(pop *f, pop *rhs_f){
 /* with minus sign because we add it to the right hand side */
  rhs_f[IDX(i,j,k)].p[pp] = -adv;
 
- //#ifdef DEBUG_HARD
+ #ifdef DEBUG_HARD
  if(ROOT) fprintf(stderr, " %d %d %d %d adv %e\n",i,j,k,pp,adv);
- //#endif 
+ #endif 
 
 	}/* for pp */
       }/* for i, j , k */

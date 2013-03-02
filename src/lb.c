@@ -169,7 +169,7 @@ void hydro_fields(){
 }
 
 /********************************************/
-void time_stepping(pop *f, pop *rhs_f){
+void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
   int i,j,k,pp;
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -178,8 +178,15 @@ void time_stepping(pop *f, pop *rhs_f){
 
 	for(pp=0;pp<NPOP;pp++){
 
+#ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
 	  f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+#endif
+#ifdef METHOD_STEPPING_AB2
+	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
+	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
+#endif
+
 
 	}
 
@@ -212,8 +219,8 @@ void sendrecv_borders_pop(pop *f){
         f[IDX(i,j,k)] = xm_pop[IDX_XBRD(i,j,k)];
         xm_pop[IDX_XBRD(i,j,k)] = f[IDX(i+BRD,j,k)];
       }
- MPI_Sendrecv( xm_pop, brd_size, MPI_vector_type, me_xm, 10,
-               xp_pop, brd_size, MPI_vector_type, me_xp, 10, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_pop, brd_size, MPI_vector_type, me_xm, 11,
+               xp_pop, brd_size, MPI_vector_type, me_xp, 11, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -232,8 +239,8 @@ void sendrecv_borders_pop(pop *f){
         yp_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
       }
 
-  MPI_Sendrecv( yp_pop, brd_size, MPI_vector_type, me_yp, 10,
-                ym_pop, brd_size, MPI_vector_type, me_ym, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( yp_pop, brd_size, MPI_vector_type, me_yp, 12,
+                ym_pop, brd_size, MPI_vector_type, me_ym, 12, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -241,8 +248,8 @@ void sendrecv_borders_pop(pop *f){
         f[IDX(i,j,k)] = ym_pop[IDX_YBRD(i,j,k)];
         ym_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
       }
- MPI_Sendrecv( ym_pop, brd_size, MPI_vector_type, me_ym, 10,
-               yp_pop, brd_size, MPI_vector_type, me_yp, 10, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( ym_pop, brd_size, MPI_vector_type, me_ym, 13,
+               yp_pop, brd_size, MPI_vector_type, me_yp, 13, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -260,8 +267,8 @@ void sendrecv_borders_pop(pop *f){
         zp_pop[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
       }
 
-  MPI_Sendrecv( zp_pop, brd_size, MPI_vector_type, me_zp, 10,
-                zm_pop, brd_size, MPI_vector_type, me_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( zp_pop, brd_size, MPI_vector_type, me_zp, 14,
+                zm_pop, brd_size, MPI_vector_type, me_zm, 14, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -269,8 +276,8 @@ void sendrecv_borders_pop(pop *f){
         f[IDX(i,j,k)] = zm_pop[IDX_ZBRD(i,j,k)];
         zm_pop[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+BRD)];
       }
- MPI_Sendrecv( zm_pop, brd_size, MPI_vector_type, me_zm, 10,
-               zp_pop, brd_size, MPI_vector_type, me_zp, 10, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( zm_pop, brd_size, MPI_vector_type, me_zm, 15,
+               zp_pop, brd_size, MPI_vector_type, me_zp, 15, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)

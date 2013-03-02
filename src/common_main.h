@@ -58,7 +58,7 @@ my_double invcs, invcs2, invcs4;
 
 
 #ifdef LB_FLUID
-pop *p, *rhs_p;
+pop *p, *rhs_p, *old_rhs_p;
 my_double *dens;
 vector *u;
 vector *ruler_x, *ruler_y, *ruler_z;

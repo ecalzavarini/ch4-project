@@ -27,7 +27,7 @@ void initial_conditions()
 	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
   
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
-    fn=0.1;
+    fn=0.01;
     kn=1.0;
 
     fn*=3.0; /* to get the correct amplitude */  
