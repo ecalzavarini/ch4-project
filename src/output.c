@@ -56,19 +56,19 @@ void dump_averages(){
 
 #ifdef LB_FLUID
 			  out_local.x += x = center_V[IDX(i, j, k)].x;
-			  ruler_x_local[i -BRD + LNX_START].x += x;
-			  ruler_y_local[j -BRD + LNY_START].x += x;
-			  ruler_z_local[k -BRD + LNZ_START].x += x;
+			  ruler_x_local[i -BRD + LNX_START].x = x;
+			  ruler_y_local[j -BRD + LNY_START].x = x;
+			  ruler_z_local[k -BRD + LNZ_START].x = x;
 
 			  out_local.y += y = center_V[IDX(i, j, k)].y;
-			  ruler_x_local[i -BRD + LNX_START].y += y;
-			  ruler_y_local[j -BRD + LNY_START].y += y;
-			  ruler_z_local[k -BRD + LNZ_START].y += y;
+			  ruler_x_local[i -BRD + LNX_START].y = y;
+			  ruler_y_local[j -BRD + LNY_START].y = y;
+			  ruler_z_local[k -BRD + LNZ_START].y = y;
 
 			  out_local.z += z = center_V[IDX(i, j, k)].z;
-			  ruler_x_local[i -BRD + LNX_START].z += z;
-			  ruler_y_local[j -BRD + LNY_START].z += z;
-			  ruler_z_local[k -BRD + LNZ_START].z += z;
+			  ruler_x_local[i -BRD + LNX_START].z = z;
+			  ruler_y_local[j -BRD + LNY_START].z = z;
+			  ruler_z_local[k -BRD + LNZ_START].z = z;
 
 			  out_local.ux += ux = u[IDX(i, j, k)].x;
 			  ruler_x_local[i -BRD + LNX_START].ux += ux;
