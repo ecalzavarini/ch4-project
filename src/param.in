@@ -2,8 +2,8 @@ NX 1
 NY 64
 NZ 1
 
-time_dt 0.433
-time_max 100.
+time_dt 0.5
+time_end 500.
 time_dump_field 10.0
 time_dump_diagn 1.0
 

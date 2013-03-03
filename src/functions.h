@@ -29,4 +29,4 @@ void compute_advection(pop * f, pop *rhs_f);
 void hydro_fields();
 
 /* output */
-void dump_averages(int itime);
+void dump_averages();

@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <math.h>
 #include <sys/types.h>
@@ -72,6 +73,7 @@ vector *force;
 
 /* time */
 int itime;
+my_double time;
 char OutDir[256];
 
 

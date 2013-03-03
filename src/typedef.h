@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct {
   double NX , NY , NZ;
-  double time_dt, time_max, time_dump_field, time_dump_diagn;
+  double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
   double tau_u , nu;
 #ifdef LB_FLUID_FORCING_POISEUILLE
@@ -29,6 +29,18 @@ typedef struct {
 #endif
 #endif
 } prop;
+
+
+#ifndef LB_FLUID
+#define NPROP 8
+#endif
+#ifdef LB_FLUID
+#define NPROP 10
+#ifdef LB_FLUID_FORCING_POISEUILLE
+#define NPROP 11
+#endif
+#endif
+
 
 typedef struct {
 #ifdef LB_FLUID
@@ -39,18 +51,6 @@ typedef struct {
 #ifdef LB_FLUID
 #define NOUT 12
 #endif
-
-
-#ifndef LB_FLUID
-#define NPROP 7
-#endif
-#ifdef LB_FLUID
-#define NPROP 9
-#ifdef LB_FLUID_FORCING_POISEUILLE
-#define NPROP 10
-#endif
-#endif
-
 
 
 

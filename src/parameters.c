@@ -66,9 +66,9 @@ void assign_parameters(){
     property.time_dt = (double)read_parameter(name); 
     fprintf(stderr,"time step: %g\n",property.time_dt);
 
-    sprintf(name,"time_max");
-    property.time_max = (double)read_parameter(name); 
-    fprintf(stderr,"Total time steps: %g\n",property.time_max);
+    sprintf(name,"time_end");
+    property.time_end = (double)read_parameter(name); 
+    fprintf(stderr,"Total time steps: %g\n",property.time_end);
   
     sprintf(name,"time_dump_field");
     property.time_dump_field = (double)read_parameter(name);

@@ -1,8 +1,6 @@
 #include "common_main.h"
 
 int main(int argc, char **argv){
-
-  int i;
  
         initialization_MPI(&argc, &argv);
 	assign_parameters();
@@ -19,11 +17,12 @@ int main(int argc, char **argv){
 	*/
 	hydro_fields();
 
-	///*
-	//for (time_now=0.0; time_now<max_max; time_now += time_dt) {
-	  for (i=0; i<100; i++) {
-	  if(i%10==0 && ROOT) fprintf(stderr,"time step %d\n",i);
-    //*/
+
+	itime=0;
+	for (time=0.0; time <= property.time_end; time += property.time_dt){
+	  itime++;
+	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
+
 
 #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);
@@ -37,7 +36,7 @@ int main(int argc, char **argv){
 	  */
 	  time_stepping(p,rhs_p,old_rhs_p);
 	 hydro_fields();	
-	 dump_averages(i);
+	 dump_averages();
 
 #endif
 	 ///*

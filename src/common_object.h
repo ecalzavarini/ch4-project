@@ -70,6 +70,7 @@ extern vector *force;
 
 /* time */
 extern int itime;
+extern my_double time;
 extern char OutDir[256];
 
 
