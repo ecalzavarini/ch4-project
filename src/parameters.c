@@ -108,7 +108,7 @@ void assign_parameters(){
  MPI_Bcast(&NX, 1, MPI_INT, 0, MPI_COMM_WORLD);
  MPI_Bcast(&NY, 1, MPI_INT, 0, MPI_COMM_WORLD);
  MPI_Bcast(&NZ, 1, MPI_INT, 0, MPI_COMM_WORLD);
- MPI_Bcast(&property, 1,MPI_Property_type, 0, MPI_COMM_WORLD);
+ MPI_Bcast(&property, 1,MPI_property_type, 0, MPI_COMM_WORLD);
  
 
 #ifdef DEBUG

@@ -36,6 +36,9 @@ typedef struct {
   my_double rho,ene,eps;
 #endif
 } output;
+#ifdef LB_FLUID
+#define NOUT 9
+#endif
 
 
 #ifndef LB_FLUID

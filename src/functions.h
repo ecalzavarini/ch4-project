@@ -27,3 +27,6 @@ void initial_conditions();
 void add_collision(pop * f, pop *rhs_f);
 void compute_advection(pop * f, pop *rhs_f);
 void hydro_fields();
+
+/* output */
+void dump_averages(int itime);

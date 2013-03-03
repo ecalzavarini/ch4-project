@@ -14,8 +14,8 @@ int mex,mey,mez;
 int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
-MPI_Datatype MPI_Property_type , MPI_pop_type , MPI_vector_type;
-
+MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type;
+MPI_Op MPI_SUM_output;
 
 /* System size , for the nodes*/
 int NX , NY , NZ;
@@ -33,7 +33,7 @@ int LNXG_START , LNYG_START , LNZG_START;
 prop property;
 
 /* Array of outputs */
-output out;
+output out_local,out_all;
 
 /* Mesh matrix */
 vector *mesh, *center_V;

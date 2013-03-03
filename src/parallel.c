@@ -1,6 +1,24 @@
 #include "common_object.h"
 
 
+void sum_output(output *a, output *b, output *c, MPI_Datatype * );
+ 
+void sum_output(output *a, output *b, output *c, MPI_Datatype *dtype)
+{
+#ifdef LB_FLUID
+  a->ux = b->ux + c->ux;
+  a->uy = b->uy + c->uy;
+  a->uz = b->uz + c->uz;
+  a->ux2 = b->ux2 + c->ux2;
+  a->uy2 = b->uy2 + c->uy2;
+  a->uz2 = b->uz2 + c->uz2;
+  a->rho = b->rho + c->rho;
+  a->ene = b->ene + c->ene;
+  a->eps = b->eps + c->eps;
+#endif
+}
+
+
 void initialization_MPI(int argc, char **argv){
 	/* Initialize MPI */
 	MPI_Init(&argc, &argv);
@@ -12,8 +30,13 @@ void initialization_MPI(int argc, char **argv){
 
 
 	/* commit types */
- MPI_Type_contiguous(NPROP, MPI_DOUBLE , &MPI_Property_type);
- MPI_Type_commit(&MPI_Property_type);
+ MPI_Type_contiguous(NPROP, MPI_DOUBLE , &MPI_property_type);
+ MPI_Type_commit(&MPI_property_type);
+
+ MPI_Type_contiguous(NOUT, MPI_DOUBLE , &MPI_output_type);
+ MPI_Type_commit(&MPI_output_type);
+ MPI_Op_create( (MPI_User_function *)sum_output, 1, &MPI_SUM_output );
+
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
