@@ -19,7 +19,7 @@ int main(int argc, char **argv){
 
 
 	itime=0;
-	for (time=0.0; time <= property.time_end; time += property.time_dt){
+	for (time=property.time_start; time <= property.time_end; time += property.time_dt){
 	  itime++;
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 

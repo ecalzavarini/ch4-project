@@ -66,9 +66,13 @@ void assign_parameters(){
     property.time_dt = (double)read_parameter(name); 
     fprintf(stderr,"time step: %g\n",property.time_dt);
 
+    sprintf(name,"time_start");
+    property.time_start = (double)read_parameter(name); 
+    fprintf(stderr,"Time start: %g\n",property.time_start);
+
     sprintf(name,"time_end");
     property.time_end = (double)read_parameter(name); 
-    fprintf(stderr,"Total time steps: %g\n",property.time_end);
+    fprintf(stderr,"Time end: %g\n",property.time_end);
   
     sprintf(name,"time_dump_field");
     property.time_dump_field = (double)read_parameter(name);
@@ -85,8 +89,8 @@ void assign_parameters(){
   sprintf(name,"tau_u");
   property.tau_u = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
-  property.nu = property.tau_u/3.0;
-  fprintf(stderr,"viscosity %g\n",(double)property.nu);
+  //property.nu = property.tau_u/3.0;
+  //fprintf(stderr,"viscosity %g\n",(double)property.nu);
 #ifdef LB_FLUID_FORCING_POISEUILLE
   /* pressure gradient */
   fprintf(stderr,"YES <- LB_FLUID_FORCING_POISEUILLE\n");
