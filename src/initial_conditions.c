@@ -6,6 +6,7 @@ void initial_conditions()
   my_double nu,gradP;
   my_double fn,kn;
   my_double y;
+  my_double L;
 
 #ifdef LB_FLUID
   nu = (my_double)property.nu;
@@ -29,21 +30,22 @@ void initial_conditions()
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.01;
     kn=1.0;
+    L=(double)(NY);
 
     fn*=3.0; /* to get the correct amplitude */  
     y = (my_double)center_V[IDX(i,j,k)].y;
 
 	/* along x */  
-        p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[2]  += -wgt[2]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[7]  +=  wgt[7]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[8]  +=  wgt[8]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[9]  += -wgt[9]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[10] += -wgt[10]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[11] +=  wgt[11]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[12] += -wgt[12]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[13] +=  wgt[13]*fn*sin(kn*two_pi*y/NY); 
-	p[IDX(i,j,k)].p[14] += -wgt[14]*fn*sin(kn*two_pi*y/NY); 
+        p[IDX(i,j,k)].p[1]  +=  wgt[1]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[2]  += -wgt[2]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[7]  +=  wgt[7]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[8]  +=  wgt[8]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[9]  += -wgt[9]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[10] += -wgt[10]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[11] +=  wgt[11]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[12] += -wgt[12]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[13] +=  wgt[13]*fn*sin(kn*two_pi*y/L); 
+	p[IDX(i,j,k)].p[14] += -wgt[14]*fn*sin(kn*two_pi*y/L); 
 #endif  
 #endif
  }/* for i,j,k */

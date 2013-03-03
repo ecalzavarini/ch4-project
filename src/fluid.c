@@ -20,7 +20,7 @@ void compute_advection(pop *f, pop *rhs_f){
 	     for (j = 0; j < LNY + TWO_BRD; j++)
 	       for (i = 0; i < LNX + TWO_BRD; i++){
 		    //for(pp=0;pp<NPOP;pp++)
-		    pp=0;
+		    pp=7;
 	fprintf(fout, "%d %d %d %d %e\n", i, j, k, pp, f[IDX(i,j,k)].p[pp] );
 	       }
 	fclose(fout);

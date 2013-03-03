@@ -4,6 +4,11 @@ void design_lb(){
 
 	NPOP = 19;
 
+	/* commit pop type */
+	MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
+	MPI_Type_commit(&MPI_pop_type);
+
+
 	/* Settings for D3Q19 */
 	wgt[0] = 1. / 3.;
 	wgt[1] = 1. / 18.;
@@ -210,8 +215,8 @@ void sendrecv_borders_pop(pop *f){
         xp_pop[IDX_XBRD(i,j,k)] = f[IDX(i+LNX,j,k)];
       }
 
-  MPI_Sendrecv( xp_pop, brd_size, MPI_vector_type, me_xp, 10,
-                xm_pop, brd_size, MPI_vector_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_pop, brd_size, MPI_pop_type, me_xp, 10,
+                xm_pop, brd_size, MPI_pop_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -219,8 +224,8 @@ void sendrecv_borders_pop(pop *f){
         f[IDX(i,j,k)] = xm_pop[IDX_XBRD(i,j,k)];
         xm_pop[IDX_XBRD(i,j,k)] = f[IDX(i+BRD,j,k)];
       }
- MPI_Sendrecv( xm_pop, brd_size, MPI_vector_type, me_xm, 11,
-               xp_pop, brd_size, MPI_vector_type, me_xp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_pop, brd_size, MPI_pop_type, me_xm, 11,
+               xp_pop, brd_size, MPI_pop_type, me_xp, 11, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -237,26 +242,29 @@ void sendrecv_borders_pop(pop *f){
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
         yp_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
+	//	fprintf(stderr,"\n SEND %d  %d %d %e %d %e\n",i,j,k,yp_pop[IDX_YBRD(i,j,k)].p[7],j+LNY,f[IDX(i,j+LNY,k)].p[7] );
       }
 
-  MPI_Sendrecv( yp_pop, brd_size, MPI_vector_type, me_yp, 12,
-                ym_pop, brd_size, MPI_vector_type, me_ym, 12, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( yp_pop, brd_size, MPI_pop_type, me_yp, 10,
+                ym_pop, brd_size, MPI_pop_type, me_ym, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++) {
         f[IDX(i,j,k)] = ym_pop[IDX_YBRD(i,j,k)];
-        ym_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
+	//fprintf(stderr,"\n RECV %d  %d %d %e %d %e\n",i,j,k,ym_pop[IDX_YBRD(i,j,k)].p[7],j+LNY,f[IDX(i,j,k)].p[7] );
+	ym_pop[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
       }
- MPI_Sendrecv( ym_pop, brd_size, MPI_vector_type, me_ym, 13,
-               yp_pop, brd_size, MPI_vector_type, me_yp, 13, MPI_COMM_WORLD, &status1);
+  
+ MPI_Sendrecv( ym_pop, brd_size, MPI_pop_type, me_ym, 13,
+               yp_pop, brd_size, MPI_pop_type, me_yp, 13, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-	f[IDX(i,j+LNY+BRD,k)] = yp_pop[IDX_YBRD(i,j,k)];
+       	f[IDX(i,j+LNY+BRD,k)] = yp_pop[IDX_YBRD(i,j,k)];
       }
-
+  
 
   /* Copy borders along z */
   brd_size = BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD);
@@ -267,8 +275,8 @@ void sendrecv_borders_pop(pop *f){
         zp_pop[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
       }
 
-  MPI_Sendrecv( zp_pop, brd_size, MPI_vector_type, me_zp, 14,
-                zm_pop, brd_size, MPI_vector_type, me_zm, 14, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( zp_pop, brd_size, MPI_pop_type, me_zp, 14,
+                zm_pop, brd_size, MPI_pop_type, me_zm, 14, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -276,8 +284,8 @@ void sendrecv_borders_pop(pop *f){
         f[IDX(i,j,k)] = zm_pop[IDX_ZBRD(i,j,k)];
         zm_pop[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+BRD)];
       }
- MPI_Sendrecv( zm_pop, brd_size, MPI_vector_type, me_zm, 15,
-               zp_pop, brd_size, MPI_vector_type, me_zp, 15, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( zm_pop, brd_size, MPI_pop_type, me_zm, 15,
+               zp_pop, brd_size, MPI_pop_type, me_zp, 15, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)

@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-void initialization_MPI(int *argc, char ***argv){
+void initialization_MPI(int argc, char **argv){
 	/* Initialize MPI */
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &me);
@@ -15,11 +15,8 @@ void initialization_MPI(int *argc, char ***argv){
  MPI_Type_contiguous(NPROP, MPI_DOUBLE , &MPI_Property_type);
  MPI_Type_commit(&MPI_Property_type);
 
-MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
-MPI_Type_commit(&MPI_pop_type);
-
-MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
-MPI_Type_commit(&MPI_vector_type);
+ MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
+ MPI_Type_commit(&MPI_vector_type);
 }
 
 
@@ -148,7 +145,7 @@ processor_splitting()
 	LNYG_END = LNYG * (mey + 1);
 	LNZG_START = LNZ * mez;
 	LNZG_END = LNZG * (mez + 1);
-
+	
 
 #ifdef DEBUG
 	fprintf(stderr, "me %d LNXG_START %d , LNYG_START %d  LNZG_START %d\n", me, LNXG_START ,LNYG_START, LNZG_START);
