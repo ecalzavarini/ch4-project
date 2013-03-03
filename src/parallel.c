@@ -1,11 +1,14 @@
 #include "common_object.h"
 
-
+/*
 void sum_output(output *a, output *b, output *c, MPI_Datatype * );
  
 void sum_output(output *a, output *b, output *c, MPI_Datatype *dtype)
 {
 #ifdef LB_FLUID
+  a->x = b->x + c->x;
+  a->y = b->y + c->y;
+  a->z = b->z + c->z;
   a->ux = b->ux + c->ux;
   a->uy = b->uy + c->uy;
   a->uz = b->uz + c->uz;
@@ -17,7 +20,32 @@ void sum_output(output *a, output *b, output *c, MPI_Datatype *dtype)
   a->eps = b->eps + c->eps;
 #endif
 }
+*/
 
+void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
+ 
+void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype){
+  int i;
+
+for (i = 0; i < *length; i++) {
+
+#ifdef LB_FLUID
+  (b+i)->x += (a+i)->x;
+  (b+i)->y += (a+i)->y;
+  (b+i)->z += (a+i)->z;
+  (b+i)->ux += (a+i)->ux;
+  (b+i)->uy += (a+i)->uy;
+  (b+i)->uz += (a+i)->uz;
+  (b+i)->ux2 += (a+i)->ux2;
+  (b+i)->uy2 += (a+i)->uy2;
+  (b+i)->uz2 += (a+i)->uz2;
+  (b+i)->rho += (a+i)->rho;
+  (b+i)->ene += (a+i)->ene;
+  (b+i)->eps += (a+i)->eps;
+#endif
+ }
+
+}
 
 void initialization_MPI(int argc, char **argv){
 	/* Initialize MPI */

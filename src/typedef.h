@@ -32,12 +32,12 @@ typedef struct {
 
 typedef struct {
 #ifdef LB_FLUID
-  my_double ux,uy,uz,ux2,uy2,uz2;
+  my_double x,y,z,ux,uy,uz,ux2,uy2,uz2;
   my_double rho,ene,eps;
 #endif
 } output;
 #ifdef LB_FLUID
-#define NOUT 9
+#define NOUT 12
 #endif
 
 

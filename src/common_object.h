@@ -34,7 +34,8 @@ extern prop property;
 
 /* Array of outputs */
 extern output out_local, out_all;
-
+extern output *ruler_x_local, *ruler_y_local, *ruler_z_local;
+extern output *ruler_x, *ruler_y, *ruler_z;
 
 /* mesh */
 extern vector *mesh, *center_V;
@@ -62,7 +63,6 @@ extern my_double invcs, invcs2, invcs4;
 extern pop *p, *rhs_p, *old_rhs_p;
 extern my_double *dens;
 extern vector *u;
-extern vector *ruler_x, *ruler_y, *ruler_z;
 #ifdef LB_FLUID_FORCING
 extern vector *force;
 #endif
