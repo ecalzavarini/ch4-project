@@ -1,26 +1,5 @@
 #include "common_object.h"
 
-/*
-void sum_output(output *a, output *b, output *c, MPI_Datatype * );
- 
-void sum_output(output *a, output *b, output *c, MPI_Datatype *dtype)
-{
-#ifdef LB_FLUID
-  a->x = b->x + c->x;
-  a->y = b->y + c->y;
-  a->z = b->z + c->z;
-  a->ux = b->ux + c->ux;
-  a->uy = b->uy + c->uy;
-  a->uz = b->uz + c->uz;
-  a->ux2 = b->ux2 + c->ux2;
-  a->uy2 = b->uy2 + c->uy2;
-  a->uz2 = b->uz2 + c->uz2;
-  a->rho = b->rho + c->rho;
-  a->ene = b->ene + c->ene;
-  a->eps = b->eps + c->eps;
-#endif
-}
-*/
 
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
  
@@ -68,6 +47,15 @@ void initialization_MPI(int argc, char **argv){
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
+
+ /* Initialize random seeds */
+  seed = time(NULL); 
+  srand48(me+seed);
+#ifdef DEBUG_HARD
+fprintf(stderr,"me %d drand48() %e\n",me, drand48());
+#endif
+
+
 }
 
 

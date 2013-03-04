@@ -132,7 +132,7 @@ void dump_averages(){
   if(ROOT){
     sprintf(fname,"velocity_averages.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",time, (double)out_all.ene, (double)out_all.rho, (double)out_all.ux, (double)out_all.uy, (double)out_all.uz, (double)out_all.ux2 , (double)out_all.uy2, (double)out_all.uz2);
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.ene, (double)out_all.rho, (double)out_all.ux, (double)out_all.uy, (double)out_all.uz, (double)out_all.ux2 , (double)out_all.uy2, (double)out_all.uz2);
     fclose(fout);
 
     sprintf(fname,"velocity_averages_x.dat");

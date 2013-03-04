@@ -109,11 +109,10 @@ void compute_advection(pop *f, pop *rhs_f){
 
 void add_collision(pop *f, pop *rhs_f){
   int i, j, k, pp;
-  my_double invtau , one_minus_invtau;
+  my_double invtau ;
   pop f_eq;
 
   invtau = 1.0/property.tau_u;
-  one_minus_invtau = (1.0 - invtau);
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -123,7 +122,7 @@ void add_collision(pop *f, pop *rhs_f){
 
 	for (pp=0; pp<NPOP; pp++){
 	/* collision */
-	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	  	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 	}/* pp */
       }/* i,j,k */
 

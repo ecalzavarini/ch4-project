@@ -38,14 +38,13 @@ void read_mesh(){
 					 * is dormient
 					 */
 					mesh_flag[IDXG(i, j, k)] = 1;
-
-		  //#define GRID_RANDOM
+			
+					//	#define GRID_RANDOM					
 #ifdef GRID_RANDOM
-					mesh[IDXG(i, j, k)].x += (my_double)drand48()*0.25;
-					mesh[IDXG(i, j, k)].y += (my_double)drand48()*0.25;
-					mesh[IDXG(i, j, k)].z += (my_double)drand48()*0.25;
+					//mesh[IDXG(i, j, k)].x += 0.1*(my_double)(2.0*drand48()-1.0);
+					mesh[IDXG(i, j, k)].y += 0.01*(my_double)(2.0*drand48()-1.0);
+					//mesh[IDXG(i, j, k)].z += 0.01*(my_double)(2.0*drand48()-1.0);
 #endif
-
 
 				} /* for ijk */
 
@@ -59,14 +58,15 @@ void read_mesh(){
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
-	/*
+	
 	for (k = BRD; k < LNZG+BRD; k++)
 			for (j = BRD; j < LNYG+BRD; j++)
 				for (i = BRD; i < LNXG+BRD; i++) 
-				  */
+				  /*			  
 	for (k = 0; k < LNZG + TWO_BRD; k++)
 	  for (j = 0; j < LNYG + TWO_BRD; j++)
 	    for (i = 0; i < LNXG + TWO_BRD; i++)
+				  */
 			  fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
 	fclose(fout);
 #endif

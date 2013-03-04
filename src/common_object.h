@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -7,6 +9,7 @@
 #include "define.h"
 #include "typedef.h"
 #include "functions.h"
+
 
 /* MPI variables */
 extern int me;
@@ -16,6 +19,9 @@ extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
 extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type;
 extern MPI_Op MPI_SUM_output;
+
+/* random seed */
+extern unsigned int seed;
 
 /* System size , center nodes */
 extern int NX , NY , NZ;
@@ -70,7 +76,7 @@ extern vector *force;
 
 /* time */
 extern int itime;
-extern my_double time;
+extern my_double time_now;
 extern char OutDir[256];
 
 
