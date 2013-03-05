@@ -177,20 +177,21 @@ void hydro_fields(){
 void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
   int i,j,k,pp;
   pop f_eq;
-  my_double fac;
+  my_double fac1,fac2;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
 	f_eq=equilibrium(f,i,j,k);
-        fac = property.time_dt*exp(-property.time_dt/property.tau_u);
+        fac1 = property.time_dt*exp(-property.time_dt/property.tau_u);
+        fac2 = property.time_dt*exp(-2.0*property.time_dt/property.tau_u);
 
 	for(pp=0;pp<NPOP;pp++){
 #ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
 #ifdef METHOD_IMPLICIT_COLLISION
-	  f[IDX(i,j,k)].p[pp] += fac*rhs_f[IDX(i,j,k)].p[pp];
+	  f[IDX(i,j,k)].p[pp] += fac1*rhs_f[IDX(i,j,k)].p[pp];
 #else
           f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 #endif
@@ -202,8 +203,8 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 #endif
 #ifdef METHOD_STEPPING_AB2
 #ifdef METHOD_IMPLICIT_COLLISION
-	  // f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
-#elseif
+	  f[IDX(i,j,k)].p[pp] += fac1*1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac2*old_rhs_f[IDX(i,j,k)].p[pp]; 
+#else
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
 #endif
 
