@@ -178,20 +178,28 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
   int i,j,k,pp;
   pop f_eq;
   my_double fac1,fac2;
+  my_double rho1,rho2;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
+#ifdef DEBUG_HARD
 	f_eq=equilibrium(f,i,j,k);
-        fac1 = property.time_dt*exp(-property.time_dt/property.tau_u);
-        fac2 = property.time_dt*exp(-2.0*property.time_dt/property.tau_u);
+#endif
+        fac1 = exp(-property.time_dt/property.tau_u);
+        fac2 = exp(-2.0*property.time_dt/property.tau_u);
+
+#ifdef METHOD_IMPLICIT_COLLISION
+	rho1=m(f[IDX(i,j,k)]);   
+#endif
 
 	for(pp=0;pp<NPOP;pp++){
 #ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
-#ifdef METHOD_IMPLICIT_COLLISION
-	  f[IDX(i,j,k)].p[pp] += fac1*rhs_f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_IMPLICIT_COLLISION 
+	  f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
+
 #else
           f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 #endif
@@ -199,11 +207,12 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 #ifdef DEBUG_HARD
 	  fprintf(stderr,"f_new %e f_eq %e diff %e\n",f[IDX(i,j,k)].p[pp], f_eq.p[pp], f[IDX(i,j,k)].p[pp]-f_eq.p[pp]);
 #endif 
-
 #endif
+
 #ifdef METHOD_STEPPING_AB2
+	  /* Adams Bashforth 2nd order */
 #ifdef METHOD_IMPLICIT_COLLISION
-	  f[IDX(i,j,k)].p[pp] += fac1*1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac2*old_rhs_f[IDX(i,j,k)].p[pp]; 
+	  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
 #else
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
 #endif
@@ -212,7 +221,13 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 #endif
 
 
-	}
+	}/* pp */
+
+#ifdef METHOD_IMPLICIT_COLLISION
+	/* pull up density again */
+	rho2=m(f[IDX(i,j,k)]);
+	for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= rho1/rho2;
+#endif
 
       }/* for i,j,k */
 }

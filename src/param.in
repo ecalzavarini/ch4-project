@@ -1,10 +1,10 @@
-NX 1
+NX 64
 NY 64
 NZ 1
 
-time_dt 0.5
+time_dt 0.1
 time_start 0.0
-time_end 1000.
+time_end 300.
 time_dump_field 10.0
 time_dump_diagn 1.0
 

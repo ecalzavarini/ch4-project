@@ -230,6 +230,7 @@ void allocate_fields(){
 #ifdef LB_FLUID_FORCING
  force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(force == NULL){ fprintf(stderr,"Not enough memory to allocate force\n"); exit(-1);}
+ set_to_zero_vector( force,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 

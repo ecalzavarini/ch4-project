@@ -31,10 +31,13 @@ int main(int argc, char **argv){
 	  */
 	  compute_advection(p,rhs_p);
 	  add_collision(p,rhs_p);
-	  /*
-	  add_forcing();
-	  */
-	  time_stepping(p,rhs_p,old_rhs_p);
+
+#ifdef LB_FLUID_FORCING
+	  build_forcing();
+	  add_forcing(p,rhs_p);
+#endif
+	  
+	 time_stepping(p,rhs_p,old_rhs_p);
 	 hydro_fields();	
 	 dump_averages();
 

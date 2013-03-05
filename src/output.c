@@ -5,6 +5,7 @@ void dump_averages(){
   FILE *fout;
   char fname[128];
   my_double x,y,z,ux,uy,uz,ux2,uy2,uz2,ene,rho,eps;
+  my_double norm;
 
 
 #ifdef LB_FLUID
@@ -128,6 +129,57 @@ void dump_averages(){
   MPI_Allreduce(ruler_x_local, ruler_x, NX, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
   MPI_Allreduce(ruler_y_local, ruler_y, NY, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
   MPI_Allreduce(ruler_z_local, ruler_z, NZ, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
+
+#define OUTPUT_NORM
+#ifdef OUTPUT_NORM
+  /* normalization */
+  norm = 1.0/(my_double)(NX*NY*NZ);
+  out_all.ene *= norm;
+  out_all.rho *= norm;
+  out_all.ux  *= norm;
+  out_all.uy  *= norm;
+  out_all.uz  *= norm;
+  out_all.ux2 *= norm;
+  out_all.uy2 *= norm;
+  out_all.uz2 *= norm;
+
+
+  norm = 1.0/(my_double)(NY*NZ);
+  for (i = 0; i < NX; i++){
+    ruler_x[i].ene *= norm;
+    ruler_x[i].rho *= norm;
+    ruler_x[i].ux *= norm; 
+    ruler_x[i].uy *= norm;
+    ruler_x[i].uz *= norm;
+    ruler_x[i].ux2 *= norm;
+    ruler_x[i].uy2 *= norm;
+    ruler_x[i].uz2 *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NZ);
+  for (i = 0; i < NY; i++){
+    ruler_y[i].ene *= norm;
+    ruler_y[i].rho *= norm;
+    ruler_y[i].ux *= norm; 
+    ruler_y[i].uy *= norm;
+    ruler_y[i].uz *= norm;
+    ruler_y[i].ux2 *= norm;
+    ruler_y[i].uy2 *= norm;
+    ruler_y[i].uz2 *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NY);
+  for (i = 0; i < NZ; i++){
+    ruler_z[i].ene *= norm;
+    ruler_z[i].rho *= norm;
+    ruler_z[i].ux *= norm; 
+    ruler_z[i].uy *= norm;
+    ruler_z[i].uz *= norm;
+    ruler_z[i].ux2 *= norm;
+    ruler_z[i].uy2 *= norm;
+    ruler_z[i].uz2 *= norm;
+  }
+#endif 
 
   if(ROOT){
     sprintf(fname,"velocity_averages.dat");

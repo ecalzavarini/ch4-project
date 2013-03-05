@@ -131,10 +131,41 @@ void add_collision(pop *f, pop *rhs_f){
 
 	}/* pp */
       }/* i,j,k */
-
-
 }
 
 
+#ifdef LB_FLUID_FORCING
+void build_forcing(){
+  int i, j, k;
 
+ for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
 
+	force[IDX(i,j,k)].x = 0.1;
+	force[IDX(i,j,k)].y = 0.0;
+	force[IDX(i,j,k)].z = 0.0;
+      }/* i,j,k */
+}
+#endif
+
+#ifdef LB_FLUID_FORCING
+void add_forcing(pop *f, pop *rhs_f){
+  int i, j, k, pp;
+  my_double invtau ;
+  pop f_eq;
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+      
+	for (pp=0; pp<NPOP; pp++){
+	/* forcing */
+	  rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].x*c[pp].x;
+          rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].y*c[pp].y;
+          rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].z*c[pp].z;
+
+	}/* pp */
+      }/* i,j,k */
+}
+#endif

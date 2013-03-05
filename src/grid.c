@@ -58,19 +58,24 @@ void read_mesh(){
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
 	
-	for (k = BRD; k < LNZG+BRD; k++)
-			for (j = BRD; j < LNYG+BRD; j++)
-				for (i = BRD; i < LNXG+BRD; i++) 
+	for (k = BRD; k < LNZG+BRD; k++){
+	  for (j = BRD; j < LNYG+BRD; j++){
+	    for (i = BRD; i < LNXG+BRD; i++){ 
 				  /*			  
 	for (k = 0; k < LNZG + TWO_BRD; k++)
 	  for (j = 0; j < LNYG + TWO_BRD; j++)
 	    for (i = 0; i < LNXG + TWO_BRD; i++)
 				  */
-			  fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+       fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+	    }
+	    fprintf(fout,"\n");
+	  }
+	  fprintf(fout,"\n");
+	} /* ijk */
 	fclose(fout);
 #endif
-}
 
+}
 /*****************************/
 
 vector vector_product(vector a , vector b){
