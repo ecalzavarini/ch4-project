@@ -177,17 +177,23 @@ void hydro_fields(){
 void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
   int i,j,k,pp;
   pop f_eq;
+  my_double fac;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
 	f_eq=equilibrium(f,i,j,k);
+        fac = property.time_dt*exp(-property.time_dt/property.tau_u);
 
 	for(pp=0;pp<NPOP;pp++){
 #ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
-	  f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_IMPLICIT_COLLISION
+	  f[IDX(i,j,k)].p[pp] += fac*rhs_f[IDX(i,j,k)].p[pp];
+#else
+          f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+#endif
 
 #ifdef DEBUG_HARD
 	  fprintf(stderr,"f_new %e f_eq %e diff %e\n",f[IDX(i,j,k)].p[pp], f_eq.p[pp], f[IDX(i,j,k)].p[pp]-f_eq.p[pp]);
@@ -195,7 +201,12 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 
 #endif
 #ifdef METHOD_STEPPING_AB2
+#ifdef METHOD_IMPLICIT_COLLISION
+	  // f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
+#elseif
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
+#endif
+
 	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
 #endif
 

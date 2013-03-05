@@ -122,7 +122,13 @@ void add_collision(pop *f, pop *rhs_f){
 
 	for (pp=0; pp<NPOP; pp++){
 	/* collision */
-	  	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+
+#ifdef METHOD_IMPLICIT_COLLISION
+	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
+#else
+        	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+#endif
+
 	}/* pp */
       }/* i,j,k */
 
