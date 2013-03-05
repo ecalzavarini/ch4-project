@@ -38,12 +38,11 @@ void read_mesh(){
 					 * is dormient
 					 */
 					mesh_flag[IDXG(i, j, k)] = 1;
-			
-					//	#define GRID_RANDOM					
+								
 #ifdef GRID_RANDOM
-					//mesh[IDXG(i, j, k)].x += 0.1*(my_double)(2.0*drand48()-1.0);
-					mesh[IDXG(i, j, k)].y += 0.01*(my_double)(2.0*drand48()-1.0);
-					//mesh[IDXG(i, j, k)].z += 0.01*(my_double)(2.0*drand48()-1.0);
+					  if(i<LNXG+BRD-1) mesh[IDXG(i, j, k)].x += 0.25*(my_double)(2.0*drand48()-1.0);
+					  if(j<LNYG+BRD-1) mesh[IDXG(i, j, k)].y += 0.25*(my_double)(2.0*drand48()-1.0);
+					  if(j<LNZG+BRD-1) mesh[IDXG(i, j, k)].z += 0.25*(my_double)(2.0*drand48()-1.0);
 #endif
 
 				} /* for ijk */
