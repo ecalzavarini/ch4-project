@@ -27,6 +27,7 @@ void initial_conditions();
 void add_collision(pop * f, pop *rhs_f);
 void compute_advection(pop * f, pop *rhs_f);
 void hydro_fields();
+tensor strain_tensor(pop *f,int i, int j, int k);
 
 /* output */
 void dump_averages();

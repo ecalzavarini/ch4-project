@@ -177,7 +177,7 @@ void hydro_fields(){
 void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
   int i,j,k,pp;
   pop f_eq;
-  my_double fac1,fac2;
+  my_double dt_over_tau,fac1,fac2;
   my_double rho1,rho2;
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -187,19 +187,22 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 #ifdef DEBUG_HARD
 	f_eq=equilibrium(f,i,j,k);
 #endif
-        fac1 = exp(-property.time_dt/property.tau_u);
-        fac2 = exp(-2.0*property.time_dt/property.tau_u);
+	dt_over_tau = property.time_dt/property.tau_u;
+        fac1 = exp(-dt_over_tau);
+      
 
-#ifdef METHOD_IMPLICIT_COLLISION
+#ifdef METHOD_EXPONENTIAL
 	rho1=m(f[IDX(i,j,k)]);   
 #endif
 
 	for(pp=0;pp<NPOP;pp++){
 #ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
-#ifdef METHOD_IMPLICIT_COLLISION 
-	  f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
-
+#ifdef METHOD_EXPONENTIAL
+	  /* my recipe a.k.a.  Integrating factor method (Lawson 1967) */
+	  // f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
+	  /* Exponential Euler Method a.k.a. Exponential time differencing (Certaine 1960)*/
+	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*property.tau_u*rhs_f[IDX(i,j,k)].p[pp];
 #else
           f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 #endif
@@ -211,8 +214,11 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 
 #ifdef METHOD_STEPPING_AB2
 	  /* Adams Bashforth 2nd order */
-#ifdef METHOD_IMPLICIT_COLLISION
-	  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
+#ifdef METHOD_EXPONENTIAL
+	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
+	  /* S. M. Cox and P. C. Matthews. Exponential Time Dierencing for Sti Systems.
+	     J. Comput. Phys., 176:430{455, 2002. */
+	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] +(  ((-dt_over_tau + 1.0)*fac1 + 2.0*dt_over_tau -1.0)*rhs_f[IDX(i,j,k)].p[pp] + (-fac1-dt_over_tau + 1.0)*old_rhs_f[IDX(i,j,k)].p[pp] )*(property.tau_u/dt_over_tau);
 #else
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
 #endif
@@ -223,10 +229,11 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 
 	}/* pp */
 
-#ifdef METHOD_IMPLICIT_COLLISION
+#ifdef METHOD_EXPONENTIAL
 	/* pull up density again */
 	rho2=m(f[IDX(i,j,k)]);
-	for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= rho1/rho2;
+	//	for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= rho1/rho2;
+	//if(i==BRD && j==BRD && k==BRD)fprintf(stderr,"rho1/rho2 %e\n", rho1/rho2);					     
 #endif
 
       }/* for i,j,k */
@@ -328,3 +335,13 @@ void sendrecv_borders_pop(pop *f){
       }
 
 }/* end send rcv */
+
+
+/********************BOUNDARY CONDITIONS**************************/
+#ifdef LB_BC
+boundary_conditions(){
+  int i,j,k;
+
+
+}
+#endif

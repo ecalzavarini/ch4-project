@@ -10,6 +10,13 @@ typedef struct {
   my_double z;
 } vector;
 
+/* Useful structures */
+typedef struct {
+  my_double xx,xy,xz;
+  my_double yx,yy,yz;
+  my_double zx,zy,zz;
+} tensor;
+
 typedef struct {
   my_double p[19];
 } pop;

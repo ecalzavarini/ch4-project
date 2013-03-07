@@ -1,11 +1,13 @@
 #include "common_object.h"
 
+
 void dump_averages(){
   int i,j,k;
   FILE *fout;
   char fname[128];
   my_double x,y,z,ux,uy,uz,ux2,uy2,uz2,ene,rho,eps;
   my_double norm;
+  tensor S;
 
 
 #ifdef LB_FLUID
@@ -114,7 +116,9 @@ void dump_averages(){
 			  ruler_y_local[j -BRD + LNY_START].ene += ene;
 			  ruler_z_local[k -BRD + LNZ_START].ene += ene;
 			  
-			  out_local.eps += eps = 0.0;
+			  S=strain_tensor(p,i, j, k);
+			  // fprintf(stderr,"SXY %e\n",S.xy);
+			  out_local.eps += eps = S.xy;
 			  ruler_x_local[i -BRD + LNX_START].eps += eps;
 			  ruler_y_local[j -BRD + LNY_START].eps += eps;
 			  ruler_z_local[k -BRD + LNZ_START].eps += eps;
@@ -142,6 +146,7 @@ void dump_averages(){
   out_all.ux2 *= norm;
   out_all.uy2 *= norm;
   out_all.uz2 *= norm;
+  out_all.eps *= norm;
 
 
   norm = 1.0/(my_double)(NY*NZ);
@@ -154,6 +159,7 @@ void dump_averages(){
     ruler_x[i].ux2 *= norm;
     ruler_x[i].uy2 *= norm;
     ruler_x[i].uz2 *= norm;
+    ruler_x[i].eps *= norm;
   }
 
   norm = 1.0/(my_double)(NX*NZ);
@@ -166,6 +172,7 @@ void dump_averages(){
     ruler_y[i].ux2 *= norm;
     ruler_y[i].uy2 *= norm;
     ruler_y[i].uz2 *= norm;
+    ruler_y[i].eps *= norm;
   }
 
   norm = 1.0/(my_double)(NX*NY);
@@ -178,28 +185,29 @@ void dump_averages(){
     ruler_z[i].ux2 *= norm;
     ruler_z[i].uy2 *= norm;
     ruler_z[i].uz2 *= norm;
+    ruler_z[i].eps *= norm;
   }
 #endif 
 
   if(ROOT){
     sprintf(fname,"velocity_averages.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.ene, (double)out_all.rho, (double)out_all.ux, (double)out_all.uy, (double)out_all.uz, (double)out_all.ux2 , (double)out_all.uy2, (double)out_all.uz2);
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.ene,(double)out_all.rho, (double)out_all.ux, (double)out_all.uy, (double)out_all.uz, (double)out_all.ux2 , (double)out_all.uy2, (double)out_all.uz2, (double)out_all.eps);
     fclose(fout);
 
     sprintf(fname,"velocity_averages_x.dat");
     fout = fopen(fname,"w");
-    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].ene, (double)ruler_x[i].rho, (double)ruler_x[i].ux, (double)ruler_x[i].uy, (double)ruler_x[i].uz, (double)ruler_x[i].ux2 , (double)ruler_x[i].uy2, (double)ruler_x[i].uz2);
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].ene, (double)ruler_x[i].rho, (double)ruler_x[i].ux, (double)ruler_x[i].uy, (double)ruler_x[i].uz, (double)ruler_x[i].ux2 , (double)ruler_x[i].uy2, (double)ruler_x[i].uz2, (double)ruler_x[i].eps);
     fclose(fout);
 
     sprintf(fname,"velocity_averages_y.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].ene, (double)ruler_y[j].rho, (double)ruler_y[j].ux, (double)ruler_y[j].uy, (double)ruler_y[j].uz, (double)ruler_y[j].ux2 , (double)ruler_y[j].uy2, (double)ruler_y[j].uz2);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].ene, (double)ruler_y[j].rho, (double)ruler_y[j].ux, (double)ruler_y[j].uy, (double)ruler_y[j].uz, (double)ruler_y[j].ux2 , (double)ruler_y[j].uy2, (double)ruler_y[j].uz2,(double)ruler_y[i].eps);
     fclose(fout);
 
     sprintf(fname,"velocity_averages_z.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].ene, (double)ruler_z[k].rho, (double)ruler_z[k].ux, (double)ruler_z[k].uy, (double)ruler_z[k].uz, (double)ruler_z[k].ux2 , (double)ruler_z[k].uy2, (double)ruler_z[k].uz2);
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].ene, (double)ruler_z[k].rho, (double)ruler_z[k].ux, (double)ruler_z[k].uy, (double)ruler_z[k].uz, (double)ruler_z[k].ux2 , (double)ruler_z[k].uy2, (double)ruler_z[k].uz2, (double)ruler_z[i].eps);
     fclose(fout);
 
   }

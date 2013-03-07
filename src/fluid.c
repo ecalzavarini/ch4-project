@@ -123,7 +123,7 @@ void add_collision(pop *f, pop *rhs_f){
 	for (pp=0; pp<NPOP; pp++){
 	/* collision */
 
-#ifdef METHOD_IMPLICIT_COLLISION
+#ifdef METHOD_EXPONENTIAL
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
         	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
@@ -167,5 +167,36 @@ void add_forcing(pop *f, pop *rhs_f){
 
 	}/* pp */
       }/* i,j,k */
+}
+#endif
+
+
+#ifdef LB_FLUID
+tensor strain_tensor(pop *f,int i, int j, int k){
+  int  pp;
+  pop f_eq;
+  tensor S;
+
+  S.xx = S.xy = S.xz = 0.0;
+  S.yx = S.yy = S.yz = 0.0;
+  S.zx = S.zy = S.zz = 0.0;
+
+      /* equilibrium distribution */
+   f_eq=equilibrium(f,i,j,k);
+
+      for (pp=0; pp<NPOP; pp++){
+	S.xx += c[pp].x*c[pp].x*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.yy += c[pp].y*c[pp].y*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.zz += c[pp].z*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.xy += c[pp].x*c[pp].y*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.xz += c[pp].x*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.yz += c[pp].y*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+      }
+      S.xy = S.yx;
+      S.xz = S.zx;
+      S.yz = S.zy;
+
+      //fprintf(stderr,"SXY %e\n",f_eq.p[0]);
+      return S;
 }
 #endif
