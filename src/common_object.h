@@ -61,7 +61,7 @@ extern int NPOP;
 /* LB speeds & weights */
 extern my_double wgt[19]; 
 extern vector c[19];
-extern my_double dirp[19] ,inv[19];
+extern int dirp[19] ,inv[19];
 extern my_double twocs2 , twocs4;
 extern my_double invtwocs2 , invtwocs4;
 extern my_double cs, cs2 , cs4 , cs22 , cssq;

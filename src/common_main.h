@@ -61,7 +61,7 @@ int NPOP;
 /* LB speeds & weights */
 my_double wgt[19]; 
 vector c[19];
-my_double dirp[19] ,inv[19];
+int dirp[19] ,inv[19];
 my_double twocs2 , twocs4;
 my_double invtwocs2 , invtwocs4;
 my_double cs, cs2 , cs4 , cs22 , cssq;

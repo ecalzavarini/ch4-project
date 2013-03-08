@@ -343,7 +343,7 @@ void prepare_boundary_conditions(){
         vector cn[NPOP];
 
 
-	if(LNX_END == NX-1){
+	if(LNX_END == NX){
 	  norm_xp_pop=(pop*) malloc(sizeof(pop)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
           if(norm_xp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_xp_pop\n"); exit(-1);}
 	}
@@ -352,7 +352,7 @@ void prepare_boundary_conditions(){
          if(norm_xm_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_xm_pop\n"); exit(-1);}
 	}
 
-	if(LNY_END == NY-1){
+	if(LNY_END == NY){
 	  norm_yp_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
          if(norm_yp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_yp_pop\n"); exit(-1);}
 	}
@@ -361,7 +361,7 @@ void prepare_boundary_conditions(){
          if(norm_ym_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_ym_pop\n"); exit(-1);}
 	}
 
-	if(LNZ_END == NZ-1){
+	if(LNZ_END == NZ){
 	  norm_zp_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
          if(norm_zp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_zp_pop\n"); exit(-1);}
 	}
@@ -430,19 +430,20 @@ void prepare_boundary_conditions(){
 				N4567 =  vector_norm(N4567);				
 
 				for(pp=0;pp<NPOP;pp++) cn[pp] =  vector_norm(c[pp]);
+				cn[0].x=cn[0].y=cn[0].z=0.0;
 		
 	for(pp=0;pp<NPOP;pp++){	
-	if(LNX_END == NX-1)  norm_xp_pop[IDX_X(i, j, k)].p[pp] = scalar_product(N1357, cn[pp]);
+	if(LNX_END == NX)   norm_xp_pop[IDX_X(j, k)].p[pp] = scalar_product(N1357, cn[pp]);
 
-	if(LNX_START == 0)   norm_xm_pop[IDX_X(i, j, k)].p[pp] = scalar_product(N0246, cn[pp]);
+	if(LNX_START == 0)  norm_xm_pop[IDX_X(j, k)].p[pp] = scalar_product(N0246, cn[pp]);
 
-	if(LNY_END == NY-1)  norm_yp_pop[IDX_Y(i, j, k)].p[pp] = scalar_product(N2367, cn[pp]);
+	if(LNY_END == NY)   norm_yp_pop[IDX_Y(i, k)].p[pp] = scalar_product(N2367, cn[pp]);
 
-	if(LNY_START == 0)   norm_ym_pop[IDX_Y(i, j, k)].p[pp] = scalar_product(N0145, cn[pp]); 
+	if(LNY_START == 0)  norm_ym_pop[IDX_Y(i, k)].p[pp] = scalar_product(N0145, cn[pp]); 
 
-	if(LNZ_END == NZ-1)  norm_zp_pop[IDX_Z(i, j, k)].p[pp] = scalar_product(N4567, cn[pp]); 
+	if(LNZ_END == NZ)   norm_zp_pop[IDX_Z(i, j)].p[pp] = scalar_product(N4567, cn[pp]); 
 
-	if(LNZ_START == 0)   norm_zm_pop[IDX_Z(i, j, k)].p[pp] = scalar_product(N0123, cn[pp]); 
+	if(LNZ_START == 0)  norm_zm_pop[IDX_Z(i, j)].p[pp] = scalar_product(N0123, cn[pp]); 
  			}/* for pp */
 
 	

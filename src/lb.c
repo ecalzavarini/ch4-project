@@ -85,6 +85,7 @@ void design_lb(){
 	inv[17] = 16;
 	inv[18] = 15;
 
+
 	/* speed of sound constants */
 	cs = 1.0 / sqrt(3.0);
 	invcs = 1.0 / cs;
@@ -336,5 +337,40 @@ void sendrecv_borders_pop(pop *f){
 
 }/* end send rcv */
 
+/*************************************************************/
 
+void boundary_conditions(pop * f){
 
+  int i,j,k,pp;
+
+	/* Y direction */	
+#ifdef LB_BC_Y
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+if(LNY_END == NY){
+#ifdef LB_BC_YP_SLIP
+	j = LNY-TWO_BRD-1; 
+	//if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0) f[IDX(i,j+1,k)].p[pp] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
+        f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	//fprintf(stderr,"norm_yp_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_yp_pop[IDX_Y(i,k)].p[pp],i,k,pp);
+	
+#endif
+}
+
+if(LNY_START == 0){
+#ifdef LB_BC_YM_SLIP
+	j = BRD; 
+        //if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0) f[IDX(i,j-1,k)].p[pp] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
+	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+       //fprintf(stderr,"norm_ym_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_ym_pop[IDX_Y(i,k)].p[pp],i,k,pp);
+#endif
+ }
+
+      }/* for pp */
+    }/* for i,j,k */
+#endif
+
+}

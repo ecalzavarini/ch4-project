@@ -15,9 +15,6 @@ int main(int argc, char **argv){
 	prepare_boundary_conditions();
 #endif
 	initial_conditions(); 
-	/*
-	boundary_conditions(); 
-	*/
 	hydro_fields();
 
 
@@ -29,9 +26,10 @@ int main(int argc, char **argv){
 
 #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);
-	  /*
-	  boundary_conditions();
-	  */
+#ifdef LB_BC	  
+	  boundary_conditions(p);
+#endif
+	  
 	  compute_advection(p,rhs_p);
 	  add_collision(p,rhs_p);
 
@@ -45,9 +43,8 @@ int main(int argc, char **argv){
 	 dump_averages();
 
 #endif
-	 ///*
    }
-  //*/
+
 	/* Shut down MPI */
 	MPI_Finalize();
 	return 0;

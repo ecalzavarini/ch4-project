@@ -142,7 +142,7 @@ void build_forcing(){
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
-	force[IDX(i,j,k)].x = 0.1;
+	force[IDX(i,j,k)].x = 0.01;
 	force[IDX(i,j,k)].y = 0.0;
 	force[IDX(i,j,k)].z = 0.0;
       }/* i,j,k */
