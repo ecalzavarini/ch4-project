@@ -10,3 +10,4 @@
 //#define METHOD_STEPPING_AB2
 #define METHOD_CENTERED
 //#define METHOD_UPWIND
+#define LB_BC

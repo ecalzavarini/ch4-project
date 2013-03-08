@@ -83,10 +83,14 @@ typedef struct {
 
 /* index on the vertices */
 #define IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
-/* and index for vertices planes */
+/* and index for vertices planes for BRD thickness slice */
 #define IDX_XBRD(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(BRD)+(int)(j)*(BRD)+(int)(i) )
 #define IDX_YBRD(i,j,k) ( (int)(k)*(BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 #define IDX_ZBRD(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 
+/* and index for vertices planes for unit thickness slice*/
+#define IDX_X(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(1)+(int)(j)*(1)+(int)(i))
+#define IDX_Y(i,j,k) ( (int)(k)*(1)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+#define IDX_Z(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 
 #define two_pi 2*3.14159265359

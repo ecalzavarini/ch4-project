@@ -130,6 +130,14 @@ vector vector_sum(vector a , vector b){
   return c;
 }
 
+vector vector_norm(vector a){
+  my_double norm;
+  norm = sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+  a.x /= norm; 
+  a.y /= norm; 
+  a.z /= norm; 
+  return a;
+}
 
 /**************************************************************************************************/
 
@@ -316,3 +324,129 @@ void compute_volumes(){
 
 
 
+/**************************************************************************************************/
+#ifdef LB_BC
+void prepare_boundary_conditions(){
+  int i,j,k,n,pp;
+
+	char            fnamein[256], fnameout[256];
+	char            name[256] = "NULL";
+	FILE           *fin, *fout;
+
+	/* Allocating array for storing information of control volume */
+	vector       P0, P1, P2, P3, P4, P5, P6, P7, P8;
+	vector       D17, D35, D03, D12, D05, D14,D06, D24, D27, D36, D47, D56;
+	my_double       S1357, S0145, S0246, S0123, S4567, S2367;
+	vector       N1357, N0145, N0246, N0123, N4567,N2367;
+	vector       M0167, M0257, M0347;
+	my_double       V, V1, V2, V3;
+        vector cn[NPOP];
+
+
+	if(LNX_END == NX-1){
+	  norm_xp_pop=(pop*) malloc(sizeof(pop)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+          if(norm_xp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_xp_pop\n"); exit(-1);}
+	}
+	if(LNX_START == 0){
+	  norm_xm_pop=(pop*) malloc(sizeof(pop)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+         if(norm_xm_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_xm_pop\n"); exit(-1);}
+	}
+
+	if(LNY_END == NY-1){
+	  norm_yp_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+         if(norm_yp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_yp_pop\n"); exit(-1);}
+	}
+	if(LNY_START == 0){
+	  norm_ym_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+         if(norm_ym_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_ym_pop\n"); exit(-1);}
+	}
+
+	if(LNZ_END == NZ-1){
+	  norm_zp_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+         if(norm_zp_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_zp_pop\n"); exit(-1);}
+	}
+
+	if(LNZ_START == 0){
+	  norm_zm_pop  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD));
+         if(norm_zm_pop == NULL){fprintf(stderr,"Not enough memory to allocate norm_zm_pop\n"); exit(-1);}
+	}
+ 
+
+	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
+		for (j = BRD; j < LNYG + BRD - 1; j++) 
+			for (k = BRD; k < LNZG + BRD - 1; k++) {
+
+/* points definition */
+/*    
+          z   
+          ^ 
+          |                         4 -----6
+          |                        /|    / |
+          | ------>y              / |   /  | 
+         /                       5-----7   |
+        /                        |  0--|---2 
+       /                         | /   |  /
+      /                          |/    |/
+     x                           1-----3
+
+ */
+				P0 = mesh[IDXG(i, j, k)];
+				P1 = mesh[IDXG(i + 1, j, k)];
+				P2 = mesh[IDXG(i, j + 1, k)];
+				P3 = mesh[IDXG(i + 1, j + 1, k)];
+				P4 = mesh[IDXG(i, j, k + 1)];
+				P5 = mesh[IDXG(i + 1, j, k + 1)];
+				P6 = mesh[IDXG(i, j + 1, k + 1)];
+				P7 = mesh[IDXG(i + 1, j + 1, k + 1)];
+
+				/* diagonals */
+	D17 = vector_difference(P7 , P1);
+	D35 = vector_difference(P5 , P3);
+	D03 = vector_difference(P3 , P0);
+	D12 = vector_difference(P2 , P1);
+	D05 = vector_difference(P5 , P0);
+	D14 = vector_difference(P4 , P1);
+	D06 = vector_difference(P6 , P0);
+	D24 = vector_difference(P4 , P2);
+	D27 = vector_difference(P7 , P2);
+	D36 = vector_difference(P6 , P3);
+	D47 = vector_difference(P7 , P4);
+	D56 = vector_difference(P6 , P5);
+				
+	/* get the outgoing normal vectors from the vector product of the diagonals */
+				N1357 =  vector_product(D17 , D35);
+				N0145 =  vector_product(D05 , D14);
+				N0246 =  vector_product(D24 , D06);
+				N2367 =  vector_product(D36 , D27);
+				N0123 =  vector_product(D12 , D03);
+				N4567 =  vector_product(D47 , D56);
+
+				/* Normalization */
+			       	N1357 =  vector_norm(N1357);
+				N0145 =  vector_norm(N0145);
+				N0246 =  vector_norm(N0246);
+				N2367 =  vector_norm(N2367);
+				N0123 =  vector_norm(N0123);
+				N4567 =  vector_norm(N4567);				
+
+				for(pp=0;pp<NPOP;pp++) cn[pp] =  vector_norm(c[pp]);
+		
+	for(pp=0;pp<NPOP;pp++){	
+	if(LNX_END == NX-1)  norm_xp_pop[IDX_X(i, j, k)].p[pp] = scalar_product(N1357, cn[pp]);
+
+	if(LNX_START == 0)   norm_xm_pop[IDX_X(i, j, k)].p[pp] = scalar_product(N0246, cn[pp]);
+
+	if(LNY_END == NY-1)  norm_yp_pop[IDX_Y(i, j, k)].p[pp] = scalar_product(N2367, cn[pp]);
+
+	if(LNY_START == 0)   norm_ym_pop[IDX_Y(i, j, k)].p[pp] = scalar_product(N0145, cn[pp]); 
+
+	if(LNZ_END == NZ-1)  norm_zp_pop[IDX_Z(i, j, k)].p[pp] = scalar_product(N4567, cn[pp]); 
+
+	if(LNZ_START == 0)   norm_zm_pop[IDX_Z(i, j, k)].p[pp] = scalar_product(N0123, cn[pp]); 
+ 			}/* for pp */
+
+	
+	}  /* for i , j , k */
+
+}
+#endif

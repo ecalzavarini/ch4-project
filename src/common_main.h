@@ -51,6 +51,9 @@ int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
 pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 
 pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
+#ifdef LB_BC
+pop *norm_xp_pop,*norm_xm_pop,*norm_yp_pop,*norm_ym_pop,*norm_zp_pop,*norm_zm_pop;
+#endif
 
 /* Populations */
 int NPOP;

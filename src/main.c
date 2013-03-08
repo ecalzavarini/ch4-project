@@ -11,6 +11,9 @@ int main(int argc, char **argv){
 #endif
 	read_mesh();
 	compute_volumes();
+#ifdef LB_BC
+	prepare_boundary_conditions();
+#endif
 	initial_conditions(); 
 	/*
 	boundary_conditions(); 

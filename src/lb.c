@@ -337,11 +337,4 @@ void sendrecv_borders_pop(pop *f){
 }/* end send rcv */
 
 
-/********************BOUNDARY CONDITIONS**************************/
-#ifdef LB_BC
-boundary_conditions(){
-  int i,j,k;
 
-
-}
-#endif
