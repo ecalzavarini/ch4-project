@@ -304,7 +304,10 @@ void compute_volumes(){
           coeff_ym[IDX(i, j, k)].p[pp] = 0.5*scalar_product(N0145, c[pp])/V; 
 	  coeff_zp[IDX(i, j, k)].p[pp] = 0.5*scalar_product(N4567, c[pp])/V; 
 	  coeff_zm[IDX(i, j, k)].p[pp] = 0.5*scalar_product(N0123, c[pp])/V; 
-
+	  /*
+	  if(LNY_START == 0 && j == LNY-TWO_BRD-1) coeff_xp[IDX(i, j, k)].p[pp]=0.0;
+	  if(LNY_END == NY  && j == BRD) coeff_xm[IDX(i, j, k)].p[pp]=0.0;
+	  */
  #ifdef DEBUG_HARD
 	/* Each processor prints its mesh */
 

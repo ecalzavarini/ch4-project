@@ -352,9 +352,15 @@ void boundary_conditions(pop * f){
 
 if(LNY_END == NY){
 #ifdef LB_BC_YP_SLIP
-	j = LNY-TWO_BRD-1; 
-	//if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0) f[IDX(i,j+1,k)].p[pp] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
-        f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	j = LNY+BRD-1; 
+	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
+	  f[IDX(i,j+1,k)].p[pp] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
+	}else{
+	  f[IDX(i,j+1,k)].p[pp] = 0.0;
+	}
+
+	//f[IDX(i,j+1,k)].p[pp] = wgt[pp];
+	//f[IDX(i,j+1,k)].p[pp] = -f[IDX(i,j,k)].p[inv[pp]];
 	//fprintf(stderr,"norm_yp_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_yp_pop[IDX_Y(i,k)].p[pp],i,k,pp);
 	
 #endif
@@ -363,8 +369,13 @@ if(LNY_END == NY){
 if(LNY_START == 0){
 #ifdef LB_BC_YM_SLIP
 	j = BRD; 
-        //if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0) f[IDX(i,j-1,k)].p[pp] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
-	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+        if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
+	  f[IDX(i,j-1,k)].p[pp] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
+	}else{
+	  f[IDX(i,j-1,k)].p[pp] = 0.0;
+	}
+	//f[IDX(i,j-1,k)].p[pp] = wgt[pp];
+	//f[IDX(i,j-1,k)].p[pp] = -f[IDX(i,j,k)].p[inv[pp]];
        //fprintf(stderr,"norm_ym_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_ym_pop[IDX_Y(i,k)].p[pp],i,k,pp);
 #endif
  }
