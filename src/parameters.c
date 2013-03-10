@@ -89,11 +89,11 @@ void assign_parameters(){
   sprintf(name,"tau_u");
   property.tau_u = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
-  //property.nu = property.tau_u/3.0;
-  //fprintf(stderr,"viscosity %g\n",(double)property.nu);
-#ifdef LB_FLUID_FORCING_POISEUILLE
+  property.nu = property.tau_u/3.0;
+  fprintf(stderr,"viscosity %g\n",(double)property.nu);
+#ifdef LB_FLUID_FORCING
   /* pressure gradient */
-  fprintf(stderr,"YES <- LB_FLUID_FORCING_POISEUILLE\n");
+  fprintf(stderr,"YES <- LB_FLUID_FORCING\n");
   sprintf(name,"gradP");
   property.gradP = read_parameter(name);
   fprintf(stderr,"Properties:\ngradP %g\n",(double)property.gradP);

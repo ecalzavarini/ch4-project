@@ -31,7 +31,7 @@ typedef struct {
   double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
   double tau_u , nu;
-#ifdef LB_FLUID_FORCING_POISEUILLE
+#ifdef LB_FLUID_FORCING
   double gradP;
 #endif
 #endif
@@ -43,7 +43,7 @@ typedef struct {
 #endif
 #ifdef LB_FLUID
 #define NPROP 10
-#ifdef LB_FLUID_FORCING_POISEUILLE
+#ifdef LB_FLUID_FORCING
 #define NPROP 11
 #endif
 #endif

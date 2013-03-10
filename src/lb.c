@@ -353,14 +353,15 @@ void boundary_conditions(pop * f){
 if(LNY_END == NY){
 #ifdef LB_BC_YP_SLIP
 	j = LNY+BRD-1; 
-	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
-	  f[IDX(i,j+1,k)].p[pp] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
-	}else{
+	/*
+       	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
+	  f[IDX(i,j+1,k)].p[inv[pp]] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[pp];
+	  }else{
 	  f[IDX(i,j+1,k)].p[pp] = 0.0;
-	}
-
+	  }
+	*/
 	//f[IDX(i,j+1,k)].p[pp] = wgt[pp];
-	//f[IDX(i,j+1,k)].p[pp] = -f[IDX(i,j,k)].p[inv[pp]];
+	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	//fprintf(stderr,"norm_yp_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_yp_pop[IDX_Y(i,k)].p[pp],i,k,pp);
 	
 #endif
@@ -369,14 +370,41 @@ if(LNY_END == NY){
 if(LNY_START == 0){
 #ifdef LB_BC_YM_SLIP
 	j = BRD; 
+	/*
         if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
-	  f[IDX(i,j-1,k)].p[pp] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[inv[pp]];
-	}else{
+	  f[IDX(i,j-1,k)].p[inv[pp]] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[pp];
+	  }else{
 	  f[IDX(i,j-1,k)].p[pp] = 0.0;
-	}
+	  }
+	*/
 	//f[IDX(i,j-1,k)].p[pp] = wgt[pp];
-	//f[IDX(i,j-1,k)].p[pp] = -f[IDX(i,j,k)].p[inv[pp]];
+	//f[IDX(i,j-1,k)].p[pp] = wgt[pp]-f[IDX(i,j,k)].p[pp];
+	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
        //fprintf(stderr,"norm_ym_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_ym_pop[IDX_Y(i,k)].p[pp],i,k,pp);
+
+	/* Lattice speeds, D3Q19 */
+	/*
+	c[0].x = 0.;	c[0].y = 0.;	c[0].z = 0.;
+	c[1].x = 1.;	c[1].y = 0.;	c[1].z = 0.;
+	c[2].x = -1.;	c[2].y = 0.;	c[2].z = 0.;
+	c[3].x = 0.;	c[3].y = 1.;	c[3].z = 0.;
+	c[4].x = 0.;	c[4].y = -1.;	c[4].z = 0.;
+	c[5].x = 0.;	c[5].y = 0.;	c[5].z = 1.;
+	c[6].x = 0.;	c[6].y = 0.;	c[6].z = -1.;
+	c[7].x = 1.;	c[7].y = 1.;	c[7].z = 0.;
+	c[8].x = 1.;	c[8].y = -1.;	c[8].z = 0.;
+	c[9].x = -1.;	c[9].y = 1.;	c[9].z = 0.;
+	c[10].x = -1.;	c[10].y = -1.;	c[10].z = 0.;
+	c[11].x = 1.;	c[11].y = 0.;	c[11].z = 1.;
+	c[12].x = -1.;	c[12].y = 0.;	c[12].z = 1.;
+	c[13].x = 1.;	c[13].y = 0.;	c[13].z = -1.;
+	c[14].x = -1.;	c[14].y = 0.;	c[14].z = -1.;
+	c[15].x = 0.;	c[15].y = 1.;	c[15].z = 1.;
+	c[16].x = 0.;	c[16].y = 1.;	c[16].z = -1.;
+	c[17].x = 0.;	c[17].y = -1.;	c[17].z = 1.;
+	c[18].x = 0.;	c[18].y = -1.;	c[18].z = -1.;
+	*/
+
 #endif
  }
 
