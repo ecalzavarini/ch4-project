@@ -45,6 +45,10 @@ void read_mesh(){
 					  if(j<LNZG+BRD-1) mesh[IDXG(i, j, k)].z += 0.25*(my_double)(2.0*drand48()-1.0);
 #endif
 
+#ifdef GRID_REFINED
+					  /* to be done */
+#endif
+
 				} /* for ijk */
 
 	} /* end else */

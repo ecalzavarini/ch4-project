@@ -215,7 +215,8 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
 	  /* S. M. Cox and P. C. Matthews. Exponential Time Dierencing for Sti Systems.
 	     J. Comput. Phys., 176:430{455, 2002. */
-	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] +(  ((-dt_over_tau + 1.0)*fac1 + 2.0*dt_over_tau -1.0)*rhs_f[IDX(i,j,k)].p[pp] + (-fac1-dt_over_tau + 1.0)*old_rhs_f[IDX(i,j,k)].p[pp] )*(property.tau_u/dt_over_tau);
+	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
+							     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(property.tau_u/dt_over_tau);
 #else
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
 #endif
@@ -329,6 +330,7 @@ void sendrecv_borders_pop(pop *f){
 
 /*************************************************************/
 
+#ifdef LB_BC
 void boundary_conditions(pop * f){
 
   int i,j,k,pp;
@@ -404,3 +406,4 @@ if(LNY_START == 0){
 #endif
 
 }
+#endif
