@@ -192,10 +192,6 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
         fac1 = exp(-dt_over_tau);
       
 
-#ifdef METHOD_EXPONENTIAL
-	rho1=m(f[IDX(i,j,k)]);   
-#endif
-
 	for(pp=0;pp<NPOP;pp++){
 #ifdef METHOD_STEPPING_EULER
 	  /* Euler first order */
@@ -205,7 +201,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 	  /* Exponential Euler Method a.k.a. Exponential time differencing (Certaine 1960)*/
 	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*property.tau_u*rhs_f[IDX(i,j,k)].p[pp];
 #else
-          f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+          f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];	
 #endif
 
 #ifdef DEBUG_HARD
@@ -230,12 +226,6 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 
 	}/* pp */
 
-#ifdef METHOD_EXPONENTIAL
-	/* pull up density again */
-	rho2=m(f[IDX(i,j,k)]);
-	//	for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= rho1/rho2;
-	//if(i==BRD && j==BRD && k==BRD)fprintf(stderr,"rho1/rho2 %e\n", rho1/rho2);					     
-#endif
 
       }/* for i,j,k */
 }
@@ -379,10 +369,11 @@ if(LNY_START == 0){
 	*/
 	//f[IDX(i,j-1,k)].p[pp] = wgt[pp];
 	//f[IDX(i,j-1,k)].p[pp] = wgt[pp]-f[IDX(i,j,k)].p[pp];
+	
 	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
        //fprintf(stderr,"norm_ym_pop[IDX_Y(%d, %d)].p[%d] %e\n",norm_ym_pop[IDX_Y(i,k)].p[pp],i,k,pp);
 
-	/* Lattice speeds, D3Q19 */
+	/* just for memo Lattice speeds, D3Q19 */
 	/*
 	c[0].x = 0.;	c[0].y = 0.;	c[0].z = 0.;
 	c[1].x = 1.;	c[1].y = 0.;	c[1].z = 0.;

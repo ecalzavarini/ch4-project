@@ -126,14 +126,39 @@ void add_collision(pop *f, pop *rhs_f){
 #ifdef LB_FLUID_FORCING
 void build_forcing(){
   int i, j, k;
+  my_double fn,kn;
+  my_double y;
+  my_double L;
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
-	force[IDX(i,j,k)].x = property.gradP/(2.0*property.nu)/;
+	force[IDX(i,j,k)].x = 0.0;
 	force[IDX(i,j,k)].y = 0.0;
 	force[IDX(i,j,k)].z = 0.0;
+
+#ifdef LB_FLUID_FORCING_POISEUILLE 
+	force[IDX(i,j,k)].x += property.gradP/(2.0*property.nu);
+	force[IDX(i,j,k)].y += 0.0;
+	force[IDX(i,j,k)].z += 0.0;
+#endif
+
+#ifdef LB_FLUID_FORCING_KOLMOGOROV 
+    fn=0.00001;
+    kn=1.0;
+    L=(my_double)(NY);
+
+    fn*=3.0; /* to get the correct amplitude */  
+    y = (my_double)center_V[IDX(i,j,k)].y;
+
+	/* along x */  
+        force[IDX(i,j,k)].x += fn*sin(kn*two_pi*y/L); 
+	force[IDX(i,j,k)].y += 0.0;
+	force[IDX(i,j,k)].z += 0.0; 
+#endif  
+
+
       }/* i,j,k */
 }
 #endif
@@ -150,9 +175,10 @@ void add_forcing(pop *f, pop *rhs_f){
       
 	for (pp=0; pp<NPOP; pp++){
 	/* forcing */
-	  rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].x*c[pp].x;
-          rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].y*c[pp].y;
-          rhs_f[IDX(i,j,k)].p[pp] +=  force[IDX(i,j,k)].z*c[pp].z;
+	  
+	    rhs_f[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
+          //rhs_f[IDX(i,j,k)].p[pp] =0.0;  3.0*wgt[pp]*force[IDX(i,j,k)].y;//*c[pp].y;
+          //rhs_f[IDX(i,j,k)].p[pp] =0.0;  3.0*wgt[pp]*force[IDX(i,j,k)].z;//*c[pp].z;
 
 	}/* pp */
       }/* i,j,k */

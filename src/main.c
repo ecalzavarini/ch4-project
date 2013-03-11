@@ -34,8 +34,8 @@ int main(int argc, char **argv){
 	  add_collision(p,rhs_p);
 
 #ifdef LB_FLUID_FORCING
-	  build_forcing();
-	  add_forcing(p,rhs_p);
+	   build_forcing();
+	   add_forcing(p,rhs_p);
 #endif
 	  
 	 time_stepping(p,rhs_p,old_rhs_p);
