@@ -100,6 +100,27 @@ void assign_parameters(){
 #endif
 #endif
 
+#ifdef LB_TEMPERATURE
+    /* relaxation time and viscosity for temperature */
+  fprintf(stderr,"YES <- LB_TEMPERATURE\n");
+  sprintf(name,"tau_t");
+  property.tau_t = read_parameter(name);
+  fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
+  property.kappa = property.tau_t/3.0;
+  fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
+#endif
+
+#ifdef LB_SCALAR
+    /* relaxation time and viscosity for temperature */
+  fprintf(stderr,"YES <- LB_SCALAR\n");
+  sprintf(name,"tau_s");
+  property.tau_s = read_parameter(name);
+  fprintf(stderr,"Properties:\ntau_s %g\n",(double)property.tau_s);
+  property.chi = property.tau_s/3.0;
+  fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
+#endif
+
+
   /* size of types, just for a check */
     fprintf(stderr,"Size of float %d\n",sizeof(float));
     fprintf(stderr,"Size of double %d\n",sizeof(double));
@@ -162,27 +183,11 @@ void allocate_fields(){
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate center_V\n"); exit(-1);}
  set_to_zero_vector( center_V,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- /* borders mesh */
- /*
- xp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
- xm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
- xp_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
- xm_flag  = (int*) malloc(sizeof(int)*BRD*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
- if(xp_mesh == NULL || xm_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- if(xp_flag == NULL || xm_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- yp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
- ym_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
- yp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD)); 
- ym_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNZG+TWO_BRD));
- if(yp_mesh == NULL || ym_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- if(yp_flag == NULL || ym_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- zp_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
- zm_mesh  = (vector*) malloc(sizeof(vector)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
- zp_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
- zm_flag  = (int*) malloc(sizeof(int)*BRD*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)); 
- if(zp_mesh == NULL || zm_mesh == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- if(zp_flag == NULL || zm_flag == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
- */
+#ifdef GRID_REFINED
+ grid_ruler_x  = (my_double*) malloc(sizeof(my_double)*NXG);
+ grid_ruler_y  = (my_double*) malloc(sizeof(my_double)*NYG);
+ grid_ruler_z  = (my_double*) malloc(sizeof(my_double)*NZG);
+#endif
 
 #ifdef LB
  coeff_xp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
@@ -234,7 +239,6 @@ void allocate_fields(){
  set_to_zero_vector( force,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
-
  /* borders pop */
  xp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  xm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -248,7 +252,6 @@ void allocate_fields(){
 
 #endif
 
-
 #ifdef LB_FLUID
  ruler_x_local  = (output*) malloc(sizeof(output)*NX);
  ruler_y_local  = (output*) malloc(sizeof(output)*NY);
@@ -256,6 +259,42 @@ void allocate_fields(){
  ruler_x  = (output*) malloc(sizeof(output)*NX);
  ruler_y  = (output*) malloc(sizeof(output)*NY);
  ruler_z  = (output*) malloc(sizeof(output)*NZ);
+#endif
+
+#ifdef LB_TEMPERATURE
+ g = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(g == NULL){ fprintf(stderr,"Not enough memory to allocate g\n"); exit(-1);}
+ set_to_zero_pop( g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_g\n"); exit(-1);}
+ set_to_zero_pop( rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ old_rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_g\n"); exit(-1);}
+ set_to_zero_pop( old_rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ t  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(t == NULL){ fprintf(stderr,"Not enough memory to allocate t\n"); exit(-1);}
+ set_to_zero_my_double( t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
+
+#ifdef LB_SCALAR
+ h = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(h == NULL){ fprintf(stderr,"Not enough memory to allocate h\n"); exit(-1);}
+ set_to_zero_pop( h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_h\n"); exit(-1);}
+ set_to_zero_pop( rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ old_rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_h\n"); exit(-1);}
+ set_to_zero_pop( old_rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ s  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(s == NULL){ fprintf(stderr,"Not enough memory to allocate s\n"); exit(-1);}
+ set_to_zero_my_double( s,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 }

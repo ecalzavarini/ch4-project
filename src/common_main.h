@@ -45,6 +45,7 @@ output *ruler_x, *ruler_y, *ruler_z;
 
 /* Mesh matrix */
 vector *mesh, *center_V;
+my_double *grid_ruler_x , *grid_ruler_y ,*grid_ruler_z;
 int *mesh_flag;
 vector *xp_mesh,*xm_mesh,*yp_mesh,*ym_mesh,*zp_mesh,*zm_mesh;
 int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;

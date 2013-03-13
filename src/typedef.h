@@ -34,6 +34,12 @@ typedef struct {
 #ifdef LB_FLUID_FORCING
   double gradP;
 #endif
+#ifdef LB_TEMPERATURE
+  double tau_t, kappa;
+#endif
+#ifdef LB_SCALAR
+  double tau_s, chi;
+#endif
 #endif
 } prop;
 
@@ -45,6 +51,12 @@ typedef struct {
 #define NPROP 10
 #ifdef LB_FLUID_FORCING
 #define NPROP 11
+#endif
+#ifdef LB_TEMPERATURE
+#define NPROP 13
+#ifdef LB_SCALAR
+#define NPROP 15
+#endif
 #endif
 #endif
 

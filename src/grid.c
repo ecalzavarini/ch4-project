@@ -1,5 +1,39 @@
 #include "common_object.h"
 
+#ifdef GRID_REFINED
+void make_grid_rulers(my_double fac){
+  int i;
+  my_double dx;
+
+  dx=2./(my_double)NXG;
+  for(i=0; i< NXG; i++){	
+    /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
+    grid_ruler_x[i] = -1.0+dx*((double)i+0.5);
+    /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
+    grid_ruler_x[i] = (1./fac)*tanh(grid_ruler_x[i]*atanh(fac));
+    /* 3) rescale the -1,1 interval to the 0,NXG interval*/
+    grid_ruler_x[i] = ((my_double)NXG/2.0)*(grid_ruler_x[i]+1.0);					  
+ }
+		
+  dx=2./(my_double)NYG;			 
+  for(i=0; i< NYG; i++){					    
+    grid_ruler_y[i] = -1.0+dx*((double)i+0.5);
+    grid_ruler_y[i] = (1./fac)*tanh(grid_ruler_y[i]*atanh(fac));
+    grid_ruler_y[i] = ((my_double)NYG/2.0)*(grid_ruler_y[i]+1.0);
+    if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
+ }
+  exit(0);
+
+  dx=2./(my_double)NZG;
+  for(i=0; i< NZG; i++){					    
+    grid_ruler_z[i] = -1.0+dx*((double)i+0.5);
+    grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));
+    grid_ruler_z[i] = ((my_double)NZG/2.0)*(grid_ruler_z[i]+1.0);					  
+ }
+
+}
+#endif
+
 void read_mesh(){
 
 	char            fnamein[256], fnameout[256];
@@ -7,6 +41,9 @@ void read_mesh(){
 	FILE           *fin, *fout;
 	int             i, j, k;
 
+#ifdef GRID_REFINED
+	my_double stretch=0.99;
+#endif
 	sprintf(fnamein, "mesh.in");
 	fin = fopen(fnamein, "r");
 	if (fin != NULL) {
@@ -25,6 +62,11 @@ void read_mesh(){
 				  mesh[IDXG(i, j, k)].z = 0.0;			 
 				  mesh_flag[IDXG(i, j, k)] = 0;
 				}
+
+
+#ifdef GRID_REFINED					  
+		 make_grid_rulers(stretch);
+#endif
 
 		/* moving on the bulk only */
 		for (k = BRD; k < LNZG+BRD; k++)
@@ -45,8 +87,12 @@ void read_mesh(){
 					  if(j<LNZG+BRD-1) mesh[IDXG(i, j, k)].z += 0.25*(my_double)(2.0*drand48()-1.0);
 #endif
 
-#ifdef GRID_REFINED
-					  /* to be done */
+
+
+#ifdef GRID_REFINED					  			       
+					  //mesh[IDXG(i, j, k)].x = grid_ruler_x[i+LNXG_START-BRD];					  
+					  mesh[IDXG(i, j, k)].y = grid_ruler_y[j+LNYG_START-BRD];
+					  //mesh[IDXG(i, j, k)].z = grid_ruler_z[k+LNZG_START-BRD];
 #endif
 
 				} /* for ijk */
