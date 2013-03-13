@@ -5,30 +5,29 @@ void make_grid_rulers(my_double fac){
   int i;
   my_double dx;
 
-  dx=2./(my_double)NXG;
+  dx=2./(my_double)NX;
   for(i=0; i< NXG; i++){	
     /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
-    grid_ruler_x[i] = -1.0+dx*((double)i+0.5);
+    grid_ruler_x[i] = -1.0+dx*((double)i);
     /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
     grid_ruler_x[i] = (1./fac)*tanh(grid_ruler_x[i]*atanh(fac));
     /* 3) rescale the -1,1 interval to the 0,NXG interval*/
-    grid_ruler_x[i] = ((my_double)NXG/2.0)*(grid_ruler_x[i]+1.0);					  
+    grid_ruler_x[i] = ((my_double)NX/2.0)*(grid_ruler_x[i]+1.0);					  
  }
 		
-  dx=2./(my_double)NYG;			 
+  dx=2./(my_double)NY;			 
   for(i=0; i< NYG; i++){					    
-    grid_ruler_y[i] = -1.0+dx*((double)i+0.5);
+    grid_ruler_y[i] = -1.0+dx*((double)i);
     grid_ruler_y[i] = (1./fac)*tanh(grid_ruler_y[i]*atanh(fac));
-    grid_ruler_y[i] = ((my_double)NYG/2.0)*(grid_ruler_y[i]+1.0);
-    if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
+    grid_ruler_y[i] = ((my_double)NY/2.0)*(grid_ruler_y[i]+1.0);
+    // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
  }
-  exit(0);
 
-  dx=2./(my_double)NZG;
+  dx=2./(my_double)NZ;
   for(i=0; i< NZG; i++){					    
-    grid_ruler_z[i] = -1.0+dx*((double)i+0.5);
+    grid_ruler_z[i] = -1.0+dx*((double)i);
     grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));
-    grid_ruler_z[i] = ((my_double)NZG/2.0)*(grid_ruler_z[i]+1.0);					  
+    grid_ruler_z[i] = ((my_double)NZ/2.0)*(grid_ruler_z[i]+1.0);					  
  }
 
 }
