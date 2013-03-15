@@ -71,7 +71,6 @@ void design_lb(){
 	inv[4] = 3;
 	inv[5] = 6;
 	inv[6] = 5;
-
 	inv[7] = 10;
 	inv[8] = 9;
 	inv[9] = 8;

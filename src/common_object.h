@@ -17,7 +17,7 @@ extern int mex,mey,mez;
 extern int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
 extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
-extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type;
+extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type,MPI_my_double_type;
 extern MPI_Op MPI_SUM_output;
 
 /* random seed */
@@ -49,9 +49,16 @@ extern my_double *grid_ruler_x , *grid_ruler_y ,*grid_ruler_z;
 extern int *mesh_flag;
 extern vector *xp_mesh,*xm_mesh,*yp_mesh,*ym_mesh,*zp_mesh,*zm_mesh;
 extern int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
-extern pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 
+#ifdef METHOD_CENTERED
+extern my_double *interp_xp,*interp_xm,*interp_yp,*interp_ym,*interp_zp,*interp_zm; 
+extern my_double *xp_scalar,*xm_scalar,*yp_scalar,*ym_scalar,*zp_scalar,*zm_scalar;
+#endif
+
+extern pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 extern pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
+
+
 #ifdef LB_BC
 extern pop *norm_xp_pop,*norm_xm_pop,*norm_yp_pop,*norm_ym_pop,*norm_zp_pop,*norm_zm_pop;
 #endif

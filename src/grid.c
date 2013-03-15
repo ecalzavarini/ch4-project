@@ -41,7 +41,7 @@ void read_mesh(){
 	int             i, j, k;
 
 #ifdef GRID_REFINED
-	my_double stretch=0.99;
+	my_double stretch=0.9;
 #endif
 	sprintf(fnamein, "mesh.in");
 	fin = fopen(fnamein, "r");
@@ -147,7 +147,8 @@ void read_mesh(){
 #endif
 
 }
-/*****************************/
+/**************************************/
+/* Useful functions on vectors        */
 
 vector vector_product(vector a , vector b){
   vector c;
@@ -186,6 +187,21 @@ vector vector_norm(vector a){
   a.y /= norm; 
   a.z /= norm; 
   return a;
+}
+
+
+vector average_4vectors(vector a , vector b, vector c, vector d){
+  vector e;
+  e.x =  0.25*(a.x + b.x + c.x + d.x);
+  e.y =  0.25*(a.y + b.y + c.y + d.y);
+  e.z =  0.25*(a.z + b.z + c.z + d.z);
+  return e;
+}
+
+my_double vector_length(vector a){
+  my_double norm;
+  norm = sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+  return norm;
 }
 
 /**************************************************************************************************/
@@ -374,6 +390,180 @@ void compute_volumes(){
 
 }
 
+
+#ifdef METHOD_CENTERED
+/****************************************************************************************************/ 
+void sendrecv_borders_scalar(my_double *f){
+  int i,j,k,brd_size;
+  MPI_Status status1;
+
+  /*     BRD|LNX|BRD     */
+  /* Copy borders along x */
+  brd_size = BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=0;i<BRD;i++){ 
+        xp_scalar[IDX_XBRD(i,j,k)] = f[IDX(i+LNX,j,k)];
+      }
+
+  MPI_Sendrecv( xp_scalar, brd_size, MPI_my_double_type, me_xp, 10,
+                xm_scalar, brd_size, MPI_my_double_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=0;i<BRD;i++) {
+        f[IDX(i,j,k)] = xm_scalar[IDX_XBRD(i,j,k)];
+        xm_scalar[IDX_XBRD(i,j,k)] = f[IDX(i+BRD,j,k)];
+      }
+ MPI_Sendrecv( xm_scalar, brd_size, MPI_my_double_type, me_xm, 11,
+               xp_scalar, brd_size, MPI_my_double_type, me_xp, 11, MPI_COMM_WORLD, &status1);
+
+ for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=0;i<BRD;i++){ 
+	f[IDX(i+LNX+BRD,j,k)] = xp_scalar[IDX_XBRD(i,j,k)];
+      }
+
+
+
+  /* Copy borders along y */
+  brd_size = BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD);
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+        yp_scalar[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
+      }
+
+  MPI_Sendrecv( yp_scalar, brd_size, MPI_my_double_type, me_yp, 10,
+                ym_scalar, brd_size, MPI_my_double_type, me_ym, 10, MPI_COMM_WORLD, &status1); 
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++) {
+        f[IDX(i,j,k)] = ym_scalar[IDX_YBRD(i,j,k)];
+	ym_scalar[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
+      }
+  
+ MPI_Sendrecv( ym_scalar, brd_size, MPI_my_double_type, me_ym, 13,
+               yp_scalar, brd_size, MPI_my_double_type, me_yp, 13, MPI_COMM_WORLD, &status1);
+
+ for(k=BRD;k<LNZ+BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+       	f[IDX(i,j+LNY+BRD,k)] = yp_scalar[IDX_YBRD(i,j,k)];
+      }
+  
+
+  /* Copy borders along z */
+  brd_size = BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD);
+
+  for(k=0;k<BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+        zp_scalar[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
+      }
+
+  MPI_Sendrecv( zp_scalar, brd_size, MPI_my_double_type, me_zp, 14,
+                zm_scalar, brd_size, MPI_my_double_type, me_zm, 14, MPI_COMM_WORLD, &status1); 
+
+  for(k=0;k<BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++) {
+        f[IDX(i,j,k)] = zm_scalar[IDX_ZBRD(i,j,k)];
+        zm_scalar[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+BRD)];
+      }
+ MPI_Sendrecv( zm_scalar, brd_size, MPI_my_double_type, me_zm, 15,
+               zp_scalar, brd_size, MPI_my_double_type, me_zp, 15, MPI_COMM_WORLD, &status1);
+
+ for(k=0;k<BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+	f[IDX(i,j,k+LNZ+BRD)] = zp_scalar[IDX_ZBRD(i,j,k)];
+      }
+
+}/* end send rcv */
+
+
+
+
+/**************************************************************************************************/
+/* Here begin the function to compute the interpolation coefficients */
+
+void compute_interpolation_coefficients(){
+
+  int i,j,k;
+  vector xp,xm,yp,ym,zp,zm;
+  vector P0, P1, P2, P3, P4, P5, P6, P7, P8;
+
+	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
+		for (j = BRD; j < LNYG + BRD - 1; j++) 
+			for (k = BRD; k < LNZG + BRD - 1; k++) {
+				P0 = mesh[IDXG(i, j, k)];
+				P1 = mesh[IDXG(i + 1, j, k)];
+				P2 = mesh[IDXG(i, j + 1, k)];
+				P3 = mesh[IDXG(i + 1, j + 1, k)];
+				P4 = mesh[IDXG(i, j, k + 1)];
+				P5 = mesh[IDXG(i + 1, j, k + 1)];
+				P6 = mesh[IDXG(i, j + 1, k + 1)];
+				P7 = mesh[IDXG(i + 1, j + 1, k + 1)];
+				P8.x = (P0.x + P1.x + P2.x + P3.x + P4.x + P5.x + P6.x + P7.x) / 8;
+				P8.y = (P0.y + P1.y + P2.y + P3.y + P4.y + P5.y + P6.y + P7.y) / 8;
+				P8.z = (P0.z + P1.z + P2.z + P3.z + P4.z + P5.z + P6.z + P7.z) / 8;
+
+/* we compute here the position of the centers of the 6 surfaces */
+xp = average_4vectors(P1, P3, P5, P7);
+xm = average_4vectors(P0, P2, P4, P6); 
+yp = average_4vectors(P2, P3, P6, P7); 
+ym = average_4vectors(P0, P1, P4, P5);
+zp = average_4vectors(P4, P5, P6, P7);
+zm = average_4vectors(P0, P1, P2, P3); 
+
+/* we find the distence of the centers from such 6 surfece centers */
+
+xp = vector_difference( center_V[IDX(i, j, k)], xp);
+xm = vector_difference( center_V[IDX(i, j, k)], xm);
+yp = vector_difference( center_V[IDX(i, j, k)], yp);
+ym = vector_difference( center_V[IDX(i, j, k)], ym);
+zp = vector_difference( center_V[IDX(i, j, k)], zp);
+zm = vector_difference( center_V[IDX(i, j, k)], zm);
+
+/* we compute the vector length (norm) */
+interp_xp[IDX(i,j,k)] = vector_length(xp);
+interp_xm[IDX(i,j,k)] = vector_length(xm);
+interp_yp[IDX(i,j,k)] = vector_length(yp);
+interp_ym[IDX(i,j,k)] = vector_length(ym);
+interp_zp[IDX(i,j,k)] = vector_length(zp);
+interp_zm[IDX(i,j,k)] = vector_length(zm);
+
+			}/*i,j,k*/
+
+	/*  send receive the borders */
+	sendrecv_borders_scalar(interp_xp);
+	sendrecv_borders_scalar(interp_xm);
+	sendrecv_borders_scalar(interp_yp);
+	sendrecv_borders_scalar(interp_ym);
+	sendrecv_borders_scalar(interp_zp);
+	sendrecv_borders_scalar(interp_zm);
+
+	/* now compute the coefficients */
+	for (i = BRD; i < LNX + BRD; i++) 
+		for (j = BRD; j < LNY + BRD; j++) 
+			for (k = BRD; k < LNZ + BRD; k++) {
+
+interp_xp[IDX(i,j,k)] =  interp_xp[IDX(i,j,k)] / (interp_xm[IDX(i+1,j,k)]+interp_xp[IDX(i,j,k)]);
+interp_xm[IDX(i,j,k)] =  interp_xm[IDX(i,j,k)] / (interp_xp[IDX(i-1,j,k)]+interp_xm[IDX(i,j,k)]);
+interp_yp[IDX(i,j,k)] =  interp_yp[IDX(i,j,k)] / (interp_ym[IDX(i,j+1,k)]+interp_yp[IDX(i,j,k)]);
+interp_ym[IDX(i,j,k)] =  interp_ym[IDX(i,j,k)] / (interp_yp[IDX(i,j-1,k)]+interp_ym[IDX(i,j,k)]);
+interp_zp[IDX(i,j,k)] =  interp_zp[IDX(i,j,k)] / (interp_zm[IDX(i,j,k+1)]+interp_zp[IDX(i,j,k)]);
+interp_zm[IDX(i,j,k)] =  interp_zm[IDX(i,j,k)] / (interp_zp[IDX(i,j,k-1)]+interp_zm[IDX(i,j,k)]);
+
+			}/* i,j,k*/
+
+}/* end func interpolation coefficients */
+
+#endif
 
 
 /**************************************************************************************************/

@@ -183,6 +183,7 @@ void allocate_fields(){
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate center_V\n"); exit(-1);}
  set_to_zero_vector( center_V,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
+
 #ifdef GRID_REFINED
  grid_ruler_x  = (my_double*) malloc(sizeof(my_double)*NXG);
  grid_ruler_y  = (my_double*) malloc(sizeof(my_double)*NYG);
@@ -209,6 +210,40 @@ void allocate_fields(){
  if(coeff_zm == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_zm\n"); exit(-1);}
  set_to_zero_pop( coeff_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
+
+ 
+#ifdef METHOD_CENTERED
+ interp_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_xp\n"); exit(-1);}
+ set_to_zero_my_double( interp_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp_xm\n"); exit(-1);}
+ set_to_zero_my_double( interp_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_yp\n"); exit(-1);}
+ set_to_zero_my_double( interp_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp_ym\n"); exit(-1);}
+ set_to_zero_my_double( interp_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_zp\n"); exit(-1);}
+ set_to_zero_my_double( interp_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp_zm\n"); exit(-1);}
+ set_to_zero_my_double( interp_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ /* borders my_double */
+ xp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ if(xp_scalar == NULL || xm_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate x{p,m}_scalar\n"); exit(-1);}
+ yp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(yp_scalar == NULL || ym_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate y{p,m}_scalar\n"); exit(-1);}
+ zp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ if(zp_scalar == NULL || zm_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_scalar\n"); exit(-1);}
+#endif
+ 
 
 
 #ifdef LB_FLUID

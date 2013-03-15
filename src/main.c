@@ -11,6 +11,9 @@ int main(int argc, char **argv){
 #endif
 	read_mesh();
 	compute_volumes();
+#ifdef METHOD_CENTERED
+	compute_interpolation_coefficients();
+#endif
 #ifdef LB_BC
 	prepare_boundary_conditions();
 #endif

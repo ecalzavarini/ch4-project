@@ -48,6 +48,10 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
 
+
+ MPI_Type_contiguous(1, MPI_DOUBLE, &MPI_my_double_type);
+ MPI_Type_commit(&MPI_my_double_type);
+
  /* Initialize random seeds */
   seed = time(NULL); 
   srand48(me+seed);
