@@ -210,13 +210,18 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 
 #ifdef METHOD_STEPPING_AB2
 	  /* Adams Bashforth 2nd order */
+	  //fprintf(stderr,"itime = %d\n",itime);
 #ifdef METHOD_EXPONENTIAL
 	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
 	  /* S. M. Cox and P. C. Matthews. Exponential Time Dierencing for Sti Systems.
 	     J. Comput. Phys., 176:430{455, 2002. */
+	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*property.tau_u*rhs_f[IDX(i,j,k)].p[pp];
+	  else
 	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
 							     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(property.tau_u/dt_over_tau);
 #else
+	 if(itime==1) f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+	 else
 	 f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]); 
 #endif
 
@@ -357,6 +362,7 @@ if(LNY_END == NY){
 #else
 	/* NOSLIP */
 
+	//coeff_yp[IDX(i, j, k)].p[pp]=0.0;
 	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 #endif
 }
@@ -375,6 +381,8 @@ if(LNY_START == 0){
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
 #else
 	/* NO SLIP */
+
+	//coeff_ym[IDX(i, j, k)].p[pp]=0.0;
 	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 #endif
 

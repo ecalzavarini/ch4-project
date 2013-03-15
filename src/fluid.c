@@ -50,6 +50,7 @@ void compute_advection(pop *f, pop *rhs_f){
                   coeff_zm[IDX(i,j,k)].p[pp]*0.5*(f[IDX(i,j,k-1)].p[pp] + f[IDX(i,j,k)].p[pp]);
 	  */
 
+	  //fprintf(stderr,"interp_xp[IDX(%d,%d,%d)] = %e\n",i,j,k,interp_xp[IDX(i,j,k)]);
 
 	  adv += coeff_xp[IDX(i,j,k)].p[pp]*( (1.0 - interp_xp[IDX(i,j,k)])* f[IDX(i+1,j,k)].p[pp] + interp_xp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] )+ 
 	         coeff_xm[IDX(i,j,k)].p[pp]*( (1.0 - interp_xm[IDX(i,j,k)])* f[IDX(i-1,j,k)].p[pp] + interp_xm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] );
@@ -200,6 +201,7 @@ void add_forcing(pop *f, pop *rhs_f){
 
 
 #ifdef LB_FLUID
+/* be careful still not working */
 tensor strain_tensor(pop *f,int i, int j, int k){
   int  pp;
   pop f_eq;

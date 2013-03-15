@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 	   add_forcing(p,rhs_p);
 #endif
 	  
-	 time_stepping(p,rhs_p,old_rhs_p);
+	   time_stepping(p,rhs_p,old_rhs_p);
 	 hydro_fields();	
 	 dump_averages();
 
