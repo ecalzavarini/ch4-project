@@ -124,6 +124,10 @@ pop equilibrium(pop * f, int i, int j, int k){
 	return f_eq;
 }
 
+
+
+
+
 /**************************************************/
 void hydro_fields(){
 	int i, j, k;
@@ -334,10 +338,100 @@ void sendrecv_borders_pop(pop *f){
 
 /*************************************************************/
 
+
+pop equilibrium_given_velocity(vector v , my_double rho){
+	int             pp;
+	my_double       ux, uy, uz;
+	my_double       rhof;
+	my_double       cu, u2;
+	pop             f_eq;
+
+	ux = v.x;
+	uy = v.y;
+	uy = v.z;
+	u2 = (ux * ux + uy * uy + uz * uz);
+
+	/* equilibrium distribution */
+	for (pp = 0; pp < NPOP; pp++) {
+		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+		f_eq.p[pp] = rho * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+	}
+
+	return f_eq;
+}
+
+/*******************/
+
+
 #ifdef LB_BC
 void boundary_conditions(pop * f){
 
   int i,j,k,pp;
+  vector vel;
+  my_double rho;
+
+
+	/* X direction */	
+#ifdef LB_BC_X
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+if(LNX_END == NX){
+	i = LNX+BRD-1;
+
+#ifdef LB_BC_XP_OUTLET
+	if(pp==0){
+	  vel.x = 0.0;
+	  vel.y = 0.0;
+	  vel.z = 0.0;
+	    rho = 1.0;
+	  f[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+	}
+#else 
+#ifdef LB_BC_XP_SLIP
+
+	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NOSLIP */
+	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+#endif
+
+ }/* if */
+
+if(LNX_START == 0){
+  i = BRD; 
+
+#ifdef LB_BC_XM_INLET
+	if(pp==0){
+	  vel.x = 0.01;
+	  vel.y = 0.0;
+	  vel.z = 0.0;
+	    rho = 1.0;
+	  f[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
+	}
+#else
+#ifdef LB_BC_XM_SLIP
+		
+	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+#endif
+
+ }/* if */
+
+      }/* for pp */
+    }/* for j,k */
+#endif
+
+
+  /************************************/
 
 	/* Y direction */	
 #ifdef LB_BC_Y
@@ -390,8 +484,13 @@ if(LNY_START == 0){
  }
 
       }/* for pp */
-    }/* for i,j,k */
+    }/* for i,k */
 #endif
+
+
+
+
+
 
 }
 #endif
