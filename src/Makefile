@@ -1,7 +1,8 @@
-CC=mpicc 
+#CC=mpicc 
+CC=h5pcc #-DH5_USE_16_API
 CFLAGS= -Wall  
-LFLAGS= -lm 
-SOURCES= parallel.c grid.c parameters.c lb.c initial_conditions.c fluid.c output.c
+LFLAGS= -lm -lhdf5
+SOURCES= parallel.c grid.c parameters.c lb.c initial_conditions.c fluid.c output.c output_h5.c
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS= common_object.h common_main.h typedef.h functions.h define.h
 EXECUTABLE= ch4
@@ -16,4 +17,4 @@ clean:
 	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN
 
 tar:
-	tar cvzf ch4-project_backup.tgz ./*.c ./*.h ./*.sh Makefile 
+	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile 
