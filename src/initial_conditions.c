@@ -3,7 +3,7 @@
 void initial_conditions() 
 {
   int i,j,k, pp;
-  my_double nu,gradP;
+  my_double nu,Amp_x;
   my_double fn,kn;
   my_double y;
   my_double L;
@@ -39,7 +39,8 @@ void initial_conditions()
 #ifdef LB_FLUID_INITIAL_POISEUILLE 
     L=(my_double)(NY);
     y = (my_double)center_V[IDX(i,j,k)].y;
-    fn=-0.01*(4.0*nu)*pow(L,-2.0);
+    Amp_x = (my_double)property.Amp_x;
+    fn=-Amp_x*(4.0*nu)*pow(L,-2.0);
 
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  

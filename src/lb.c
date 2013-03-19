@@ -111,7 +111,7 @@ pop equilibrium(pop * f, int i, int j, int k){
 
 	ux = u[IDX(i, j, k)].x;
 	uy = u[IDX(i, j, k)].y;
-	uy = u[IDX(i, j, k)].z;
+	uz = u[IDX(i, j, k)].z;
 
 	u2 = (ux * ux + uy * uy + uz * uz);
 
@@ -120,6 +120,8 @@ pop equilibrium(pop * f, int i, int j, int k){
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 		f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
 	}
+
+	//fprintf(stderr,"i %d j %d k %d\n",i,j,k);
 
 	return f_eq;
 }
@@ -143,17 +145,10 @@ void hydro_fields(){
 
 #ifdef LB_FLUID
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
-#ifdef METHOD_FORCING_GUO
-				u[IDX(i, j, k)].x = (mvx(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].x) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].y = (mvy(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].y) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].z = (mvz(p[IDX(i, j, k)]) + 0.5 * force[IDX(i, j, k)].z) / dens[IDX(i, j, k)];
-				/* set to zero after computing velocity */
-				force[IDX(i, j, k)].x = force[IDX(i, j, k)].y = force[IDX(i, j, k)].y = 0.0;
-#else
+
 				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-#endif
 #endif
 			}/* for i,j,k */
 
@@ -348,7 +343,7 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 
 	ux = v.x;
 	uy = v.y;
-	uy = v.z;
+	uz = v.z;
 	u2 = (ux * ux + uy * uy + uz * uz);
 
 	/* equilibrium distribution */
@@ -487,9 +482,46 @@ if(LNY_START == 0){
     }/* for i,k */
 #endif
 
+  /*****************************************************************************************/
+  /* Z direction */	
 
+#ifdef LB_BC_Z
 
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (i = BRD; i < LNX + BRD; i++){
+      for(pp=0;pp<NPOP;pp++){
 
+	if(LNZ_END == NZ){
+	k = LNZ+BRD-1;
+
+#ifdef LB_BC_ZP_SLIP
+
+	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NOSLIP */
+	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+
+ }/* if */
+
+	if(LNZ_START == 0){
+	  k = BRD; 
+
+#ifdef LB_BC_ZM_SLIP
+		
+	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+
+ }/* if */
+
+      }/* for pp */
+    }/* for j,i */
+#endif
 
 
 }

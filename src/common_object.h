@@ -10,6 +10,7 @@
 #include "typedef.h"
 #include "functions.h"
 
+#include <hdf5.h>
 
 /* MPI variables */
 extern int me;

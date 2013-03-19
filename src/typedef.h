@@ -32,7 +32,7 @@ typedef struct {
 #ifdef LB_FLUID
   double tau_u , nu;
 #ifdef LB_FLUID_FORCING
-  double gradP;
+  double Amp_x,Amp_y,Amp_z;
 #endif
 #ifdef LB_TEMPERATURE
   double tau_t, kappa;
@@ -50,12 +50,12 @@ typedef struct {
 #ifdef LB_FLUID
 #define NPROP 10
 #ifdef LB_FLUID_FORCING
-#define NPROP 11
+#define NPROP 13
 #endif
 #ifdef LB_TEMPERATURE
-#define NPROP 13
-#ifdef LB_SCALAR
 #define NPROP 15
+#ifdef LB_SCALAR
+#define NPROP 17
 #endif
 #endif
 #endif

@@ -9,4 +9,8 @@ time_dump_field 10.0
 time_dump_diagn 1.0
 
 tau_u 1.0
-gradP 0.01
+
+Amp_x 0.0
+Amp_y 0.0
+Amp_z 0.01
+

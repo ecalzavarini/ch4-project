@@ -124,8 +124,14 @@ void add_collision(pop *f, pop *rhs_f){
 	f_eq=equilibrium(f,i,j,k);
 
 	for (pp=0; pp<NPOP; pp++){
-	/* collision */
 
+//#define ONLY_COLLISION
+#ifdef ONLY_COLLISION
+	  /* set to zero , just for check to eliminate advection */
+	  rhs_f[IDX(i,j,k)].p[pp] = 0.0;
+#endif
+
+	/* collision */
 #ifdef METHOD_EXPONENTIAL
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
@@ -140,12 +146,14 @@ void add_collision(pop *f, pop *rhs_f){
 #ifdef LB_FLUID_FORCING
 void build_forcing(){
   int i, j, k;
-  my_double fn,kn;
-  my_double y;
-  my_double L,nu;
+  my_double fnx,fny,fnz,kn;
+  my_double x,y,z;
+  my_double LX,LY,LZ,nu;
 
-  L=(my_double)(NY);
-  nu=property.nu;
+   LX=(my_double)(NX);
+   LY=(my_double)(NY);
+   LZ=(my_double)(NZ);
+   nu=property.nu;
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -156,21 +164,27 @@ void build_forcing(){
 	force[IDX(i,j,k)].z = 0.0;
 
 #ifdef LB_FLUID_FORCING_POISEUILLE 
-	force[IDX(i,j,k)].x += property.gradP*((4.*nu)*pow(L,-2.0));  
-	force[IDX(i,j,k)].y += 0.0;
-	force[IDX(i,j,k)].z += 0.0;
+	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is just an arbitrary choice */
+	force[IDX(i,j,k)].x += property.Amp_x*((4.*nu)*pow(LY,-2.0));  
+	force[IDX(i,j,k)].y += property.Amp_y*((4.*nu)*pow(LX,-2.0));  
+	force[IDX(i,j,k)].z += property.Amp_z*((4.*nu)*pow(LY,-2.0));  
 #endif
 
 #ifdef LB_FLUID_FORCING_KOLMOGOROV 
  
     kn=1.0;
-    fn=property.gradP*nu*pow(two_pi/L,2.0);
+    fnx=nu*pow(two_pi/LX,2.0);
+    fny=nu*pow(two_pi/LY,2.0);
     y = (my_double)center_V[IDX(i,j,k)].y;
+    x = (my_double)center_V[IDX(i,j,k)].x;
 
 	/* along x */  
-        force[IDX(i,j,k)].x += fn*sin(kn*two_pi*y/L); 
-	force[IDX(i,j,k)].y += 0.0;
-	force[IDX(i,j,k)].z += 0.0; 
+        force[IDX(i,j,k)].x += property.Amp_x*fny*sin(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].y += property.Amp_y*fnx*sin(kn*two_pi*x/LX); 
+	force[IDX(i,j,k)].z += property.Amp_z*fny*sin(kn*two_pi*y/LY);  
+
+	//   fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
+	//  exit(1);
 #endif  
 
       }/* i,j,k */

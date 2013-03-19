@@ -213,6 +213,10 @@ void dump_averages(){
   }
 #endif
   
+#ifdef OUTPUT_H5
+  /* write  files */
+  if(itime==1) write_h5();
+#endif
 
 }
 
