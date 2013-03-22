@@ -25,8 +25,8 @@ void write_h5(){
      * Initialize data buffer 
      */
     
-    data = (my_double *) malloc(sizeof(my_double)*dimsf[0]*dimsf[1]);
-    for (i=0; i < dimsf[0]*dimsf[1]*dimsf[1]; i++) {
+    data = (my_double *) malloc(sizeof(my_double)*dimsf[0]*dimsf[1]*dimsf[2]);
+    for (i=0; i < dimsf[0]*dimsf[1]*dimsf[2]; i++) {
         data[i] = i;
     }
     

@@ -391,7 +391,9 @@ void compute_volumes(){
 }
 
 
-#ifdef METHOD_CENTERED
+//#ifdef METHOD_CENTERED
+
+#if (defined METHOD_CENTERED || defined METHOD_QUICK)
 /****************************************************************************************************/ 
 void sendrecv_borders_scalar(my_double *f){
   int i,j,k,brd_size;
@@ -485,7 +487,7 @@ void sendrecv_borders_scalar(my_double *f){
 
 }/* end send rcv */
 
-
+#endif
 
 
 /**************************************************************************************************/
@@ -497,6 +499,13 @@ void compute_interpolation_coefficients(){
   vector xp,xm,yp,ym,zp,zm;
   vector P0, P1, P2, P3, P4, P5, P6, P7, P8;
 
+  /* for quick */
+  vector XPF1, XPF2, XPB1, XPB2, XMF1, XMF2, XMB1, XMB2;
+  vector YPF1, YPF2, YPB1, YPB2, YMF1, YMF2, YMB1, YMB2;   
+  vector ZPF1, ZPF2, ZPB1, ZPB2, ZMF1, ZMF2, ZMB1, ZMB2;
+
+
+#ifdef METHOD_CENTERED
 	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
 		for (j = BRD; j < LNYG + BRD - 1; j++) 
 			for (k = BRD; k < LNZG + BRD - 1; k++) {
@@ -561,9 +570,143 @@ interp_zm[IDX(i,j,k)] =  interp_zm[IDX(i,j,k)] / (interp_zp[IDX(i,j,k-1)]+interp
 
 			}/* i,j,k*/
 
-}/* end func interpolation coefficients */
+#endif
+
+#ifdef METHOD_QUICK
+	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
+		for (j = BRD; j < LNYG + BRD - 1; j++) 
+			for (k = BRD; k < LNZG + BRD - 1; k++) {
+				P0 = mesh[IDXG(i, j, k)];
+				P1 = mesh[IDXG(i + 1, j, k)];
+				P2 = mesh[IDXG(i, j + 1, k)];
+				P3 = mesh[IDXG(i + 1, j + 1, k)];
+				P4 = mesh[IDXG(i, j, k + 1)];
+				P5 = mesh[IDXG(i + 1, j, k + 1)];
+				P6 = mesh[IDXG(i, j + 1, k + 1)];
+				P7 = mesh[IDXG(i + 1, j + 1, k + 1)];
+				P8.x = (P0.x + P1.x + P2.x + P3.x + P4.x + P5.x + P6.x + P7.x) / 8;
+				P8.y = (P0.y + P1.y + P2.y + P3.y + P4.y + P5.y + P6.y + P7.y) / 8;
+				P8.z = (P0.z + P1.z + P2.z + P3.z + P4.z + P5.z + P6.z + P7.z) / 8;
+
+/* we compute here the position of the centers of the 6 surfaces */
+xp = average_4vectors(P1, P3, P5, P7);
+xm = average_4vectors(P0, P2, P4, P6); 
+yp = average_4vectors(P2, P3, P6, P7); 
+ym = average_4vectors(P0, P1, P4, P5);
+zp = average_4vectors(P4, P5, P6, P7);
+zm = average_4vectors(P0, P1, P2, P3); 
+
+
+/* we find the coefficients for XP  */
+
+ XPF1 =  ((xp -  center_V[IDX(i, j, k)])*(xp -  center_V[IDX(i-1, j, k)]))/(( center_V[IDX(i+1, j, k)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i+1, j, k)] -  center_V[IDX(i-1, j, k)]));
+ XPF2 =  ((xp -  center_V[IDX(i, j, k)])*( center_V[IDX(i+1, j, k)] - xp ))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i-1, j, k)]) * ( center_V[IDX(i+1, j, k)] -  center_V[IDX(i-1, j, k)]));
+
+XPB1 = ((xp -  center_V[IDX(i+1, j, k)])*(xp -  center_V[IDX(i+2, j, k)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i+1, j, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i+2, j, k)]));
+XPB2 = ((xp -  center_V[IDX(i+1, j, k)])*(center_V[IDX(i, j, k)] - xp))/(( center_V[IDX(i+1, j, k)] -  center_V[IDX(i+2, j, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i+2, j, k)]));
+
+/* we find the coefficients for XM  */
+
+XMF1 =  ((xm -  center_V[IDX(i, j, k)])*(xm -  center_V[IDX(i+1, j, k)]))/(( center_V[IDX(i-1, j, k)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i-1, j, k)] -  center_V[IDX(i+1, j, k)]));
+XMF2 =  ((xm -  center_V[IDX(i, j, k)])*(center_V[IDX(i-1, j, k)] - xm))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i+1, j, k)]) * ( center_V[IDX(i-1, j, k)] -  center_V[IDX(i+1, j, k)]));
+
+XMB1 =  ((xm -  center_V[IDX(i-1, j, k)])*(xm -  center_V[IDX(i-2, j, k)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i-1, j, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i-2, j, k)]));
+XMB2 =  ((xm -  center_V[IDX(i-1, j, k)])*(center_V[IDX(i, j, k)] - xm))/(( center_V[IDX(i-1, j, k)] -  center_V[IDX(i-2, j, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i-2, j, k)]));
+
+/* we find the coefficients for YP  */
+
+ YPF1 =  ((yp -  center_V[IDX(i, j, k)])*(yp -  center_V[IDX(i, j-1, k)]))/(( center_V[IDX(i, j+1, k)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i, j+1, k)] -  center_V[IDX(i, j-1, k)]));
+ YPF2 =  ((yp -  center_V[IDX(i, j, k)])*( center_V[IDX(i, j+1, k)] - yp ))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j-1, k)]) * ( center_V[IDX(i, j+1, k)] -  center_V[IDX(i, j-1, k)]));
+
+YPB1 = ((yp -  center_V[IDX(i, j+1, k)])*(yp -  center_V[IDX(i, j+2, k)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j+1, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j+2, k)]));
+YPB2 = ((yp -  center_V[IDX(i, j+1, k)])*(center_V[IDX(i, j, k)] - yp))/(( center_V[IDX(i, j+1, k)] -  center_V[IDX(i, j+2, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j+2, k)]));
+
+/* we find the coefficients for YM  */
+YMF1 =  ((ym -  center_V[IDX(i, j, k)])*(ym -  center_V[IDX(i, j+1, k)]))/(( center_V[IDX(i, j-1, k)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i, j-1, k)] -  center_V[IDX(i, j+1, k)]));
+YMF2 =  ((ym -  center_V[IDX(i, j, k)])*(center_V[IDX(i, j-1, k)] - ym))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j+1, k)]) * ( center_V[IDX(i, j-1, k)] -  center_V[IDX(i, j+1, k)]));
+
+YMB1 =  ((ym -  center_V[IDX(i, j-1, k)])*(ym -  center_V[IDX(i, j-2, k)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j-1, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j-2, k)]));
+YMB2 =  ((ym -  center_V[IDX(i, j-1, k)])*(center_V[IDX(i, j, k)] - ym))/(( center_V[IDX(i, j-1, k)] -  center_V[IDX(i, j-2, k)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j-2, k)]));
+
+
+/* we find the coefficients for ZP  */
+
+ ZPF1 =  ((zp -  center_V[IDX(i, j, k)])*(zp -  center_V[IDX(i, j, k-1)]))/(( center_V[IDX(i, j, k+1)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i, j, k+1)] -  center_V[IDX(i, j, k-1)]));
+ ZPF2 =  ((zp -  center_V[IDX(i, j, k)])*( center_V[IDX(i, j, k+1)] - zp ))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k-1)]) * ( center_V[IDX(i, j, k+1)] -  center_V[IDX(i, j, k-1)]));
+
+ZPB1 = ((zp -  center_V[IDX(i, j, k+1)])*(zp -  center_V[IDX(i, j, k+2)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k+1)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k+2)]));
+ZPB2 = ((zp -  center_V[IDX(i, j, k+1)])*(center_V[IDX(i, j, k)] - zp))/(( center_V[IDX(i, j, k+1)] -  center_V[IDX(i, j, k+2)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k+2)]));
+
+/* we find the coefficients for ZM  */
+
+ZMF1 =  ((zm -  center_V[IDX(i, j, k)])*(zm -  center_V[IDX(i, j, k+1)]))/(( center_V[IDX(i, j, k-1)] -  center_V[IDX(i, j, k)]) * ( center_V[IDX(i, j, k-1)] -  center_V[IDX(i, j, k+1)]));
+ZMF2 =  ((zm -  center_V[IDX(i, j, k)])*(center_V[IDX(i, j, k-1)] - zm))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k+1)]) * ( center_V[IDX(i, j, k-1)] -  center_V[IDX(i, j, k+1)]));
+
+ZMB1 =  ((zm -  center_V[IDX(i, j, k-1)])*(zm -  center_V[IDX(i, j, k-2)]))/(( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k-1)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k-2)]));
+ZMB2 =  ((zm -  center_V[IDX(i, j, k-1)])*(center_V[IDX(i, j, k)] - zm))/(( center_V[IDX(i, j, k-1)] -  center_V[IDX(i, j, k-2)]) * ( center_V[IDX(i, j, k)] -  center_V[IDX(i, j, k-2)]));
+
+
+/* we compute the vector length (norm) of the coefficients G1 and G2 for QUICK */
+quick_xpf1[IDX(i,j,k)] = vector_length(XPF1);
+quick_xpf2[IDX(i,j,k)] = vector_length(XPF2);
+quick_xpb1[IDX(i,j,k)] = vector_length(XPB1);
+quick_xpb2[IDX(i,j,k)] = vector_length(XPB2);
+quick_xmf1[IDX(i,j,k)] = vector_length(XMF1);
+quick_xmf2[IDX(i,j,k)] = vector_length(XMF2);
+quick_xmb1[IDX(i,j,k)] = vector_length(XMB1);
+quick_xmb2[IDX(i,j,k)] = vector_length(XMB2);
+quick_ypf1[IDX(i,j,k)] = vector_length(YPF1);
+quick_ypf2[IDX(i,j,k)] = vector_length(YPF2);
+quick_ypb1[IDX(i,j,k)] = vector_length(YPB1);
+quick_ypb2[IDX(i,j,k)] = vector_length(YPB2);
+quick_ymf1[IDX(i,j,k)] = vector_length(YMF1);
+quick_ymf2[IDX(i,j,k)] = vector_length(YMF2);
+quick_ymb1[IDX(i,j,k)] = vector_length(YMB1);
+quick_ymb2[IDX(i,j,k)] = vector_length(YMB2);
+quick_zpf1[IDX(i,j,k)] = vector_length(ZPF1);
+quick_zpf2[IDX(i,j,k)] = vector_length(ZPF2);
+quick_zpb1[IDX(i,j,k)] = vector_length(ZPB1);
+quick_zpb2[IDX(i,j,k)] = vector_length(ZPB2);
+quick_zmf1[IDX(i,j,k)] = vector_length(ZMF1);
+quick_zmf2[IDX(i,j,k)] = vector_length(ZMF2);
+quick_zmb1[IDX(i,j,k)] = vector_length(ZMB1);
+quick_zmb2[IDX(i,j,k)] = vector_length(ZMB2);
+
+
+			}/*i,j,k*/
+
+	/*  send receive the borders */
+	sendrecv_borders_scalar(quick_xpf1);
+	sendrecv_borders_scalar(quick_xpf2);
+	sendrecv_borders_scalar(quick_xpb1);
+	sendrecv_borders_scalar(quick_xpb2);
+	sendrecv_borders_scalar(quick_xmf1);
+	sendrecv_borders_scalar(quick_xmf2);
+	sendrecv_borders_scalar(quick_xmb1);
+	sendrecv_borders_scalar(quick_xmb2);
+	sendrecv_borders_scalar(quick_ypf1);
+	sendrecv_borders_scalar(quick_ypf2);
+	sendrecv_borders_scalar(quick_ypb1);
+	sendrecv_borders_scalar(quick_ypb2);
+	sendrecv_borders_scalar(quick_ymf1);
+	sendrecv_borders_scalar(quick_ymf2);
+	sendrecv_borders_scalar(quick_ymb1);
+	sendrecv_borders_scalar(quick_ymb2);
+	sendrecv_borders_scalar(quick_zpf1);
+	sendrecv_borders_scalar(quick_zpf2);
+	sendrecv_borders_scalar(quick_zpb1);
+	sendrecv_borders_scalar(quick_zpb2);
+	sendrecv_borders_scalar(quick_zmf1);
+	sendrecv_borders_scalar(quick_zmf2);
+	sendrecv_borders_scalar(quick_zmb1);
+	sendrecv_borders_scalar(quick_zmb2);
 
 #endif
+
+
+}/* end func interpolation coefficients */
+
+
 
 
 /**************************************************************************************************/

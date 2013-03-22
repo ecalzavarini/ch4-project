@@ -12,10 +12,11 @@
 //#define METHOD_EXPONENTIAL
 #define METHOD_STEPPING_EULER
 //#define METHOD_STEPPING_AB2
-//#define METHOD_CENTERED
-#define METHOD_UPWIND
+#define METHOD_MIXED
+#define METHOD_CENTERED
+//#define METHOD_UPWIND
 #define LB_BC
-//#define LB_BC_Y
+#define LB_BC_Y
 //#define LB_BC_YP_SLIP
 //#define LB_BC_YM_SLIP
 //#define LB_BC_X
@@ -23,6 +24,6 @@
 //#define LB_BC_XM_SLIP
 //#define LB_BC_XM_INLET
 //#define LB_BC_XP_OUTLET
-#define LB_BC_Z
+//#define LB_BC_Z
 //#define LB_TEMPERATURE
 //#define LB_SCALAR

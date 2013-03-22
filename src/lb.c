@@ -84,17 +84,16 @@ void design_lb(){
 	inv[17] = 16;
 	inv[18] = 15;
 
-
 	/* speed of sound constants */
-	cs = 1.0 / sqrt(3.0);
-	invcs = 1.0 / cs;
-	cs2 = (1.0 / 3.0);
+	cs  = 1.0 / sqrt(3.0);
+	cs2 = 1.0 / 3.0;
+	cs4 = 1.0 / 9.0;
+	invcs  = 1.0 / cs;
 	invcs2 = 1.0 / cs2;
-	cs4 = (1.0 / 9.0);
 	invcs4 = 1.0 / cs4;
 	twocs2 = 2.0 * cs2;
-	invtwocs2 = 1.0 / twocs2;
 	twocs4 = 2.0 * cs4;
+	invtwocs2 = 1.0 / twocs2;
 	invtwocs4 = 1.0 / twocs4;
 
 }
@@ -119,14 +118,13 @@ pop equilibrium(pop * f, int i, int j, int k){
 	for (pp = 0; pp < NPOP; pp++) {
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 		f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+	       
 	}
 
 	//fprintf(stderr,"i %d j %d k %d\n",i,j,k);
 
 	return f_eq;
 }
-
-
 
 
 
@@ -349,7 +347,7 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 	/* equilibrium distribution */
 	for (pp = 0; pp < NPOP; pp++) {
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
-		f_eq.p[pp] = rho * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+		f_eq.p[pp] = rho * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);		 
 	}
 
 	return f_eq;
@@ -364,6 +362,7 @@ void boundary_conditions(pop * f){
   int i,j,k,pp;
   vector vel;
   my_double rho;
+  pop f_eq;
 
 
 	/* X direction */	
@@ -452,7 +451,9 @@ if(LNY_END == NY){
 	/* NOSLIP */
 
 	//coeff_yp[IDX(i, j, k)].p[pp]=0.0;
-	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+       	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+
+
 #endif
 }
 
@@ -473,6 +474,7 @@ if(LNY_START == 0){
 
 	//coeff_ym[IDX(i, j, k)].p[pp]=0.0;
 	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	
 #endif
 
 
