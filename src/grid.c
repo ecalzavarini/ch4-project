@@ -373,9 +373,8 @@ void compute_volumes(){
 	  if(LNY_START == 0 && j == LNY-TWO_BRD-1) coeff_xp[IDX(i, j, k)].p[pp]=0.0;
 	  if(LNY_END == NY  && j == BRD) coeff_xm[IDX(i, j, k)].p[pp]=0.0;
 	  */
- #ifdef DEBUG_HARD
+#ifdef DEBUG_HARD
 	/* Each processor prints its mesh */
-
 	  if(ROOT){ 
 	sprintf(fnamein, "coeff.%d.out", me);
 	fout = fopen(fnamein, "a");
@@ -384,7 +383,7 @@ void compute_volumes(){
 	fprintf(fout, "%d %d %d %d coeff_zp %e coeff_zm %e\n",i,j,k,pp,coeff_zp[IDX(i, j, k)].p[pp], coeff_zm[IDX(i, j, k)].p[pp] ); fflush(fout);
 		    fclose(fout);
 	  }
- #endif 
+#endif 
  			}/* for pp */	
 	}  /* for i , j , k */
 

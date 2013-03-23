@@ -82,8 +82,13 @@ typedef struct {
 #define ROOT (!me)
 
 /* total frame size */
+#ifdef METHOD_MYQUICK
+#define BRD 2
+#else 
 #define BRD 1
+#endif
 #define TWO_BRD 2*BRD
+
 
 /* index on the grid */
 #define IDXG(i,j,k) ( (int)(k)*(LNYG+TWO_BRD)*(LNXG+TWO_BRD)+(int)(j)*(LNXG+TWO_BRD)+(int)(i) )

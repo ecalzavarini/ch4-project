@@ -144,9 +144,18 @@ void hydro_fields(){
 #ifdef LB_FLUID
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
 
+				//#ifndef METHOD_FORCING_GUO
 				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				//#else
+				/*
+				u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
+   				u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
+				*/
+				//#endif
+
 #endif
 			}/* for i,j,k */
 
@@ -362,7 +371,7 @@ void boundary_conditions(pop * f){
   int i,j,k,pp;
   vector vel;
   my_double rho;
-  pop f_eq;
+  pop f_eq,f_neq;
 
 
 	/* X direction */	
@@ -449,10 +458,22 @@ if(LNY_END == NY){
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
 #else
 	/* NOSLIP */
+	  vel.x = u[IDX(i,j,k)].x;
+	  vel.y = u[IDX(i,j,k)].y;
+	  vel.z = u[IDX(i,j,k)].z;
+	    rho = 1.0;
+	  f_neq = equilibrium_given_velocity(vel,rho);
+	  f_neq.p[pp] -= f[IDX(i,j,k)].p[pp];
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  f_eq = equilibrium_given_velocity(vel,rho);
+       	  //f[IDX(i,j+1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 
-	//coeff_yp[IDX(i, j, k)].p[pp]=0.0;
        	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-
+#ifdef METHOD_MYQUICK
+       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
+#endif
 
 #endif
 }
@@ -472,9 +493,23 @@ if(LNY_START == 0){
 #else
 	/* NO SLIP */
 
-	//coeff_ym[IDX(i, j, k)].p[pp]=0.0;
-	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	
+	  vel.x = u[IDX(i,j,k)].x;
+	  vel.y = u[IDX(i,j,k)].y;
+	  vel.z = u[IDX(i,j,k)].z;
+	    rho = 1.0;
+	  f_neq = equilibrium_given_velocity(vel,rho);
+	  f_neq.p[pp] -= f[IDX(i,j,k)].p[pp];
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  f_eq = equilibrium_given_velocity(vel,rho);
+	  //f[IDX(i,j-1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
+	  
+	  f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];
+#endif
+  
 #endif
 
 
