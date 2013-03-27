@@ -336,6 +336,63 @@ void sendrecv_borders_pop(pop *f){
 	f[IDX(i,j,k+LNZ+BRD)] = zp_pop[IDX_ZBRD(i,j,k)];
       }
 
+
+#ifdef EDGES_AND_CORNERS
+
+  /* First we communicate the corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */
+  brd_size = BRD*BRD*BRD;
+
+  for(k=0;k<BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<BRD;i++){ 
+        xp_yp_zp_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+LNZ)];
+        xp_yp_zm_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+BRD)];
+        xp_ym_zp_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+LNZ)];
+        xm_yp_zp_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+LNZ)];
+      }
+
+  MPI_Sendrecv( xp_yp_zp_corner_pop, brd_size, MPI_pop_type, me_xp_yp_zp, 10,
+                xm_ym_zm_corner_pop, brd_size, MPI_pop_type, me_xm_ym_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_yp_zm_corner_pop, brd_size, MPI_pop_type, me_xp_yp_zm, 10,
+                xm_ym_zp_corner_pop, brd_size, MPI_pop_type, me_xm_ym_zp, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_ym_zp_corner_pop, brd_size, MPI_pop_type, me_xp_ym_zp, 10,
+                xm_yp_zm_corner_pop, brd_size, MPI_pop_type, me_xm_yp_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xm_yp_zp_corner_pop, brd_size, MPI_pop_type, me_xm_yp_zp, 10,
+                xp_ym_zm_corner_pop, brd_size, MPI_pop_type, me_xp_ym_zm, 10, MPI_COMM_WORLD, &status1); 
+
+  for(k=0;k<BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<BRD;i++) {
+        f[IDX(i,j,k)] = xm_ym_zm_corner_pop[IDX_CORNER(i,j,k)];
+        f[IDX(i,j,k+LNZ+BRD)] = xm_ym_zp_corner_pop[IDX_CORNER(i,j,k)];
+        f[IDX(i,j+LNY+BRD,k)] = xm_yp_zm_corner_pop[IDX_CORNER(i,j,k)];
+        f[IDX(i+LNX+BRD,j,k)] = xp_ym_zm_corner_pop[IDX_CORNER(i,j,k)];
+        xm_ym_zm_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+BRD)];
+        xm_ym_zp_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+LNZ)];
+        xm_yp_zm_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+BRD)];
+        xp_ym_zm_corner_pop[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+BRD)];
+      }
+ MPI_Sendrecv( xm_ym_zm_corner_pop, brd_size, MPI_pop_type, me_xm_ym_zm, 11,
+               xp_yp_zp_corner_pop, brd_size, MPI_pop_type, me_xp_yp_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_ym_zp_corner_pop, brd_size, MPI_pop_type, me_xm_ym_zp, 11,
+               xp_yp_zm_corner_pop, brd_size, MPI_pop_type, me_xp_yp_zm, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_yp_zm_corner_pop, brd_size, MPI_pop_type, me_xm_yp_zm, 11,
+               xp_ym_zp_corner_pop, brd_size, MPI_pop_type, me_xp_ym_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xp_ym_zm_corner_pop, brd_size, MPI_pop_type, me_xp_ym_zm, 11,
+               xm_yp_zp_corner_pop, brd_size, MPI_pop_type, me_xm_yp_zp, 11, MPI_COMM_WORLD, &status1);
+
+ for(k=0;k<BRD;k++)
+    for(j=0;j<BRD;j++)
+      for(i=0;i<BRD;i++){ 
+	f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)] = xp_yp_zp_corner_pop[IDX_CORNER(i,j,k)];
+	f[IDX(i+LNX+BRD,j+LNY+BRD,k)] = xp_yp_zm_corner_pop[IDX_CORNER(i,j,k)];
+	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)] = xp_ym_zp_corner_pop[IDX_CORNER(i,j,k)];
+	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)] = xm_yp_zp_corner_pop[IDX_CORNER(i,j,k)];
+      }
+
+#endif
+
+
 }/* end send rcv */
 
 /*************************************************************/

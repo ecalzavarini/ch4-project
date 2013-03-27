@@ -65,21 +65,19 @@ fprintf(stderr,"me %d drand48() %e\n",me, drand48());
 
 /**********************************************************************************/
 
-int 
-compare(const void *a, const void *b)
+int compare(const void *a, const void *b)
 {
 	return (*(int *) a - *(int *) b);
 }
 
 
 
-void 
-processor_splitting()
+void processor_splitting()
 {
 
 	int             tnprocs, nleft, ncubic;
 	int             sort3d[3], sort2d[2];
-	int             i, j, k, ami, next;
+	int             i, j, k, ami, next, next_x, next_y, next_z;
 
 	/* grid processor splitting */
 	LNX = NX;
@@ -202,6 +200,49 @@ processor_splitting()
 	next = (mey-1+nyprocs) % nyprocs; me_ym = mez * (nyprocs * nxprocs) + next * nxprocs + mex;
 	next = (mez+1+nzprocs) % nzprocs; me_zp = next * (nyprocs * nxprocs) + mey * nxprocs + mex; 
 	next = (mez-1+nzprocs) % nzprocs; me_zm = next * (nyprocs * nxprocs) + mey * nxprocs + mex;
+
+        me_next  = (int*) malloc(sizeof(int)*27);
+	/* Alternative way more compact and safer, to be done */ 
+	for (k = -1; k <=1; k++)
+		for (j = -1; j <=1; j++)
+			for (i = -1; i <=1; i++) {
+
+			  next_x = (mex+i+nxprocs) % nxprocs;
+			  next_y = (mey+j+nyprocs) % nyprocs;
+			  next_z = (mez+k+nzprocs) % nzprocs;
+			  me_next[IDX_NEXT(i,j,k)] = next_z * (nyprocs * nxprocs) + next_y * nxprocs + next_x;
+
+			  // fprintf(stderr,"me %d, i=%d j=%d k=%d, me_next=%d\n", me,i,j,k,me_next[IDX_NEXT(i,j,k)]);
+			}
+
+
+#ifdef EDGES_AND_CORNERS
+
+ /* for the corners */
+ me_xp_yp_zp = me_next[IDX_NEXT(  1,  1,  1)];
+ me_xm_ym_zm = me_next[IDX_NEXT( -1, -1, -1)];
+ me_xp_yp_zm = me_next[IDX_NEXT(  1,  1, -1)];
+ me_xm_ym_zp = me_next[IDX_NEXT( -1, -1,  1)];
+ me_xp_ym_zp = me_next[IDX_NEXT(  1, -1,  1)]; 
+ me_xm_yp_zm = me_next[IDX_NEXT( -1,  1, -1)]; 
+ me_xm_yp_zp = me_next[IDX_NEXT( -1,  1,  1)]; 
+ me_xp_ym_zm = me_next[IDX_NEXT(  1, -1, -1)]; 
+	
+ /* for the edges */
+ me_xp_yp = me_next[IDX_NEXT(  1,  1,  0)]; 
+ me_xm_ym = me_next[IDX_NEXT( -1, -1,  0)]; 
+ me_xp_ym = me_next[IDX_NEXT(  1, -1,  0)]; 
+ me_xm_yp = me_next[IDX_NEXT( -1,  1,  0)]; 
+ me_yp_zp = me_next[IDX_NEXT(  0,  1,  1)]; 
+ me_ym_zm = me_next[IDX_NEXT(  0, -1, -1)]; 
+ me_yp_zm = me_next[IDX_NEXT(  0,  1, -1)]; 
+ me_ym_zp = me_next[IDX_NEXT(  0, -1,  1)]; 
+ me_xp_zp = me_next[IDX_NEXT(  1,  0,  1)]; 
+ me_xm_zm = me_next[IDX_NEXT( -1,  0, -1)]; 
+ me_xp_zm = me_next[IDX_NEXT(  1,  0, -1)]; 
+ me_xm_zp = me_next[IDX_NEXT( -1,  0,  1)]; 
+
+#endif
 
 #ifdef DEBUG
 	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);

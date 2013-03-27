@@ -110,4 +110,10 @@ typedef struct {
 #define IDX_Y(i,k) ( (int)(k)*(LNX+TWO_BRD)+(int)(i))
 #define IDX_Z(i,j) ( (int)(j)*(LNX+TWO_BRD)+(int)(i))
 
+/* index for corner cubelets */
+#define IDX_CORNER(i,j,k) ( (int)(k)*BRD*BRD+(int)(j)*BRD+(int)(i) )
+
+/* neighbouring index for processors*/
+#define IDX_NEXT(i,j,k) ( (int)(k+1)*9+(int)(j+1)*3+(int)(i+1) )
+
 #define two_pi 2*3.14159265359

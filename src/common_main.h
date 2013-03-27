@@ -16,6 +16,9 @@
 int me;
 int mex,mey,mez;
 int me_xp, me_xm, me_yp,me_ym, me_zp,me_zm;
+int  me_xp_yp_zp, me_xm_ym_zm , me_xp_yp_zm , me_xm_ym_zp , me_xp_ym_zp , me_xm_yp_zm , me_xm_yp_zp , me_xp_ym_zm; 
+int  me_xp_yp, me_xm_ym, me_xp_ym , me_xm_yp , me_yp_zp , me_ym_zm , me_yp_zm , me_ym_zp , me_xp_zp , me_xm_zm , me_xp_zm , me_xm_zp ;
+int *me_next;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
 MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type, MPI_my_double_type;
