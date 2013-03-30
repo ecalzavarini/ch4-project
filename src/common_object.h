@@ -54,7 +54,7 @@ extern int *mesh_flag;
 extern vector *xp_mesh,*xm_mesh,*yp_mesh,*ym_mesh,*zp_mesh,*zm_mesh;
 extern int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
 
-#ifdef METHOD_CENTERED
+#if (defined METHOD_CENTERED || defined METHOD_MYQUICK)
 extern my_double *interp_xp,*interp_xm,*interp_yp,*interp_ym,*interp_zp,*interp_zm; 
 extern my_double *xp_scalar,*xm_scalar,*yp_scalar,*ym_scalar,*zp_scalar,*zm_scalar;
 #endif
@@ -63,7 +63,7 @@ extern pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 extern pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
 
 
-#ifdef LB_BC
+#ifdef LB_FLUID_BC
 extern pop *norm_xp_pop,*norm_xm_pop,*norm_yp_pop,*norm_ym_pop,*norm_zp_pop,*norm_zm_pop;
 #endif
 

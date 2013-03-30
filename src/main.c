@@ -14,7 +14,7 @@ int main(int argc, char **argv){
 	//#ifdef METHOD_CENTERED
 	compute_interpolation_coefficients();
 	//#endif
-#ifdef LB_BC
+#ifdef LB_FLUID_BC
 	prepare_boundary_conditions();
 #endif
 	initial_conditions(); 
@@ -29,7 +29,7 @@ int main(int argc, char **argv){
 
 #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);
-#ifdef LB_BC	  
+#ifdef LB_FLUID_BC	  
 	  boundary_conditions(p);
 #endif
 	  

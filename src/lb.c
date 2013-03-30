@@ -422,7 +422,7 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 /*******************/
 
 
-#ifdef LB_BC
+#ifdef LB_FLUID_BC
 void boundary_conditions(pop * f){
 
   int i,j,k,pp;
@@ -432,7 +432,7 @@ void boundary_conditions(pop * f){
 
 
 	/* X direction */	
-#ifdef LB_BC_X
+#ifdef LB_FLUID_BC_X
 
   for (j = BRD; j < LNY + BRD; j++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -441,7 +441,7 @@ void boundary_conditions(pop * f){
 if(LNX_END == NX){
 	i = LNX+BRD-1;
 
-#ifdef LB_BC_XP_OUTLET
+#ifdef LB_FLUID_BC_XP_OUTLET
 	if(pp==0){
 	  vel.x = 0.0;
 	  vel.y = 0.0;
@@ -450,7 +450,7 @@ if(LNX_END == NX){
 	  f[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
 	}
 #else 
-#ifdef LB_BC_XP_SLIP
+#ifdef LB_FLUID_BC_XP_SLIP
 
 	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
@@ -465,7 +465,7 @@ if(LNX_END == NX){
 if(LNX_START == 0){
   i = BRD; 
 
-#ifdef LB_BC_XM_INLET
+#ifdef LB_FLUID_BC_XM_INLET
 	if(pp==0){
 	  vel.x = 0.01;
 	  vel.y = 0.0;
@@ -474,7 +474,7 @@ if(LNX_START == 0){
 	  f[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
 	}
 #else
-#ifdef LB_BC_XM_SLIP
+#ifdef LB_FLUID_BC_XM_SLIP
 		
 	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
@@ -494,7 +494,7 @@ if(LNX_START == 0){
   /************************************/
 
 	/* Y direction */	
-#ifdef LB_BC_Y
+#ifdef LB_FLUID_BC_Y
 
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -502,7 +502,7 @@ if(LNX_START == 0){
 
 if(LNY_END == NY){
 	j = LNY+BRD-1; 
-#ifdef LB_BC_YP_SLIP
+#ifdef LB_FLUID_BC_YP_SLIP
 	/*
        	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
 	  f[IDX(i,j+1,k)].p[inv[pp]] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[pp];
@@ -537,7 +537,7 @@ if(LNY_END == NY){
 
 if(LNY_START == 0){
   j = BRD; 
-#ifdef LB_BC_YM_SLIP	
+#ifdef LB_FLUID_BC_YM_SLIP	
 	/*
         if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
 	  f[IDX(i,j-1,k)].p[inv[pp]] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[pp];
@@ -579,7 +579,7 @@ if(LNY_START == 0){
   /*****************************************************************************************/
   /* Z direction */	
 
-#ifdef LB_BC_Z
+#ifdef LB_FLUID_BC_Z
 
   for (j = BRD; j < LNY + BRD; j++) 			
     for (i = BRD; i < LNX + BRD; i++){
@@ -588,7 +588,7 @@ if(LNY_START == 0){
 	if(LNZ_END == NZ){
 	k = LNZ+BRD-1;
 
-#ifdef LB_BC_ZP_SLIP
+#ifdef LB_FLUID_BC_ZP_SLIP
 
 	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[pp];
@@ -602,7 +602,7 @@ if(LNY_START == 0){
 	if(LNZ_START == 0){
 	  k = BRD; 
 
-#ifdef LB_BC_ZM_SLIP
+#ifdef LB_FLUID_BC_ZM_SLIP
 		
 	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[pp];
