@@ -249,6 +249,17 @@ void allocate_fields(){
  zp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  zm_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_scalar == NULL || zm_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_scalar\n"); exit(-1);}
+
+/* borders vector */
+ xp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ if(xp_vector == NULL || xm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate x{p,m}_vector\n"); exit(-1);}
+ yp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(yp_vector == NULL || ym_vector == NULL){ fprintf(stderr,"Not enough memory to allocate y{p,m}_vector\n"); exit(-1);}
+ zp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ if(zp_vector == NULL || zm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_vector\n"); exit(-1);}
 #endif
  
 

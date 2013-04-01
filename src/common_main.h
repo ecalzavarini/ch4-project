@@ -57,6 +57,7 @@ int *xp_flag,*xm_flag,*yp_flag,*ym_flag,*zp_flag,*zm_flag;
 #if (defined METHOD_CENTERED || defined METHOD_MYQUICK)
 my_double *interp_xp,*interp_xm,*interp_yp,*interp_ym,*interp_zp,*interp_zm;
 my_double *xp_scalar,*xm_scalar,*yp_scalar,*ym_scalar,*zp_scalar,*zm_scalar;
+vector *xp_vector,*xm_vector,*yp_vector,*ym_vector,*zp_vector,*zm_vector;
 #endif
 
 pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;

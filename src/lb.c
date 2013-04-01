@@ -8,6 +8,17 @@ void design_lb(){
 	MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
 	MPI_Type_commit(&MPI_pop_type);
 
+	/* speed of sound constants */
+	cs  = 1.0 /sqrt(3.0);
+	cs2 = pow((double)cs,2.0); //1.0 / 3.0;
+	cs4 = pow((double)cs,4.0); //1.0 / 9.0;
+	invcs  = 1.0 / cs;
+	invcs2 = 1.0 / cs2;
+	invcs4 = 1.0 / cs4;
+	twocs2 = 2.0 * cs2;
+	twocs4 = 2.0 * cs4;
+	invtwocs2 = 1.0 / twocs2;
+	invtwocs4 = 1.0 / twocs4;
 
 	/* Settings for D3Q19 */
 	wgt[0] = 1. / 3.;
@@ -83,18 +94,6 @@ void design_lb(){
 	inv[16] = 17;
 	inv[17] = 16;
 	inv[18] = 15;
-
-	/* speed of sound constants */
-	cs  = 1.0 / sqrt(3.0);
-	cs2 = 1.0 / 3.0;
-	cs4 = 1.0 / 9.0;
-	invcs  = 1.0 / cs;
-	invcs2 = 1.0 / cs2;
-	invcs4 = 1.0 / cs4;
-	twocs2 = 2.0 * cs2;
-	twocs4 = 2.0 * cs4;
-	invtwocs2 = 1.0 / twocs2;
-	invtwocs4 = 1.0 / twocs4;
 
 }
 
