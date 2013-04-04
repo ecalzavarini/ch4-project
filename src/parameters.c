@@ -262,6 +262,65 @@ void allocate_fields(){
  if(zp_vector == NULL || zm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_vector\n"); exit(-1);}
 #endif
  
+#ifdef METHOD_MYQUICK
+ interp2_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_xp\n"); exit(-1);}
+ set_to_zero_my_double( interp2_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp2_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_xm\n"); exit(-1);}
+ set_to_zero_my_double( interp2_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp2_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_yp\n"); exit(-1);}
+ set_to_zero_my_double( interp2_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp2_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_ym\n"); exit(-1);}
+ set_to_zero_my_double( interp2_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp2_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_zp\n"); exit(-1);}
+ set_to_zero_my_double( interp2_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp2_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp2_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_zm\n"); exit(-1);}
+ set_to_zero_my_double( interp2_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ interp3_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_xp\n"); exit(-1);}
+ set_to_zero_my_double( interp3_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp3_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_xm\n"); exit(-1);}
+ set_to_zero_my_double( interp3_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp3_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_yp\n"); exit(-1);}
+ set_to_zero_my_double( interp3_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp3_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_ym\n"); exit(-1);}
+ set_to_zero_my_double( interp3_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp3_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zp\n"); exit(-1);}
+ set_to_zero_my_double( interp3_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp3_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp3_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zm\n"); exit(-1);}
+ set_to_zero_my_double( interp3_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ interp4_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_xp\n"); exit(-1);}
+ set_to_zero_my_double( interp4_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp4_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_xm\n"); exit(-1);}
+ set_to_zero_my_double( interp4_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp4_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_yp\n"); exit(-1);}
+ set_to_zero_my_double( interp4_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp4_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_ym\n"); exit(-1);}
+ set_to_zero_my_double( interp4_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp4_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_zp\n"); exit(-1);}
+ set_to_zero_my_double( interp4_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ interp4_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(interp4_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_zm\n"); exit(-1);}
+ set_to_zero_my_double( interp4_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
+
 
 
 #ifdef LB_FLUID
