@@ -11,6 +11,7 @@ void dump_averages(){
 
 
 #ifdef LB_FLUID
+    out_local.x = out_local.y = out_local.z = 0.0; 
     out_local.ux = out_local.uy = out_local.uz = 0.0; 
     out_local.ux2 = out_local.uy2 = out_local.uz2 = 0.0; 
     out_local.rho = 0.0;
@@ -58,20 +59,22 @@ void dump_averages(){
 			for (k = BRD; k < LNZ+BRD; k++) {
 
 #ifdef LB_FLUID
+			  
 			  out_local.x += x = center_V[IDX(i, j, k)].x;
-			  ruler_x_local[i -BRD + LNX_START].x = x;
-			  ruler_y_local[j -BRD + LNY_START].x = x;
-			  ruler_z_local[k -BRD + LNZ_START].x = x;
+			  ruler_x_local[i -BRD + LNX_START].x += x;
+			  ruler_y_local[j -BRD + LNY_START].x += x;
+			  ruler_z_local[k -BRD + LNZ_START].x += x;
 
 			  out_local.y += y = center_V[IDX(i, j, k)].y;
-			  ruler_x_local[i -BRD + LNX_START].y = y;
-			  ruler_y_local[j -BRD + LNY_START].y = y;
-			  ruler_z_local[k -BRD + LNZ_START].y = y;
+			  ruler_x_local[i -BRD + LNX_START].y += y;
+			  ruler_y_local[j -BRD + LNY_START].y += y;
+			  ruler_z_local[k -BRD + LNZ_START].y += y;
 
 			  out_local.z += z = center_V[IDX(i, j, k)].z;
-			  ruler_x_local[i -BRD + LNX_START].z = z;
-			  ruler_y_local[j -BRD + LNY_START].z = z;
-			  ruler_z_local[k -BRD + LNZ_START].z = z;
+			  ruler_x_local[i -BRD + LNX_START].z += z;
+			  ruler_y_local[j -BRD + LNY_START].z += z;
+			  ruler_z_local[k -BRD + LNZ_START].z += z;
+			  
 
 			  out_local.ux += ux = u[IDX(i, j, k)].x;
 			  ruler_x_local[i -BRD + LNX_START].ux += ux;
@@ -151,6 +154,7 @@ void dump_averages(){
 
   norm = 1.0/(my_double)(NY*NZ);
   for (i = 0; i < NX; i++){
+    ruler_x[i].x *= norm;
     ruler_x[i].ene *= norm;
     ruler_x[i].rho *= norm;
     ruler_x[i].ux *= norm; 
@@ -164,6 +168,7 @@ void dump_averages(){
 
   norm = 1.0/(my_double)(NX*NZ);
   for (i = 0; i < NY; i++){
+    ruler_y[i].y *= norm;
     ruler_y[i].ene *= norm;
     ruler_y[i].rho *= norm;
     ruler_y[i].ux *= norm; 
@@ -177,6 +182,7 @@ void dump_averages(){
 
   norm = 1.0/(my_double)(NX*NY);
   for (i = 0; i < NZ; i++){
+    ruler_z[i].z *= norm;
     ruler_z[i].ene *= norm;
     ruler_z[i].rho *= norm;
     ruler_z[i].ux *= norm; 
