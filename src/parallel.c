@@ -160,10 +160,10 @@ void processor_splitting()
 	LNZ_START = LNZ * mez;
 	LNZ_END = LNZ * (mez + 1);
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	fprintf(stderr, "me %d LNX_START %d , LNY_START %d  LNZ_START %d\n", me, LNX_START ,LNY_START, LNZ_START);
 	fprintf(stderr, "me %d LNX_END %d , LNY_END %d  LNZ_END %d\n", me, LNX_END ,LNY_END, LNZ_END);
-#endif
+	#endif
 
 	/* processor rulers for the grid */
 	NXG=NX+1;
@@ -193,7 +193,7 @@ void processor_splitting()
 	fprintf(stderr, "me %d LNXG_END %d , LNYG_END %d  LNZG_END %d\n", me, LNXG_END ,LNYG_END, LNZG_END);
 #endif
 
-	/* every procs finds it neighbors */
+	/* every procs finds its neighbors */
 	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
 	next = (mex-1+nxprocs) % nxprocs; me_xm = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
 	next = (mey+1+nyprocs) % nyprocs; me_yp = mez * (nyprocs * nxprocs) + next * nxprocs + mex; 
