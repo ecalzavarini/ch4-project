@@ -64,13 +64,6 @@ void design_lb(){
 	c[18].x = 0.;	c[18].y = -1.;	c[18].z = -1.;
 
 
-	/* in typedef.h  
-#define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8] -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14]) 
-#define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15]+a.p[16]-a.p[17]-a.p[18]) 
-#define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
-#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
-	 */
-
 	/*
 	 * This function provides the opposite velocity c_j=inv[i] for
 	 * velocity c_i
@@ -422,7 +415,7 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 
 
 #ifdef LB_FLUID_BC
-void boundary_conditions(pop * f){
+void boundary_conditions(pop *f){
 
   int i,j,k,pp;
   vector vel;
@@ -512,6 +505,10 @@ if(LNY_END == NY){
 	//f[IDX(i,j+1,k)].p[pp] = wgt[pp];
 	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK
+       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[pp];
+#endif
 #else
 	/* NOSLIP */
 	  vel.x = u[IDX(i,j,k)].x;
@@ -546,6 +543,10 @@ if(LNY_START == 0){
 	*/	
 	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK
+       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[pp];
+#endif
 #else
 	/* NO SLIP */
 
