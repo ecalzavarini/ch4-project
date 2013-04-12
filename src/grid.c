@@ -585,7 +585,6 @@ void sendrecv_borders_vector(vector *f){
       for(i=BRD;i<LNX+BRD;i++){ 
 	f[IDX(i,j,k+LNZ+BRD)] = zp_vector[IDX_ZBRD(i,j,k)];
       }
-
 }/* end send rcv */
 
 
@@ -796,6 +795,48 @@ zm = average_4vectors(P0, P1, P2, P3);
 
 	/* exchange centers */
   	sendrecv_borders_vector(center_V);
+	
+	for (j = BRD; j < LNY + BRD ; j++) 
+	for (k = BRD; k < LNZ + BRD ; k++){
+	if(LNX_START == 0){
+	  center_V[IDX(1, j, k)].x = - center_V[IDX(2, j , k)].x;
+	  center_V[IDX(0, j, k)].x = - center_V[IDX(3, j , k)].x;
+	  if(NX==1) center_V[IDX(0, j, k)].x = center_V[IDX(1, j, k)].x - 2.0*center_V[IDX(2, j , k)].x;
+	}	
+	if(LNX_END == NX){
+	  center_V[IDX(LNX+TWO_BRD-2, j, k)].x =  (NX - center_V[IDX(LNX+BRD-1, j, k)].x)+NX;
+	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (NX - center_V[IDX(LNX+BRD-2, j, k)].x)+NX;
+	}
+	}
+	
+
+       	for (i = BRD; i < LNX + BRD; i++) 
+	for (k = BRD; k < LNZ + BRD; k++) {
+	if(LNY_START == 0){
+	  center_V[IDX(i, 1, k)].y = - center_V[IDX(i, 2 , k)].y;
+	  center_V[IDX(i, 0, k)].y = - center_V[IDX(i, 3 , k)].y;
+	  if(NY==1) center_V[IDX(i, 0, k)].y = center_V[IDX(i, 1, k)].y - 2.0*center_V[IDX(i, 2 , k)].y;
+	}	
+	if(LNY_END == NY){
+	  center_V[IDX(i, LNY+TWO_BRD-2, k)].y =  (NY - center_V[IDX(i, LNY+BRD-1, k)].y)+NY;
+	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (NY - center_V[IDX(i, LNY+BRD-2, k)].y)+NY;
+	}
+	}
+
+	
+	for (i = BRD; i < LNX + BRD ; i++) 
+	for (j = BRD; j < LNY + BRD ; j++){ 
+	if(LNZ_START == 0){
+	  center_V[IDX(i, j, 1)].z = - center_V[IDX(i, j, 2)].z;
+	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 3)].z;
+	  if(NZ==1) center_V[IDX(i, j, 0)].z = center_V[IDX(i, j, 1)].z - 2.0*center_V[IDX(i, j , 2)].z;
+	}	
+	if(LNZ_END == NZ){
+	  center_V[IDX(i, j, LNZ+TWO_BRD-2)].z =  (NZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+NZ;
+	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (NZ - center_V[IDX(i, j, LNZ+BRD-2)].z)+NZ;
+	}
+	}
+	
 
 	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
 		for (j = BRD; j < LNYG + BRD - 1; j++) 
@@ -820,114 +861,125 @@ w_ym = average_4vectors(P0, P1, P4, P5);
 w_zp = average_4vectors(P4, P5, P6, P7);
 w_zm = average_4vectors(P0, P1, P2, P3); 
 
+
+/*******************************************************************/
+/*  Part 1: from inside to the outside */ 
+
 /* we find the distance of the centers from such 6 surface centers */
+/*  x - xu */
  xp = vector_difference(w_xp, center_V[IDX(i, j, k)]);
- xm = vector_difference(center_V[IDX(i, j, k)],w_xm);
+ xm = vector_difference(w_xm, center_V[IDX(i, j, k)]);
  yp = vector_difference(w_yp, center_V[IDX(i, j, k)]);
- ym = vector_difference(center_V[IDX(i, j, k)],w_ym);
+ ym = vector_difference(w_ym, center_V[IDX(i, j, k)]);
  zp = vector_difference(w_zp, center_V[IDX(i, j, k)]);
- zm = vector_difference(center_V[IDX(i, j, k)],w_zm);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k)]);
 /* we find the distance of the centers from such 6 surface centers */
+/* x - xuu */
  xp2 = vector_difference(w_xp, center_V[IDX(i-1, j, k)]);
- xm2 = vector_difference(center_V[IDX(i+1, j, k)],w_xm);
+ xm2 = vector_difference(w_xm, center_V[IDX(i+1, j, k)]);
  yp2 = vector_difference(w_yp, center_V[IDX(i, j-1, k)]);
- ym2 = vector_difference(center_V[IDX(i, j+1, k)],w_ym);
+ ym2 = vector_difference(w_ym, center_V[IDX(i, j+1, k)]);
  zp2 = vector_difference(w_zp, center_V[IDX(i, j, k-1)]);
- zm2 = vector_difference(center_V[IDX(i, j, k+1)],w_zm);
+ zm2 = vector_difference(w_zm, center_V[IDX(i, j, k+1)]);
  /* we find the distance between the two neighboring nodes */ 
+ /* xd - xu */
  dxp = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i, j, k)]);
- dxm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i-1, j, k)]);
+ dxm = vector_difference(center_V[IDX(i-1, j, k)], center_V[IDX(i, j, k)]);
  dyp = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j, k)]);
- dym = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j-1, k)]);
+ dym = vector_difference(center_V[IDX(i, j-1, k)], center_V[IDX(i, j, k)]);
  dzp = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k)]);
- dzm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k-1)]);
-/* we find the distance between the two neighboring nodes */ 
+ dzm = vector_difference(center_V[IDX(i, j, k-1)], center_V[IDX(i, j, k)]);
+/* we find the distance between the two next neighboring nodes */ 
+/* xd - xuu */
  dxp2 = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i-1, j, k)]);
- dxm2 = vector_difference(center_V[IDX(i-1, j, k)],center_V[IDX(i+1, j, k)]);
+ dxm2 = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i-1, j, k)]);
  dyp2 = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j-1, k)]);
- dym2 = vector_difference(center_V[IDX(i, j-1, k)],center_V[IDX(i, j+1, k)]);
+ dym2 = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j-1, k)]);
  dzp2 = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k-1)]);
- dzm2 = vector_difference(center_V[IDX(i, j, k-1)],center_V[IDX(i, j, k+1)]);
-
-/* now correct for the boundary nodes */
- if(i == LNX+BRD-1 && LNX_END == NX){ 
-   edge.x=NX;edge.y=0;edge.z=0;
-   dxp = vector_difference(edge, center_V[IDX(i, j, k)]); 
-   dxp=vector_scale(2.0,dxp);
- }
-
- if(i == BRD && LNX_START == 0){
-  edge.x=0;edge.y=0;edge.z=0;
-  dxm = vector_difference(center_V[IDX(i, j, k)],edge);
-  dxm=vector_scale(2.0,dxm);
- }
- 
- if(j == LNY+BRD-1 && LNY_END == NY){ 
-   edge.x=0;edge.y=NY;edge.z=0;
-   dyp = vector_difference(edge, center_V[IDX(i, j, k)]); 
-   dyp=vector_scale(2.0,dyp);
-
-   dyp2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-1, k)]);
-   dyp2 = vector_sum(dyp2,dyp);
- }
-
- if(j == BRD && LNY_START == 0){
-  edge.x=0;edge.y=0;edge.z=0;
-  dym = vector_difference(center_V[IDX(i, j, k)],edge);
-  dym=vector_scale(2.0,dym);
-
-  yp2 = vector_difference(center_V[IDX(i, j, k)],edge);
-  yp2 = vector_sum(yp2,dym);
-
-  dyp2 = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j, k)]);
-  dyp2 = vector_sum(dyp2,dym);
-
- }
-
- if(k == LNZ+BRD-1 && LNZ_END == NZ){ 
-   edge.x=0;edge.y=0;edge.z=NZ;
-   dzp = vector_difference(edge, center_V[IDX(i, j, k)]); 
-   dzp=vector_scale(2.0,dzp);
- }
-
- if(k == BRD && LNZ_START == 0){
-  edge.x=0;edge.y=0;edge.z=0;
-  dzm = vector_difference(center_V[IDX(i, j, k)],edge);
-  dzm=vector_scale(2.0,dzm);
- }
-
-
- xp3=xm;
- xm3=xp;
- yp3=ym;
- ym3=yp;
- zp3=zm;
- zm3=zp;
-
- dxp3=dxm;
- dxm3=dxp;
- dyp3=dym;
- dym3=dyp;
- dzp3=dzm;
- dzm3=dzp;
+ dzm2 = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k-1)]);
+ /* xd - x */
+ xp3 = vector_difference(center_V[IDX(i+1, j, k)],w_xp);
+ xm3 = vector_difference(center_V[IDX(i-1, j, k)],w_xm);
+ yp3 = vector_difference(center_V[IDX(i, j+1, k)],w_yp);
+ ym3 = vector_difference(center_V[IDX(i, j-1, k)],w_ym);
+ zp3 = vector_difference(center_V[IDX(i, j, k+1)],w_zp);
+ zm3 = vector_difference(center_V[IDX(i, j, k-1)],w_zm);
+ /* xu - xuu */
+ dxp3 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i-1, j, k)]);
+ dxm3 = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i+1, j, k)]);
+ dyp3 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-1, k)]);
+ dym3 = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j+1, k)]);
+ dzp3 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k-1)]);
+ dzm3 = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k+1)]);
 
  /* This is UPWIND g1 = (x-xu)*(x-xuu) / (xd-xu)*(xd-xuu)         */
- interp_xp[IDX(i,j,k)] = (xp.x*xp2.x)/(dxp.x*dxp2.x);
- interp_xm[IDX(i,j,k)] = (xm.x*xm2.x)/(dxm.x*dxm2.x);
- interp_yp[IDX(i,j,k)] = (yp.y*yp2.y)/(dyp.y*dyp2.y);
- interp_ym[IDX(i,j,k)] = (ym.y*ym2.y)/(dym.y*dym2.y);
- interp_zp[IDX(i,j,k)] = (zp.z*zp2.z)/(dzp.z*dzp2.z);
- interp_zm[IDX(i,j,k)] = (zm.z*zm2.z)/(dzm.z*dzm2.z);
+ interp_xp[IDX(i,j,k)] = fabs( (xp.x*xp2.x)/(dxp.x*dxp2.x) );
+ interp_xm[IDX(i,j,k)] = fabs( (xm.x*xm2.x)/(dxm.x*dxm2.x) );
+ interp_yp[IDX(i,j,k)] = fabs( (yp.y*yp2.y)/(dyp.y*dyp2.y) );
+ interp_ym[IDX(i,j,k)] = fabs( (ym.y*ym2.y)/(dym.y*dym2.y) );
+ interp_zp[IDX(i,j,k)] = fabs( (zp.z*zp2.z)/(dzp.z*dzp2.z) );
+ interp_zm[IDX(i,j,k)] = fabs( (zm.z*zm2.z)/(dzm.z*dzm2.z) );
 
- /* This is UPWIND g2 = (x-xu)*(xd-x) / (xu-xuu)*(xd-xuu)          */
- interp2_xp[IDX(i,j,k)] = (xp.x*xp3.x)/(dxp3.x*dxp2.x);
- interp2_xm[IDX(i,j,k)] = (xm.x*xm3.x)/(dxm3.x*dxm2.x);
- interp2_yp[IDX(i,j,k)] = (yp.y*yp3.y)/(dyp3.y*dyp2.y);
- interp2_ym[IDX(i,j,k)] = (ym.y*ym3.y)/(dym3.y*dym2.y);
- interp2_zp[IDX(i,j,k)] = (zp.z*zp3.z)/(dzp3.z*dzp2.z);
- interp2_zm[IDX(i,j,k)] = (zm.z*zm3.z)/(dzm3.z*dzm2.z);
+ /* This is UPWIND g2 = (x-xu)*(xd-x) / (xu-xuu)*(xd-xuu)         */
+ interp2_xp[IDX(i,j,k)] = fabs( (xp.x*xp3.x)/(dxp3.x*dxp2.x) );
+ interp2_xm[IDX(i,j,k)] = fabs( (xm.x*xm3.x)/(dxm3.x*dxm2.x) );
+ interp2_yp[IDX(i,j,k)] = fabs( (yp.y*yp3.y)/(dyp3.y*dyp2.y) );
+ interp2_ym[IDX(i,j,k)] = fabs( (ym.y*ym3.y)/(dym3.y*dym2.y) );
+ interp2_zp[IDX(i,j,k)] = fabs( (zp.z*zp3.z)/(dzp3.z*dzp2.z) );
+ interp2_zm[IDX(i,j,k)] = fabs( (zm.z*zm3.z)/(dzm3.z*dzm2.z) );
 
- /* This is DOWNWIND g3 = (x-xu)*(x-xuu) / (xd-xu)*(xd-xuu)         */
+
+ /*******************************************************************/
+/*  Part 2: from outside to the inside */ 
+
+/* we find the distance of the centers from such 6 surface centers */
+/*  x - xu */
+ xp = vector_difference(w_xp, center_V[IDX(i+1, j, k)]);
+ xm = vector_difference(w_xm, center_V[IDX(i-1, j, k)]);
+ yp = vector_difference(w_yp, center_V[IDX(i, j+1, k)]);
+ ym = vector_difference(w_ym, center_V[IDX(i, j-1, k)]);
+ zp = vector_difference(w_zp, center_V[IDX(i, j, k+1)]);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k-1)]);
+/* we find the distance of the centers from such 6 surface centers */
+/* x - xuu */
+ xp2 = vector_difference(w_xp, center_V[IDX(i+2, j, k)]);
+ xm2 = vector_difference(w_xm, center_V[IDX(i-2, j, k)]);
+ yp2 = vector_difference(w_yp, center_V[IDX(i, j+2, k)]);
+ ym2 = vector_difference(w_ym, center_V[IDX(i, j-2, k)]);
+ zp2 = vector_difference(w_zp, center_V[IDX(i, j, k+2)]);
+ zm2 = vector_difference(w_zm, center_V[IDX(i, j, k-2)]);
+ /* we find the distance between the two neighboring nodes */ 
+ /* xd - xu */
+ dxp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i+1, j, k)]);
+ dxm = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i-1, j, k)]);
+ dyp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j+1, k)]);
+ dym = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-1, k)]);
+ dzp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k+1)]);
+ dzm = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k-1)]);
+/* we find the distance between the two next neighboring nodes */ 
+/* xd - xuu */
+ dxp2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i+2, j, k)]);
+ dxm2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i-2, j, k)]);
+ dyp2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j+2, k)]);
+ dym2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-2, k)]);
+ dzp2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k+2)]);
+ dzm2 = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k-2)]);
+ /* xd - x */
+ xp3 = vector_difference(center_V[IDX(i, j, k)],w_xp);
+ xm3 = vector_difference(center_V[IDX(i, j, k)],w_xm);
+ yp3 = vector_difference(center_V[IDX(i, j, k)],w_yp);
+ ym3 = vector_difference(center_V[IDX(i, j, k)],w_ym);
+ zp3 = vector_difference(center_V[IDX(i, j, k)],w_zp);
+ zm3 = vector_difference(center_V[IDX(i, j, k)],w_zm);
+ /* xu - xuu */
+ dxp3 = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i+2, j, k)]);
+ dxm3 = vector_difference(center_V[IDX(i-1, j, k)],center_V[IDX(i-2, j, k)]);
+ dyp3 = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j+2, k)]);
+ dym3 = vector_difference(center_V[IDX(i, j-1, k)],center_V[IDX(i, j-2, k)]);
+ dzp3 = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k+2)]);
+ dzm3 = vector_difference(center_V[IDX(i, j, k-1)],center_V[IDX(i, j, k-2)]);
+
+ /* This is DOWNWIND g3 = (x-xu)*(x-xuu) / (xd-xu)*(xd-xuu)        */
  interp3_xp[IDX(i,j,k)] = (xp.x*xp2.x)/(dxp.x*dxp2.x);
  interp3_xm[IDX(i,j,k)] = (xm.x*xm2.x)/(dxm.x*dxm2.x);
  interp3_yp[IDX(i,j,k)] = (yp.y*yp2.y)/(dyp.y*dyp2.y);
@@ -976,21 +1028,22 @@ w_zm = average_4vectors(P0, P1, P2, P3);
 	sendrecv_borders_scalar(interp4_zm);
 	
 	
-	//#ifdef BEBUG_HARD
+	#ifdef BEBUG_HARD
 	for (i = BRD; i < LNX + BRD; i++) 
 		for (j = BRD; j < LNY + BRD; j++) 
 			for (k = BRD; k < LNZ + BRD; k++) {
 
 fprintf(stderr,"ZZZZ me %d i j k %d %d %d | %f %f %f %f\n", me, i,j,k,
-	//interp_yp[IDX(i,j,k)], interp2_yp[IDX(i,j,k)], interp3_yp[IDX(i,j,k)], interp4_yp[IDX(i,j,k)]);
-	interp_ym[IDX(i,j,k)], interp2_ym[IDX(i,j,k)], interp3_ym[IDX(i,j,k)], interp4_ym[IDX(i,j,k)]);
+	//center_V[IDX(i,j,k)].x , center_V[IDX(i,j,k)].y , center_V[IDX(i,j,k)].z);
 	//interp_xp[IDX(i,j,k)], interp2_xp[IDX(i,j,k)], interp3_xp[IDX(i,j,k)], interp4_xp[IDX(i,j,k)]);
 	//interp_xm[IDX(i,j,k)], interp2_xm[IDX(i,j,k)], interp3_xm[IDX(i,j,k)], interp4_xm[IDX(i,j,k)]);
-       //interp_zp[IDX(i,j,k)], interp2_zp[IDX(i,j,k)], interp3_zp[IDX(i,j,k)], interp4_zp[IDX(i,j,k)]);
-       //interp_zm[IDX(i,j,k)], interp2_zm[IDX(i,j,k)], interp3_zm[IDX(i,j,k)], interp4_zm[IDX(i,j,k)]);
+       	 interp_yp[IDX(i,j,k)], interp2_yp[IDX(i,j,k)], interp3_yp[IDX(i,j,k)], interp4_yp[IDX(i,j,k)]);
+	//interp_ym[IDX(i,j,k)], interp2_ym[IDX(i,j,k)], interp3_ym[IDX(i,j,k)], interp4_ym[IDX(i,j,k)]);
+        //interp_zp[IDX(i,j,k)], interp2_zp[IDX(i,j,k)], interp3_zp[IDX(i,j,k)], interp4_zp[IDX(i,j,k)]);
+        //interp_zm[IDX(i,j,k)], interp2_zm[IDX(i,j,k)], interp3_zm[IDX(i,j,k)], interp4_zm[IDX(i,j,k)]);
 }/* i,j,k*/
 	//exit(1);
-	//#endif
+	#endif
 
 #endif
 

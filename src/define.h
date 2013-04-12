@@ -3,8 +3,8 @@
 //#define DEBUG_HARD
 
 /* GRID */
-#define GRID_REGULAR
-//#define GRID_REFINED
+//#define GRID_REGULAR
+#define GRID_REFINED
 //#define GRID_REGULAR_CARTESIAN
 //#define GRID_REGULAR_CARTESIAN_EQUISPACED
 //#define GRID_REGULAR_CARTESIAN_EQUISPACED_X
@@ -39,13 +39,13 @@
 //#define LB_FLUID_BC_Z  
 
 /* METHODS for time stepping or convective term */
-//#define METHOD_EXPONENTIAL
-#define METHOD_STEPPING_EULER
-//#define METHOD_STEPPING_AB2
+#define METHOD_EXPONENTIAL
+//#define METHOD_STEPPING_EULER
+#define METHOD_STEPPING_AB2
 //#define METHOD_MIXED
 //#define METHOD_CENTERED
-#define METHOD_UPWIND
-//#define METHOD_MYQUICK
+//#define METHOD_UPWIND
+#define METHOD_MYQUICK
 
 /* TEMPERATURE */
 //#define LB_TEMPERATURE
