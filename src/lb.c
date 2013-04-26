@@ -586,7 +586,7 @@ if(LNY_START == 0){
 #ifdef LB_TEMPERATURE_BC_Y
 
   pop g_eq, g_eq_w;
-  my_double effDT;
+  my_double effDT, rho2;
 
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -599,9 +599,10 @@ if(LNY_END == NY){
 	  vel.x = u[IDX(i,j,k)].x;
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
-	  rho = t[IDX(i,j,k)]; // m(g[IDX(i,LNY-1,k)]); 
+	  rho = t[IDX(i,j,k)]; 
+	  //rho = m(g[IDX(i,j,k)]);
 	  g_eq = equilibrium_given_velocity(vel,rho);
-	  effDT = ( (property.T_top-property.T_ref) - m(g_eq) )*2.0 +  m(g_eq);
+	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
 	  vel.x *= -1.0;
 	  vel.y *= -1.0;
 	  vel.z *= -1.0;
@@ -610,6 +611,18 @@ if(LNY_END == NY){
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
 
 #ifdef METHOD_MYQUICK
+	  vel.x = u[IDX(i,j-1,k)].x;
+	  vel.y = u[IDX(i,j-1,k)].y;
+	  vel.z = u[IDX(i,j-1,k)].z;
+	  rho = t[IDX(i,j-1,k)]; 
+	  //rho = m(g[IDX(i,j-1,k)]);
+	  g_eq = equilibrium_given_velocity(vel,rho);
+	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+
        	for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = g[IDX(i,j-1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];
 #endif
  }
@@ -621,17 +634,33 @@ if(LNY_START == 0){
 	  vel.x = u[IDX(i,j,k)].x;
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
-	  rho =  t[IDX(i,j,k)]; //m(g[IDX(i,1,k)]);
+	  rho  =  t[IDX(i,j,k)]; 
+	  //rho = m(g[IDX(i,j,k)]);
 	  g_eq = equilibrium_given_velocity(vel,rho);
-	  effDT = ( (property.T_bot-property.T_ref) - m(g_eq) )*2.0 +  m(g_eq);
+ 
 	  vel.x *= -1.0;
 	  vel.y *= -1.0;
-	  vel.z *= -1.0;
+	  vel.z *= -1.0;	 
+	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
 	  g_eq_w = equilibrium_given_velocity(vel,effDT);
 
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
-#ifdef METHOD_MYQUICK
- 	for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = g[IDX(i,j+1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];       
+
+#ifdef METHOD_MYQUICK 
+	  vel.x = u[IDX(i,j+1,k)].x;
+	  vel.y = u[IDX(i,j+1,k)].y;
+	  vel.z = u[IDX(i,j+1,k)].z;
+	   rho =  t[IDX(i,j+1,k)]; 
+	  //rho = m(g[IDX(i,j+1,k)]);
+	  g_eq = equilibrium_given_velocity(vel,rho);
+ 
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;	  
+	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
+	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = g[IDX(i,j+1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];  
 #endif
 }
 

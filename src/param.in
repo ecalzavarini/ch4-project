@@ -1,10 +1,10 @@
-NX 32
-NY 32
+NX 64
+NY 64
 NZ 1
 
 time_dt 0.025
 time_start 0.0
-time_end 2.0
+time_end 25.0
 time_dump_field 10.0
 time_dump_diagn 1.0
 

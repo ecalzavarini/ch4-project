@@ -40,8 +40,8 @@
 
 /* METHODS for time stepping or convective term */
 //#define METHOD_EXPONENTIAL
-//#define METHOD_STEPPING_EULER
-#define METHOD_STEPPING_AB2
+#define METHOD_STEPPING_EULER
+//#define METHOD_STEPPING_AB2
 //#define METHOD_MIXED
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
