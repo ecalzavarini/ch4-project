@@ -36,6 +36,11 @@ typedef struct {
 #endif
 #ifdef LB_TEMPERATURE
   double tau_t, kappa;
+  double T_bot,T_top,T_ref,deltaT;
+#ifdef LB_TEMPERATURE_BUOYANCY
+  double beta_t,beta2_t;
+  double gravity_x,gravity_y,gravity_z;
+#endif
 #endif
 #ifdef LB_SCALAR
   double tau_s, chi;
@@ -53,9 +58,12 @@ typedef struct {
 #define NPROP 13
 #endif
 #ifdef LB_TEMPERATURE
-#define NPROP 15
+#define NPROP 19
+#ifdef LB_TEMPERATURE_BUOYANCY
+#define NPROP 24
+#endif
 #ifdef LB_SCALAR
-#define NPROP 17
+#define NPROP 26
 #endif
 #endif
 #endif
@@ -63,12 +71,23 @@ typedef struct {
 
 typedef struct {
 #ifdef LB_FLUID
-  my_double x,y,z,ux,uy,uz,ux2,uy2,uz2;
+  my_double x,y,z;
+  my_double ux,uy,uz;
+  my_double ux2,uy2,uz2;
   my_double rho,ene,eps;
+#endif
+#ifdef LB_TEMPERATURE
+  my_double t,t2,epst;
+  my_double dxt,dyt,dzt;
+  my_double uxt,uyt,uzt;
+  my_double nux,nuy,nuz;
 #endif
 } output;
 #ifdef LB_FLUID
 #define NOUT 12
+#endif
+#ifdef LB_TEMPERATURE
+#define NOUT 24
 #endif
 
 

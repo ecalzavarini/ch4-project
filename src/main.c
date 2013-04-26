@@ -11,14 +11,15 @@ int main(int argc, char **argv){
 #endif
 	read_mesh();
 	compute_volumes();
-	//#ifdef METHOD_CENTERED
 	compute_interpolation_coefficients();
-	//#endif
+
 #ifdef LB_FLUID_BC
 	prepare_boundary_conditions();
 #endif
 	initial_conditions(); 
 	hydro_fields();
+	//dump_averages();
+	// exit(1);
 
 
 	itime=0;
@@ -29,12 +30,19 @@ int main(int argc, char **argv){
 
 #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);
-#ifdef LB_FLUID_BC	  
-	  boundary_conditions(p);
+#ifdef LB_TEMPERATURE
+	  sendrecv_borders_pop(g);
+#endif
+#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC)
+	  boundary_conditions();
 #endif
 	  
 	  compute_advection(p,rhs_p);
 	  add_collision(p,rhs_p);
+#ifdef LB_TEMPERATURE
+	  compute_advection(g,rhs_g);
+	  add_collision(g,rhs_g);
+#endif
 
 #ifdef LB_FLUID_FORCING
 	  build_forcing();
@@ -42,11 +50,15 @@ int main(int argc, char **argv){
 #endif
 	  
 	 time_stepping(p,rhs_p,old_rhs_p);
+#ifdef LB_TEMPERATURE
+	 time_stepping(g,rhs_g,old_rhs_g);
+#endif
+	
 	 hydro_fields();	
 	 dump_averages();
 
 #endif
-   }
+	}
 
 	/* Shut down MPI */
 	MPI_Finalize();

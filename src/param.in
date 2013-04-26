@@ -1,10 +1,10 @@
-NX 1
-NY 64
+NX 32
+NY 32
 NZ 1
 
 time_dt 0.025
 time_start 0.0
-time_end 10000.
+time_end 2.0
 time_dump_field 10.0
 time_dump_diagn 1.0
 
@@ -14,3 +14,14 @@ Amp_x 0.01
 Amp_y 0.0
 Amp_z 0.0
 
+tau_t 1.0
+T_bot 1.0
+T_top 0.0
+T_ref 0.0
+
+beta_t  0.001
+beta2_t 0.0
+
+gravity_x 0.0
+gravity_y 1.0
+gravity_z 0.0

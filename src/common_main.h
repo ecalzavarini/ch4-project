@@ -94,6 +94,10 @@ vector *force;
 #endif
 #endif
 
+#ifdef LB_TEMPERATURE
+pop *g, *rhs_g, *old_rhs_g;
+my_double *t;
+#endif
 
 
 /* time */

@@ -9,18 +9,32 @@ void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype){
 for (i = 0; i < *length; i++) {
 
 #ifdef LB_FLUID
-  (b+i)->x += (a+i)->x;
-  (b+i)->y += (a+i)->y;
-  (b+i)->z += (a+i)->z;
-  (b+i)->ux += (a+i)->ux;
-  (b+i)->uy += (a+i)->uy;
-  (b+i)->uz += (a+i)->uz;
+  (b+i)->x   += (a+i)->x;
+  (b+i)->y   += (a+i)->y;
+  (b+i)->z   += (a+i)->z;
+  (b+i)->ux  += (a+i)->ux;
+  (b+i)->uy  += (a+i)->uy;
+  (b+i)->uz  += (a+i)->uz;
   (b+i)->ux2 += (a+i)->ux2;
   (b+i)->uy2 += (a+i)->uy2;
   (b+i)->uz2 += (a+i)->uz2;
   (b+i)->rho += (a+i)->rho;
   (b+i)->ene += (a+i)->ene;
   (b+i)->eps += (a+i)->eps;
+#endif
+#ifdef LB_TEMPERATURE
+  (b+i)->dxt  += (a+i)->dxt;
+  (b+i)->dyt  += (a+i)->dyt;
+  (b+i)->dzt  += (a+i)->dzt;
+  (b+i)->uxt  += (a+i)->uxt;
+  (b+i)->uyt  += (a+i)->uyt;
+  (b+i)->uzt  += (a+i)->uzt;
+  (b+i)->nux  += (a+i)->nux;
+  (b+i)->nuy  += (a+i)->nuy;
+  (b+i)->nuz  += (a+i)->nuz;
+  (b+i)->t    += (a+i)->t;
+  (b+i)->t2   += (a+i)->t2;
+  (b+i)->epst += (a+i)->epst;
 #endif
  }
 
@@ -43,7 +57,7 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_contiguous(NOUT, MPI_DOUBLE , &MPI_output_type);
  MPI_Type_commit(&MPI_output_type);
  MPI_Op_create( (MPI_User_function *)sum_output, 1, &MPI_SUM_output );
-
+ fprintf(stderr,"--------> NOUT size %d\n",NOUT);
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);

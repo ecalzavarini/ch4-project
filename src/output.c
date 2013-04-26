@@ -8,7 +8,16 @@ void dump_averages(){
   my_double x,y,z,ux,uy,uz,ux2,uy2,uz2,ene,rho,eps;
   my_double norm;
   tensor S;
+#ifdef LB_TEMPERATURE
+  my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz;
+#endif
 
+
+  x=y=z=ux=uy=uz=ux2=uy2=uz2=ene=rho=eps=0.0;
+
+#ifdef LB_TEMPERATURE
+temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
+#endif
 
 #ifdef LB_FLUID
     out_local.x = out_local.y = out_local.z = 0.0; 
@@ -52,6 +61,52 @@ void dump_averages(){
       ruler_z[i].rho = ruler_z[i].ene = ruler_z[i].eps = 0.0;
     }
 #endif
+
+
+#ifdef LB_TEMPERATURE
+    out_local.dxt = out_local.dyt = out_local.dzt = 0.0; 
+    out_local.uxt = out_local.uyt = out_local.uzt = 0.0; 
+    out_local.nux = out_local.nuy = out_local.nuz = 0.0; 
+    out_local.t = 0.0;
+    out_local.t2 = 0.0;
+    out_local.epst = 0.0;
+
+    for (i = 0; i < NX; i++){ 
+      ruler_x_local[i].dxt   = ruler_x_local[i].dyt   = ruler_x_local[i].dzt  = 0.0;
+      ruler_x_local[i].uxt  = ruler_x_local[i].uyt  = ruler_x_local[i].uzt  = 0.0;
+      ruler_x_local[i].nux = ruler_x_local[i].nuy = ruler_x_local[i].nuz = 0.0;
+      ruler_x_local[i].t = ruler_x_local[i].t2 = ruler_x_local[i].epst = 0.0;
+
+      ruler_x[i].dxt   = ruler_x[i].dyt   = ruler_x[i].dzt  = 0.0;
+      ruler_x[i].uxt  = ruler_x[i].uyt  = ruler_x[i].uzt  = 0.0;
+      ruler_x[i].nux = ruler_x[i].nuy = ruler_x[i].nuz = 0.0;
+      ruler_x[i].t = ruler_x[i].t2 = ruler_x[i].epst = 0.0;
+    }
+    for (i = 0; i < NY; i++){ 
+      ruler_y_local[i].dxt   = ruler_y_local[i].dyt   = ruler_y_local[i].dzt  = 0.0;
+      ruler_y_local[i].uxt  = ruler_y_local[i].uyt  = ruler_y_local[i].uzt  = 0.0;
+      ruler_y_local[i].nux = ruler_y_local[i].nuy = ruler_y_local[i].nuz = 0.0;
+      ruler_y_local[i].t = ruler_y_local[i].t2 = ruler_y_local[i].epst = 0.0;
+
+      ruler_y[i].dxt   = ruler_y[i].dyt   = ruler_y[i].dzt  = 0.0;
+      ruler_y[i].uxt  = ruler_y[i].uyt  = ruler_y[i].uzt  = 0.0;
+      ruler_y[i].nux = ruler_y[i].nuy = ruler_y[i].nuz = 0.0;
+      ruler_y[i].t = ruler_y[i].t2 = ruler_y[i].epst = 0.0;
+    } 
+    for (i = 0; i < NZ; i++){ 
+      ruler_z_local[i].dxt   = ruler_z_local[i].dyt   = ruler_z_local[i].dzt  = 0.0;
+      ruler_z_local[i].uxt  = ruler_z_local[i].uyt  = ruler_z_local[i].uzt  = 0.0;
+      ruler_z_local[i].nux = ruler_z_local[i].nuy = ruler_z_local[i].nuz = 0.0;
+      ruler_z_local[i].t = ruler_z_local[i].t2 = ruler_z_local[i].epst = 0.0;
+
+      ruler_z[i].dxt   = ruler_z[i].dyt   = ruler_z[i].dzt  = 0.0;
+      ruler_z[i].uxt  = ruler_z[i].uyt  = ruler_z[i].uzt  = 0.0;
+      ruler_z[i].nux = ruler_z[i].nuy = ruler_z[i].nuz = 0.0;
+      ruler_z[i].t = ruler_z[i].t2 = ruler_z[i].epst = 0.0;
+    }
+#endif
+
+
 
 
 	for (i = BRD; i < LNX+BRD; i++)
@@ -126,16 +181,94 @@ void dump_averages(){
 			  ruler_y_local[j -BRD + LNY_START].eps += eps;
 			  ruler_z_local[k -BRD + LNZ_START].eps += eps;
 #endif
+
+
+#ifdef LB_TEMPERATURE
+			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
+			  
+			  dxt = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+			  out_local.dxt += dxt;
+			  ruler_x_local[i -BRD + LNX_START].dxt += dxt;
+			  ruler_y_local[j -BRD + LNY_START].dxt += dxt;
+			  ruler_z_local[k -BRD + LNZ_START].dxt += dxt;
+
+			  dyt = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+			  out_local.dyt += dyt;
+			  ruler_x_local[i -BRD + LNX_START].dyt += dyt;
+			  ruler_y_local[j -BRD + LNY_START].dyt += dyt;
+			  ruler_z_local[k -BRD + LNZ_START].dyt += dyt;
+
+			  if(NZ!=1) dzt = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+			  out_local.dzt += dzt;
+			  ruler_x_local[i -BRD + LNX_START].dzt += dzt;
+			  ruler_y_local[j -BRD + LNY_START].dzt += dzt;
+			  ruler_z_local[k -BRD + LNZ_START].dzt += dzt;
+			  
+
+			  out_local.uxt += uxt = u[IDX(i, j, k)].x*t[IDX(i, j, k)];
+			  ruler_x_local[i -BRD + LNX_START].uxt += uxt;
+			  ruler_y_local[j -BRD + LNY_START].uxt += uxt;
+			  ruler_z_local[k -BRD + LNZ_START].uxt += uxt;
+
+			  out_local.uyt += uyt = u[IDX(i, j, k)].y*t[IDX(i, j, k)];
+			  ruler_x_local[i -BRD + LNX_START].uyt += uyt;
+			  ruler_y_local[j -BRD + LNY_START].uyt += uyt;
+			  ruler_z_local[k -BRD + LNZ_START].uyt += uyt;
+
+			  out_local.uzt += uzt = u[IDX(i, j, k)].z*t[IDX(i, j, k)];
+			  ruler_x_local[i -BRD + LNX_START].uzt += uzt;
+			  ruler_y_local[j -BRD + LNY_START].uzt += uzt;
+			  ruler_z_local[k -BRD + LNZ_START].uzt += uzt;
+
+			  nux = 0.0;
+			  out_local.nux += nux;
+			  ruler_x_local[i -BRD + LNX_START].nux += nux;
+			  ruler_y_local[j -BRD + LNY_START].nux += nux;
+			  ruler_z_local[k -BRD + LNZ_START].nux += nux;
+
+			  nuy = 0.0;
+			  out_local.nuy += nuy;
+			  ruler_x_local[i -BRD + LNX_START].nuy += nuy;
+			  ruler_y_local[j -BRD + LNY_START].nuy += nuy;
+			  ruler_z_local[k -BRD + LNZ_START].nuy += nuy;
+
+			  nuz = 0.0;
+			  out_local.nuz += nuz;
+			  ruler_x_local[i -BRD + LNX_START].nuz += nuz;
+			  ruler_y_local[j -BRD + LNY_START].nuz += nuz;
+			  ruler_z_local[k -BRD + LNZ_START].nuz += nuz;
+
+			  out_local.t += temp = t[IDX(i, j, k)];
+			  ruler_x_local[i -BRD + LNX_START].t += temp;
+			  ruler_y_local[j -BRD + LNY_START].t += temp;
+			  ruler_z_local[k -BRD + LNZ_START].t += temp;
+
+			  t2=t[IDX(i, j, k)]*t[IDX(i, j, k)];
+			  out_local.t2 += t2;
+			  ruler_x_local[i -BRD + LNX_START].t2 += t2;
+			  ruler_y_local[j -BRD + LNY_START].t2 += t2;
+			  ruler_z_local[k -BRD + LNZ_START].t2 += t2;
+			  
+			  epst = dxt*dxt + dyt*dyt + dzt*dzt;
+			  out_local.epst += epst; 
+			  ruler_x_local[i -BRD + LNX_START].epst += epst;
+			  ruler_y_local[j -BRD + LNY_START].epst += epst;
+			  ruler_z_local[k -BRD + LNZ_START].epst += epst;
+#endif
+
 			} /* for i j k */      
 
 
 
-#ifdef LB_FLUID
+
+	/* Sum all */
   MPI_Allreduce(&out_local, &out_all, 1, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
 
   MPI_Allreduce(ruler_x_local, ruler_x, NX, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
   MPI_Allreduce(ruler_y_local, ruler_y, NY, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
   MPI_Allreduce(ruler_z_local, ruler_z, NZ, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
+
+#ifdef LB_FLUID
 
 #define OUTPUT_NORM
 #ifdef OUTPUT_NORM
@@ -193,8 +326,80 @@ void dump_averages(){
     ruler_z[i].uz2 *= norm;
     ruler_z[i].eps *= norm;
   }
+#endif
 #endif 
 
+#ifdef LB_TEMPERATURE
+
+#ifdef OUTPUT_NORM
+  /* normalization */
+  norm = 1.0/(my_double)(NX*NY*NZ);
+  out_all.t *= norm;
+  out_all.t2 *= norm;
+  out_all.epst  *= norm;
+  out_all.dxt  *= norm;
+  out_all.dyt  *= norm;
+  out_all.dzt *= norm;
+  out_all.uxt *= norm;
+  out_all.uyt *= norm;
+  out_all.uzt *= norm;
+  out_all.nux *= norm;
+  out_all.nuy *= norm;
+  out_all.nuz *= norm;
+
+  norm = 1.0/(my_double)(NY*NZ);
+  for (i = 0; i < NX; i++){
+    ruler_x[i].t *= norm;
+    ruler_x[i].t2 *= norm;
+    ruler_x[i].epst *= norm;
+    ruler_x[i].dxt *= norm; 
+    ruler_x[i].dyt *= norm;
+    ruler_x[i].dzt *= norm;
+    ruler_x[i].uxt *= norm;
+    ruler_x[i].uyt *= norm;
+    ruler_x[i].uzt *= norm;
+    ruler_x[i].nux *= norm;
+    ruler_x[i].nuy *= norm;
+    ruler_x[i].nuz *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NZ);
+  for (i = 0; i < NY; i++){
+    ruler_y[i].t *= norm;
+    ruler_y[i].t2 *= norm;
+    ruler_y[i].epst *= norm;
+    ruler_y[i].dxt *= norm; 
+    ruler_y[i].dyt *= norm;
+    ruler_y[i].dzt *= norm;
+    ruler_y[i].uxt *= norm;
+    ruler_y[i].uyt *= norm;
+    ruler_y[i].uzt *= norm;
+    ruler_y[i].nux *= norm;
+    ruler_y[i].nuy *= norm;
+    ruler_y[i].nuz *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NY);
+  for (i = 0; i < NZ; i++){
+    ruler_z[i].t *= norm;
+    ruler_z[i].t2 *= norm;
+    ruler_z[i].epst *= norm;
+    ruler_z[i].dxt *= norm; 
+    ruler_z[i].dyt *= norm;
+    ruler_z[i].dzt *= norm;
+    ruler_z[i].uxt *= norm;
+    ruler_z[i].uyt *= norm;
+    ruler_z[i].uzt *= norm;
+    ruler_z[i].nux *= norm;
+    ruler_z[i].nuy *= norm;
+    ruler_z[i].nuz *= norm;
+  }
+#endif
+#endif 
+
+
+
+#ifdef LB_FLUID
   if(ROOT){
     sprintf(fname,"velocity_averages.dat");
     fout = fopen(fname,"a");    
@@ -219,6 +424,31 @@ void dump_averages(){
   }
 #endif
   
+#ifdef LB_TEMPERATURE
+  if(ROOT){
+    sprintf(fname,"temperature_averages.dat");
+    fout = fopen(fname,"a");    
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.t,(double)out_all.t2, (double)out_all.epst, (double)out_all.dxt, (double)out_all.dyt, (double)out_all.dzt , (double)out_all.uxt, (double)out_all.uyt, (double)out_all.uzt,(double)out_all.nux, (double)out_all.nuy, (double)out_all.nuz );
+    fclose(fout);
+
+    sprintf(fname,"temperature_averages_x.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].t, (double)ruler_x[i].t2, (double)ruler_x[i].epst, (double)ruler_x[i].dxt, (double)ruler_x[i].dyt, (double)ruler_x[i].dzt , (double)ruler_x[i].uxt, (double)ruler_x[i].uyt, (double)ruler_x[i].uzt, (double)ruler_x[i].nux, (double)ruler_x[i].nuy, (double)ruler_x[i].nuz);
+    fclose(fout);
+
+    sprintf(fname,"temperature_averages_y.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz);
+    fclose(fout);
+
+    sprintf(fname,"temperature_averages_z.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz );
+    fclose(fout);
+
+  }
+#endif
+
 #ifdef OUTPUT_H5
   /* write  files */
   if(itime==1) write_h5();

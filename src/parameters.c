@@ -114,6 +114,30 @@ void assign_parameters(){
   fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
   property.kappa = property.tau_t/3.0;
   fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
+  sprintf(name,"T_bot");
+  property.T_bot = read_parameter(name);
+  sprintf(name,"T_top");
+  property.T_top = read_parameter(name);
+  sprintf(name,"T_ref");
+  property.T_ref = read_parameter(name);
+  property.deltaT = property.T_bot-property.T_top;
+  fprintf(stderr,"T_bot %g , T_top %g , deltaT %g\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
+#ifdef LB_TEMPERATURE_BUOYANCY
+  fprintf(stderr,"YES <- LB_TEMPERATURE_BUOYANCY\n");
+  sprintf(name,"beta_t");
+  property.beta_t = read_parameter(name);
+  fprintf(stderr,"linear volume expansion coefficient %g\n",(double)property.beta_t);
+  sprintf(name,"beta2_t");
+  property.beta2_t = read_parameter(name);
+  fprintf(stde rr,"quadratic volume expansion coefficient %g\n",(double)property.beta2_t);
+  sprintf(name,"gravity_x");
+  property.gravity_x = read_parameter(name);
+  sprintf(name,"gravity_y");
+  property.gravity_x = read_parameter(name);
+  sprintf(name,"gravity_z");
+  property.gravity_x = read_parameter(name);
+  fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
+#endif 
 #endif
 
 #ifdef LB_SCALAR

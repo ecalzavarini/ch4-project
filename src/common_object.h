@@ -94,6 +94,12 @@ extern vector *force;
 #endif
 #endif
 
+#ifdef LB_TEMPERATURE
+extern pop *g, *rhs_g, *old_rhs_g;
+extern my_double *t;
+#endif
+
+
 /* time */
 extern int itime;
 extern my_double time_now;

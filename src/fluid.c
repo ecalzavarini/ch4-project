@@ -380,6 +380,20 @@ void build_forcing(){
 	//  exit(1);
 #endif  
 
+
+#ifdef LB_TEMPERATURE_BUOYANCY
+  my_double ff1, ff2, vel, temp, coeff;
+
+  ff1 = property.beta_t*property.gravity_z;
+  ff2 = property.beta2_t*property.gravity_z;
+
+      temp = (t[IDX(i,j,k)] - property.T_ref);
+      force[IDX(i,j,k)].x += 0.0;
+      force[IDX(i,j,k)].y += 0.0;
+      force[IDX(i,j,k)].z += (ff1*temp + ff2*temp*temp);
+#endif
+
+
       }/* i,j,k */
 }
 #endif

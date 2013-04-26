@@ -149,6 +149,11 @@ void hydro_fields(){
 				//#endif
 
 #endif
+
+#ifdef LB_TEMPERATURE 
+				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
+#endif
+
 			}/* for i,j,k */
 
 #ifdef DEBUG
@@ -415,12 +420,12 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 
 
 #ifdef LB_FLUID_BC
-void boundary_conditions(pop *f){
+void boundary_conditions(){
 
   int i,j,k,pp;
   vector vel;
   my_double rho;
-  pop f_eq,f_neq;
+  pop p_eq,p_neq;
 
 
 	/* X direction */	
@@ -439,16 +444,16 @@ if(LNX_END == NX){
 	  vel.y = 0.0;
 	  vel.z = 0.0;
 	    rho = 1.0;
-	  f[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+	  p[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
 	}
 #else 
 #ifdef LB_FLUID_BC_XP_SLIP
 
-	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
 #else
 	/* NOSLIP */
-	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #endif
 #endif
 
@@ -463,16 +468,16 @@ if(LNX_START == 0){
 	  vel.y = 0.0;
 	  vel.z = 0.0;
 	    rho = 1.0;
-	  f[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
+	  p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
 	}
 #else
 #ifdef LB_FLUID_BC_XM_SLIP
 		
-	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
 #else
 	/* NO SLIP */
-	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #endif
 #endif
 
@@ -503,11 +508,11 @@ if(LNY_END == NY){
 	  }
 	*/
 	//f[IDX(i,j+1,k)].p[pp] = wgt[pp];
-	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[pp];
 #ifdef METHOD_MYQUICK
-       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
-	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[pp];
+       	p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[pp];
 #endif
 #else
 	/* NOSLIP */
@@ -515,17 +520,17 @@ if(LNY_END == NY){
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
 	    rho = 1.0;
-	  f_neq = equilibrium_given_velocity(vel,rho);
-	  f_neq.p[pp] -= f[IDX(i,j,k)].p[pp];
+	  p_neq = equilibrium_given_velocity(vel,rho);
+	  p_neq.p[pp] -= p[IDX(i,j,k)].p[pp];
 	  vel.x *= -1.0;
 	  vel.y *= -1.0;
 	  vel.z *= -1.0;
-	  f_eq = equilibrium_given_velocity(vel,rho);
+	  p_eq = equilibrium_given_velocity(vel,rho);
        	  //f[IDX(i,j+1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 
-       	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+       	p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #ifdef METHOD_MYQUICK
-       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
+       	p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
 #endif
 
 #endif
@@ -541,11 +546,11 @@ if(LNY_START == 0){
 	  f[IDX(i,j-1,k)].p[pp] = 0.0;
 	  }
 	*/	
-	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[pp];
 #ifdef METHOD_MYQUICK
-       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];
-	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[pp];
+       	  p[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[pp];
 #endif
 #else
 	/* NO SLIP */
@@ -554,17 +559,17 @@ if(LNY_START == 0){
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
 	    rho = 1.0;
-	  f_neq = equilibrium_given_velocity(vel,rho);
-	  f_neq.p[pp] -= f[IDX(i,j,k)].p[pp];
+	  p_neq = equilibrium_given_velocity(vel,rho);
+	  p_neq.p[pp] -= p[IDX(i,j,k)].p[pp];
 	  vel.x *= -1.0;
 	  vel.y *= -1.0;
 	  vel.z *= -1.0;
-	  f_eq = equilibrium_given_velocity(vel,rho);
+	  p_eq = equilibrium_given_velocity(vel,rho);
 	  //f[IDX(i,j-1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 	  
-	  f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	  p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #ifdef METHOD_MYQUICK
-       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];
+       	  p[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[inv[pp]];
 #endif
   
 #endif
@@ -575,6 +580,66 @@ if(LNY_START == 0){
       }/* for pp */
     }/* for i,k */
 #endif
+
+
+	/* Y direction */	
+#ifdef LB_TEMPERATURE_BC_Y
+
+  pop g_eq, g_eq_w;
+  my_double effDT;
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+	  vel.x = u[IDX(i,j,k)].x;
+	  vel.y = u[IDX(i,j,k)].y;
+	  vel.z = u[IDX(i,j,k)].z;
+	  rho = t[IDX(i,j,k)]; // m(g[IDX(i,LNY-1,k)]); 
+	  g_eq = equilibrium_given_velocity(vel,rho);
+	  effDT = ( (property.T_top-property.T_ref) - m(g_eq) )*2.0 +  m(g_eq);
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+
+#ifdef METHOD_MYQUICK
+       	for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = g[IDX(i,j-1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+#endif
+ }
+
+if(LNY_START == 0){
+
+	j = BRD; 
+	/* prepare it */
+	  vel.x = u[IDX(i,j,k)].x;
+	  vel.y = u[IDX(i,j,k)].y;
+	  vel.z = u[IDX(i,j,k)].z;
+	  rho =  t[IDX(i,j,k)]; //m(g[IDX(i,1,k)]);
+	  g_eq = equilibrium_given_velocity(vel,rho);
+	  effDT = ( (property.T_bot-property.T_ref) - m(g_eq) )*2.0 +  m(g_eq);
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+#ifdef METHOD_MYQUICK
+ 	for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = g[IDX(i,j+1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];       
+#endif
+}
+
+      
+    }
+#endif
+
+
 
   /*****************************************************************************************/
   /* Z direction */	
@@ -590,11 +655,11 @@ if(LNY_START == 0){
 
 #ifdef LB_FLUID_BC_ZP_SLIP
 
-	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i,j,k+1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) p[IDX(i,j,k+1)].p[pp] = p[IDX(i,j,k)].p[pp];
 #else
 	/* NOSLIP */
-	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	p[IDX(i,j,k+1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #endif
 
  }/* if */
@@ -604,11 +669,11 @@ if(LNY_START == 0){
 
 #ifdef LB_FLUID_BC_ZM_SLIP
 		
-	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[pp];
+	p[IDX(i,j,k-1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) p[IDX(i,j,k-1)].p[pp] = p[IDX(i,j,k)].p[pp];
 #else
 	/* NO SLIP */
-	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	p[IDX(i,j,k-1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #endif
 
  }/* if */
