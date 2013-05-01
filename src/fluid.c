@@ -303,13 +303,14 @@ adv=0.0;
 }
 
 
-void add_collision(pop *f, pop *rhs_f){
+void add_collision(pop *f, pop *rhs_f, my_double tau){
   int i, j, k, pp;
   my_double invtau ;
   pop f_eq;
 
-  invtau = 1.0/property.tau_u;
-  
+  //invtau = 1.0/property.tau_u;
+    invtau = 1.0/tau;
+
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 

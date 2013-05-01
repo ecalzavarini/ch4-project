@@ -177,7 +177,7 @@ void hydro_fields(){
 }
 
 /********************************************/
-void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
+void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
   int i,j,k,pp;
   pop f_eq;
   my_double dt_over_tau,fac1,fac2;
@@ -190,7 +190,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 #ifdef DEBUG_HARD
 	f_eq=equilibrium(f,i,j,k);
 #endif
-	dt_over_tau = property.time_dt/property.tau_u;
+	dt_over_tau = property.time_dt/tau;
         fac1 = exp(-dt_over_tau);
       
 
@@ -201,7 +201,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 	  /* my recipe a.k.a.  Integrating factor method (Lawson 1967) */
 	  // f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
 	  /* Exponential Euler Method a.k.a. Exponential time differencing (Certaine 1960)*/
-	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*property.tau_u*rhs_f[IDX(i,j,k)].p[pp];
+	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
 #else
           f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];	
 #endif
@@ -218,10 +218,10 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f){
 	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
 	  /* S. M. Cox and P. C. Matthews. Exponential Time Dierencing for Sti Systems.
 	     J. Comput. Phys., 176:430{455, 2002. */
-	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*property.tau_u*rhs_f[IDX(i,j,k)].p[pp];
+	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
 	  else
 	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
-							     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(property.tau_u/dt_over_tau);
+							     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);
 #else
 	 if(itime==1) f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 	 else

@@ -38,11 +38,11 @@ int main(int argc, char **argv){
 	  
 #ifdef LB_FLUID
 	  compute_advection(p,rhs_p);
-	  add_collision(p,rhs_p);
+	  add_collision(p,rhs_p,property.tau_u);
 #endif
 #ifdef LB_TEMPERATURE
 	  compute_advection(g,rhs_g);
-	  add_collision(g,rhs_g);
+	  add_collision(g,rhs_g,property.tau_t);
 #endif
 
 #ifdef LB_FLUID_FORCING
@@ -51,10 +51,10 @@ int main(int argc, char **argv){
 #endif
 
 #ifdef LB_FLUID	  
-	 time_stepping(p,rhs_p,old_rhs_p);
+	  time_stepping(p,rhs_p,old_rhs_p,property.tau_u);
 #endif
 #ifdef LB_TEMPERATURE
-	 time_stepping(g,rhs_g,old_rhs_g);
+	  time_stepping(g,rhs_g,old_rhs_g,property.tau_t);
 #endif
 	
 	 hydro_fields();	
