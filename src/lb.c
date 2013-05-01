@@ -596,71 +596,76 @@ if(LNY_END == NY){
 
  	  j = LNY+BRD-1; 
 
-	  vel.x = u[IDX(i,j,k)].x;
-	  vel.y = u[IDX(i,j,k)].y;
-	  vel.z = u[IDX(i,j,k)].z;
+	  //vel.x = u[IDX(i,j,k)].x;
+	  //vel.y = u[IDX(i,j,k)].y;
+	  //vel.z = u[IDX(i,j,k)].z;
 	  rho = t[IDX(i,j,k)]; 
-	  //rho = m(g[IDX(i,j,k)]);
-	  g_eq = equilibrium_given_velocity(vel,rho);
-	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
-	  vel.x *= -1.0;
-	  vel.y *= -1.0;
-	  vel.z *= -1.0;
-	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+	  //g_eq = equilibrium_given_velocity(vel,rho);
 
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
+	  //vel.x *= -1.0;
+	  //vel.y *= -1.0;
+	  //vel.z *= -1.0;
+	  //g_eq_w = equilibrium_given_velocity(vel,effDT);
+
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
 
 #ifdef METHOD_MYQUICK
-	  vel.x = u[IDX(i,j-1,k)].x;
-	  vel.y = u[IDX(i,j-1,k)].y;
-	  vel.z = u[IDX(i,j-1,k)].z;
+	  //vel.x = u[IDX(i,j-1,k)].x;
+	  //vel.y = u[IDX(i,j-1,k)].y;
+	  //vel.z = u[IDX(i,j-1,k)].z;
 	  rho = t[IDX(i,j-1,k)]; 
-	  //rho = m(g[IDX(i,j-1,k)]);
-	  g_eq = equilibrium_given_velocity(vel,rho);
-	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
-	  vel.x *= -1.0;
-	  vel.y *= -1.0;
-	  vel.z *= -1.0;
-	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+	  //g_eq = equilibrium_given_velocity(vel,rho);
 
-       	for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = g[IDX(i,j-1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
+	  //vel.x *= -1.0;
+	  //vel.y *= -1.0;
+	  //vel.z *= -1.0;
+	  //g_eq_w = equilibrium_given_velocity(vel,effDT);
+
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = g[IDX(i,j-1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
 #endif
  }
 
 if(LNY_START == 0){
 
-	j = BRD; 
+	  j = BRD; 
 	/* prepare it */
-	  vel.x = u[IDX(i,j,k)].x;
-	  vel.y = u[IDX(i,j,k)].y;
-	  vel.z = u[IDX(i,j,k)].z;
+	  //vel.x = u[IDX(i,j,k)].x;
+	  //vel.y = u[IDX(i,j,k)].y;
+	  //vel.z = u[IDX(i,j,k)].z;
 	  rho  =  t[IDX(i,j,k)]; 
-	  //rho = m(g[IDX(i,j,k)]);
-	  g_eq = equilibrium_given_velocity(vel,rho);
- 
-	  vel.x *= -1.0;
-	  vel.y *= -1.0;
-	  vel.z *= -1.0;	 
+	  //g_eq = equilibrium_given_velocity(vel,rho);
+	  
+	  //vel.x *= -1.0;
+	  //vel.y *= -1.0;
+	  //vel.z *= -1.0;	 	  	  
 	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
-	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+	  //g_eq_w = equilibrium_given_velocity(vel,effDT);
 
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*effDT;// - g_eq.p[inv[pp]] + g_eq_w.p[pp];
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+	  // fprintf(stderr,"effDT %e\n", effDT);
 
 #ifdef METHOD_MYQUICK 
-	  vel.x = u[IDX(i,j+1,k)].x;
-	  vel.y = u[IDX(i,j+1,k)].y;
-	  vel.z = u[IDX(i,j+1,k)].z;
-	   rho =  t[IDX(i,j+1,k)]; 
-	  //rho = m(g[IDX(i,j+1,k)]);
-	  g_eq = equilibrium_given_velocity(vel,rho);
- 
-	  vel.x *= -1.0;
-	  vel.y *= -1.0;
-	  vel.z *= -1.0;	  
+	  
+	  //vel.x = u[IDX(i,j+1,k)].x;
+	  //vel.y = u[IDX(i,j+1,k)].y;
+	  //vel.z = u[IDX(i,j+1,k)].z;
+	  rho =  t[IDX(i,j+1,k)];   
+	  //g_eq = equilibrium_given_velocity(vel,rho);
+	  
+	  //vel.x *= -1.0;
+	  //vel.y *= -1.0;
+	  //vel.z *= -1.0;	  	  	  
 	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
-	  g_eq_w = equilibrium_given_velocity(vel,effDT);
+	  //g_eq_w = equilibrium_given_velocity(vel,effDT);
 
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = g[IDX(i,j+1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];  
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = g[IDX(i,j+1,k)].p[inv[pp]];//  - g_eq.p[inv[pp]] + g_eq_w.p[pp];  
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  (effDT/rho)*g[IDX(i,j+1,k)].p[pp];
+	  //fprintf(stderr,"effDT %e\n", effDT);
 #endif
 }
 

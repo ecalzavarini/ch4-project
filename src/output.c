@@ -185,7 +185,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 
 #ifdef LB_TEMPERATURE
 			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
-			  
+			  /* note thet t field must be communicate first */
 			  dxt = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
 			  out_local.dxt += dxt;
 			  ruler_x_local[i -BRD + LNX_START].dxt += dxt;

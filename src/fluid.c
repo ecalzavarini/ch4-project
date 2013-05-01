@@ -309,11 +309,11 @@ void add_collision(pop *f, pop *rhs_f){
   pop f_eq;
 
   invtau = 1.0/property.tau_u;
-
+  
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-      
+     
 	f_eq=equilibrium(f,i,j,k);
 
 	for (pp=0; pp<NPOP; pp++){
@@ -328,7 +328,7 @@ void add_collision(pop *f, pop *rhs_f){
 #ifdef METHOD_EXPONENTIAL
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
-        	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+		rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 #endif
 
 	}/* pp */
@@ -382,15 +382,14 @@ void build_forcing(){
 
 
 #ifdef LB_TEMPERATURE_BUOYANCY
-  my_double ff1, ff2, vel, temp, coeff;
+  my_double temp, fac;
 
-  ff1 = property.beta_t*property.gravity_z;
-  ff2 = property.beta2_t*property.gravity_z;
+  temp = (t[IDX(i,j,k)] - property.T_ref);
+  fac = property.beta_t*temp + property.beta2_t*temp*temp;
 
-      temp = (t[IDX(i,j,k)] - property.T_ref);
-      force[IDX(i,j,k)].x += 0.0;
-      force[IDX(i,j,k)].y += 0.0;
-      force[IDX(i,j,k)].z += (ff1*temp + ff2*temp*temp);
+      force[IDX(i,j,k)].x += fac*property.gravity_x;
+      force[IDX(i,j,k)].y += fac*property.gravity_y;
+      force[IDX(i,j,k)].z += fac*property.gravity_z;
 #endif
 
 
