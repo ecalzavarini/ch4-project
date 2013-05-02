@@ -129,13 +129,13 @@ void assign_parameters(){
   fprintf(stderr,"linear volume expansion coefficient %g\n",(double)property.beta_t);
   sprintf(name,"beta2_t");
   property.beta2_t = read_parameter(name);
-  fprintf(stde rr,"quadratic volume expansion coefficient %g\n",(double)property.beta2_t);
+  fprintf(stderr,"quadratic volume expansion coefficient %g\n",(double)property.beta2_t);
   sprintf(name,"gravity_x");
   property.gravity_x = read_parameter(name);
   sprintf(name,"gravity_y");
-  property.gravity_x = read_parameter(name);
+  property.gravity_y = read_parameter(name);
   sprintf(name,"gravity_z");
-  property.gravity_x = read_parameter(name);
+  property.gravity_z = read_parameter(name);
   fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
 #endif 
 #endif
