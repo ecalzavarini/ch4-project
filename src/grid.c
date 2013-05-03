@@ -727,7 +727,7 @@ zm = average_4vectors(P0, P1, P2, P3);
 
 /* now correct for the boundary nodes */
  if(i == LNX+BRD-1 && LNX_END == NX){ 
-   edge.x=NX;edge.y=0;edge.z=0;
+   edge.x=property.SX;edge.y=0;edge.z=0;
    dxp = vector_difference(edge, center_V[IDX(i, j, k)]); 
    dxp=vector_scale(2.0,dxp);
  }
@@ -739,7 +739,7 @@ zm = average_4vectors(P0, P1, P2, P3);
  }
  
  if(j == LNY+BRD-1 && LNY_END == NY){ 
-   edge.x=0;edge.y=NY;edge.z=0;
+   edge.x=0;edge.y=property.SY;edge.z=0;
    dyp = vector_difference(edge, center_V[IDX(i, j, k)]); 
    dyp=vector_scale(2.0,dyp);
  }
@@ -751,7 +751,7 @@ zm = average_4vectors(P0, P1, P2, P3);
  }
 
  if(k == LNZ+BRD-1 && LNZ_END == NZ){ 
-   edge.x=0;edge.y=0;edge.z=NZ;
+   edge.x=0;edge.y=0;edge.z=property.SZ;
    dzp = vector_difference(edge, center_V[IDX(i, j, k)]); 
    dzp=vector_scale(2.0,dzp);
  }
@@ -811,8 +811,8 @@ zm = average_4vectors(P0, P1, P2, P3);
 	  if(NX==1) center_V[IDX(0, j, k)].x = center_V[IDX(1, j, k)].x - 2.0*center_V[IDX(2, j , k)].x;
 	}	
 	if(LNX_END == NX){
-	  center_V[IDX(LNX+TWO_BRD-2, j, k)].x =  (NX - center_V[IDX(LNX+BRD-1, j, k)].x)+NX;
-	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (NX - center_V[IDX(LNX+BRD-2, j, k)].x)+NX;
+	  center_V[IDX(LNX+TWO_BRD-2, j, k)].x =  (property.SX - center_V[IDX(LNX+BRD-1, j, k)].x)+property.SX;
+	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (property.SX - center_V[IDX(LNX+BRD-2, j, k)].x)+property.SX;
 	}
 	}
 	
@@ -825,8 +825,8 @@ zm = average_4vectors(P0, P1, P2, P3);
 	  if(NY==1) center_V[IDX(i, 0, k)].y = center_V[IDX(i, 1, k)].y - 2.0*center_V[IDX(i, 2 , k)].y;
 	}	
 	if(LNY_END == NY){
-	  center_V[IDX(i, LNY+TWO_BRD-2, k)].y =  (NY - center_V[IDX(i, LNY+BRD-1, k)].y)+NY;
-	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (NY - center_V[IDX(i, LNY+BRD-2, k)].y)+NY;
+	  center_V[IDX(i, LNY+TWO_BRD-2, k)].y =  (property.SY - center_V[IDX(i, LNY+BRD-1, k)].y)+property.SY;
+	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (property.SY - center_V[IDX(i, LNY+BRD-2, k)].y)+property.SY;
 	}
 	}
 
@@ -839,8 +839,8 @@ zm = average_4vectors(P0, P1, P2, P3);
 	  if(NZ==1) center_V[IDX(i, j, 0)].z = center_V[IDX(i, j, 1)].z - 2.0*center_V[IDX(i, j , 2)].z;
 	}	
 	if(LNZ_END == NZ){
-	  center_V[IDX(i, j, LNZ+TWO_BRD-2)].z =  (NZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+NZ;
-	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (NZ - center_V[IDX(i, j, LNZ+BRD-2)].z)+NZ;
+	  center_V[IDX(i, j, LNZ+TWO_BRD-2)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+property.SZ;
+	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-2)].z)+property.SZ;
 	}
 	}
 	

@@ -632,6 +632,7 @@ if(LNY_END == NY){
 
 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = g[IDX(i,j,k)].p[inv[pp]] - g_eq.p[inv[pp]] + g_eq_w.p[pp];
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+	 
 
 #ifdef METHOD_MYQUICK
 	  //vel.x = u[IDX(i,j-1,k)].x;
@@ -648,6 +649,7 @@ if(LNY_END == NY){
 
 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = g[IDX(i,j-1,k)].p[inv[pp]]  - g_eq.p[inv[pp]] + g_eq_w.p[pp];
 	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
+
 #endif
  }
 
