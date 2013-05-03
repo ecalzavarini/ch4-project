@@ -245,6 +245,28 @@ void sendrecv_borders_pop(pop *f){
   int i,j,k,brd_size;
   MPI_Status status1;
 
+#ifdef METHOD_MYQUICK
+  /* if the method is Quick, then  BRD=2 : we have to be careful  when the NX,NY or NZ values are =1 */
+  /* in that case we copy the same value everywhere */
+  if(NX==1){
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+     f[IDX(0,j,k)] = f[IDX(1,j,k)] = f[IDX(3,j,k)] = f[IDX(4,j,k)] =  f[IDX(2,j,k)];
+  } 
+
+  if(NY==1){
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(i=BRD;i<LNY+BRD;i++)
+     f[IDX(i,0,k)] = f[IDX(i,1,k)] = f[IDX(i,3,k)] = f[IDX(i,4,k)] =  f[IDX(i,2,k)];
+  } 
+
+  if(NZ==1){
+  for(i=BRD;i<LNX+BRD;i++)
+    for(j=BRD;j<LNY+BRD;j++)
+     f[IDX(i,j,0)] = f[IDX(i,j,1)] = f[IDX(i,j,3)] = f[IDX(i,j,4)] =  f[IDX(i,j,2)];
+  } 
+#endif
+
   /*     BRD|LNX|BRD     */
   /* Copy borders along x */
   brd_size = BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
