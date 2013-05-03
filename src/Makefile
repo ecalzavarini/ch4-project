@@ -16,5 +16,8 @@ $(EXECUTABLE):  main.c $(OBJECTS) $(HEADERS)
 clean:
 	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN
 
+clean-dat:
+	rm -rf ./*.dat
+
 tar:
 	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile 

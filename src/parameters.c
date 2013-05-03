@@ -61,6 +61,16 @@ void assign_parameters(){
     NZ = (int)property.NZ;
     fprintf(stderr,"System Size:\nNX %d \nNY %d \nNZ %d\n", NX , NY, NZ);
 
+
+    /* Size of simulation domain */
+    sprintf(name,"SX");
+    property.SX = (double)read_parameter(name);
+    sprintf(name,"SY");
+    property.SY = (double)read_parameter(name);
+    sprintf(name,"NZ");
+    property.SZ = (double)read_parameter(name);
+    fprintf(stderr,"System Size:\nSX %d \nSY %d \nSZ %d\n", property.SX , property.SY, property.SZ);
+
     /* time stepping parameters */
     sprintf(name,"time_dt");
     property.time_dt = (double)read_parameter(name); 

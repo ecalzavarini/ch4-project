@@ -3,7 +3,11 @@
 #ifdef GRID_REFINED
 void make_grid_rulers(my_double fac){
   int i;
-  my_double dx;
+  my_double dx,dy,dz;
+  my_double fac2 = 2.0;
+#ifdef GRID_REFINED_ONESIDED
+  fac2 = 1.0;
+#endif
 
   dx=2./(my_double)NX;
   for(i=0; i< NXG; i++){	
@@ -11,27 +15,30 @@ void make_grid_rulers(my_double fac){
     grid_ruler_x[i] = -1.0+dx*((double)i);
     /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
     grid_ruler_x[i] = (1./fac)*tanh(grid_ruler_x[i]*atanh(fac));
-    /* 3) rescale the -1,1 interval to the 0,NXG interval*/
-    grid_ruler_x[i] = ((my_double)NX/2.0)*(grid_ruler_x[i]+1.0);					  
+    /* 3) rescale the -1,1 interval to the 0,SX interval*/
+    grid_ruler_x[i] = (property.SX/fac2)*(grid_ruler_x[i]+1.0);
  }
 		
-  dx=2./(my_double)NY;			 
+  dy=2./(my_double)NY;			 
   for(i=0; i< NYG; i++){					    
-    grid_ruler_y[i] = -1.0+dx*((double)i);
+    grid_ruler_y[i] = -1.0+dy*((double)i);
     grid_ruler_y[i] = (1./fac)*tanh(grid_ruler_y[i]*atanh(fac));
-    grid_ruler_y[i] = ((my_double)NY/2.0)*(grid_ruler_y[i]+1.0);
+    grid_ruler_y[i] = (property.SY/fac2)*(grid_ruler_y[i]+1.0);
     // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
  }
 
-  dx=2./(my_double)NZ;
+  dz=2./(my_double)NZ;
   for(i=0; i< NZG; i++){					    
-    grid_ruler_z[i] = -1.0+dx*((double)i);
+    grid_ruler_z[i] = -1.0+dz*((double)i);
     grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));
-    grid_ruler_z[i] = ((my_double)NZ/2.0)*(grid_ruler_z[i]+1.0);					  
+    grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
  }
 
 }
 #endif
+
+
+
 
 void read_mesh(){
 
@@ -41,7 +48,7 @@ void read_mesh(){
 	int             i, j, k;
 
 #ifdef GRID_REFINED
-	my_double stretch=0.99;
+	my_double stretch=0.98;
 #endif
 	sprintf(fnamein, "mesh.in");
 	fin = fopen(fnamein, "r");
@@ -71,9 +78,9 @@ void read_mesh(){
 		for (k = BRD; k < LNZG+BRD; k++)
 			for (j = BRD; j < LNYG+BRD; j++)
 				for (i = BRD; i < LNXG+BRD; i++) {
-					mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD);
-					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-BRD);
-					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD);
+				        mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD)*property.SX/property.NX;
+					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-BRD)*property.SY/property.NY;
+					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD)*property.SZ/property.NZ;
 					/*
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient

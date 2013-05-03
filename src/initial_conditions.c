@@ -28,7 +28,7 @@ void initial_conditions()
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.01;
     kn=1.0;
-    L=(my_double)(NY); 
+    L=(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;
 
         /* along x */
@@ -38,7 +38,7 @@ void initial_conditions()
 #endif  
 
 #ifdef LB_FLUID_INITIAL_POISEUILLE 
-    L=(my_double)(NY);
+    L=(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;
     Amp_x = (my_double)property.Amp_x;
     fn=-Amp_x*(4.0*nu)*pow(L,-2.0);
@@ -48,6 +48,16 @@ void initial_conditions()
 	  p[IDX(i,j,k)].p[pp] +=  6.0*wgt[pp]*c[pp].x*fn*y*(y-L);
 
 #endif  
+
+#ifdef LB_TEMPERATURE_BUOYANCY	
+   L=(my_double)property.SY; //NY;
+   y = (my_double)center_V[IDX(i,j,k)].y;
+
+  /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
+for (pp = 0; pp < NPOP; pp++) 
+  p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+#endif
+
 
 }/* for i,j,k */
 
@@ -65,12 +75,13 @@ void initial_conditions()
 
 #ifdef LB_TEMPERATURE_INITIAL_LINEAR
 	/* linear temperature gradient */
+	L=(my_double)property.SY; //LY;
 	y = (my_double)center_V[IDX(i,j,k)].y;
-	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/NY)*y );
+	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y );
 #endif 
 
 #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-	if(x<NX/2){ t[IDX(i,j,k)] += 1.e-4; }else{ t[IDX(i,j,k)] -= 1.e-4; }
+	if(center_V[IDX(i, j, k)].x<NX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
 #endif
 
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT

@@ -28,6 +28,7 @@ typedef struct {
 
 typedef struct {
   double NX , NY , NZ;
+  double SX , SY , SZ; 
   double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
   double tau_u , nu;
@@ -50,20 +51,20 @@ typedef struct {
 
 
 #ifndef LB_FLUID
-#define NPROP 8
+#define NPROP 11
 #endif
 #ifdef LB_FLUID
-#define NPROP 10
-#ifdef LB_FLUID_FORCING
 #define NPROP 13
+#ifdef LB_FLUID_FORCING
+#define NPROP 16
 #endif
 #ifdef LB_TEMPERATURE
-#define NPROP 19
+#define NPROP 22
 #ifdef LB_TEMPERATURE_BUOYANCY
-#define NPROP 24
+#define NPROP 27
 #endif
 #ifdef LB_SCALAR
-#define NPROP 26
+#define NPROP 29
 #endif
 #endif
 #endif

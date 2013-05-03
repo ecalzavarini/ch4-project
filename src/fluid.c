@@ -391,6 +391,8 @@ void build_forcing(){
       force[IDX(i,j,k)].x += fac*property.gravity_x;
       force[IDX(i,j,k)].y += fac*property.gravity_y;
       force[IDX(i,j,k)].z += fac*property.gravity_z;
+
+      //fprintf(stderr, "fy %e\n",property.gravity_y);
 #endif
 
 
