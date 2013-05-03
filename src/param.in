@@ -1,8 +1,8 @@
-NX 10
+NX 101
 NY 50
 NZ 1
 
-SX 10
+SX 101
 SY 50
 SZ 1
 
@@ -20,7 +20,7 @@ Amp_z 0.0
 
 tau_t 0.5
 T_bot 1.0
-T_top 2.0
+T_top -1.0
 T_ref 0.0
 
 beta_t  0.002

@@ -28,6 +28,7 @@ void add_collision(pop * f, pop *rhs_f,my_double tau);
 void compute_advection(pop * f, pop *rhs_f);
 void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);
-
+vector gradient_scalar(my_double *t, int i, int j, int k);
+tensor gradient_vector(vector *t, int i, int j, int k);
 /* output */
 void dump_averages();

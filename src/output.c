@@ -10,6 +10,7 @@ void dump_averages(){
   tensor S;
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz;
+  vector grad;
 #endif
 
 
@@ -107,6 +108,14 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 #endif
 
 
+    /* Here we send recv to compute the gradients */
+#ifdef LB_FLUID
+    sendrecv_borders_vector(u);
+#endif
+#ifdef LB_TEMPERATURE
+    sendrecv_borders_scalar(t);
+#endif
+
 
 
 	for (i = BRD; i < LNX+BRD; i++)
@@ -185,20 +194,22 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 
 #ifdef LB_TEMPERATURE
 			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
-			  /* note thet t field must be communicate first */
-			  dxt = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+			  /* note thet t field must be communicate first -> it has been done above */
+			  grad=gradient_scalar(t,i,j,k);
+
+			  dxt = grad.x;
 			  out_local.dxt += dxt;
 			  ruler_x_local[i -BRD + LNX_START].dxt += dxt;
 			  ruler_y_local[j -BRD + LNY_START].dxt += dxt;
 			  ruler_z_local[k -BRD + LNZ_START].dxt += dxt;
 
-			  dyt = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+			  dyt = grad.y;
 			  out_local.dyt += dyt;
 			  ruler_x_local[i -BRD + LNX_START].dyt += dyt;
 			  ruler_y_local[j -BRD + LNY_START].dyt += dyt;
 			  ruler_z_local[k -BRD + LNZ_START].dyt += dyt;
 
-			  if(NZ!=1) dzt = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+			  dzt = grad.z;
 			  out_local.dzt += dzt;
 			  ruler_x_local[i -BRD + LNX_START].dzt += dzt;
 			  ruler_y_local[j -BRD + LNY_START].dzt += dzt;
@@ -220,19 +231,19 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_y_local[j -BRD + LNY_START].uzt += uzt;
 			  ruler_z_local[k -BRD + LNZ_START].uzt += uzt;
 
-			  nux = 0.0;
+			  nux = property.kappa*dxt + uxt;
 			  out_local.nux += nux;
 			  ruler_x_local[i -BRD + LNX_START].nux += nux;
 			  ruler_y_local[j -BRD + LNY_START].nux += nux;
 			  ruler_z_local[k -BRD + LNZ_START].nux += nux;
 
-			  nuy = 0.0;
+			  nuy = property.kappa*dyt + uyt;
 			  out_local.nuy += nuy;
 			  ruler_x_local[i -BRD + LNX_START].nuy += nuy;
 			  ruler_y_local[j -BRD + LNY_START].nuy += nuy;
 			  ruler_z_local[k -BRD + LNZ_START].nuy += nuy;
 
-			  nuz = 0.0;
+			  nuz = property.kappa*dzt + uzt;
 			  out_local.nuz += nuz;
 			  ruler_x_local[i -BRD + LNX_START].nuz += nuz;
 			  ruler_y_local[j -BRD + LNY_START].nuz += nuz;
@@ -249,7 +260,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_y_local[j -BRD + LNY_START].t2 += t2;
 			  ruler_z_local[k -BRD + LNZ_START].t2 += t2;
 			  
-			  epst = dxt*dxt + dyt*dyt + dzt*dzt;
+			  epst = property.kappa*(dxt*dxt + dyt*dyt + dzt*dzt);
 			  out_local.epst += epst; 
 			  ruler_x_local[i -BRD + LNX_START].epst += epst;
 			  ruler_y_local[j -BRD + LNY_START].epst += epst;
@@ -454,5 +465,45 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
   if(itime==1) write_h5();
 #endif
 
+//#define OUTPUT_ASCII
+#ifdef OUTPUT_ASCII
+#ifdef LB_FLUID
+  /* Here dumps the velocity field */
+  sprintf(fname,"vel.%d",itime);
+  fout = fopen(fname,"w");
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+        fprintf(fout,"%e %e %e %e %e %e %e\n", 
+		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
+                (double)u[IDX(i,j,k)].x, (double)u[IDX(i,j,k)].y, (double)u[IDX(i,j,k)].z,
+		(double)dens[IDX(i,j,k)] );  
+   
+      fprintf(fout,"\n");
+    }
+    fclose(fout);
+#endif
+
+#ifdef LB_TEMPERATURE
+  /* Here dumps the temperature field */
+  sprintf(fname,"temp.%d",itime);
+  fout = fopen(fname,"w");
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+        fprintf(fout,"%e %e %e %e\n", 
+		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
+		(double)t[IDX(i,j,k)] );  
+        
+      fprintf(fout,"\n");
+    }
+    fclose(fout);
+#endif
+
+#endif
 }
 
