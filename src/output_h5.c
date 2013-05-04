@@ -2,12 +2,12 @@
 #include <hdf5.h>
 
 
-#define H5FILE_NAME     "ch4.h5"
-#define DATASETNAME 	"fluid_pop"
+#define H5FILE_NAME     "temp.h5"
+#define DATASETNAME 	"temperature"
 #define RANK   3       /* dataset rank */
 
 
-void write_h5(){
+void write_h5(my_double   *t){
  
 
     /*
@@ -16,20 +16,10 @@ void write_h5(){
     hid_t       file_id, dset_id;         /* file and dataset identifiers */
     hid_t       filespace;      /* file and memory dataspace identifiers */
     hsize_t     dimsf[] = {NX, NY,NZ};                 /* dataset dimensions */
-    my_double   *data;                    /* pointer to data buffer to write */
     hid_t	plist_id;                 /* property list identifier */
     int         i;
     herr_t      status;
 
-    /*
-     * Initialize data buffer 
-     */
-    
-    data = (my_double *) malloc(sizeof(my_double)*dimsf[0]*dimsf[1]*dimsf[2]);
-    for (i=0; i < dimsf[0]*dimsf[1]*dimsf[2]; i++) {
-        data[i] = i;
-    }
-    
     /* 
      * Set up file access property list with parallel I/O access
      */
@@ -63,7 +53,7 @@ void write_h5(){
      * H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_INDEPENDENT); 
      */
     
-    status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plist_id, data);
+    status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plist_id, t);
     /*
     free(data);
     */
