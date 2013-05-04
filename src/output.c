@@ -462,46 +462,55 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 
 #ifdef OUTPUT_H5
   /* write  files */
-  if(itime==1) write_h5();
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_h5();
 #endif
 
-//#define OUTPUT_ASCII
+
 #ifdef OUTPUT_ASCII
 #ifdef LB_FLUID
+
+  if(ROOT && itime%((int)(property.time_dump_field/property.time_dt))==0 ){
   /* Here dumps the velocity field */
-  sprintf(fname,"vel.%d",itime);
+    sprintf(fname,"%s/vel.%d",OutDir,itime);
   fout = fopen(fname,"w");
 
-  for(k=BRD;k<LNZ+BRD;k++)
-    for(j=BRD;j<LNY+BRD;j++)
+  for(k=BRD;k<LNZ+BRD;k++){
+    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
         fprintf(fout,"%e %e %e %e %e %e %e\n", 
 		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
                 (double)u[IDX(i,j,k)].x, (double)u[IDX(i,j,k)].y, (double)u[IDX(i,j,k)].z,
 		(double)dens[IDX(i,j,k)] );  
-   
+      } 
       fprintf(fout,"\n");
     }
+    fprintf(fout,"\n");
+  }
     fclose(fout);
+  }
 #endif
 
 #ifdef LB_TEMPERATURE
+  if(ROOT  && itime%((int)(property.time_dump_field/property.time_dt))==0){
   /* Here dumps the temperature field */
-  sprintf(fname,"temp.%d",itime);
+    sprintf(fname,"%s/temp.%d",OutDir,itime);
   fout = fopen(fname,"w");
 
-  for(k=BRD;k<LNZ+BRD;k++)
-    for(j=BRD;j<LNY+BRD;j++)
+  for(k=BRD;k<LNZ+BRD;k++){
+    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
         fprintf(fout,"%e %e %e %e\n", 
 		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
 		(double)t[IDX(i,j,k)] );  
-        
+      } 
       fprintf(fout,"\n");
     }
+    fprintf(fout,"\n");
+  }
     fclose(fout);
+  }
 #endif
 
 #endif

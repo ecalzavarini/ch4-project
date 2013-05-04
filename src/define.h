@@ -2,6 +2,11 @@
 //#define DEBUG
 //#define DEBUG_HARD
 
+
+/* OUTPUT */
+//#define OUTPUT_ASCII
+//#define OUTPUT_H5
+
 /* GRID */
 
 #define GRID_REGULAR
