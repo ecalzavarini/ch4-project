@@ -15,7 +15,7 @@ void write_h5(my_double   *t){
      */ 	
     hid_t       file_id, dset_id;         /* file and dataset identifiers */
     hid_t       filespace;      /* file and memory dataspace identifiers */
-    hsize_t     dimsf[] = {NX, NY,NZ};                 /* dataset dimensions */
+    hsize_t     dimsf[] = {NX+TWO_BRD, NY+TWO_BRD,NZ+TWO_BRD};     /* dataset dimensions */
     hid_t	plist_id;                 /* property list identifier */
     int         i;
     herr_t      status;

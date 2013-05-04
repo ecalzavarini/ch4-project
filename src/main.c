@@ -32,7 +32,11 @@ int main(int argc, char **argv){
 #ifdef LB_TEMPERATURE
 	  sendrecv_borders_pop(g);
 #endif
-#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC)
+#ifdef LB_SCALAR
+	  sendrecv_borders_pop(h);
+#endif
+
+#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
 	  boundary_conditions();
 #endif
 	  
@@ -44,6 +48,10 @@ int main(int argc, char **argv){
 	  compute_advection(g,rhs_g);
 	  add_collision(g,rhs_g,property.tau_t);
 #endif
+#ifdef LB_SCALAR
+	  compute_advection(h,rhs_h);
+	  add_collision(h,rhs_h,property.tau_s);
+#endif 
 
 #ifdef LB_FLUID_FORCING
 	  build_forcing();
@@ -56,7 +64,9 @@ int main(int argc, char **argv){
 #ifdef LB_TEMPERATURE
 	  time_stepping(g,rhs_g,old_rhs_g,property.tau_t);
 #endif
-	
+#ifdef LB_SCALAR
+	  time_stepping(h,rhs_h,old_rhs_h,property.tau_s);
+#endif	
 	 hydro_fields();	
 	 dump_averages();
 

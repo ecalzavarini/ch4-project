@@ -462,7 +462,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 
 #ifdef OUTPUT_H5
   /* write  files */
-  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_h5();
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_h5(t);
 #endif
 
 
