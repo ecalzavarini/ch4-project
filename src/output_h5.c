@@ -18,52 +18,35 @@ write_scalar_h5(my_double   *t,  char *fname)
   void *old_client_data;
   hid_t string_type, hdf5_poptype, H5_TYPE_IN_USE;
  
-
   sprintf(H5FILE_NAME,"%s/%s_%d.h5",OutDir,fname,itime);
   sprintf(DATASETNAME,"%s",fname);
 
-  H5_TYPE_IN_USE = H5T_NATIVE_DOUBLE;
-
   efile_3d[0] = NX;  efile_3d[1] = NY;  efile_3d[2] = NZ;
-  efilespace = H5Screate_simple(3, efile_3d, NULL);
+  efilespace = H5Screate_simple(RANK, efile_3d, NULL);
   
   edimens_3d[0] = LNX+TWO_BRD;  edimens_3d[1] = LNY+TWO_BRD;  edimens_3d[2] = LNZ+TWO_BRD;
-  ememspace = H5Screate_simple(3, edimens_3d, NULL);
+  ememspace = H5Screate_simple(RANK, edimens_3d, NULL);
 
-  //sprintf(H5FILE_NAME,"%s/%s.h5",basedir,basename);
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
-
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
-  
-  //file_id = H5Fopen(H5FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT);
-  //if (file_id>=0) {
-    // group   = H5Gopen(file_id, "/EULER",H5P_DEFAULT);
-    // } else {
-    file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
-    group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
-    // }
+  file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+  group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
-  //H5Eset_auto(H5E_DEFAULT,old_func, old_client_data);
-  //write_attributes(group,H5FILE_NAME);
   H5Pclose(plist_id);
 
-
-  //H5_TYPE_IN_USE = H5T_NATIVE_DOUBLE;
-  //hdf5_poptype = H5Tcopy(H5_TYPE_IN_USE);  
   property_id  = H5Pcreate(H5P_DATASET_CREATE);
-
   edataset = H5Dcreate(group, DATASETNAME, H5T_NATIVE_DOUBLE, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);       
   
   estart_3d[0] = BRD;  estart_3d[1] = BRD;  estart_3d[2] = BRD;
   estride_3d[0] = 1;  estride_3d[1] = 1;  estride_3d[2] = 1;
-  eblock_3d[0] = LNX;  eblock_3d[1] = LNY;  eblock_3d[2] = LNZ;
   ecount_3d[0] = 1;  ecount_3d[1] = 1;  ecount_3d[2] = 1;
+  eblock_3d[0] = LNX;  eblock_3d[1] = LNY;  eblock_3d[2] = LNZ;
 
   dstart_3d[0] = mex*LNX;  dstart_3d[1] = mey*LNY;  dstart_3d[2] = mez*LNZ;
   dstride_3d[0] = 1;  dstride_3d[1] = 1;  dstride_3d[2] = 1;
-  dblock_3d[0] = LNX;  dblock_3d[1] = LNY;  dblock_3d[2] = LNZ;
   dcount_3d[0] = 1;  dcount_3d[1] = 1;  dcount_3d[2] = 1;
+  dblock_3d[0] = LNX;  dblock_3d[1] = LNY;  dblock_3d[2] = LNZ;
 
   status = H5Sselect_hyperslab( ememspace, H5S_SELECT_SET, estart_3d, estride_3d, ecount_3d, eblock_3d);
   status = H5Sselect_hyperslab(efilespace, H5S_SELECT_SET, dstart_3d, dstride_3d, dcount_3d, dblock_3d);
@@ -78,7 +61,6 @@ write_scalar_h5(my_double   *t,  char *fname)
   H5Sclose(ememspace);
   H5Pclose(xfer_plist);
   H5Pclose(property_id);
-  /* Close the data set */
   H5Dclose(edataset);
   H5Gclose(group);
   H5Fclose(file_id);  
@@ -104,35 +86,21 @@ write_vector_h5(vector   *t, char *fname){
   sprintf(H5FILE_NAME,"%s/%s_%d.h5",OutDir,fname,itime);
   sprintf(DATASETNAME,"%s",fname);
 
-  //H5_TYPE_IN_USE = H5T_NATIVE_DOUBLE;
-
-  efile_3d[0] = NX;  efile_3d[1] = NY;  efile_3d[2] = NZ;
-  efilespace = H5Screate_simple(3, efile_3d, NULL);
+  efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
+  efilespace = H5Screate_simple(RANK, efile_3d, NULL);
   
-  edimens_3d[0] = LNX+TWO_BRD;  edimens_3d[1] = LNY+TWO_BRD;  edimens_3d[2] = LNZ+TWO_BRD;
-  ememspace = H5Screate_simple(3, edimens_3d, NULL);
+  edimens_3d[0] = LNZ+TWO_BRD;  edimens_3d[1] = LNY+TWO_BRD;  edimens_3d[2] = LNX+TWO_BRD;
+  ememspace = H5Screate_simple(RANK, edimens_3d, NULL);
 
-  //sprintf(H5FILE_NAME,"%s/%s.h5",basedir,basename);
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
-  
-  //file_id = H5Fopen(H5FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT);
-  //if (file_id>=0) {
-    // group   = H5Gopen(file_id, "/EULER",H5P_DEFAULT);
-    // } else {
-    file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
-    group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
-    // }
+  file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+  group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
-  //H5Eset_auto(H5E_DEFAULT,old_func, old_client_data);
-  //write_attributes(group,H5FILE_NAME);
   H5Pclose(plist_id);
 
-
-  //H5_TYPE_IN_USE = H5T_NATIVE_DOUBLE;
-  //hdf5_poptype = H5Tcopy(H5_TYPE_IN_USE);  
   hdf5_pop_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
   H5Tinsert(hdf5_pop_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
   H5Tinsert(hdf5_pop_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
@@ -144,13 +112,13 @@ write_vector_h5(vector   *t, char *fname){
   
   estart_3d[0] = BRD;  estart_3d[1] = BRD;  estart_3d[2] = BRD;
   estride_3d[0] = 1;  estride_3d[1] = 1;  estride_3d[2] = 1;
-  eblock_3d[0] = LNX;  eblock_3d[1] = LNY;  eblock_3d[2] = LNZ;
   ecount_3d[0] = 1;  ecount_3d[1] = 1;  ecount_3d[2] = 1;
+  eblock_3d[0] = LNZ;  eblock_3d[1] = LNY;  eblock_3d[2] = LNX;
 
-  dstart_3d[0] = mex*LNX;  dstart_3d[1] = mey*LNY;  dstart_3d[2] = mez*LNZ;
+  dstart_3d[0] = mez*LNZ;  dstart_3d[1] = mey*LNY;  dstart_3d[2] = mex*LNX;
   dstride_3d[0] = 1;  dstride_3d[1] = 1;  dstride_3d[2] = 1;
-  dblock_3d[0] = LNX;  dblock_3d[1] = LNY;  dblock_3d[2] = LNZ;
   dcount_3d[0] = 1;  dcount_3d[1] = 1;  dcount_3d[2] = 1;
+  dblock_3d[0] = LNZ;  dblock_3d[1] = LNY;  dblock_3d[2] = LNX;
 
   status = H5Sselect_hyperslab( ememspace, H5S_SELECT_SET, estart_3d, estride_3d, ecount_3d, eblock_3d);
   status = H5Sselect_hyperslab(efilespace, H5S_SELECT_SET, dstart_3d, dstride_3d, dcount_3d, dblock_3d);
@@ -165,7 +133,6 @@ write_vector_h5(vector   *t, char *fname){
   H5Sclose(ememspace);
   H5Pclose(xfer_plist);
   H5Pclose(property_id);
-  /* Close the data set */
   H5Dclose(edataset);
   H5Gclose(group);
   H5Fclose(file_id);  
