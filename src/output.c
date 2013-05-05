@@ -461,8 +461,21 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 #endif
 
 #ifdef OUTPUT_H5
-  /* write  files */
-  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_h5(t);
+  /* write grid at first time step */
+  if(itime==1) write_vector_h5(center_V,"vertex");
+#ifdef LB_FLUID
+  /* write velocity and density */
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_vector_h5(u,"velocity");
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_scalar_h5(dens,"density");
+#endif
+#ifdef LB_TEMPERATURE
+ /* write temperature */
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_scalar_h5(t,"temperature");
+#endif
+#ifdef LB_SCALAR
+ /* write scalar */
+  if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_scalar_h5(s,"scalar");
+#endif
 #endif
 
 
