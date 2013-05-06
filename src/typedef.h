@@ -109,7 +109,6 @@ typedef struct {
 #endif
 #define TWO_BRD 2*BRD
 
-
 /* index on the grid */
 #define IDXG(i,j,k) ( (int)(k)*(LNYG+TWO_BRD)*(LNXG+TWO_BRD)+(int)(j)*(LNXG+TWO_BRD)+(int)(i) )
 /* and index for grid planes */
@@ -135,5 +134,12 @@ typedef struct {
 
 /* neighbouring index for processors*/
 #define IDX_NEXT(i,j,k) ( (int)(k+1)*9+(int)(j+1)*3+(int)(i+1) )
+
+
+
+
+
+
+
 
 #define two_pi 2*3.14159265359

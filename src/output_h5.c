@@ -1,5 +1,6 @@
 #include "common_object.h"
 #include <hdf5.h>
+#include <hdf5_hl.h>
 
 write_vector_h5(vector   *t, char *fname){
   int RANK = 3;
@@ -14,7 +15,7 @@ write_vector_h5(vector   *t, char *fname){
   herr_t status;
   H5E_auto_t old_func;
   void *old_client_data;
-  hid_t hdf5_pop_type;
+  hid_t hdf5_type;
   hsize_t array[ ] = {3}; 
  
   sprintf(H5FILE_NAME,"%s/%s_%d.h5",OutDir,fname,itime);
@@ -31,20 +32,20 @@ write_vector_h5(vector   *t, char *fname){
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
   file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
-  group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+  group   = H5Gcreate (file_id, "/euler", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
   H5Pclose(plist_id);
 
-  //hdf5_pop_type = H5Tarray_create(H5T_NATIVE_DOUBLE,1,array);
+  //hdf5_type = H5Tarray_create(H5T_NATIVE_DOUBLE,1,array);
 
-  hdf5_pop_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
-  H5Tinsert(hdf5_pop_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
-  H5Tinsert(hdf5_pop_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
-  H5Tinsert(hdf5_pop_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+  hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
+  H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
 
   property_id  = H5Pcreate(H5P_DATASET_CREATE);
 
-  edataset = H5Dcreate(group, DATASETNAME, hdf5_pop_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);       
+  edataset = H5Dcreate(group, DATASETNAME, hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);       
   
   estart_3d[0] = BRD;  estart_3d[1] = BRD;  estart_3d[2] = BRD;
   estride_3d[0] = 1;  estride_3d[1] = 1;  estride_3d[2] = 1;
@@ -61,7 +62,7 @@ write_vector_h5(vector   *t, char *fname){
   
   xfer_plist = H5Pcreate(H5P_DATASET_XFER);
   ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
-  ret = H5Dwrite(edataset, hdf5_pop_type, ememspace, efilespace, xfer_plist, t);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, t);
 
   MPI_Barrier(MPI_COMM_WORLD);
       
@@ -90,7 +91,7 @@ write_scalar_h5(vector   *t, char *fname){
   herr_t status;
   H5E_auto_t old_func;
   void *old_client_data;
-  hid_t hdf5_pop_type;
+  hid_t hdf5_type;
   hsize_t array[ ] = {3}; 
  
   sprintf(H5FILE_NAME,"%s/%s_%d.h5",OutDir,fname,itime);
@@ -99,32 +100,35 @@ write_scalar_h5(vector   *t, char *fname){
   efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
   efilespace = H5Screate_simple(RANK, efile_3d, NULL);
   
+  //fprintf(stderr,"NZ %d NY %d NX %d\n",NZ,NY,NX);
+
   edimens_3d[0] = LNZ+TWO_BRD;  edimens_3d[1] = LNY+TWO_BRD;  edimens_3d[2] = LNX+TWO_BRD;
   ememspace = H5Screate_simple(RANK, edimens_3d, NULL);
+
+  //fprintf(stderr,"LNX+TWO_BRD %d LNY+TWO_BRD %d LNZ+TWO_BRD %d\n",LNZ+TWO_BRD,LNY+TWO_BRD,LNX+TWO_BRD);
 
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
   file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
-  group   = H5Gcreate (file_id, "/EULER", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+  group   = H5Gcreate (file_id, "/euler", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
   H5Pclose(plist_id);
 
-  //hdf5_pop_type = H5Tarray_create(H5T_NATIVE_DOUBLE,1,array);
-
-  hdf5_pop_type = H5Tcreate (H5T_COMPOUND, sizeof(my_double));
-  H5Tinsert(hdf5_pop_type, "x", NULL, H5T_NATIVE_DOUBLE);
-  //H5Tinsert(hdf5_pop_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
-  //H5Tinsert(hdf5_pop_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+  //hdf5_type = H5Tarray_create(H5T_NATIVE_DOUBLE,1,array);
+  //hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(my_double));
+  //H5Tinsert(hdf5_type, "x", NULL, H5T_NATIVE_DOUBLE);
+  
+  hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
 
   property_id  = H5Pcreate(H5P_DATASET_CREATE);
 
-  edataset = H5Dcreate(group, DATASETNAME, hdf5_pop_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);       
-  
+  edataset = H5Dcreate(group, DATASETNAME, hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);       
+    
   estart_3d[0] = BRD;  estart_3d[1] = BRD;  estart_3d[2] = BRD;
-  estride_3d[0] = 1;  estride_3d[1] = 1;  estride_3d[2] = 1;
-  ecount_3d[0] = 1;  ecount_3d[1] = 1;  ecount_3d[2] = 1;
+  estride_3d[0] = 1;  estride_3d[1] = 1;   estride_3d[2] = 1;
+  ecount_3d[0] = 1;    ecount_3d[1] = 1;    ecount_3d[2] = 1;
   eblock_3d[0] = LNZ;  eblock_3d[1] = LNY;  eblock_3d[2] = LNX;
 
   dstart_3d[0] = mez*LNZ;  dstart_3d[1] = mey*LNY;  dstart_3d[2] = mex*LNX;
@@ -132,12 +136,15 @@ write_scalar_h5(vector   *t, char *fname){
   dcount_3d[0] = 1;  dcount_3d[1] = 1;  dcount_3d[2] = 1;
   dblock_3d[0] = LNZ;  dblock_3d[1] = LNY;  dblock_3d[2] = LNX;
 
+  //fprintf(stderr,"mex %d mey %d mez %d\n",mex,mey,mez);
+
   status = H5Sselect_hyperslab( ememspace, H5S_SELECT_SET, estart_3d, estride_3d, ecount_3d, eblock_3d);
   status = H5Sselect_hyperslab(efilespace, H5S_SELECT_SET, dstart_3d, dstride_3d, dcount_3d, dblock_3d);
-  
+    
   xfer_plist = H5Pcreate(H5P_DATASET_XFER);
   ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
-  ret = H5Dwrite(edataset, hdf5_pop_type, ememspace, efilespace, xfer_plist, t);
+  //ret = H5Pset_buffer(xfer_plist, (hsize_t)LNX*LNY*LNZ, NULL, NULL);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, t);
 
   MPI_Barrier(MPI_COMM_WORLD);
       
