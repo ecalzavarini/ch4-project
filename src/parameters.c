@@ -67,9 +67,9 @@ void assign_parameters(){
     property.SX = (double)read_parameter(name);
     sprintf(name,"SY");
     property.SY = (double)read_parameter(name);
-    sprintf(name,"NZ");
+    sprintf(name,"SZ");
     property.SZ = (double)read_parameter(name);
-    fprintf(stderr,"System Size:\nSX %d \nSY %d \nSZ %d\n", property.SX , property.SY, property.SZ);
+    fprintf(stderr,"System Size:\nSX %d \nSY %d \nSZ %d\n", (int)property.SX , (int)property.SY, (int)property.SZ);
 
     /* time stepping parameters */
     sprintf(name,"time_dt");
