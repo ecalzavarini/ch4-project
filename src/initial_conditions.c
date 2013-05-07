@@ -54,8 +54,8 @@ void initial_conditions()
    y = (my_double)center_V[IDX(i,j,k)].y;
 
   /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
-for (pp = 0; pp < NPOP; pp++) 
-  p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+   for (pp = 0; pp < NPOP; pp++) 
+   p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
 #endif
 
 

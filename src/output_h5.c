@@ -77,7 +77,7 @@ write_vector_h5(vector   *t, char *fname){
 
 
 
-#ifdef AAAAAAAAAA
+
 write_scalar_h5(my_double  *t, char *fname){
   int RANK = 3;
   char H5FILE_NAME[256];
@@ -156,7 +156,7 @@ write_scalar_h5(my_double  *t, char *fname){
   H5Gclose(group);
   H5Fclose(file_id);  
 }
-#endif
+
 
 
 void output_h5(){

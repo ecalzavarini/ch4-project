@@ -231,19 +231,19 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_y_local[j -BRD + LNY_START].uzt += uzt;
 			  ruler_z_local[k -BRD + LNZ_START].uzt += uzt;
 
-			  nux = property.kappa*dxt + uxt;
+			  nux = ( - property.kappa*dxt + uxt )/( property.kappa*property.deltaT/property.SY );
 			  out_local.nux += nux;
 			  ruler_x_local[i -BRD + LNX_START].nux += nux;
 			  ruler_y_local[j -BRD + LNY_START].nux += nux;
 			  ruler_z_local[k -BRD + LNZ_START].nux += nux;
 
-			  nuy = property.kappa*dyt + uyt;
+			  nuy = ( - property.kappa*dyt + uyt )/( property.kappa*property.deltaT/property.SY );
 			  out_local.nuy += nuy;
 			  ruler_x_local[i -BRD + LNX_START].nuy += nuy;
 			  ruler_y_local[j -BRD + LNY_START].nuy += nuy;
 			  ruler_z_local[k -BRD + LNZ_START].nuy += nuy;
 
-			  nuz = property.kappa*dzt + uzt;
+			  nuz = ( - property.kappa*dzt + uzt )/( property.kappa*property.deltaT/property.SY );
 			  out_local.nuz += nuz;
 			  ruler_x_local[i -BRD + LNX_START].nuz += nuz;
 			  ruler_y_local[j -BRD + LNY_START].nuz += nuz;
@@ -462,8 +462,10 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 
 #ifdef OUTPUT_H5
 
-  if(itime%((int)(property.time_dump_field/property.time_dt))==0) output_h5();
+  //  if(itime%((int)(property.time_dump_field/property.time_dt))==0) output_h5();
 
+   if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_scalar_h5(t,"temperature");
+  //if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_vector_h5(center_V,"position");
 #endif
 
 
