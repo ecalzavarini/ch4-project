@@ -537,15 +537,19 @@ if(LNZ_START == 0 && k == BRD){
 vector gradient_scalar(my_double *t, int i, int j, int k){
 
   vector grad;
+  my_double a0,a1,a2,h1,h2;
 
   /* in the bulk , centered 2nd order finite difference */
    grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
    grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
    grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
 
+
+#define FIRST_ORDER_GRAD
+#ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(LNX_START == 0 && i == BRD){
-   grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
+    grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
  }
  if(LNX_END == NY && i == LNX+BRD-1){ 
    grad.x = ( t[IDX(i, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
@@ -566,6 +570,71 @@ if(LNZ_START == 0 && k == BRD){
  if(LNZ_END == NZ && k == LNZ+BRD-1){ 
    grad.z = ( t[IDX(i, j, k)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
  }
-      return grad;
+#endif
+
+
+#ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(LNX_START == 0 && i == BRD){
+
+  h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+  h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i+1, j, k)] + a2*t[IDX(i+2, j, k)];
+
+ }
+ if(LNX_END == NY && i == LNX+BRD-1){ 
+
+   h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+   h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i-1, j, k)] + a2*t[IDX(i-2, j, k)];   
+ }
+
+   /* at the y boundaries */
+if(LNY_START == 0 && j == BRD){
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j+1, k)] + a2*t[IDX(i, j+2, k)];
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(LNY_END == NY && j == LNY+BRD-1){ 
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j-1, k)] + a2*t[IDX(i, j-2, k)]; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+
+   /* at the z boundaries */
+if(LNZ_START == 0 && k == BRD){
+  h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+  h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k+1)] + a2*t[IDX(i, j, k+2)];
+ }
+ if(LNZ_END == NZ && k == LNZ+BRD-1){ 
+   h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+   h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k-1)] + a2*t[IDX(i, j, k-2)]; 
+ }
+#endif
+
+    return grad;
 }
 #endif
