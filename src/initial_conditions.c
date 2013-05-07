@@ -61,6 +61,31 @@ void initial_conditions()
 
 }/* for i,j,k */
 
+
+   /* We set the global density to be =1 , this is an optional step */
+   my_double norm, norm_all;
+   norm = norm_all = 0.0;
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++)
+	for (pp = 0; pp < NPOP; pp++){ 
+	  norm += p[IDX(i,j,k)].p[pp];
+      }
+
+  MPI_Allreduce(&norm, &norm_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+  norm_all /= property.NX* property.NY* property.NZ;
+
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++)
+	for (pp = 0; pp < NPOP; pp++){ 
+	  p[IDX(i,j,k)].p[pp] /= norm_all;
+      }
+  /* end of density normalization*/
+
+
    /* communicate borders for populations */
    sendrecv_borders_pop(p);
 #endif

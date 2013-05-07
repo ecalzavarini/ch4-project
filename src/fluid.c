@@ -428,7 +428,7 @@ void add_forcing(pop *f, pop *rhs_f){
         cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
         d.x = (c[pp].x-ux)*invcs2 + c[pp].x*cu*invcs4;
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
-        d.z = (c[pp].z-uy)*invcs2 + c[pp].z*cu*invcs4;
+        d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
 
        rhs_f[IDX(i,j,k)].p[pp] += 2.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
        rhs_f[IDX(i,j,k)].p[pp] += 2.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;

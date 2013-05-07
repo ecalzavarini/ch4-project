@@ -1,12 +1,12 @@
 NX 101
-NY 50
+NY 25
 NZ 1
 
 SX 101
 SY 50
 SZ 1
 
-time_dt 0.25
+time_dt 0.125
 time_start 0.0
 time_end 25000.
 time_dump_field 25.

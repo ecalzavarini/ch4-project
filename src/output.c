@@ -231,19 +231,19 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_y_local[j -BRD + LNY_START].uzt += uzt;
 			  ruler_z_local[k -BRD + LNZ_START].uzt += uzt;
 
-			  nux = ( - property.kappa*dxt + uxt )/( property.kappa*property.deltaT/property.SY );
+			  nux = ( - property.kappa*dxt + uxt );
 			  out_local.nux += nux;
 			  ruler_x_local[i -BRD + LNX_START].nux += nux;
 			  ruler_y_local[j -BRD + LNY_START].nux += nux;
 			  ruler_z_local[k -BRD + LNZ_START].nux += nux;
 
-			  nuy = ( - property.kappa*dyt + uyt )/( property.kappa*property.deltaT/property.SY );
+			  nuy = ( - property.kappa*dyt + uyt );
 			  out_local.nuy += nuy;
 			  ruler_x_local[i -BRD + LNX_START].nuy += nuy;
 			  ruler_y_local[j -BRD + LNY_START].nuy += nuy;
 			  ruler_z_local[k -BRD + LNZ_START].nuy += nuy;
 
-			  nuz = ( - property.kappa*dzt + uzt )/( property.kappa*property.deltaT/property.SY );
+			  nuz = ( - property.kappa*dzt + uzt );
 			  out_local.nuz += nuz;
 			  ruler_x_local[i -BRD + LNX_START].nuz += nuz;
 			  ruler_y_local[j -BRD + LNY_START].nuz += nuz;
@@ -354,9 +354,9 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
   out_all.uxt *= norm;
   out_all.uyt *= norm;
   out_all.uzt *= norm;
-  out_all.nux *= norm;
-  out_all.nuy *= norm;
-  out_all.nuz *= norm;
+  out_all.nux *= norm/( property.kappa*property.deltaT/property.SY );
+  out_all.nuy *= norm/( property.kappa*property.deltaT/property.SY );
+  out_all.nuz *= norm/( property.kappa*property.deltaT/property.SY );
 
   norm = 1.0/(my_double)(NY*NZ);
   for (i = 0; i < NX; i++){
@@ -369,9 +369,9 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_x[i].uxt *= norm;
     ruler_x[i].uyt *= norm;
     ruler_x[i].uzt *= norm;
-    ruler_x[i].nux *= norm;
-    ruler_x[i].nuy *= norm;
-    ruler_x[i].nuz *= norm;
+    ruler_x[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_x[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_x[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
   }
 
   norm = 1.0/(my_double)(NX*NZ);
@@ -385,9 +385,9 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_y[i].uxt *= norm;
     ruler_y[i].uyt *= norm;
     ruler_y[i].uzt *= norm;
-    ruler_y[i].nux *= norm;
-    ruler_y[i].nuy *= norm;
-    ruler_y[i].nuz *= norm;
+    ruler_y[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_y[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_y[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
   }
 
   norm = 1.0/(my_double)(NX*NY);
@@ -401,9 +401,9 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_z[i].uxt *= norm;
     ruler_z[i].uyt *= norm;
     ruler_z[i].uzt *= norm;
-    ruler_z[i].nux *= norm;
-    ruler_z[i].nuy *= norm;
-    ruler_z[i].nuz *= norm;
+    ruler_z[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_z[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_z[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
   }
 #endif
 #endif 
