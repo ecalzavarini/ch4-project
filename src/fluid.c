@@ -344,9 +344,9 @@ void build_forcing(){
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
 
-   LX=(my_double)(NX);
-   LY=(my_double)(NY);
-   LZ=(my_double)(NZ);
+   LX=(my_double)(property.SX);
+   LY=(my_double)(property.SY);
+   LZ=(my_double)(property.SZ);
    nu=property.nu;
 
  for(k=BRD;k<LNZ+BRD;k++)
@@ -359,9 +359,9 @@ void build_forcing(){
 
 #ifdef LB_FLUID_FORCING_POISEUILLE 
 	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is just an arbitrary choice */
-	force[IDX(i,j,k)].x += property.Amp_x*((4.*nu)*pow(LY,-2.0));  
-	force[IDX(i,j,k)].y += property.Amp_y*((4.*nu)*pow(LX,-2.0));  
-	force[IDX(i,j,k)].z += property.Amp_z*((4.*nu)*pow(LY,-2.0));  
+	force[IDX(i,j,k)].x += 2.0*property.Amp_x*((4.*nu)*pow(LY,-2.0));  
+	force[IDX(i,j,k)].y += 2.0*property.Amp_y*((4.*nu)*pow(LX,-2.0));  
+	force[IDX(i,j,k)].z += 2.0*property.Amp_z*((4.*nu)*pow(LY,-2.0));  
 #endif
 
 #ifdef LB_FLUID_FORCING_KOLMOGOROV 
@@ -387,6 +387,7 @@ void build_forcing(){
 
   temp = (t[IDX(i,j,k)] - property.T_ref);
   fac = property.beta_t*temp + property.beta2_t*temp*temp;
+  //fac = property.beta_t;
 
       force[IDX(i,j,k)].x += fac*property.gravity_x;
       force[IDX(i,j,k)].y += fac*property.gravity_y;
@@ -418,9 +419,9 @@ void add_forcing(pop *f, pop *rhs_f){
 	/* forcing */
 
 #ifndef METHOD_FORCING_GUO	  	  
-	    rhs_f[IDX(i,j,k)].p[pp] += 6.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
-            rhs_f[IDX(i,j,k)].p[pp] += 6.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
-            rhs_f[IDX(i,j,k)].p[pp] += 6.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
+	    rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
+            rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
+            rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
 #else       
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
@@ -430,9 +431,9 @@ void add_forcing(pop *f, pop *rhs_f){
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
         d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
 
-       rhs_f[IDX(i,j,k)].p[pp] += 2.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
-       rhs_f[IDX(i,j,k)].p[pp] += 2.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
-       rhs_f[IDX(i,j,k)].p[pp] += 2.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;
+       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
+       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
+       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;
 #endif
 
 	}/* pp */

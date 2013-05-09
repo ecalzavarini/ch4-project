@@ -45,7 +45,7 @@ void initial_conditions()
 
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  6.0*wgt[pp]*c[pp].x*fn*y*(y-L);
+	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
 
 #endif  
 
@@ -55,9 +55,8 @@ void initial_conditions()
 
   /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
    for (pp = 0; pp < NPOP; pp++) 
-     //p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
-     /* why this factor 2 in the exp? Strange but it works... */
-     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(2.*property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
 #endif
 
 
@@ -78,13 +77,14 @@ void initial_conditions()
   MPI_Allreduce(&norm, &norm_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
   norm_all /= property.NX* property.NY* property.NZ;
-
+  /*
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++)
 	for (pp = 0; pp < NPOP; pp++){ 
 	  p[IDX(i,j,k)].p[pp] /= norm_all;
       }
+  */
   /* end of density normalization*/
 
 
