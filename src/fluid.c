@@ -133,6 +133,7 @@ void compute_advection(pop *f, pop *rhs_f){
  else
    adv += coeff_zm[IDX(i,j,k)].p[pp]*( interp3_zm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_zm[IDX(i,j,k)] + interp4_zm[IDX(i,j,k)])*f[IDX(i,j,k-1)].p[pp] -interp4_zm[IDX(i,j,k)]*f[IDX(i,j,k-2)].p[pp] );	  
 
+
  //#define GRID_UNIT_EQUISPACED 
 #ifdef GRID_UNIT_EQUISPACED
 /* QUICK for a regular grid */

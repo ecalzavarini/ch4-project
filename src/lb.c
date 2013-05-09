@@ -624,7 +624,10 @@ if(LNY_END == NY){
 
 	  rho = t[IDX(i,j,k)]; 
 	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
-	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+
+	  /* imposed heat flux */
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
 
 #ifdef KALYAN_BC  /* Works only single processor */
 	  a = -1.0/interp4_yp[IDX(i,j,k)];
@@ -641,6 +644,9 @@ if(LNY_END == NY){
 	  rho = t[IDX(i,j-1,k)]; 	
 	  effDT = ( (property.T_top-property.T_ref) - rho )*2.0 +  rho;
 	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
+
+	  /* imposed heat flux */
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  g[IDX(i,j-1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
 
 #ifdef KALYAN_BC
 	  a1 = -1.0/interp4_yp[IDX(i,j+1,k)];
@@ -662,6 +668,9 @@ if(LNY_START == 0){
 	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
  	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];	  
 
+	  /* imposed heat flux */
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
+
 #ifdef KALYAN_BC
 	  a2 = -1.0/interp2_yp[IDX(i,j,k)];
 	  b2 = (property.T_bot-property.T_ref) - ((property.deltaT/LNY)*(my_double)grid_ruler_y[1]);	 
@@ -677,6 +686,9 @@ if(LNY_START == 0){
 	  rho =  t[IDX(i,j+1,k)];   
 	  effDT = ( (property.T_bot-property.T_ref) - rho )*2.0 +  rho;	 
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  (effDT/rho)*g[IDX(i,j+1,k)].p[pp];
+
+	  /* imposed heat flux */
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  g[IDX(i,j+1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
 
 #ifdef KALYAN_BC
 	  a3 = -1.0/interp2_yp[IDX(i,j-1,k)];
