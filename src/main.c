@@ -69,8 +69,11 @@ int main(int argc, char **argv){
 #endif	
 	 hydro_fields();	
 	 dump_averages();
-
 	}
+
+#ifdef OUTPUT_H5
+       	write_pop_h5();
+#endif
 
 	/* Shut down MPI */
 	MPI_Finalize();

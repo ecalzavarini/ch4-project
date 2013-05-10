@@ -461,11 +461,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 #endif
 
 #ifdef OUTPUT_H5
-
-  //  if(itime%((int)(property.time_dump_field/property.time_dt))==0) output_h5();
-
-   if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_scalar_h5(t,"temperature");
-  //if(itime%((int)(property.time_dump_field/property.time_dt))==0) write_vector_h5(center_V,"position");
+    if(itime%((int)(property.time_dump_field/property.time_dt))==0) output_h5();
 #endif
 
 

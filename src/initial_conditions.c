@@ -125,4 +125,18 @@ void initial_conditions()
    sendrecv_borders_pop(g);
 #endif
 
+
+#ifdef OUTPUT_H5
+   // read_pop_h5();
+#ifdef LB_FLUID
+  sendrecv_borders_pop(p);
+#endif
+#ifdef LB_TEMPERATURE
+  sendrecv_borders_pop(g);
+#endif
+#ifdef LB_TEMPERATURE
+  sendrecv_borders_pop(h);
+#endif
+#endif
+
 }
