@@ -218,19 +218,22 @@ void write_pop_h5(){
 
 
 #ifdef LB_FLUID
-  edataset = H5Dcreate(file_id, "velocity", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  /////edataset = H5Dcreate(file_id, "velocity", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  edataset = H5Dcreate(group, "velocity", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, p);
   H5Dclose(edataset);
 #endif
 
 #ifdef LB_TEMPERATURE
-  edataset = H5Dcreate(file_id, "temperature", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  ////  edataset = H5Dcreate(file_id, "temperature", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  edataset = H5Dcreate(group, "temperature", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, g);
   H5Dclose(edataset);
 #endif
 
 #ifdef LB_SCALAR
-  edataset = H5Dcreate(file_id, "scalar", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  ////edataset = H5Dcreate(file_id, "scalar", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
+  edataset = H5Dcreate(group, "scalar", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, h);
   H5Dclose(edataset);
 #endif
@@ -254,12 +257,13 @@ void write_pop_h5(){
 
 /**********************************************/
 
+#define IN_H5FILE_NAME "pop.h5"
 
 void read_pop_h5(){
   char *fname;
   int RANK = 3;  
   char label[128] , label2[128];
-  char NEW_H5FILE_NAME[128];
+  //char NEW_H5FILE_NAME[128];
   char DATASETNAME[256];
   hid_t file_id, group, edataset, ememspace, hdf5_status;
   hid_t xfer_plist, ret, property_id, efilespace;
@@ -272,33 +276,27 @@ void read_pop_h5(){
   void *old_client_data;
   hid_t hdf5_type;
   hsize_t array[ ] = {3}; 
-
   int i;
-  int size = (LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
+
+  plist_id = H5Pcreate(H5P_FILE_ACCESS);
+  hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
+
+  file_id = H5Fopen(IN_H5FILE_NAME, H5F_ACC_RDONLY, H5P_DEFAULT);
+  group   = H5Gopen(file_id, "/population", H5P_DEFAULT);
+  H5Pclose(plist_id);
+
+  hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(pop));
+  for (i = 0; i < NPOP; i++){
+    sprintf(label,"p%d",i);
+    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_DOUBLE);
+  }
+  property_id  = H5Pcreate(H5P_DATASET_CREATE); 
 
   efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
   efilespace = H5Screate_simple(RANK, efile_3d, NULL);
 
   edimens_3d[0] = LNZ+TWO_BRD;  edimens_3d[1] = LNY+TWO_BRD;  edimens_3d[2] = LNX+TWO_BRD;
   ememspace = H5Screate_simple(RANK, edimens_3d, NULL);
-
-  plist_id = H5Pcreate(H5P_FILE_ACCESS);
-
-  hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
-
-  file_id = H5Fopen(H5FILE_NAME, H5F_ACC_RDONLY, H5P_DEFAULT);
-  group   = H5Gopen(file_id, "/population", H5P_DEFAULT);
-  H5Pclose(plist_id);
-  
-  //hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
- hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(pop));
-  for (i = 0; i < NPOP; i++){
-    sprintf(label,"p%d",i);
-    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_DOUBLE);
-  }
-
-
-  property_id  = H5Pcreate(H5P_DATASET_CREATE);       
     
   estart_3d[0] = BRD;  estart_3d[1] = BRD;  estart_3d[2] = BRD;
   estride_3d[0] = 1;  estride_3d[1] = 1;   estride_3d[2] = 1;
@@ -316,22 +314,21 @@ void read_pop_h5(){
   xfer_plist = H5Pcreate(H5P_DATASET_XFER);
   ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
 
-
 #ifdef LB_FLUID
-  edataset = H5Dcreate(file_id, "velocity", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
-  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, xfer_plist, p);
+  edataset = H5Dopen(group,"velocity",H5P_DEFAULT); 
+  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, p);
   H5Dclose(edataset);
 #endif
 
 #ifdef LB_TEMPERATURE
-  edataset = H5Dcreate(file_id, "temperature", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
-  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, xfer_plist, g);
+  edataset = H5Dopen(group, "temperature", H5P_DEFAULT);
+  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, g);
   H5Dclose(edataset);
 #endif
 
 #ifdef LB_SCALAR
-  edataset = H5Dcreate(file_id, "scalar", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT); 
-  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, xfer_plist, h);
+  edataset = H5Dopen(group, "scalar", H5P_DEFAULT);
+  ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, h);
   H5Dclose(edataset);
 #endif
 
@@ -344,11 +341,6 @@ void read_pop_h5(){
   H5Pclose(property_id);
   H5Gclose(group);
   H5Fclose(file_id);  
-
-  /* we rename the file */
-
-  sprintf(NEW_H5FILE_NAME,"pop.h5");
-  rename (H5FILE_NAME, NEW_H5FILE_NAME);
 
 }
 
