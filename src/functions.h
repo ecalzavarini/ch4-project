@@ -21,7 +21,7 @@ void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,my_double tau);
 
 /* initial_conditions.c */
 
-void initial_conditions();
+void initial_conditions(int restart);
 
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau);

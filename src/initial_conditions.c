@@ -1,6 +1,6 @@
 #include "common_object.h"
 
-void initial_conditions() 
+void initial_conditions(int restart) 
 {
   int i,j,k, pp;
   my_double nu,Amp_x;
@@ -8,7 +8,6 @@ void initial_conditions()
   my_double y;
   my_double L;
 
-  #ifdef AAAAAAAAA
 
 #ifdef LB_FLUID
   nu = (my_double)property.nu;
@@ -127,10 +126,9 @@ void initial_conditions()
    sendrecv_borders_pop(g);
 #endif
 
-   #endif //  AAAAAAA
 
 #ifdef OUTPUT_H5
-   read_pop_h5();
+   if(restart) read_pop_h5();
 #ifdef LB_FLUID
   sendrecv_borders_pop(p);
 #endif
@@ -140,8 +138,6 @@ void initial_conditions()
 #ifdef LB_SCALAR
   sendrecv_borders_pop(h);
 #endif
-  //write_pop_h5();
-  //exit(1);
 #endif
 
 }

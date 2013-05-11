@@ -1,15 +1,15 @@
-NX 101
-NY 50
-NZ 1
+NX 64
+NY 32
+NZ 2
 
-SX 101
-SY 50
-SZ 1
+SX 64
+SY 32
+SZ 2
 
-time_dt 0.25
+time_dt 0.125
 time_start 0.0
-time_end 250000.
-time_dump_field 25.
+time_end 12.5
+time_dump_field 1.25
 time_dump_diagn 1.0
 
 tau_u 0.5
@@ -19,11 +19,11 @@ Amp_y 0.0
 Amp_z 0.0
 
 tau_t 0.5
-T_bot 3.0
-T_top 1.0
+T_bot 1.0
+T_top -1.0
 T_ref 0.0
 
-beta_t  0.00025
+beta_t  0.005
 beta2_t 0.0
 
 gravity_x 0.0
