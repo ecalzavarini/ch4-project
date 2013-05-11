@@ -95,10 +95,16 @@ void read_mesh(){
 
 
 
-#ifdef GRID_REFINED					  			       
-					  //mesh[IDXG(i, j, k)].x = grid_ruler_x[i+LNXG_START-BRD];					  
+#ifdef GRID_REFINED
+#ifdef GRID_REFINED_X					  			       
+					  mesh[IDXG(i, j, k)].x = grid_ruler_x[i+LNXG_START-BRD];
+#endif
+#ifdef GRID_REFINED_Y					  
 					  mesh[IDXG(i, j, k)].y = grid_ruler_y[j+LNYG_START-BRD];
-					  //mesh[IDXG(i, j, k)].z = grid_ruler_z[k+LNZG_START-BRD];
+#endif
+#ifdef GRID_REFINED_Z
+					  mesh[IDXG(i, j, k)].z = grid_ruler_z[k+LNZG_START-BRD];
+#endif
 #endif
 
 				} /* for ijk */

@@ -16,8 +16,8 @@ int main(int argc, char **argv){
 	//#ifdef LB_FLUID_BC
 	//	prepare_boundary_conditions();
 	//#endif
-	int restart = 0;
-	initial_conditions(restart); 
+	int resume = 1;
+	initial_conditions(resume); 
 	hydro_fields();
 	//dump_averages();
 	//exit(1);
