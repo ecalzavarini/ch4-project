@@ -1,15 +1,17 @@
-NX 64
-NY 32
-NZ 2
+resume 1
 
-SX 64
-SY 32
-SZ 2
+NX 1
+NY 64
+NZ 1
 
-time_dt 0.125
+SX 1
+SY 128
+SZ 1
+
+time_dt 0.25
 time_start 0.0
-time_end 12.5
-time_dump_field 1.25
+time_end 2500.0
+time_dump_field 2500.
 time_dump_diagn 1.0
 
 tau_u 0.5
@@ -23,7 +25,7 @@ T_bot 1.0
 T_top -1.0
 T_ref 0.0
 
-beta_t  0.005
+beta_t  0.025
 beta2_t 0.0
 
 gravity_x 0.0

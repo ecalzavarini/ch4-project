@@ -109,7 +109,7 @@ void initial_conditions(int restart)
 #endif 
 
 #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-	if(center_V[IDX(i, j, k)].x<NX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
+	if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
 #endif
 
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT

@@ -27,6 +27,9 @@ extern MPI_Op MPI_SUM_output;
 /* random seed */
 extern unsigned int seed;
 
+/* resume */
+extern int resume;
+
 /* System size , center nodes */
 extern int NX , NY , NZ;
 extern int LNX , LNY , LNZ;

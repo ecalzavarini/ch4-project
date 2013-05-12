@@ -27,6 +27,10 @@ MPI_Op MPI_SUM_output;
 /* random seed */
 unsigned int seed;
 
+/* resume */
+int resume;
+
+
 /* System size , for the nodes*/
 int NX , NY , NZ;
 int LNX , LNY , LNZ;

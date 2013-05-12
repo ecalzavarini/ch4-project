@@ -49,6 +49,11 @@ void assign_parameters(){
     remove("param.out");
     /* read parameters from file */
 
+
+    /* resume */
+    sprintf(name,"resume");
+    resume = (int)read_parameter(name);
+
     /* size of center nodes grid */
     sprintf(name,"NX");
     property.NX = (double)read_parameter(name);
@@ -173,6 +178,8 @@ void assign_parameters(){
   }/* if ROOT*/
 
  /* Now broadcast all properties */
+ MPI_Bcast(&resume, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
  MPI_Bcast(&NX, 1, MPI_INT, 0, MPI_COMM_WORLD);
  MPI_Bcast(&NY, 1, MPI_INT, 0, MPI_COMM_WORLD);
  MPI_Bcast(&NZ, 1, MPI_INT, 0, MPI_COMM_WORLD);
