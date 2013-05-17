@@ -320,8 +320,10 @@ void compute_volumes(){
 				S2367 = 0.5 * fabs(sqrt((pow((D27.y * D36.z - D27.z * D36.y), 2.0)) + (pow((D27.z * D36.x - D27.x * D36.z), 2.0)) + (pow((D27.x * D36.y - D27.y * D36.x), 2.0))));
 				S0123 = 0.5 * fabs(sqrt((pow((D03.y * D12.z - D03.z * D12.y), 2.0)) + (pow((D03.z * D12.x - D03.x * D12.z), 2.0)) + (pow((D03.x * D12.y - D03.y * D12.x), 2.0))));
 				S4567 = 0.5 * fabs(sqrt((pow((D47.y * D56.z - D47.z * D56.y), 2.0)) + (pow((D47.z * D56.x - D47.x * D56.z), 2.0)) + (pow((D47.x * D56.y - D47.y * D56.x), 2.0))));
-				fprintf(stdout, "\n%e %e %e %e %e %e \n", S1357, S0145, S0246, S2367, S0123, S4567);
 
+#ifdef DEBUG			
+	fprintf(stdout, "\n%e %e %e %e %e %e \n", S1357, S0145, S0246, S2367, S0123, S4567);
+#endif
 				/*
 				 * NORMAL VECTOR definition Normal vector of
 				 * a plane with known two vectors can be
@@ -377,8 +379,9 @@ void compute_volumes(){
 	V3 = fabs(D17.x * (D05.y * M0347.z - D05.z * M0347.y) - D05.x * (D17.y * M0347.z - D17.z * M0347.y) + M0347.x * (D17.y * D05.z - D17.z * D05.y));			
 	V = (V1 + V2 + V3)/12.0;
 
+#ifdef DEBUG
 				/* testing volume */
-				fprintf(stdout, "%e \n", V);
+#endif				fprintf(stdout, "Volume : %e \n", V);
 
 				center_V[IDX(i, j, k)] = P8;
 			    //if(P8.x==0.5)fprintf(stdout, "WWW me %d , %d %d %d , %g %g %g\n",me, i,j,k,center_V[IDX(i, j, k)].x,center_V[IDX(i, j, k)].y,center_V[IDX(i, j, k)].z);
