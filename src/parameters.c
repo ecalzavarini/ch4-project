@@ -202,6 +202,11 @@ void set_to_zero_vector( vector *f,int size){
   for(i=0;i<size;i++) f[i].x = f[i].y = f[i].z = 0.0;
 }
 
+void set_to_zero_scalar( my_double *f,int size){
+  int i;
+  for(i=0;i<size;i++) f[i] = 0.0;
+}
+
 void set_to_zero_int( int *f,int size){
   int i;
   for(i=0;i<size;i++) f[i] = 0;

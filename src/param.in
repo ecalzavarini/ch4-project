@@ -11,7 +11,7 @@ SZ 1
 time_dt 0.0625
 time_start 0.0
 time_end 625.0
-time_dump_field 625.0
+time_dump_field 6.250
 time_dump_diagn 1.0
 
 tau_u 0.125

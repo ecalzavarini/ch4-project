@@ -405,8 +405,25 @@ void build_forcing(){
       /* set to zero */ 
       t_source[IDX(i,j,k)] = 0.0;
 
-      /* here we can for instance impose a temperature profile , or add a thermal source or make the field reactive*/
+   /* here we can for instance impose a temperature profile , or add a thermal source or make the field reactive*/
  
+#ifdef LB_TEMPERATURE_FORCING_SOURCE
+  /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
+      my_double spot;
+      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( spot < 100.0 ) t_source[IDX(i,j,k)] = property.T_top;
+#endif
+
+#ifdef LB_TEMPERATURE_FORCING_PROFILE
+  /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
+  t_source[IDX(i,j,k)] = (property.DeltaT/property.SY)*u[IDX(i,j,k)].y;
+#endif
+
+#ifdef LB_TEMPERATURE_FORCING_REACTION
+  /* make the field reactive */
+  t_source[IDX(i,j,k)] = 0.1*t[IDX(i,j,k)]*(1.0-t_source[IDX(i,j,k)]);
+#endif
+
 #endif
 
 
