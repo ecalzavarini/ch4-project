@@ -1,31 +1,31 @@
 resume 1
 
-NX 1
+NX 128
 NY 64
 NZ 1
 
-SX 1
-SY 128
+SX 128
+SY 64
 SZ 1
 
-time_dt 0.25
+time_dt 0.0625
 time_start 0.0
-time_end 2500.0
-time_dump_field 2500.
+time_end 625.0
+time_dump_field 625.0
 time_dump_diagn 1.0
 
-tau_u 0.5
+tau_u 0.125
 
-Amp_x 0.01
+Amp_x 0.1
 Amp_y 0.0
 Amp_z 0.0
 
-tau_t 0.5
+tau_t 0.125
 T_bot 1.0
 T_top -1.0
 T_ref 0.0
 
-beta_t  0.025
+beta_t  0.0083
 beta2_t 0.0
 
 gravity_x 0.0

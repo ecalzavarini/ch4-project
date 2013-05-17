@@ -53,9 +53,9 @@ int main(int argc, char **argv){
 	  add_collision(h,rhs_h,property.tau_s);
 #endif 
 
-#ifdef LB_FLUID_FORCING
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
 	  build_forcing();
-	  add_forcing(p,rhs_p);
+	  add_forcing();
 #endif
 
 #ifdef LB_FLUID	  
