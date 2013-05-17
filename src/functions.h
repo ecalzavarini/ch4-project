@@ -30,5 +30,6 @@ void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);
 tensor gradient_vector(vector *t, int i, int j, int k);
+
 /* output */
 void dump_averages();

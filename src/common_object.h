@@ -100,6 +100,9 @@ extern vector *force;
 #ifdef LB_TEMPERATURE
 extern pop *g, *rhs_g, *old_rhs_g;
 extern my_double *t;
+#ifdef LB_TEMPERATURE_FORCING
+extern my_double *t_source;
+#endif
 #endif
 
 

@@ -433,6 +433,12 @@ void allocate_fields(){
  t  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(t == NULL){ fprintf(stderr,"Not enough memory to allocate t\n"); exit(-1);}
  set_to_zero_my_double( t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+#ifdef LB_TEMPERATURE_FORCING
+ t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(t_source == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+ set_to_zero_scalar( t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
 #endif
 
 #ifdef LB_SCALAR

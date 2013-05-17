@@ -338,7 +338,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 }
 
 
-#ifdef LB_FLUID_FORCING
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
 void build_forcing(){
   int i, j, k;
   my_double fnx,fny,fnz,kn;
@@ -354,6 +354,7 @@ void build_forcing(){
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
+#ifdef LB_FLUID_FORCING
 	force[IDX(i,j,k)].x = 0.0;
 	force[IDX(i,j,k)].y = 0.0;
 	force[IDX(i,j,k)].z = 0.0;
@@ -397,13 +398,24 @@ void build_forcing(){
       //fprintf(stderr, "fy %e\n",property.gravity_y);
 #endif
 
+#endif
+
+
+#ifdef LB_TEMPERATURE_FORCING
+      /* set to zero */ 
+      t_source[IDX(i,j,k)] = 0.0;
+
+      /* here we can for instance impose a temperature profile , or add a thermal source or make the field reactive*/
+ 
+#endif
+
 
       }/* i,j,k */
 }
 #endif
 
-#ifdef LB_FLUID_FORCING
-void add_forcing(pop *f, pop *rhs_f){
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
+void add_forcing(){
   int i, j, k, pp;
   my_double invtau ;
   pop f_eq;
@@ -419,10 +431,12 @@ void add_forcing(pop *f, pop *rhs_f){
 	for (pp=0; pp<NPOP; pp++){
 	/* forcing */
 
+#ifdef LB_FLUID_FORCING
+
 #ifndef METHOD_FORCING_GUO	  	  
-	    rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
-            rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
-            rhs_f[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
+	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
+            rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
+            rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
 #else       
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
@@ -432,9 +446,16 @@ void add_forcing(pop *f, pop *rhs_f){
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
         d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
 
-       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
-       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
-       rhs_f[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;
+       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
+       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
+       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;
+#endif
+
+#endif
+
+#ifdef LB_TEMPERATURE_FORCING
+       /* Not Guo here ? */
+	    rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
 #endif
 
 	}/* pp */
