@@ -421,7 +421,7 @@ void build_forcing(){
 
 #ifdef LB_TEMPERATURE_FORCING_REACTION
   /* make the field reactive */
-  t_source[IDX(i,j,k)] = 0.1*t[IDX(i,j,k)]*(1.0-t_source[IDX(i,j,k)]);
+  t_source[IDX(i,j,k)] = t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
 #endif
 
 #endif

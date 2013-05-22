@@ -1,14 +1,14 @@
-resume 1
+resume 0
 
-NX 128
+NX 64
 NY 64
 NZ 1
 
-SX 128
+SX 64
 SY 64
 SZ 1
 
-time_dt 0.0625
+time_dt 0.01
 time_start 0.0
 time_end 625.0
 time_dump_field 6.250
@@ -22,7 +22,7 @@ Amp_z 0.0
 
 tau_t 0.125
 T_bot 1.0
-T_top -1.0
+T_top 0.0
 T_ref 0.0
 
 beta_t  0.0083

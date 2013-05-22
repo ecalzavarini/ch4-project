@@ -116,6 +116,14 @@ void initial_conditions(int restart)
         /* constant temperature */
         t[IDX(i,j,k)] = property.T_top;
 #endif
+
+#ifdef LB_TEMPERATURE_INITIAL_SPOT
+  /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
+      my_double spot;
+      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( spot < 100.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+#endif
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  g[IDX(i,j,k)].p[pp] = wgt[pp]*t[IDX(i,j,k)];
