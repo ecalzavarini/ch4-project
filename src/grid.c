@@ -9,7 +9,8 @@ void make_grid_rulers(my_double fac){
   fac2 = 1.0;
 #endif
 
-  dx=2./(my_double)NX;
+  //dx=2./(my_double)NX;
+  dx=fac2/(my_double)NX;
   for(i=0; i< NXG; i++){	
     /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
     grid_ruler_x[i] = -1.0+dx*((double)i);
@@ -19,7 +20,8 @@ void make_grid_rulers(my_double fac){
     grid_ruler_x[i] = (property.SX/fac2)*(grid_ruler_x[i]+1.0);
  }
 		
-  dy=2./(my_double)NY;			 
+  //dy=2./(my_double)NY;			 
+  dy=fac2/(my_double)NY;
   for(i=0; i< NYG; i++){					    
     grid_ruler_y[i] = -1.0+dy*((double)i);
     grid_ruler_y[i] = (1./fac)*tanh(grid_ruler_y[i]*atanh(fac));
@@ -27,7 +29,8 @@ void make_grid_rulers(my_double fac){
     // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
  }
 
-  dz=2./(my_double)NZ;
+  //dz=2./(my_double)NZ;
+  dz=fac2/(my_double)NZ;
   for(i=0; i< NZG; i++){					    
     grid_ruler_z[i] = -1.0+dz*((double)i);
     grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));

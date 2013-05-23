@@ -398,9 +398,28 @@ void build_forcing(){
       //fprintf(stderr, "fy %e\n",property.gravity_y);
 #endif
 
+
+#ifdef  LB_FLUID_FORCING_PENALIZATION
+      my_double mask;
+      /* penalization of a cube */
+      
+      if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
+	  fabs(center_V[IDX(i,j,k)].y) < 10 && 
+	  fabs(center_V[IDX(i,j,k)].z-property.SZ/2.0) < 10  ) 
+	mask=1.0; 
+      else 
+	mask=0.0;
+  
+      if( mask == 1.0 ){
+	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
+	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
+	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
+	  }
 #endif
 
+#endif
 
+/* From here HERE SOURCE TERM ON SCALAR FIELD */
 #ifdef LB_TEMPERATURE_FORCING
       /* set to zero */ 
       t_source[IDX(i,j,k)] = 0.0;
