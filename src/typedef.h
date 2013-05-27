@@ -51,19 +51,25 @@ typedef struct {
 
 
 #ifndef LB_FLUID
+#undef NPROP
 #define NPROP 11
 #endif
 #ifdef LB_FLUID
+#undef NPROP
 #define NPROP 13
 #ifdef LB_FLUID_FORCING
+#undef NPROP
 #define NPROP 16
 #endif
 #ifdef LB_TEMPERATURE
+#undef NPROP
 #define NPROP 22
 #ifdef LB_TEMPERATURE_BUOYANCY
+#undef NPROP
 #define NPROP 27
 #endif
 #ifdef LB_SCALAR
+#undef NPROP
 #define NPROP 29
 #endif
 #endif
@@ -85,9 +91,11 @@ typedef struct {
 #endif
 } output;
 #ifdef LB_FLUID
+#undef NOUT
 #define NOUT 12
 #endif
 #ifdef LB_TEMPERATURE
+#undef NOUT
 #define NOUT 24
 #endif
 

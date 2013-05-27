@@ -319,8 +319,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
       for(i=BRD;i<LNX+BRD;i++){ 
      
 	f_eq=equilibrium(f,i,j,k);
-	for (pp=0; pp<NPOP; pp++) 
-	  fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 
 #if (defined METHOD_MYQUICK || defined METHOD_TRAPEZOID)
 	f_eq_xp = equilibrium(f,i+1,j,k); 
@@ -352,8 +351,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 #ifdef METHOD_EXPONENTIAL
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
-			rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
-		//      rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
+		//	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+		        rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
 
 #if (defined METHOD_MYQUICK || defined METHOD_TRAPEZOID)
 

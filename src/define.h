@@ -8,11 +8,11 @@
 #define OUTPUT_H5
 
 /* GRID */
-#define GRID_REGULAR
-//#define GRID_REFINED
+//#define GRID_REGULAR
+#define GRID_REFINED
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_X
-//#define GRID_REFINED_Y
+#define GRID_REFINED_Y
 //#define GRID_REFINED_Z
 
 //#define GRID_IRREGULAR_RANDOM
@@ -48,7 +48,7 @@
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
 #define METHOD_MYQUICK
-#define METHOD_TRAPEZOID
+//#define METHOD_TRAPEZOID
 
 /* TEMPERATURE */
 #define LB_TEMPERATURE

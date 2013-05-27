@@ -8,9 +8,9 @@ SX 128
 SY 64
 SZ 1
 
-time_dt 0.125
+time_dt 0.0125
 time_start 0.0
-time_end 750.0
+time_end 1.25
 time_dump_field 75.0
 time_dump_diagn 1.0
 
