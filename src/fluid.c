@@ -310,7 +310,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
   pop f_eq;
   pop f_eq_xp,f_eq_xm,f_eq_yp,f_eq_ym,f_eq_zp,f_eq_zm;
   pop fcoll, fcoll_xp,fcoll_xm,fcoll_yp,fcoll_ym,fcoll_zp,fcoll_zm;
-
+  my_double fac;
+ 
   //invtau = 1.0/property.tau_u;
     invtau = 1.0/tau;
 
@@ -351,21 +352,23 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 #ifdef METHOD_EXPONENTIAL
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
-		//	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
-		        rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
+
 
 #if (defined METHOD_MYQUICK || defined METHOD_TRAPEZOID)
+   rhs_f[IDX(i,j,k)].p[pp] +=  0.5*fcoll.p[pp];
 
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_xp[IDX(i,j,k)]*fcoll_xp.p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*fcoll.p[pp] - interp2_xp[IDX(i,j,k)]*fcoll_xm.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_xm[IDX(i,j,k)]*fcoll_xm.p[pp] + (1.0 - interp_xm[IDX(i,j,k)] + interp2_xm[IDX(i,j,k)])*fcoll.p[pp] - interp2_xm[IDX(i,j,k)]*fcoll_xp.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_xp[IDX(i,j,k)]*fcoll_xp.p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*fcoll.p[pp] - interp2_xp[IDX(i,j,k)]*fcoll_xm.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_xm[IDX(i,j,k)]*fcoll_xm.p[pp] + (1.0 - interp_xm[IDX(i,j,k)] + interp2_xm[IDX(i,j,k)])*fcoll.p[pp] - interp2_xm[IDX(i,j,k)]*fcoll_xp.p[pp] );
 
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_yp[IDX(i,j,k)]*fcoll_yp.p[pp] + (1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)])*fcoll.p[pp] - interp2_yp[IDX(i,j,k)]*fcoll_ym.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_ym[IDX(i,j,k)]*fcoll_ym.p[pp] + (1.0 - interp_ym[IDX(i,j,k)] + interp2_ym[IDX(i,j,k)])*fcoll.p[pp] - interp2_ym[IDX(i,j,k)]*fcoll_yp.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_yp[IDX(i,j,k)]*fcoll_yp.p[pp] + (1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)])*fcoll.p[pp] - interp2_yp[IDX(i,j,k)]*fcoll_ym.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_ym[IDX(i,j,k)]*fcoll_ym.p[pp] + (1.0 - interp_ym[IDX(i,j,k)] + interp2_ym[IDX(i,j,k)])*fcoll.p[pp] - interp2_ym[IDX(i,j,k)]*fcoll_yp.p[pp] );
 
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_zp[IDX(i,j,k)]*fcoll_zp.p[pp] + (1.0 - interp_zp[IDX(i,j,k)] + interp2_zp[IDX(i,j,k)])*fcoll.p[pp] - interp2_zp[IDX(i,j,k)]*fcoll_zm.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.5*( interp_zm[IDX(i,j,k)]*fcoll_zm.p[pp] + (1.0 - interp_zm[IDX(i,j,k)] + interp2_zm[IDX(i,j,k)])*fcoll.p[pp] - interp2_zm[IDX(i,j,k)]*fcoll_zp.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_zp[IDX(i,j,k)]*fcoll_zp.p[pp] + (1.0 - interp_zp[IDX(i,j,k)] + interp2_zp[IDX(i,j,k)])*fcoll.p[pp] - interp2_zp[IDX(i,j,k)]*fcoll_zm.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_zm[IDX(i,j,k)]*fcoll_zm.p[pp] + (1.0 - interp_zm[IDX(i,j,k)] + interp2_zm[IDX(i,j,k)])*fcoll.p[pp] - interp2_zm[IDX(i,j,k)]*fcoll_zp.p[pp] );
 
-
+#else
+		//	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+		        rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
 #endif
 
 #endif
