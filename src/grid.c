@@ -1,5 +1,7 @@
 #include "common_object.h"
 
+
+
 #ifdef GRID_REFINED
 void make_grid_rulers(my_double fac){
   int i;
@@ -36,6 +38,35 @@ void make_grid_rulers(my_double fac){
     grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));
     grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
  }
+
+#ifdef GRID_REFINED_BULK
+  dx=fac2/(my_double)NX;
+  for(i=0; i< NXG; i++){	
+    /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
+    grid_ruler_x[i] = -1.0+dx*((double)i);
+    /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
+    grid_ruler_x[i] = (1.-fac)*sinh(grid_ruler_x[i]*asinh(1./(1.-fac)));
+    /* 3) rescale the -1,1 interval to the 0,SX interval*/
+    grid_ruler_x[i] = (property.SX/fac2)*(grid_ruler_x[i]+1.0);
+ }
+
+ 
+  dy=fac2/(my_double)NY;
+  for(i=0; i< NYG; i++){					    
+    grid_ruler_y[i] = -1.0+dy*((double)i);
+    grid_ruler_y[i] = (1.-fac)*sinh(grid_ruler_y[i]*asinh(1./(1.-fac)));
+    grid_ruler_y[i] = (property.SY/fac2)*(grid_ruler_y[i]+1.0);
+    // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
+ }
+
+  dz=fac2/(my_double)NZ;
+  for(i=0; i< NZG; i++){					    
+    grid_ruler_z[i] = -1.0+dz*((double)i);
+    grid_ruler_z[i] = (1.-fac)*tanh(grid_ruler_z[i]*atanh(1./(1.-fac)));
+    grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
+ }
+
+#endif
 
 }
 #endif
