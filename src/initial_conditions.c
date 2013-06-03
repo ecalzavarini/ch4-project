@@ -50,14 +50,14 @@ void initial_conditions(int restart)
 
 #endif  
 
-#ifdef LB_TEMPERATURE_BUOYANCY	
+#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
    L=(my_double)property.SY; //NY;
    y = (my_double)center_V[IDX(i,j,k)].y;
-
   /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
    for (pp = 0; pp < NPOP; pp++) 
-     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
-   //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
+      p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     //p[IDX(i,j,k)].p[pp] = wgt[pp];
+     //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
 #endif
 
 
@@ -121,7 +121,7 @@ void initial_conditions(int restart)
   /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
       my_double spot;
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 10.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+      if( spot < 1.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
 #endif
 
 	/* on the populations */
