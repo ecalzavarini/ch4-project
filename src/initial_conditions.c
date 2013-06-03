@@ -34,7 +34,7 @@ void initial_conditions(int restart)
 
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  6.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
+	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
 
 #endif  
 
@@ -42,7 +42,7 @@ void initial_conditions(int restart)
     L=(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;
     Amp_x = (my_double)property.Amp_x;
-    fn=-Amp_x*(4.0*nu)*pow(L,-2.0);
+    fn=-3.0*Amp_x*(4.0*nu)*pow(L,-2.0);
 
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
@@ -121,7 +121,7 @@ void initial_conditions(int restart)
   /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
       my_double spot;
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 100.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+      if( spot < 10.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
 #endif
 
 	/* on the populations */

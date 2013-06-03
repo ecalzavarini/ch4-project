@@ -312,7 +312,6 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
   pop fcoll, fcoll_xp,fcoll_xm,fcoll_yp,fcoll_ym,fcoll_zp,fcoll_zm;
   my_double fac;
  
-  //invtau = 1.0/property.tau_u;
     invtau = 1.0/tau;
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -320,9 +319,9 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
       for(i=BRD;i<LNX+BRD;i++){ 
      
 	f_eq=equilibrium(f,i,j,k);
-	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
-
-#if (defined METHOD_MYQUICK || defined METHOD_TRAPEZOID)
+       	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+       
+#if (defined METHOD_MYQUICK && defined METHOD_TRAPEZOID)
 	f_eq_xp = equilibrium(f,i+1,j,k); 
         f_eq_xm = equilibrium(f,i-1,j,k);
 	f_eq_yp = equilibrium(f,i,j+1,k); 
@@ -339,7 +338,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 	  fcoll_zm.p[pp] = -invtau * (f[IDX(i,j,k-1)].p[pp] - f_eq_zm.p[pp]);
 	}
 #endif
-
+	
 	for (pp=0; pp<NPOP; pp++){
 
 	  //#define ONLY_COLLISION
@@ -353,24 +352,25 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
 #else
 
+		
+#if (defined METHOD_MYQUICK && defined METHOD_TRAPEZOID)
+   rhs_f[IDX(i,j,k)].p[pp] +=  0.25*fcoll.p[pp];
 
-#if (defined METHOD_MYQUICK || defined METHOD_TRAPEZOID)
-   rhs_f[IDX(i,j,k)].p[pp] +=  0.5*fcoll.p[pp];
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_xp[IDX(i,j,k)]*fcoll_xp.p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*fcoll.p[pp] - interp2_xp[IDX(i,j,k)]*fcoll_xm.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_xm[IDX(i,j,k)]*fcoll_xm.p[pp] + (1.0 - interp_xm[IDX(i,j,k)] + interp2_xm[IDX(i,j,k)])*fcoll.p[pp] - interp2_xm[IDX(i,j,k)]*fcoll_xp.p[pp] );
 
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_xp[IDX(i,j,k)]*fcoll_xp.p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*fcoll.p[pp] - interp2_xp[IDX(i,j,k)]*fcoll_xm.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_xm[IDX(i,j,k)]*fcoll_xm.p[pp] + (1.0 - interp_xm[IDX(i,j,k)] + interp2_xm[IDX(i,j,k)])*fcoll.p[pp] - interp2_xm[IDX(i,j,k)]*fcoll_xp.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_yp[IDX(i,j,k)]*fcoll_yp.p[pp] + (1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)])*fcoll.p[pp] - interp2_yp[IDX(i,j,k)]*fcoll_ym.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_ym[IDX(i,j,k)]*fcoll_ym.p[pp] + (1.0 - interp_ym[IDX(i,j,k)] + interp2_ym[IDX(i,j,k)])*fcoll.p[pp] - interp2_ym[IDX(i,j,k)]*fcoll_yp.p[pp] );
 
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_yp[IDX(i,j,k)]*fcoll_yp.p[pp] + (1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)])*fcoll.p[pp] - interp2_yp[IDX(i,j,k)]*fcoll_ym.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_ym[IDX(i,j,k)]*fcoll_ym.p[pp] + (1.0 - interp_ym[IDX(i,j,k)] + interp2_ym[IDX(i,j,k)])*fcoll.p[pp] - interp2_ym[IDX(i,j,k)]*fcoll_yp.p[pp] );
-
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_zp[IDX(i,j,k)]*fcoll_zp.p[pp] + (1.0 - interp_zp[IDX(i,j,k)] + interp2_zp[IDX(i,j,k)])*fcoll.p[pp] - interp2_zp[IDX(i,j,k)]*fcoll_zm.p[pp] );
-   rhs_f[IDX(i,j,k)].p[pp] += 0.25*( interp_zm[IDX(i,j,k)]*fcoll_zm.p[pp] + (1.0 - interp_zm[IDX(i,j,k)] + interp2_zm[IDX(i,j,k)])*fcoll.p[pp] - interp2_zm[IDX(i,j,k)]*fcoll_zp.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_zp[IDX(i,j,k)]*fcoll_zp.p[pp] + (1.0 - interp_zp[IDX(i,j,k)] + interp2_zp[IDX(i,j,k)])*fcoll.p[pp] - interp2_zp[IDX(i,j,k)]*fcoll_zm.p[pp] );
+   rhs_f[IDX(i,j,k)].p[pp] += 0.125*( interp_zm[IDX(i,j,k)]*fcoll_zm.p[pp] + (1.0 - interp_zm[IDX(i,j,k)] + interp2_zm[IDX(i,j,k)])*fcoll.p[pp] - interp2_zm[IDX(i,j,k)]*fcoll_zp.p[pp] );
 
 #else
-		//	rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
-		        rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
+   //rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+			rhs_f[IDX(i,j,k)].p[pp] +=  fcoll.p[pp];
 #endif
-
+		
+  //rhs_f[IDX(i,j,k)].p[pp] +=  -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 #endif
 
 	}/* pp */
@@ -442,19 +442,28 @@ void build_forcing(){
 #ifdef  LB_FLUID_FORCING_PENALIZATION
       my_double mask;
       /* penalization of a cube */
-      
+      /*  
       if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
 	  fabs(center_V[IDX(i,j,k)].y) < 10 && 
 	  fabs(center_V[IDX(i,j,k)].z-property.SZ/2.0) < 10  ) 
 	mask=1.0; 
       else 
 	mask=0.0;
-  
+
       if( mask == 1.0 ){
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
+      */
+      
+      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( mask < 10.0 ){
+	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
+	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
+	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
+	  }
+
 #endif
 
 #endif
@@ -470,7 +479,7 @@ void build_forcing(){
   /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
       my_double spot;
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 100.0 ) t_source[IDX(i,j,k)] = property.T_top;
+      if( spot < 10.0 ) t_source[IDX(i,j,k)] = property.T_top;
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_PROFILE
