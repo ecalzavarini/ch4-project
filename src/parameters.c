@@ -153,8 +153,8 @@ void assign_parameters(){
   property.gravity_z = read_parameter(name);
   fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
 
-  fprintf(stderr,"And the Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
-
+  fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
+  fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
 #endif 
 #endif
 
