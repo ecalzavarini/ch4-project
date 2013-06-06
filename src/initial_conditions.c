@@ -108,10 +108,6 @@ void initial_conditions(int restart)
 	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y );
 #endif 
 
-#ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-	if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
-#endif
-
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
         /* constant temperature */
         t[IDX(i,j,k)] = property.T_top;
@@ -122,6 +118,10 @@ void initial_conditions(int restart)
       my_double spot;
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( spot < 1.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+#endif
+
+#ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
+	if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
 #endif
 
 	/* on the populations */
