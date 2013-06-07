@@ -104,6 +104,10 @@ my_double *t;
 #ifdef LB_TEMPERATURE_FORCING
 my_double *t_source;
 #endif
+#ifdef LB_TEMPERATURE_MELTING
+my_double *liquid_frac, *liquid_frac_old;
+my_double *enthalpy;
+#endif
 #endif
 
 

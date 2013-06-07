@@ -42,6 +42,9 @@ typedef struct {
   double beta_t,beta2_t;
   double gravity_x,gravity_y,gravity_z;
 #endif
+#ifdef LB_TEMPERATURE_MELTING
+  double T_solid,latent_heat,specific_heat;
+#endif
 #endif
 #ifdef LB_SCALAR
   double tau_s, chi;
@@ -68,9 +71,17 @@ typedef struct {
 #undef NPROP
 #define NPROP 27
 #endif
-#ifdef LB_SCALAR
+#if (defined LB_TEMPERATURE_MELTING && defined LB_TEMPERATURE_BUOYANCY) 
 #undef NPROP
-#define NPROP 29
+#define NPROP 30
+#else 
+#undef NPROP
+#define NPROP 25
+#endif
+#ifdef LB_SCALAR
+/* Note that is only valid without melting */ 
+#undef NPROP
+#define NPROP 32
 #endif
 #endif
 #endif

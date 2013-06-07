@@ -132,6 +132,21 @@ void initial_conditions(int restart)
 
    /* communicate borders for populations */
    sendrecv_borders_pop(g);
+
+   /* Melting fields */
+#ifdef LB_TEMPERATURE_MELTING
+  /* 1 is fluid , 0 is solid */
+   for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
+      liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=1.0;
+#else
+      liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
+#endif
+    }  
+#endif
+
 #endif
 
 

@@ -156,6 +156,15 @@ void assign_parameters(){
   fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
 #endif 
+#ifdef LB_TEMPERATURE_MELTING
+  sprintf(name,"T_solid");
+  property.T_solid = read_parameter(name);
+  sprintf(name,"specific_heat");
+  property.specific_heat = read_parameter(name);
+  sprintf(name,"latent_heat");
+  property.latent_heat = read_parameter(name);
+  fprintf(stderr,"Stefan Number is -> Ste = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
+#endif
 #endif
 
 #ifdef LB_SCALAR
@@ -443,6 +452,18 @@ void allocate_fields(){
  t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(t_source == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
  set_to_zero_scalar( t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+#ifdef LB_TEMPERATURE_MELTING
+ liquid_frac  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+ set_to_zero_scalar( liquid_frac,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+ set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+ set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
 #endif
 #endif
 
