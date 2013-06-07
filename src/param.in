@@ -10,8 +10,8 @@ SZ 1
 
 time_dt 0.3
 time_start 0.0
-time_end 250.0
-time_dump_field 25.
+time_end 3000.0
+time_dump_field 30.
 time_dump_diagn 1.0
 
 tau_u 1.0
@@ -22,7 +22,7 @@ Amp_z 0.0
 
 tau_t 1.0
 T_bot  1.0
-T_top 0.0
+T_top -1.0
 T_ref 0.0
 
 beta_t  0.0025

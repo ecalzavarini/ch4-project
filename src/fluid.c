@@ -442,7 +442,7 @@ void build_forcing(){
 #ifdef  LB_FLUID_FORCING_PENALIZATION
       my_double mask;
       /* penalization of a cube */
-      /*  
+        
       if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
 	  fabs(center_V[IDX(i,j,k)].y) < 10 && 
 	  fabs(center_V[IDX(i,j,k)].z-property.SZ/2.0) < 10  ) 
@@ -455,15 +455,15 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
-      */
       
+      /*
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( mask < 1.0 ){
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
-
+      */
 #endif
 
 #endif
@@ -478,8 +478,19 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_SOURCE
   /* mimic source term  */
       my_double spot;
-      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 1.0 ) t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_bot);
+      /* penalization of a cube */
+        
+      if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
+	  fabs(center_V[IDX(i,j,k)].y) < 10 && 
+	  fabs(center_V[IDX(i,j,k)].z-property.SZ/2.0) < 10  ) 
+	spot=1.0; 
+      else 
+	spot=0.0;
+
+      if( spot == 1.0 ) t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_bot);
+
+      //spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      //if( spot < 1.0 ) t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_bot);
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_PROFILE
