@@ -11,6 +11,9 @@ void dump_averages(){
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz;
   vector grad;
+#ifdef LB_TEMPERATURE_MELTING   
+  my_double lf, dtlf, enth;
+#endif 
 #endif
 
 
@@ -265,6 +268,27 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_x_local[i -BRD + LNX_START].epst += epst;
 			  ruler_y_local[j -BRD + LNY_START].epst += epst;
 			  ruler_z_local[k -BRD + LNZ_START].epst += epst;
+
+#ifdef LB_TEMPERATURE_MELTING   
+			  lf = liquid_frac[IDX(i, j, k)];
+			  out_local.lf += lf;
+			  ruler_x_local[i -BRD + LNX_START].lf += lf;
+			  ruler_y_local[j -BRD + LNY_START].lf += lf;
+			  ruler_z_local[k -BRD + LNZ_START].lf += lf;
+
+			  dtlf = ( liquid_frac[IDX(i, j, k)]-liquid_frac_old[IDX(i, j, k)] )/property.time_dt;
+			  out_local.dtlf += dtlf;
+			  ruler_x_local[i -BRD + LNX_START].dtlf += dtlf;
+			  ruler_y_local[j -BRD + LNY_START].dtlf += dtlf;
+			  ruler_z_local[k -BRD + LNZ_START].dtlf += dtlf;
+
+			  enth = property.specific_heat*t[IDX(i,j,k)] + property.latent_heat*liquid_frac[IDX(i,j,k)];
+			  out_local.enth += enth;
+			  ruler_x_local[i -BRD + LNX_START].enth += enth;
+			  ruler_y_local[j -BRD + LNY_START].enth += enth;
+			  ruler_z_local[k -BRD + LNZ_START].enth += enth;
+#endif 
+
 #endif
 
 			} /* for i j k */      

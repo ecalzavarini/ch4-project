@@ -7,7 +7,7 @@ void melting(){
   my_double  fl;
   my_double hs, hl , temp , Tl;
   my_double eps = 1.0;
-  my_double Ts,Cp,Lf;
+  my_double Ts,Cp,Lf,enthalpy;
 
   Ts = (my_double) property.T_solid;
   Cp = (my_double) property.specific_heat;
@@ -38,15 +38,19 @@ void melting(){
       //#endif
 
       /* compute Entalphy */
-      enthalpy[IDX(i,j,k)] = Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)];
+      //enthalpy[IDX(i,j,k)] = Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)];
+	enthalpy = Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)];
       /* compute new fluid fraction */
-      if(enthalpy[IDX(i,j,k)] < hs) liquid_frac[IDX(i,j,k)]=0.0;
-      else if(enthalpy[IDX(i,j,k)] > hl) liquid_frac[IDX(i,j,k)]=1.0;
-      else liquid_frac[IDX(i,j,k)]= (enthalpy[IDX(i,j,k)] - hs)/(hl - hs);
+      //if(enthalpy[IDX(i,j,k)] < hs) liquid_frac[IDX(i,j,k)]=0.0;
+      //else if(enthalpy[IDX(i,j,k)] > hl) liquid_frac[IDX(i,j,k)]=1.0;
+      //else liquid_frac[IDX(i,j,k)]= (enthalpy[IDX(i,j,k)] - hs)/(hl - hs);
+      if(enthalpy < hs) liquid_frac[IDX(i,j,k)]=0.0;
+      else if(enthalpy > hl) liquid_frac[IDX(i,j,k)]=1.0;
+      else liquid_frac[IDX(i,j,k)]= (enthalpy - hs)/(hl - hs);
     }
 
   /* add melting term to the temperature field */
-  temp = (Lf/Cp);
+   temp = (Lf/Cp)/property.time_dt;
    for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){

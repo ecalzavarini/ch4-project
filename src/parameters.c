@@ -459,9 +459,9 @@ void allocate_fields(){
  liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
  set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
- set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ //enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+ //set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 #endif
 #endif

@@ -104,7 +104,7 @@ extern my_double *t;
 extern my_double *t_source;
 #ifdef LB_TEMPERATURE_MELTING
 extern my_double *liquid_frac, *liquid_frac_old;
-extern my_double *enthalpy;
+//extern my_double *enthalpy;
 #endif
 #endif
 #endif
