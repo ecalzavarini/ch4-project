@@ -55,6 +55,9 @@ int main(int argc, char **argv){
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
 	  build_forcing();
+#ifdef LB_TEMPERATURE_MELTING
+	  melting();
+#endif
 	  add_forcing();
 #endif
 

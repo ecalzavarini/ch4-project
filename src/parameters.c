@@ -49,7 +49,6 @@ void assign_parameters(){
     remove("param.out");
     /* read parameters from file */
 
-
     /* resume */
     sprintf(name,"resume");
     resume = (int)read_parameter(name);

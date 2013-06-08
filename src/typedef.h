@@ -27,64 +27,36 @@ typedef struct {
 } param;
 
 typedef struct {
-  double NX , NY , NZ;
-  double SX , SY , SZ; 
-  double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
+  my_double NX , NY , NZ;
+  my_double SX , SY , SZ; 
+  my_double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
-  double tau_u , nu;
+  my_double tau_u , nu;
 #ifdef LB_FLUID_FORCING
-  double Amp_x,Amp_y,Amp_z;
+  my_double Amp_x,Amp_y,Amp_z;
 #endif
 #ifdef LB_TEMPERATURE
-  double tau_t, kappa;
-  double T_bot,T_top,T_ref,deltaT;
+  my_double tau_t, kappa;
+  my_double T_bot,T_top,T_ref,deltaT;
 #ifdef LB_TEMPERATURE_BUOYANCY
-  double beta_t,beta2_t;
-  double gravity_x,gravity_y,gravity_z;
+  my_double beta_t,beta2_t;
+  my_double gravity_x,gravity_y,gravity_z;
 #endif
 #ifdef LB_TEMPERATURE_MELTING
-  double T_solid,latent_heat,specific_heat;
+  my_double T_solid,latent_heat,specific_heat;
 #endif
 #endif
 #ifdef LB_SCALAR
-  double tau_s, chi;
+  my_double tau_s, chi;
 #endif
 #endif
 } prop;
 
 
-#ifndef LB_FLUID
-#undef NPROP
-#define NPROP 11
-#endif
-#ifdef LB_FLUID
-#undef NPROP
-#define NPROP 13
-#ifdef LB_FLUID_FORCING
-#undef NPROP
-#define NPROP 16
-#endif
-#ifdef LB_TEMPERATURE
-#undef NPROP
-#define NPROP 22
-#ifdef LB_TEMPERATURE_BUOYANCY
-#undef NPROP
-#define NPROP 27
-#endif
-#if (defined LB_TEMPERATURE_MELTING && defined LB_TEMPERATURE_BUOYANCY) 
-#undef NPROP
-#define NPROP 30
-#else 
-#undef NPROP
-#define NPROP 25
-#endif
-#ifdef LB_SCALAR
-/* Note that is only valid without melting */ 
-#undef NPROP
-#define NPROP 32
-#endif
-#endif
-#endif
+/* useful macro */
+#define SIZE_STRUCT(x) (sizeof(x) / sizeof(my_double))
+
+#define NPROP SIZE_STRUCT(prop)
 
 
 typedef struct {
@@ -99,17 +71,14 @@ typedef struct {
   my_double dxt,dyt,dzt;
   my_double uxt,uyt,uzt;
   my_double nux,nuy,nuz;
+#ifdef LB_TEMPERATURE_MELTING	
+  my_double lf, dtlf, enth;
+#endif		
 #endif
+	
 } output;
-#ifdef LB_FLUID
-#undef NOUT
-#define NOUT 12
-#endif
-#ifdef LB_TEMPERATURE
-#undef NOUT
-#define NOUT 24
-#endif
 
+#define NOUT SIZE_STRUCT(output)
 
 
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
@@ -153,12 +122,6 @@ typedef struct {
 
 /* neighbouring index for processors*/
 #define IDX_NEXT(i,j,k) ( (int)(k+1)*9+(int)(j+1)*3+(int)(i+1) )
-
-
-
-
-
-
 
 
 #define two_pi 2*3.14159265359
