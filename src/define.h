@@ -30,14 +30,14 @@
 //#define METHOD_FORCING_GUO
 //#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
-#define LB_FLUID_FORCING_PENALIZATION
+//#define LB_FLUID_FORCING_PENALIZATION
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_YP_SLIP                                                                        
+//#define LB_FLUID_BC_YP_SLIP                                           
 //#define LB_FLUID_BC_YM_SLIP                         
-//#define LB_FLUID_BC_X                                                                              
-//#define LB_FLUID_BC_XP_SLIP                                                      
-//#define LB_FLUID_BC_XM_SLIP                                                                             
+//#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_XP_SLIP                                             
+//#define LB_FLUID_BC_XM_SLIP                                               
 //#define LB_FLUID_BC_XM_INLET                                         
 //#define LB_FLUID_BC_XP_OUTLET                                               
 //#define LB_FLUID_BC_Z  
@@ -55,17 +55,18 @@
 /* TEMPERATURE */
 #define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
-//#define LB_TEMPERATURE_INITIAL_CONSTANT
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
-#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BUOYANCY
 #define LB_TEMPERATURE_BC
 #define LB_TEMPERATURE_BC_Y
 #define LB_TEMPERATURE_FORCING
-#define LB_TEMPERATURE_FORCING_SOURCE
+//#define LB_TEMPERATURE_FORCING_SOURCE
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION
+#define LB_TEMPERATURE_MELTING
 //#define KALYAN_BC
 
 
