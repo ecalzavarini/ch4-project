@@ -108,6 +108,24 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
       ruler_z[i].nux = ruler_z[i].nuy = ruler_z[i].nuz = 0.0;
       ruler_z[i].t = ruler_z[i].t2 = ruler_z[i].epst = 0.0;
     }
+#ifdef LB_TEMPERATURE_MELTING
+    out_local.lf = out_local.dtlf = out_local.enth = 0.0; 
+
+    for (i = 0; i < NX; i++){ 
+      ruler_x_local[i].lf   = ruler_x_local[i].dtlf   = ruler_x_local[i].enth  = 0.0;
+      ruler_x[i].lf   = ruler_x[i].dtlf   = ruler_x[i].enth  = 0.0;
+    }
+
+    for (i = 0; i < NY; i++){ 
+      ruler_y_local[i].lf   = ruler_y_local[i].dtlf   = ruler_y_local[i].enth  = 0.0;
+      ruler_y[i].lf   = ruler_y[i].dtlf   = ruler_y[i].enth  = 0.0;
+    } 
+
+    for (i = 0; i < NZ; i++){ 
+      ruler_z_local[i].lf   = ruler_z_local[i].dtlf   = ruler_z_local[i].enth  = 0.0;
+      ruler_z[i].lf   = ruler_z[i].dtlf   = ruler_z[i].enth  = 0.0;
+    }
+#endif
 #endif
 
 
@@ -430,6 +448,35 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_z[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
   }
 #endif
+
+#ifdef LB_TEMPERATURE_MELTING
+  /* normalization */
+  norm = 1.0/(my_double)(NX*NY*NZ);
+  out_all.lf *= norm;
+  out_all.dtlf *= norm;
+  out_all.enth  *= norm;
+
+  norm = 1.0/(my_double)(NY*NZ);
+  for (i = 0; i < NX; i++){
+    ruler_x[i].lf *= norm;
+    ruler_x[i].dtlf *= norm;
+    ruler_x[i].enth *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NZ);
+  for (i = 0; i < NY; i++){
+    ruler_y[i].lf *= norm;
+    ruler_y[i].dtlf *= norm;
+    ruler_y[i].enth *= norm;
+  }
+
+  norm = 1.0/(my_double)(NX*NY);
+  for (i = 0; i < NZ; i++){
+    ruler_z[i].lf *= norm;
+    ruler_z[i].dtlf *= norm;
+    ruler_z[i].enth *= norm;
+  }
+#endif
 #endif 
 
 
@@ -482,6 +529,30 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     fclose(fout);
 
   }
+
+#ifdef LB_TEMPERATURE_MELTING
+  if(ROOT){
+    sprintf(fname,"melting_averages.dat");
+    fout = fopen(fname,"a");    
+    fprintf(fout,"%e %e %e %e %e\n",time_now, (double)out_all.lf,(double)out_all.dtlf, (double)out_all.enth);
+    fclose(fout);
+
+    sprintf(fname,"melting_averages_x.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].lf, (double)ruler_x[i].dtlf, (double)ruler_x[i].enth);
+    fclose(fout);
+
+    sprintf(fname,"melting_averages_y.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].lf, (double)ruler_y[j].dtlf, (double)ruler_y[j].enth);
+    fclose(fout);
+
+    sprintf(fname,"melting_averages_z.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].lf, (double)ruler_z[k].dtlf, (double)ruler_z[k].enth);
+    fclose(fout);
+  }
+#endif
 #endif
 
 #ifdef OUTPUT_H5
