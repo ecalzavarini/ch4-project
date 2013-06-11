@@ -7,10 +7,10 @@ void dump_averages(){
   char fname[128];
   my_double x,y,z,ux,uy,uz,ux2,uy2,uz2,ene,rho,eps;
   my_double norm;
-  tensor S;
+  tensor grad_u;
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz;
-  vector grad;
+  vector grad_t;
 #ifdef LB_TEMPERATURE_MELTING   
   my_double lf, dtlf, enth;
 #endif 
@@ -204,9 +204,18 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_y_local[j -BRD + LNY_START].ene += ene;
 			  ruler_z_local[k -BRD + LNZ_START].ene += ene;
 			  
-			  S=strain_tensor(p,i, j, k);
+			  //S=strain_tensor(p,i, j, k);
+			  grad_u = gradient_vector(u,i,j,k);
 			  // fprintf(stderr,"SXY %e\n",S.xy);
-			  out_local.eps += eps = S.xy;
+			  out_local.eps += eps = ( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+			                           (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
+			                           (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
+			                           (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
+			                           (grad_u.yy + grad_u.yy)*(grad_u.yy + grad_u.yy) +
+			                           (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
+                                                   (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
+			                           (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
+			                           (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu;
 			  ruler_x_local[i -BRD + LNX_START].eps += eps;
 			  ruler_y_local[j -BRD + LNY_START].eps += eps;
 			  ruler_z_local[k -BRD + LNZ_START].eps += eps;
@@ -216,21 +225,21 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 #ifdef LB_TEMPERATURE
 			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
 			  /* note thet t field must be communicate first -> it has been done above */
-			  grad=gradient_scalar(t,i,j,k);
+			  grad_t=gradient_scalar(t,i,j,k);
 
-			  dxt = grad.x;
+			  dxt = grad_t.x;
 			  out_local.dxt += dxt;
 			  ruler_x_local[i -BRD + LNX_START].dxt += dxt;
 			  ruler_y_local[j -BRD + LNY_START].dxt += dxt;
 			  ruler_z_local[k -BRD + LNZ_START].dxt += dxt;
 
-			  dyt = grad.y;
+			  dyt = grad_t.y;
 			  out_local.dyt += dyt;
 			  ruler_x_local[i -BRD + LNX_START].dyt += dyt;
 			  ruler_y_local[j -BRD + LNY_START].dyt += dyt;
 			  ruler_z_local[k -BRD + LNZ_START].dyt += dyt;
 
-			  dzt = grad.z;
+			  dzt = grad_t.z;
 			  out_local.dzt += dzt;
 			  ruler_x_local[i -BRD + LNX_START].dzt += dzt;
 			  ruler_y_local[j -BRD + LNY_START].dzt += dzt;
