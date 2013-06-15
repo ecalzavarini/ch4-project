@@ -189,6 +189,7 @@ if(LNY_START == 0){
   pop g_eq, g_eq_w;
   my_double effDT, rho2;
   my_double T_wall;
+  my_double fac;
 
 #ifdef KALYAN_BC
   my_double a,b,c,d,a1,b1,c1,d1,a2,b2,c2,d2,a3,b3,c3,d3;
@@ -227,7 +228,7 @@ if(LNY_END == NY){
 
 #ifdef METHOD_MYQUICK
 	  
-	  rho = t[IDX(i,j-1,k)];
+	  //rho = t[IDX(i,j-1,k)];
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
 #else
@@ -237,7 +238,7 @@ if(LNY_END == NY){
 	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
 
 	  /* imposed heat flux */
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  g[IDX(i,j-1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  g[IDX(i,j-1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
 
 #ifdef KALYAN_BC
 	  a1 = -1.0/interp4_yp[IDX(i,j+1,k)];
@@ -261,11 +262,17 @@ if(LNY_START == 0){
 #else
 	  T_wall = 0.0;
 #endif
-	  effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;	 
- 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];	  
-
+	  // effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
+	  //effDT = ( (T_wall-property.T_ref) - rho ) +  (T_wall-property.T_ref);
+	  //effDT = 2.0*(T_wall-property.T_ref) - rho;
+ 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];	  
+	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
+	  //fprintf(stderr, "1 fac %lf\n", fac );
 	  /* imposed heat flux */
 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
+
+     
 
 #ifdef KALYAN_BC
 	  a2 = -1.0/interp2_yp[IDX(i,j,k)];
@@ -285,8 +292,13 @@ if(LNY_START == 0){
 #else
 	  T_wall = 0.0;
 #endif   
-	  effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;	 
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  (effDT/rho)*g[IDX(i,j+1,k)].p[pp];
+	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;	
+	  //effDT = ( (T_wall-property.T_ref) - rho ) +  (T_wall-property.T_ref);
+	  //effDT = 2.0*(T_wall-property.T_ref) - rho;
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  (effDT/rho)*g[IDX(i,j+1,k)].p[pp];
+	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  fac*g[IDX(i,j+1,k)].p[pp];
+	  //fprintf(stderr, "2 fac %lf\n", fac );
 
 	  /* imposed heat flux */
 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  g[IDX(i,j+1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
