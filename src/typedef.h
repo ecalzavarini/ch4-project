@@ -71,6 +71,7 @@ typedef struct {
   my_double dxt,dyt,dzt;
   my_double uxt,uyt,uzt;
   my_double nux,nuy,nuz;
+  my_double lb;
 #ifdef LB_TEMPERATURE_MELTING	
   my_double lf, dtlf, enth;
 #endif		

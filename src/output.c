@@ -9,7 +9,7 @@ void dump_averages(){
   my_double norm;
   tensor grad_u;
 #ifdef LB_TEMPERATURE
-  my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz;
+  my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
   vector grad_t;
 #ifdef LB_TEMPERATURE_MELTING   
   my_double lf, dtlf, enth;
@@ -20,7 +20,7 @@ void dump_averages(){
   x=y=z=ux=uy=uz=ux2=uy2=uz2=ene=rho=eps=0.0;
 
 #ifdef LB_TEMPERATURE
-temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
+temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 #endif
 
 #ifdef LB_FLUID
@@ -74,39 +74,46 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     out_local.t = 0.0;
     out_local.t2 = 0.0;
     out_local.epst = 0.0;
+    out_local.lb = 0.0;
 
     for (i = 0; i < NX; i++){ 
       ruler_x_local[i].dxt   = ruler_x_local[i].dyt   = ruler_x_local[i].dzt  = 0.0;
       ruler_x_local[i].uxt  = ruler_x_local[i].uyt  = ruler_x_local[i].uzt  = 0.0;
       ruler_x_local[i].nux = ruler_x_local[i].nuy = ruler_x_local[i].nuz = 0.0;
       ruler_x_local[i].t = ruler_x_local[i].t2 = ruler_x_local[i].epst = 0.0;
+      ruler_x_local[i].lb = 0.0;
 
       ruler_x[i].dxt   = ruler_x[i].dyt   = ruler_x[i].dzt  = 0.0;
       ruler_x[i].uxt  = ruler_x[i].uyt  = ruler_x[i].uzt  = 0.0;
       ruler_x[i].nux = ruler_x[i].nuy = ruler_x[i].nuz = 0.0;
       ruler_x[i].t = ruler_x[i].t2 = ruler_x[i].epst = 0.0;
+      ruler_x[i].lb = 0.0;
     }
     for (i = 0; i < NY; i++){ 
       ruler_y_local[i].dxt   = ruler_y_local[i].dyt   = ruler_y_local[i].dzt  = 0.0;
       ruler_y_local[i].uxt  = ruler_y_local[i].uyt  = ruler_y_local[i].uzt  = 0.0;
       ruler_y_local[i].nux = ruler_y_local[i].nuy = ruler_y_local[i].nuz = 0.0;
       ruler_y_local[i].t = ruler_y_local[i].t2 = ruler_y_local[i].epst = 0.0;
+      ruler_y_local[i].lb = 0.0;
 
       ruler_y[i].dxt   = ruler_y[i].dyt   = ruler_y[i].dzt  = 0.0;
       ruler_y[i].uxt  = ruler_y[i].uyt  = ruler_y[i].uzt  = 0.0;
       ruler_y[i].nux = ruler_y[i].nuy = ruler_y[i].nuz = 0.0;
       ruler_y[i].t = ruler_y[i].t2 = ruler_y[i].epst = 0.0;
+      ruler_y[i].lb = 0.0;
     } 
     for (i = 0; i < NZ; i++){ 
       ruler_z_local[i].dxt   = ruler_z_local[i].dyt   = ruler_z_local[i].dzt  = 0.0;
       ruler_z_local[i].uxt  = ruler_z_local[i].uyt  = ruler_z_local[i].uzt  = 0.0;
       ruler_z_local[i].nux = ruler_z_local[i].nuy = ruler_z_local[i].nuz = 0.0;
       ruler_z_local[i].t = ruler_z_local[i].t2 = ruler_z_local[i].epst = 0.0;
+      ruler_z_local[i].lb = 0.0;
 
       ruler_z[i].dxt   = ruler_z[i].dyt   = ruler_z[i].dzt  = 0.0;
       ruler_z[i].uxt  = ruler_z[i].uyt  = ruler_z[i].uzt  = 0.0;
       ruler_z[i].nux = ruler_z[i].nuy = ruler_z[i].nuz = 0.0;
       ruler_z[i].t = ruler_z[i].t2 = ruler_z[i].epst = 0.0;
+      ruler_z[i].lb = 0.0;
     }
 #ifdef LB_TEMPERATURE_MELTING
     out_local.lf = out_local.dtlf = out_local.enth = 0.0; 
@@ -295,6 +302,13 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
 			  ruler_x_local[i -BRD + LNX_START].epst += epst;
 			  ruler_y_local[j -BRD + LNY_START].epst += epst;
 			  ruler_z_local[k -BRD + LNZ_START].epst += epst;
+#ifdef LB_TEMPERATURE_BUOYANCY
+			  lb = pow(eps,5./4.)*pow(eps,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+			  out_local.lb += lb;
+			  ruler_x_local[i -BRD + LNX_START].lb += lb;
+			  ruler_y_local[j -BRD + LNY_START].lb += lb;
+			  ruler_z_local[k -BRD + LNZ_START].lb += lb;
+#endif
 
 #ifdef LB_TEMPERATURE_MELTING   
 			  lf = liquid_frac[IDX(i, j, k)];
@@ -408,6 +422,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
   out_all.nux *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuy *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuz *= norm/( property.kappa*property.deltaT/property.SY );
+  out_all.lb  *= norm;
 
   norm = 1.0/(my_double)(NY*NZ);
   for (i = 0; i < NX; i++){
@@ -423,6 +438,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_x[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_x[i].lb *= norm;
   }
 
   norm = 1.0/(my_double)(NX*NZ);
@@ -439,6 +455,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_y[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_y[i].lb *= norm;
   }
 
   norm = 1.0/(my_double)(NX*NY);
@@ -455,6 +472,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
     ruler_z[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+    ruler_z[i].lb *= norm;
   }
 #endif
 
@@ -519,22 +537,22 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= 0.0;
   if(ROOT){
     sprintf(fname,"temperature_averages.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.t,(double)out_all.t2, (double)out_all.epst, (double)out_all.dxt, (double)out_all.dyt, (double)out_all.dzt , (double)out_all.uxt, (double)out_all.uyt, (double)out_all.uzt,(double)out_all.nux, (double)out_all.nuy, (double)out_all.nuz );
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.t,(double)out_all.t2, (double)out_all.epst, (double)out_all.dxt, (double)out_all.dyt, (double)out_all.dzt , (double)out_all.uxt, (double)out_all.uyt, (double)out_all.uzt,(double)out_all.nux, (double)out_all.nuy, (double)out_all.nuz,(double)out_all.lb );
     fclose(fout);
 
     sprintf(fname,"temperature_averages_x.dat");
     fout = fopen(fname,"w");
-    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].t, (double)ruler_x[i].t2, (double)ruler_x[i].epst, (double)ruler_x[i].dxt, (double)ruler_x[i].dyt, (double)ruler_x[i].dzt , (double)ruler_x[i].uxt, (double)ruler_x[i].uyt, (double)ruler_x[i].uzt, (double)ruler_x[i].nux, (double)ruler_x[i].nuy, (double)ruler_x[i].nuz);
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].t, (double)ruler_x[i].t2, (double)ruler_x[i].epst, (double)ruler_x[i].dxt, (double)ruler_x[i].dyt, (double)ruler_x[i].dzt , (double)ruler_x[i].uxt, (double)ruler_x[i].uyt, (double)ruler_x[i].uzt, (double)ruler_x[i].nux, (double)ruler_x[i].nuy, (double)ruler_x[i].nuz, (double)ruler_x[i].lb);
     fclose(fout);
 
     sprintf(fname,"temperature_averages_y.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[i].lb);
     fclose(fout);
 
     sprintf(fname,"temperature_averages_z.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz );
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[i].lb );
     fclose(fout);
 
   }
