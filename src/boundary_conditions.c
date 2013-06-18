@@ -210,8 +210,11 @@ if(LNY_END == NY){
 #else
 	  T_wall = 0.0;
 #endif
-	  effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+
+	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
+	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
 
 	  /* imposed heat flux */
 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
@@ -228,14 +231,16 @@ if(LNY_END == NY){
 
 #ifdef METHOD_MYQUICK
 	  
-	  //rho = t[IDX(i,j-1,k)];
+	  rho = t[IDX(i,j-1,k)];
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
 #else
 	  T_wall = 0.0;
 #endif 	
-	  effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
-	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
+	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
+	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
+	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  fac*g[IDX(i,j-1,k)].p[pp];
 
 	  /* imposed heat flux */
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  g[IDX(i,j-1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
