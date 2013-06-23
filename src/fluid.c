@@ -428,7 +428,9 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_BUOYANCY
   my_double temp, fac;
 
-  temp = (t[IDX(i,j,k)] - property.T_ref);
+  //temp = (t[IDX(i,j,k)] - property.T_ref);
+  temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
+  //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
   fac = property.beta_t*temp + property.beta2_t*temp*temp;
   //fac = property.beta_t;
 

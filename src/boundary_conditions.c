@@ -191,10 +191,6 @@ if(LNY_START == 0){
   my_double T_wall;
   my_double fac;
 
-#ifdef KALYAN_BC
-  my_double a,b,c,d,a1,b1,c1,d1,a2,b2,c2,d2,a3,b3,c3,d3;
-#endif
-
 
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -204,56 +200,19 @@ if(LNY_END == NY){
 
  	  j = LNY+BRD-1; 
 
-	  rho = t[IDX(i,j,k)];
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
 #else
 	  T_wall = 0.0;
 #endif
 
-	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];
-	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
 
-	  /* imposed heat flux */
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
 
-#ifdef KALYAN_BC  /* Works only single processor */
-	  a = -1.0/interp4_yp[IDX(i,j,k)];
-	  b = (property.T_bot-property.T_ref) - ((property.deltaT/LNY)*(my_double)grid_ruler_y[LNY-1]);	
-	  c = interp3_yp[IDX(i,j,k)];
-	  d = 1.0 - interp3_yp[IDX(i,j,k)] + interp4_yp[IDX(i,j,k)];
-
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] = (a * (b- (c * t[IDX(i,j-1,k)]) - (d * t[IDX(i,j,k)]))) * wgt[pp];	
-#endif 
-
-
-#ifdef METHOD_MYQUICK
-	  
-	  rho = t[IDX(i,j-1,k)];
-#ifndef LB_TEMPERATURE_FLUCTUATION 
-	  T_wall = property.T_top;
-#else
-	  T_wall = 0.0;
-#endif 	
-	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =   (effDT/rho)*g[IDX(i,j-1,k)].p[pp];
-	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+#ifdef METHOD_MYQUICK	  	  
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j-1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  fac*g[IDX(i,j-1,k)].p[pp];
-
-	  /* imposed heat flux */
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  g[IDX(i,j-1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
-
-#ifdef KALYAN_BC
-	  a1 = -1.0/interp4_yp[IDX(i,j+1,k)];
-	  b1 = property.T_top-property.T_ref;	 
-	  c1 = interp3_yp[IDX(i,j+1,k)];
-	  d1 = 1.0 - interp3_yp[IDX(i,j+1,k)] + interp4_yp[IDX(i,j+1,k)];
-
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] = (a1* (b1 - (c1 * t[IDX(i,j,k)]) - (d1*  (a * (b - (c * t[IDX(i,j-1,k)]) - (d * t[IDX(i,j,k)])))))) * wgt[pp];
-#endif
-
 #endif
  }
 
@@ -261,62 +220,23 @@ if(LNY_START == 0){
 
 	  j = BRD; 
 
-	  rho  =  t[IDX(i,j,k)]; 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
 #else
 	  T_wall = 0.0;
 #endif
-	  // effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;
-	  //effDT = ( (T_wall-property.T_ref) - rho ) +  (T_wall-property.T_ref);
-	  //effDT = 2.0*(T_wall-property.T_ref) - rho;
- 	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  (effDT/rho)*g[IDX(i,j,k)].p[pp];	  
-	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
-	  //fprintf(stderr, "1 fac %lf\n", fac );
-	  /* imposed heat flux */
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  g[IDX(i,j,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
-
      
-
-#ifdef KALYAN_BC
-	  a2 = -1.0/interp2_yp[IDX(i,j,k)];
-	  b2 = (property.T_bot-property.T_ref) - ((property.deltaT/LNY)*(my_double)grid_ruler_y[1]);	 
-	  c2 = interp_yp[IDX(i,j,k)];
-	  d2 = 1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)];
-
-	   for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] = (a2 * ( b2 - (c2 * t[IDX(i,j+1,k)]) - (d2 * t[IDX(i,j,k)]))) * wgt[pp];
-#endif
-
-
 #ifdef METHOD_MYQUICK 
 	  
-	  rho =  t[IDX(i,j+1,k)];
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
 #else
 	  T_wall = 0.0;
 #endif   
-	  //effDT = ( (T_wall-property.T_ref) - rho )*2.0 +  rho;	
-	  //effDT = ( (T_wall-property.T_ref) - rho ) +  (T_wall-property.T_ref);
-	  //effDT = 2.0*(T_wall-property.T_ref) - rho;
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  (effDT/rho)*g[IDX(i,j+1,k)].p[pp];
-	  fac = 2.0*(T_wall-property.T_ref)/rho - 1.0;
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  fac*g[IDX(i,j+1,k)].p[pp];
-	  //fprintf(stderr, "2 fac %lf\n", fac );
-
-	  /* imposed heat flux */
-	  //for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  g[IDX(i,j+1,k)].p[inv[pp]]+(-property.kappa*property.deltaT/property.SY)*wgt[pp];
-
-#ifdef KALYAN_BC
-	  a3 = -1.0/interp2_yp[IDX(i,j-1,k)];
-	  b3 = property.T_bot-property.T_ref;	 
-	  c3 = interp_yp[IDX(i,j-1,k)];
-	  d3 = 1.0 - interp_yp[IDX(i,j-1,k)] + interp2_yp[IDX(i,j-1,k)];
-
-       for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] = (a3 * (b3 - (c3 * t[IDX(i,j,k)]) - (d3 * (a2 * ( b2 - (c2 * t[IDX(i,j+1,k)]) - (d2 * t[IDX(i,j,k)])))))) * wgt[pp];
-#endif
-
 #endif
 }
 

@@ -1,37 +1,37 @@
-resume 0
+resume 1
 
-NX 1
-NY 100
+NX 128
+NY 64
 NZ 1
 
-SX 1
-SY 100
+SX 1280
+SY 640
 SZ 1
 
-time_dt 0.1
+time_dt 0.25
 time_start 0.0
-time_end 30000.0
-time_dump_field 1.0
+time_end 3500.0
+time_dump_field 250.0
 time_dump_diagn 1.0
 
-tau_u 1.0
+tau_u 0.5
 
 Amp_x 0.01
 Amp_y 0.0
 Amp_z 0.0
 
-tau_t 1.0
-T_bot  0.5
-T_top -0.5
+tau_t 0.5
+T_bot  1.
+T_top -1.
 T_ref 0.0
 
-beta_t  0.015
+beta_t 0.00013246
 beta2_t 0.0
 
 gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-T_solid -0.5
+T_solid 1.001
 latent_heat 1
 specific_heat 1

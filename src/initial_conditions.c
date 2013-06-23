@@ -5,8 +5,8 @@ void initial_conditions(int restart)
   int i,j,k, pp;
   my_double nu,Amp_x;
   my_double fn,kn;
-  my_double y;
-  my_double L;
+  my_double y,x;
+  my_double L,LX,LY;
 
 
 #ifdef LB_FLUID
@@ -26,6 +26,18 @@ void initial_conditions(int restart)
 	/* constant density */
 	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
   
+#ifdef LB_FLUID_INITIAL_VORTICES 
+    fn=0.01;
+    kn=1.0;
+    LY=(my_double)property.SY; //NY;
+    y = (my_double)center_V[IDX(i,j,k)].y;
+    LX=(my_double)property.SX; //NX;
+    x = (my_double)center_V[IDX(i,j,k)].x;
+        
+       	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*( c[pp].y*sin(0.5*kn*two_pi*x/LX) + c[pp].y*sin(kn*two_pi*x/LX) );	
+#endif  
+
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.01;
     kn=1.0;
@@ -37,6 +49,7 @@ void initial_conditions(int restart)
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
 
 #endif  
+
 
 #ifdef LB_FLUID_INITIAL_POISEUILLE 
     L=(my_double)property.SY; //NY;
@@ -55,7 +68,9 @@ void initial_conditions(int restart)
    y = (my_double)center_V[IDX(i,j,k)].y;
   /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
    for (pp = 0; pp < NPOP; pp++) 
-      p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     // p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     /* the good one */
+     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( 0.5*property.deltaT - 0.5*(property.deltaT/L)*y )/cs2 ));
      //p[IDX(i,j,k)].p[pp] = wgt[pp];
      //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
 #endif
