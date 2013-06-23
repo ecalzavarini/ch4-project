@@ -303,7 +303,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 			  ruler_y_local[j -BRD + LNY_START].epst += epst;
 			  ruler_z_local[k -BRD + LNZ_START].epst += epst;
 #ifdef LB_TEMPERATURE_BUOYANCY
-			  lb = pow(eps,5./4.)*pow(eps,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+			  lb = 0; //pow(eps,5./4.)*pow(epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
 			  out_local.lb += lb;
 			  ruler_x_local[i -BRD + LNX_START].lb += lb;
 			  ruler_y_local[j -BRD + LNY_START].lb += lb;
@@ -422,7 +422,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
   out_all.nux *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuy *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuz *= norm/( property.kappa*property.deltaT/property.SY );
-  out_all.lb  *= norm;
+  out_all.lb  = pow(out_all.eps,5./4.)*pow(out_all.epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
 
   norm = 1.0/(my_double)(NY*NZ);
   for (i = 0; i < NX; i++){
@@ -438,7 +438,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
     ruler_x[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
-    ruler_x[i].lb *= norm;
+    ruler_x[i].lb = pow(ruler_x[i].eps,5./4.)*pow(ruler_x[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
   }
 
   norm = 1.0/(my_double)(NX*NZ);
@@ -455,7 +455,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
     ruler_y[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
-    ruler_y[i].lb *= norm;
+    ruler_y[i].lb =  pow(ruler_y[i].eps,5./4.)*pow(ruler_y[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
   }
 
   norm = 1.0/(my_double)(NX*NY);
@@ -472,7 +472,7 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
     ruler_z[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
-    ruler_z[i].lb *= norm;
+    ruler_z[i].lb =  pow(ruler_z[i].eps,5./4.)*pow(ruler_z[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
   }
 #endif
 
@@ -547,12 +547,12 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 
     sprintf(fname,"temperature_averages_y.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[i].lb);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[j].lb);
     fclose(fout);
 
     sprintf(fname,"temperature_averages_z.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[i].lb );
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[k].lb );
     fclose(fout);
 
   }
