@@ -40,6 +40,7 @@ my_double read_parameter(char * variable){
 void assign_parameters(){
   char name[256];
   int i;
+  FILE *fout;
 
   if(ROOT){
     sprintf(OutDir,"RUN");
@@ -47,6 +48,7 @@ void assign_parameters(){
     fprintf(stderr,"OutDir is %s\n",OutDir);   
 
     remove("param.out");
+    remove("numbers.out");
     /* read parameters from file */
 
     /* resume */
@@ -154,6 +156,11 @@ void assign_parameters(){
 
   fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
+  fout = fopen("numbers.out","a");
+  fprintf(fout,"Rayleigh %e\n",property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
+  fprintf(fout,"Prandtl %e\n", property.nu/property.kappa);   
+  fclose(fout);
+
 #endif 
 #ifdef LB_TEMPERATURE_MELTING
   sprintf(name,"T_solid");
