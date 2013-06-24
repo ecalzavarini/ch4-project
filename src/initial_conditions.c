@@ -25,6 +25,20 @@ void initial_conditions(int restart)
 
 	/* constant density */
 	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
+
+
+#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
+   L=(my_double)property.SY; //NY;
+   y = (my_double)center_V[IDX(i,j,k)].y;
+  /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
+   for (pp = 0; pp < NPOP; pp++) 
+     // p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
+     /* the good one */
+     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( 0.5*property.deltaT - 0.5*(property.deltaT/L)*y )/cs2 ));
+     //p[IDX(i,j,k)].p[pp] = wgt[pp];
+     //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
+#endif
+
   
 #ifdef LB_FLUID_INITIAL_VORTICES 
     fn=0.01;
@@ -62,18 +76,6 @@ void initial_conditions(int restart)
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
 
 #endif  
-
-#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
-   L=(my_double)property.SY; //NY;
-   y = (my_double)center_V[IDX(i,j,k)].y;
-  /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
-   for (pp = 0; pp < NPOP; pp++) 
-     // p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
-     /* the good one */
-     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( 0.5*property.deltaT - 0.5*(property.deltaT/L)*y )/cs2 ));
-     //p[IDX(i,j,k)].p[pp] = wgt[pp];
-     //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
-#endif
 
 
 }/* for i,j,k */
@@ -115,7 +117,6 @@ void initial_conditions(int restart)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
-
 #ifdef LB_TEMPERATURE_INITIAL_LINEAR
 	/* linear temperature gradient */
 	L=(my_double)property.SY; //LY;
@@ -125,7 +126,18 @@ void initial_conditions(int restart)
 
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
         /* constant temperature */
-        t[IDX(i,j,k)] = property.T_top;
+        t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
+#endif
+
+#ifdef LB_TEMPERATURE_INITIAL_BL
+	/* BOUNDARY LAYER INITIALIZATION */
+	L=(my_double)property.SY; //LY;
+	y = (my_double)center_V[IDX(i,j,k)].y;
+	fn=20.; 
+	if(y>L/fn && y<L*(1.-1./fn) ) t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
+	if(y<=L/fn)  t[IDX(i,j,k)] =  (property.T_bot) - (0.5*fn*property.deltaT/L)*y ;
+	if(y>=L*(1.-1./fn))  t[IDX(i,j,k)] =  (property.deltaT*0.5*(1.-1./fn)*fn) - (0.5*fn*property.deltaT/L)*y ;
+	  
 #endif
 
 #ifdef LB_TEMPERATURE_INITIAL_SPOT
