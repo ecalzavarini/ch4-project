@@ -179,6 +179,17 @@ void initial_conditions(int restart)
 
 #ifdef OUTPUT_H5
    if(restart) read_pop_h5();
+
+   //#define PERTURBATE
+#ifdef PERTURBATE
+   for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*drand48()-1.0);
+	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*drand48()-1.0);
+      }
+#endif
+
 #ifdef LB_FLUID
   sendrecv_borders_pop(p);
 #endif
