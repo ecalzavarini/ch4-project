@@ -36,6 +36,6 @@ new_f = h5py.File('new_pop.h5', 'w')
 grp = new_f.create_group('population')
 dset_t = grp.create_dataset('temperature',(NNZ,NNY,NNX), new_t.dtype)
 dset_v = grp.create_dataset('velocity',(NNZ,NNY,NNX), new_v.dtype)
-dset_t = new_t
-dset_v = new_v
+dset_t[:] = new_t
+dset_v[:] = new_v
 
