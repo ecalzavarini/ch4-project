@@ -23,6 +23,9 @@ void dump_averages(){
 temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 #endif
 
+/* if on diagnostic */
+if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
+
 #ifdef LB_FLUID
     out_local.x = out_local.y = out_local.z = 0.0; 
     out_local.ux = out_local.uy = out_local.uz = 0.0; 
@@ -581,6 +584,9 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
   }
 #endif
 #endif
+
+
+}/* end of if on time_dump_diagn */
 
 #ifdef OUTPUT_H5
     if(itime%((int)(property.time_dump_field/property.time_dt))==0) output_h5();
