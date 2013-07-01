@@ -1,6 +1,48 @@
 #include "common_object.h"
 
 
+void add_output(output *f, output *g, int size){
+  int i;
+  for(i=0;i<size;i++){
+#ifdef LB_FLUID
+     f[i].x += g[i].x;
+     f[i].y += g[i].y;
+     f[i].z += g[i].z; 
+     f[i].ux += g[i].ux;
+     f[i].uy += g[i].uy;
+     f[i].uz += g[i].uz;
+     f[i].ux2 += g[i].ux2;
+     f[i].uy2 += g[i].uy2;
+     f[i].uz2 += g[i].uz2;
+     f[i].rho += g[i].rho;
+     f[i].ene += g[i].ene;
+     f[i].eps += g[i].eps;
+#endif
+#ifdef LB_TEMPERATURE
+    f[i].dxt += g[i].dxt;
+    f[i].dyt += g[i].dyt;
+    f[i].dzt += g[i].dzt;
+    f[i].uxt += g[i].uxt;
+    f[i].uyt += g[i].uyt;
+    f[i].uzt += g[i].uzt;
+    f[i].nux += g[i].nux;
+    f[i].nuy += g[i].nuy; 
+    f[i].nuz += g[i].nuz;
+    f[i].t   += g[i].t;
+    f[i].t2  += g[i].t2;
+    f[i].epst += g[i].epst; 
+    f[i].lb  += g[i].lb;
+#ifdef LB_TEMPERATURE_MELTING
+    f[i].lf  += g[i].lf;
+    f[i].dtlf += g[i].dtlf;
+    f[i].enth += g[i].enth;
+#endif
+#endif
+  }
+}
+
+
+
 void dump_averages(){
   int i,j,k;
   FILE *fout;
@@ -8,6 +50,7 @@ void dump_averages(){
   my_double x,y,z,ux,uy,uz,ux2,uy2,uz2,ene,rho,eps;
   my_double norm;
   tensor grad_u;
+  int irun;
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
   vector grad_t;
@@ -25,6 +68,8 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 
 /* if on diagnostic */
 if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
+
+  irun = (int)( itime/ (int)(property.time_dump_diagn/property.time_dt) );
 
   /* set to zero local rulers */
  set_to_zero_output(ruler_x_local,NX);
@@ -523,6 +568,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #endif 
 
 
+  /* Here running averages */
+  add_output(ruler_x_running,ruler_x,NX);
+  add_output(ruler_y_running,ruler_y,NY);
+  add_output(ruler_z_running,ruler_z,NZ);
+
 
 #ifdef LB_FLUID
   if(ROOT){
@@ -545,6 +595,22 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fout = fopen(fname,"w");
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].ene, (double)ruler_z[k].rho, (double)ruler_z[k].ux, (double)ruler_z[k].uy, (double)ruler_z[k].uz, (double)ruler_z[k].ux2 , (double)ruler_z[k].uy2, (double)ruler_z[k].uz2, (double)ruler_z[i].eps);
     fclose(fout);
+
+    sprintf(fname,"velocity_averages_x_run.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].ene/(double)irun, (double)ruler_x_running[i].rho/(double)irun, (double)ruler_x_running[i].ux/(double)irun, (double)ruler_x_running[i].uy/(double)irun, (double)ruler_x_running[i].uz/(double)irun, (double)ruler_x_running[i].ux2/(double)irun , (double)ruler_x_running[i].uy2/(double)irun, (double)ruler_x_running[i].uz2/(double)irun, (double)ruler_x_running[i].eps/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"velocity_averages_y_run.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].ene/(double)irun, (double)ruler_y_running[j].rho/(double)irun, (double)ruler_y_running[j].ux/(double)irun, (double)ruler_y_running[j].uy/(double)irun, (double)ruler_y_running[j].uz/(double)irun, (double)ruler_y_running[j].ux2/(double)irun , (double)ruler_y_running[j].uy2/(double)irun, (double)ruler_y_running[j].uz2/(double)irun,(double)ruler_y_running[i].eps/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"velocity_averages_z_run.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].ene/(double)irun, (double)ruler_z_running[k].rho/(double)irun, (double)ruler_z_running[k].ux/(double)irun, (double)ruler_z_running[k].uy/(double)irun, (double)ruler_z_running[k].uz/(double)irun, (double)ruler_z_running[k].ux2/(double)irun , (double)ruler_z_running[k].uy2/(double)irun, (double)ruler_z_running[k].uz2/(double)irun, (double)ruler_z_running[i].eps/(double)irun);
+    fclose(fout);
+
 
   }
 #endif
@@ -571,15 +637,32 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[k].lb );
     fclose(fout);
 
+
+    sprintf(fname,"temperature_averages_x_run.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].t/(double)irun, (double)ruler_x_running[i].t2/(double)irun, (double)ruler_x_running[i].epst/(double)irun, (double)ruler_x_running[i].dxt/(double)irun, (double)ruler_x_running[i].dyt/(double)irun, (double)ruler_x_running[i].dzt/(double)irun , (double)ruler_x_running[i].uxt/(double)irun, (double)ruler_x_running[i].uyt/(double)irun, (double)ruler_x_running[i].uzt/(double)irun, (double)ruler_x_running[i].nux/(double)irun, (double)ruler_x_running[i].nuy/(double)irun, (double)ruler_x_running[i].nuz/(double)irun, (double)ruler_x_running[i].lb/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"temperature_averages_y_run.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].t/(double)irun, (double)ruler_y_running[j].t2/(double)irun, (double)ruler_y_running[j].epst/(double)irun, (double)ruler_y_running[j].dxt/(double)irun, (double)ruler_y_running[j].dyt/(double)irun, (double)ruler_y_running[j].dzt/(double)irun , (double)ruler_y_running[j].uxt/(double)irun, (double)ruler_y_running[j].uyt/(double)irun,(double)ruler_y_running[i].uzt/(double)irun, (double)ruler_y_running[j].nux/(double)irun, (double)ruler_y_running[j].nuy/(double)irun, (double)ruler_y_running[j].nuz/(double)irun,(double)ruler_y_running[j].lb/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"temperature_averages_z_run.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].t/(double)irun, (double)ruler_z_running[k].t2/(double)irun, (double)ruler_z_running[k].epst/(double)irun, (double)ruler_z_running[k].dxt/(double)irun, (double)ruler_z_running[k].dyt/(double)irun, (double)ruler_z_running[k].dzt/(double)irun , (double)ruler_z_running[k].uxt/(double)irun, (double)ruler_z_running[k].uyt/(double)irun, (double)ruler_z_running[i].uzt/(double)irun, (double)ruler_z_running[k].nux/(double)irun, (double)ruler_z_running[k].nuy/(double)irun, (double)ruler_z_running[k].nuz/(double)irun,(double)ruler_z_running[k].lb/(double)irun );
+    fclose(fout);
   }
 
 #ifdef LB_TEMPERATURE_MELTING
   if(ROOT){
+    /* global */
     sprintf(fname,"melting_averages.dat");
     fout = fopen(fname,"a");    
     fprintf(fout,"%e %e %e %e %e\n",time_now, (double)out_all.lf,(double)out_all.dtlf, (double)out_all.enth);
     fclose(fout);
 
+    /* instantaneous */
     sprintf(fname,"melting_averages_x.dat");
     fout = fopen(fname,"w");
     for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].lf, (double)ruler_x[i].dtlf, (double)ruler_x[i].enth);
@@ -593,6 +676,22 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     sprintf(fname,"melting_averages_z.dat");
     fout = fopen(fname,"w");
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].lf, (double)ruler_z[k].dtlf, (double)ruler_z[k].enth);
+    fclose(fout);
+
+    /* running  averages */
+    sprintf(fname,"melting_averages_x_run.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].lf/(double)irun, (double)ruler_x_running[i].dtlf/(double)irun, (double)ruler_x_running[i].enth/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"melting_averages_y_run.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].lf/(double)irun, (double)ruler_y_running[j].dtlf/(double)irun, (double)ruler_y_running[j].enth/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"melting_averages_z_run.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].lf/(double)irun, (double)ruler_z_running[k].dtlf/(double)irun, (double)ruler_z_running[k].enth/(double)irun);
     fclose(fout);
   }
 #endif
