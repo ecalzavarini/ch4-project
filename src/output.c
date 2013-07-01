@@ -26,6 +26,16 @@ temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
 /* if on diagnostic */
 if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
+  /* set to zero local rulers */
+ set_to_zero_output(ruler_x_local,NX);
+ set_to_zero_output(ruler_y_local,NY);
+ set_to_zero_output(ruler_z_local,NZ);
+
+ /* set to zero global ruler */
+ set_to_zero_output(ruler_x,NX);
+ set_to_zero_output(ruler_y,NY);
+ set_to_zero_output(ruler_z,NZ);
+
 #ifdef LB_FLUID
     out_local.x = out_local.y = out_local.z = 0.0; 
     out_local.ux = out_local.uy = out_local.uz = 0.0; 
@@ -33,7 +43,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     out_local.rho = 0.0;
     out_local.ene = 0.0;
     out_local.eps = 0.0;
-
+    /*
     for (i = 0; i < NX; i++){ 
       ruler_x_local[i].x   = ruler_x_local[i].y   = ruler_x_local[i].z  = 0.0;
       ruler_x_local[i].ux  = ruler_x_local[i].uy  = ruler_x_local[i].uz  = 0.0;
@@ -67,6 +77,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
       ruler_z[i].ux2 = ruler_z[i].uy2 = ruler_z[i].uz2 = 0.0;
       ruler_z[i].rho = ruler_z[i].ene = ruler_z[i].eps = 0.0;
     }
+    */
 #endif
 
 
@@ -78,7 +89,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     out_local.t2 = 0.0;
     out_local.epst = 0.0;
     out_local.lb = 0.0;
-
+    /*
     for (i = 0; i < NX; i++){ 
       ruler_x_local[i].dxt   = ruler_x_local[i].dyt   = ruler_x_local[i].dzt  = 0.0;
       ruler_x_local[i].uxt  = ruler_x_local[i].uyt  = ruler_x_local[i].uzt  = 0.0;
@@ -118,9 +129,10 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
       ruler_z[i].t = ruler_z[i].t2 = ruler_z[i].epst = 0.0;
       ruler_z[i].lb = 0.0;
     }
+    */
 #ifdef LB_TEMPERATURE_MELTING
     out_local.lf = out_local.dtlf = out_local.enth = 0.0; 
-
+    /*
     for (i = 0; i < NX; i++){ 
       ruler_x_local[i].lf   = ruler_x_local[i].dtlf   = ruler_x_local[i].enth  = 0.0;
       ruler_x[i].lf   = ruler_x[i].dtlf   = ruler_x[i].enth  = 0.0;
@@ -135,6 +147,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
       ruler_z_local[i].lf   = ruler_z_local[i].dtlf   = ruler_z_local[i].enth  = 0.0;
       ruler_z[i].lf   = ruler_z[i].dtlf   = ruler_z[i].enth  = 0.0;
     }
+    */
 #endif
 #endif
 

@@ -50,6 +50,7 @@ prop property;
 output out_local,out_all;
 output *ruler_x_local, *ruler_y_local, *ruler_z_local;
 output *ruler_x, *ruler_y, *ruler_z;
+output *ruler_x_running, *ruler_y_running, *ruler_z_running;
 
 /* Mesh matrix */
 vector *mesh, *center_V;

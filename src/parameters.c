@@ -239,6 +239,27 @@ void set_to_zero_pop(pop  *f,int size){
       f[i].p[pp] = 0.0;
 }
 
+void set_to_zero_output(output  *f,int size){
+  int i,pp;
+  for(i=0;i<size;i++){
+#ifdef LB_FLUID
+     f[i].x = f[i].y = f[i].z = 0.0; 
+     f[i].ux = f[i].uy = f[i].uz = 0.0; 
+     f[i].ux2 = f[i].uy2 = f[i].uz2 = 0.0; 
+     f[i].rho = f[i].ene = f[i].eps = 0.0;
+#endif
+#ifdef LB_TEMPERATURE
+    f[i].dxt = f[i].dyt = f[i].dzt = 0.0; 
+    f[i].uxt = f[i].uyt = f[i].uzt = 0.0; 
+    f[i].nux = f[i].nuy = f[i].nuz = 0.0; 
+    f[i].t = f[i].t2 = f[i].epst = f[i].lb = 0.0;
+#ifdef LB_TEMPERATURE_MELTING
+    f[i].lf = f[i].dtlf = f[i].enth = 0.0; 
+#endif
+#endif
+  }
+}
+
 
 void allocate_fields(){
  mesh  = (vector*) malloc(sizeof(vector)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
@@ -435,6 +456,18 @@ void allocate_fields(){
  ruler_x  = (output*) malloc(sizeof(output)*NX);
  ruler_y  = (output*) malloc(sizeof(output)*NY);
  ruler_z  = (output*) malloc(sizeof(output)*NZ);
+ ruler_x_running  = (output*) malloc(sizeof(output)*NX);
+ ruler_y_running  = (output*) malloc(sizeof(output)*NY);
+ ruler_z_running  = (output*) malloc(sizeof(output)*NZ);
+ set_to_zero_output(ruler_x_local,NX);
+ set_to_zero_output(ruler_y_local,NY);
+ set_to_zero_output(ruler_z_local,NZ);
+ set_to_zero_output(ruler_x,NX);
+ set_to_zero_output(ruler_y,NY);
+ set_to_zero_output(ruler_z,NZ);
+ set_to_zero_output(ruler_x_running,NX);
+ set_to_zero_output(ruler_y_running,NY);
+ set_to_zero_output(ruler_z_running,NZ);
 #endif
 
 #ifdef LB_TEMPERATURE
