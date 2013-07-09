@@ -51,6 +51,7 @@ void dump_averages(){
   my_double norm;
   tensor grad_u;
   int irun;
+  my_double vol,lx,ly,lz;
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
   vector grad_t;
@@ -211,6 +212,13 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
 
+
+			  /* computing volume local */
+			  lx = 0.5*(center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x);
+			  ly = 0.5*(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y);
+			  lz = 0.5*(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z);
+			  vol = lx*ly*lz;
+
 #ifdef LB_FLUID
 			  
 			  out_local.x += x = center_V[IDX(i, j, k)].x;
@@ -229,45 +237,45 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_z_local[k -BRD + LNZ_START].z += z;
 			  
 
-			  out_local.ux += ux = u[IDX(i, j, k)].x;
+			  out_local.ux += ux = u[IDX(i, j, k)].x*vol;
 			  ruler_x_local[i -BRD + LNX_START].ux += ux;
 			  ruler_y_local[j -BRD + LNY_START].ux += ux;
 			  ruler_z_local[k -BRD + LNZ_START].ux += ux;
 
-			  out_local.uy += uy = u[IDX(i, j, k)].y;
+			  out_local.uy += uy = u[IDX(i, j, k)].y*vol;
 			  ruler_x_local[i -BRD + LNX_START].uy += uy;
 			  ruler_y_local[j -BRD + LNY_START].uy += uy;
 			  ruler_z_local[k -BRD + LNZ_START].uy += uy;
 
-			  out_local.uz += uz = u[IDX(i, j, k)].z;
+			  out_local.uz += uz = u[IDX(i, j, k)].z*vol;
 			  ruler_x_local[i -BRD + LNX_START].uz += uz;
 			  ruler_y_local[j -BRD + LNY_START].uz += uz;
 			  ruler_z_local[k -BRD + LNZ_START].uz += uz;
 
-			  ux2 = u[IDX(i, j, k)].x*u[IDX(i, j, k)].x;
+			  ux2 = u[IDX(i, j, k)].x*u[IDX(i, j, k)].x*vol;
 			  out_local.ux2 += ux2;
 			  ruler_x_local[i -BRD + LNX_START].ux2 += ux2;
 			  ruler_y_local[j -BRD + LNY_START].ux2 += ux2;
 			  ruler_z_local[k -BRD + LNZ_START].ux2 += ux2;
 
-			  uy2 = u[IDX(i, j, k)].y*u[IDX(i, j, k)].y;
+			  uy2 = u[IDX(i, j, k)].y*u[IDX(i, j, k)].y*vol;
 			  out_local.uy2 += uy2;
 			  ruler_x_local[i -BRD + LNX_START].uy2 += uy2;
 			  ruler_y_local[j -BRD + LNY_START].uy2 += uy2;
 			  ruler_z_local[k -BRD + LNZ_START].uy2 += uy2;
 
-			  uz2 = u[IDX(i, j, k)].z*u[IDX(i, j, k)].z;
+			  uz2 = u[IDX(i, j, k)].z*u[IDX(i, j, k)].z*vol;
 			  out_local.uz2 += uz2;
 			  ruler_x_local[i -BRD + LNX_START].uz2 += uz2;
 			  ruler_y_local[j -BRD + LNY_START].uz2 += uz2;
 			  ruler_z_local[k -BRD + LNZ_START].uz2 += uz2;
 
-			  out_local.rho += rho = dens[IDX(i, j, k)];
+			  out_local.rho += rho = dens[IDX(i, j, k)]*vol;
 			  ruler_x_local[i -BRD + LNX_START].rho += rho;
 			  ruler_y_local[j -BRD + LNY_START].rho += rho;
 			  ruler_z_local[k -BRD + LNZ_START].rho += rho;
 
-			  out_local.ene += ene = 0.5*(ux2+uy2+uz2);
+	    out_local.ene += ene = 0.5*(u[IDX(i, j, k)].x*u[IDX(i, j, k)].x + u[IDX(i, j, k)].y*u[IDX(i, j, k)].y + u[IDX(i, j, k)].z*u[IDX(i, j, k)].z)*vol; // 0.5*(ux2+uy2+uz2);
 			  ruler_x_local[i -BRD + LNX_START].ene += ene;
 			  ruler_y_local[j -BRD + LNY_START].ene += ene;
 			  ruler_z_local[k -BRD + LNZ_START].ene += ene;
@@ -283,7 +291,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			                           (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
                                                    (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
 			                           (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
-			                           (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu;
+			                           (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu * vol;
 			  ruler_x_local[i -BRD + LNX_START].eps += eps;
 			  ruler_y_local[j -BRD + LNY_START].eps += eps;
 			  ruler_z_local[k -BRD + LNZ_START].eps += eps;
@@ -295,36 +303,36 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  /* note thet t field must be communicate first -> it has been done above */
 			  grad_t=gradient_scalar(t,i,j,k);
 
-			  dxt = grad_t.x;
+			  dxt = grad_t.x*vol;
 			  out_local.dxt += dxt;
 			  ruler_x_local[i -BRD + LNX_START].dxt += dxt;
 			  ruler_y_local[j -BRD + LNY_START].dxt += dxt;
 			  ruler_z_local[k -BRD + LNZ_START].dxt += dxt;
 
-			  dyt = grad_t.y;
+			  dyt = grad_t.y*vol;
 			  out_local.dyt += dyt;
 			  ruler_x_local[i -BRD + LNX_START].dyt += dyt;
 			  ruler_y_local[j -BRD + LNY_START].dyt += dyt;
 			  ruler_z_local[k -BRD + LNZ_START].dyt += dyt;
 
-			  dzt = grad_t.z;
+			  dzt = grad_t.z*vol;
 			  out_local.dzt += dzt;
 			  ruler_x_local[i -BRD + LNX_START].dzt += dzt;
 			  ruler_y_local[j -BRD + LNY_START].dzt += dzt;
 			  ruler_z_local[k -BRD + LNZ_START].dzt += dzt;
 			  
 
-			  out_local.uxt += uxt = u[IDX(i, j, k)].x*t[IDX(i, j, k)];
+			  out_local.uxt += uxt = u[IDX(i, j, k)].x*t[IDX(i, j, k)]*vol;
 			  ruler_x_local[i -BRD + LNX_START].uxt += uxt;
 			  ruler_y_local[j -BRD + LNY_START].uxt += uxt;
 			  ruler_z_local[k -BRD + LNZ_START].uxt += uxt;
 
-			  out_local.uyt += uyt = u[IDX(i, j, k)].y*t[IDX(i, j, k)];
+			  out_local.uyt += uyt = u[IDX(i, j, k)].y*t[IDX(i, j, k)]*vol;
 			  ruler_x_local[i -BRD + LNX_START].uyt += uyt;
 			  ruler_y_local[j -BRD + LNY_START].uyt += uyt;
 			  ruler_z_local[k -BRD + LNZ_START].uyt += uyt;
 
-			  out_local.uzt += uzt = u[IDX(i, j, k)].z*t[IDX(i, j, k)];
+			  out_local.uzt += uzt = u[IDX(i, j, k)].z*t[IDX(i, j, k)]*vol;
 			  ruler_x_local[i -BRD + LNX_START].uzt += uzt;
 			  ruler_y_local[j -BRD + LNY_START].uzt += uzt;
 			  ruler_z_local[k -BRD + LNZ_START].uzt += uzt;
@@ -347,18 +355,18 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_y_local[j -BRD + LNY_START].nuz += nuz;
 			  ruler_z_local[k -BRD + LNZ_START].nuz += nuz;
 
-			  out_local.t += temp = t[IDX(i, j, k)];
+			  out_local.t += temp = t[IDX(i, j, k)]*vol;
 			  ruler_x_local[i -BRD + LNX_START].t += temp;
 			  ruler_y_local[j -BRD + LNY_START].t += temp;
 			  ruler_z_local[k -BRD + LNZ_START].t += temp;
 
-			  t2=t[IDX(i, j, k)]*t[IDX(i, j, k)];
+			  t2=t[IDX(i, j, k)]*t[IDX(i, j, k)]*vol;
 			  out_local.t2 += t2;
 			  ruler_x_local[i -BRD + LNX_START].t2 += t2;
 			  ruler_y_local[j -BRD + LNY_START].t2 += t2;
 			  ruler_z_local[k -BRD + LNZ_START].t2 += t2;
 			  
-			  epst = property.kappa*(dxt*dxt + dyt*dyt + dzt*dzt);
+			  epst = property.kappa*(grad_t.x*grad_t.x + grad_t.y*grad_t.y + grad_t.z*grad_t.z)*vol; //property.kappa*(dxt*dxt + dyt*dyt + dzt*dzt);
 			  out_local.epst += epst; 
 			  ruler_x_local[i -BRD + LNX_START].epst += epst;
 			  ruler_y_local[j -BRD + LNY_START].epst += epst;
@@ -372,19 +380,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #endif
 
 #ifdef LB_TEMPERATURE_MELTING   
-			  lf = liquid_frac[IDX(i, j, k)];
+			  lf = liquid_frac[IDX(i, j, k)]*vol;
 			  out_local.lf += lf;
 			  ruler_x_local[i -BRD + LNX_START].lf += lf;
 			  ruler_y_local[j -BRD + LNY_START].lf += lf;
 			  ruler_z_local[k -BRD + LNZ_START].lf += lf;
 
-			  dtlf = ( liquid_frac[IDX(i, j, k)]-liquid_frac_old[IDX(i, j, k)] )/property.time_dt;
+			  dtlf = ( liquid_frac[IDX(i, j, k)]-liquid_frac_old[IDX(i, j, k)] )*(vol/property.time_dt);
 			  out_local.dtlf += dtlf;
 			  ruler_x_local[i -BRD + LNX_START].dtlf += dtlf;
 			  ruler_y_local[j -BRD + LNY_START].dtlf += dtlf;
 			  ruler_z_local[k -BRD + LNZ_START].dtlf += dtlf;
 
-			  enth = property.specific_heat*t[IDX(i,j,k)] + property.latent_heat*liquid_frac[IDX(i,j,k)];
+			  enth = ( property.specific_heat*t[IDX(i,j,k)] + property.latent_heat*liquid_frac[IDX(i,j,k)])*vol;
 			  out_local.enth += enth;
 			  ruler_x_local[i -BRD + LNX_START].enth += enth;
 			  ruler_y_local[j -BRD + LNY_START].enth += enth;
@@ -410,7 +418,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #define OUTPUT_NORM
 #ifdef OUTPUT_NORM
   /* normalization */
-  norm = 1.0/(my_double)(NX*NY*NZ);
+  //norm = 1.0/(my_double)(NX*NY*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
   out_all.ene *= norm;
   out_all.rho *= norm;
   out_all.ux  *= norm;
@@ -422,7 +431,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   out_all.eps *= norm;
 
 
-  norm = 1.0/(my_double)(NY*NZ);
+  //norm = 1.0/(my_double)(NY*NZ);
+    norm = 1.0/(my_double)(property.SY*property.SZ);
   for (i = 0; i < NX; i++){
     ruler_x[i].x *= norm;
     ruler_x[i].ene *= norm;
@@ -436,7 +446,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_x[i].eps *= norm;
   }
 
-  norm = 1.0/(my_double)(NX*NZ);
+  //norm = 1.0/(my_double)(NX*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SZ);
   for (i = 0; i < NY; i++){
     ruler_y[i].y *= norm;
     ruler_y[i].ene *= norm;
@@ -450,7 +461,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_y[i].eps *= norm;
   }
 
-  norm = 1.0/(my_double)(NX*NY);
+  //norm = 1.0/(my_double)(NX*NY);
+  norm = 1.0/(my_double)(property.SX*property.SY);
   for (i = 0; i < NZ; i++){
     ruler_z[i].z *= norm;
     ruler_z[i].ene *= norm;
@@ -470,7 +482,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
 #ifdef OUTPUT_NORM
   /* normalization */
-  norm = 1.0/(my_double)(NX*NY*NZ);
+  //norm = 1.0/(my_double)(NX*NY*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
   out_all.t *= norm;
   out_all.t2 *= norm;
   out_all.epst  *= norm;
@@ -485,7 +498,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   out_all.nuz *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.lb  = pow(out_all.eps,5./4.)*pow(out_all.epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
 
-  norm = 1.0/(my_double)(NY*NZ);
+  //norm = 1.0/(my_double)(NY*NZ);
+  norm = 1.0/(my_double)(property.SY*property.SZ);
   for (i = 0; i < NX; i++){
     ruler_x[i].t *= norm;
     ruler_x[i].t2 *= norm;
@@ -502,7 +516,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_x[i].lb = pow(ruler_x[i].eps,5./4.)*pow(ruler_x[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
   }
 
-  norm = 1.0/(my_double)(NX*NZ);
+  //norm = 1.0/(my_double)(NX*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SZ);
   for (i = 0; i < NY; i++){
     ruler_y[i].t *= norm;
     ruler_y[i].t2 *= norm;
@@ -519,7 +534,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_y[i].lb =  pow(ruler_y[i].eps,5./4.)*pow(ruler_y[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
   }
 
-  norm = 1.0/(my_double)(NX*NY);
+  //norm = 1.0/(my_double)(NX*NY);
+  norm = 1.0/(my_double)(property.SY*property.SZ);
   for (i = 0; i < NZ; i++){
     ruler_z[i].t *= norm;
     ruler_z[i].t2 *= norm;
@@ -539,26 +555,30 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
 #ifdef LB_TEMPERATURE_MELTING
   /* normalization */
-  norm = 1.0/(my_double)(NX*NY*NZ);
+  // norm = 1.0/(my_double)(NX*NY*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
   out_all.lf *= norm;
   out_all.dtlf *= norm;
   out_all.enth  *= norm;
 
-  norm = 1.0/(my_double)(NY*NZ);
+  //norm = 1.0/(my_double)(NY*NZ);
+  norm = 1.0/(my_double)(property.SY*property.SZ);
   for (i = 0; i < NX; i++){
     ruler_x[i].lf *= norm;
     ruler_x[i].dtlf *= norm;
     ruler_x[i].enth *= norm;
   }
 
-  norm = 1.0/(my_double)(NX*NZ);
+  //norm = 1.0/(my_double)(NX*NZ);
+  norm = 1.0/(my_double)(property.SX*property.SZ);
   for (i = 0; i < NY; i++){
     ruler_y[i].lf *= norm;
     ruler_y[i].dtlf *= norm;
     ruler_y[i].enth *= norm;
   }
 
-  norm = 1.0/(my_double)(NX*NY);
+  //norm = 1.0/(my_double)(NX*NY);
+  norm = 1.0/(my_double)(property.SX*property.SY);
   for (i = 0; i < NZ; i++){
     ruler_z[i].lf *= norm;
     ruler_z[i].dtlf *= norm;
