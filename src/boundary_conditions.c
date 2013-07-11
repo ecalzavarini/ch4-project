@@ -183,6 +183,26 @@ if(LNY_START == 0){
 #endif
 
 
+
+#ifdef LB_TEMPERATURE_BC_KEEP_WITHIN
+
+  my_double T_max, T_min;
+
+  /* Rather DIRTY TRICK , in order to keep the temperature inside the boundaries, in the whole bulk */
+  T_max = property.T_bot;
+  T_min = property.T_top;
+  if( property.T_top > property.T_bot){ T_max = property.T_top;  T_min = property.T_bot;}
+
+  for (i = BRD; i < LNX + BRD; i++) 
+    for (j = BRD; j < LNY + BRD; j++)
+      for (k = BRD; k < LNZ + BRD; k++){
+
+	if(m(g[IDX(i,j,k)]) < T_min) for(pp=0;pp<NPOP;pp++) g[IDX(i,j,k)].p[pp] *= T_min/m(g[IDX(i,j,k)]);
+	if(m(g[IDX(i,j,k)]) > T_max) for(pp=0;pp<NPOP;pp++) g[IDX(i,j,k)].p[pp] *= T_max/m(g[IDX(i,j,k)]); 
+      }
+#endif
+
+
 	/* Y direction */	
 #ifdef LB_TEMPERATURE_BC_Y
 
@@ -191,6 +211,7 @@ if(LNY_START == 0){
   my_double T_wall;
   my_double fac;
 
+  /************************/
 
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -209,10 +230,10 @@ if(LNY_END == NY){
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
 
-
-#ifdef METHOD_MYQUICK	  	  
+#ifdef METHOD_MYQUICK
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j-1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  fac*g[IDX(i,j-1,k)].p[pp];
+
 #endif
  }
 
@@ -225,8 +246,10 @@ if(LNY_START == 0){
 #else
 	  T_wall = 0.0;
 #endif
+
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
+
      
 #ifdef METHOD_MYQUICK 
 	  
@@ -237,6 +260,7 @@ if(LNY_START == 0){
 #endif   
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-2,k)].p[pp] =  fac*g[IDX(i,j+1,k)].p[pp];
+
 #endif
 }
 
