@@ -302,7 +302,20 @@ adv=0.0;
 
 	}/* for pp */
       }/* for i, j , k */
+
+#ifdef METHOD_STREAMING
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+	rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
+     
+      }/* i */
+   }/* J */
+ }/* k */
+#endif
 }
+
 
 
 void add_collision(pop *f, pop *rhs_f, my_double tau){

@@ -179,6 +179,53 @@ void hydro_fields(){
 
 }
 
+
+
+
+#ifdef METHOD_STREAMING
+void streaming(pop *f, pop *rhs_f){
+ int i, j, k, pp;
+ int kp,km,jp,jm,ip,im; 
+
+ for(k=BRD;k<LNZ+BRD;k++){
+   km = k-1;
+   kp = k+1;
+   for(j=BRD;j<LNY+BRD;j++){
+     jm = j-1;
+     jp = j+1;
+      for(i=BRD;i<LNX+BRD;i++){ 
+     im = i-1;
+     ip = i+1;
+
+	f[IDX( i, j, k)].p[0]  = rhs_f[IDX(i,j,k)].p[0];
+	f[IDX(ip, j, k)].p[1]  = rhs_f[IDX(i,j,k)].p[1];
+	f[IDX(im, j, k)].p[2]  = rhs_f[IDX(i,j,k)].p[2];
+	f[IDX( i,jp, k)].p[3]  = rhs_f[IDX(i,j,k)].p[3];
+	f[IDX( i,jm, k)].p[4]  = rhs_f[IDX(i,j,k)].p[4];
+	f[IDX( i, j,kp)].p[5]  = rhs_f[IDX(i,j,k)].p[5];
+	f[IDX( i, j,km)].p[6]  = rhs_f[IDX(i,j,k)].p[6];
+	f[IDX(ip,jp, k)].p[7] = rhs_f[IDX(i,j,k)].p[7];
+	f[IDX(ip,jm, k)].p[8] = rhs_f[IDX(i,j,k)].p[8];
+	f[IDX(im,jp, k)].p[9] = rhs_f[IDX(i,j,k)].p[9];
+	f[IDX(im,jm, k)].p[10] = rhs_f[IDX(i,j,k)].p[10];
+	f[IDX(ip, j,kp)].p[11] = rhs_f[IDX(i,j,k)].p[11];
+	f[IDX(im, j,kp)].p[12] = rhs_f[IDX(i,j,k)].p[12];
+	f[IDX(ip, j,km)].p[13] = rhs_f[IDX(i,j,k)].p[13];
+	f[IDX(im, j,km)].p[14] = rhs_f[IDX(i,j,k)].p[14];
+	f[IDX( i,jp,kp)].p[15] = rhs_f[IDX(i,j,k)].p[15];
+	f[IDX( i,jp,km)].p[16] = rhs_f[IDX(i,j,k)].p[16];
+	f[IDX( i,jm,kp)].p[17] = rhs_f[IDX(i,j,k)].p[17];
+	f[IDX( i,jm,km)].p[18] = rhs_f[IDX(i,j,k)].p[18];
+
+     
+      }/* i */
+   }/* J */
+ }/* k */
+
+}
+#endif
+
+
 /********************************************/
 void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
   int i,j,k,pp;
@@ -234,11 +281,12 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
 #endif
 
-
 	}/* pp */
-
-
       }/* for i,j,k */
+
+#ifdef METHOD_STREAMING
+  streaming(f, rhs_f);
+#endif
 }
 
 

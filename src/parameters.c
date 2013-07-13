@@ -304,7 +304,7 @@ void allocate_fields(){
 
  
  //#ifdef METHOD_CENTERED
-#if (defined METHOD_CENTERED || defined METHOD_MYQUICK)
+#if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING)
  interp_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_xp\n"); exit(-1);}
  set_to_zero_my_double( interp_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
