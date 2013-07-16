@@ -308,10 +308,10 @@ adv=0.0;
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
-	rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
+		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
      
       }/* i */
-   }/* J */
+   }/* j */
  }/* k */
 #endif
 }
@@ -476,7 +476,7 @@ void build_forcing(){
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( mask < 1.0 ){       
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
-	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y+0.1;
+	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
 	  }
       
@@ -536,7 +536,6 @@ void add_forcing(){
   vector d;
   my_double ux,uy,uz,cu;
 
-
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
@@ -561,7 +560,7 @@ void add_forcing(){
 
        rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
-       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;
+       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;       
 #endif
 
 #endif

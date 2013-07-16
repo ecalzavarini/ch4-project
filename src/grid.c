@@ -657,78 +657,95 @@ void compute_interpolation_coefficients(){
   vector YPF1, YPF2, YPB1, YPB2, YMF1, YMF2, YMB1, YMB2;   
   vector ZPF1, ZPF2, ZPB1, ZPB2, ZMF1, ZMF2, ZMB1, ZMB2;
 
-
-#ifdef METHOD_CENTERED_WRONG
-	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
-		for (j = BRD; j < LNYG + BRD - 1; j++) 
-			for (k = BRD; k < LNZG + BRD - 1; k++) {
-				P0 = mesh[IDXG(i, j, k)];
-				P1 = mesh[IDXG(i + 1, j, k)];
-				P2 = mesh[IDXG(i, j + 1, k)];
-				P3 = mesh[IDXG(i + 1, j + 1, k)];
-				P4 = mesh[IDXG(i, j, k + 1)];
-				P5 = mesh[IDXG(i + 1, j, k + 1)];
-				P6 = mesh[IDXG(i, j + 1, k + 1)];
-				P7 = mesh[IDXG(i + 1, j + 1, k + 1)];
-				P8.x = (P0.x + P1.x + P2.x + P3.x + P4.x + P5.x + P6.x + P7.x) / 8;
-				P8.y = (P0.y + P1.y + P2.y + P3.y + P4.y + P5.y + P6.y + P7.y) / 8;
-				P8.z = (P0.z + P1.z + P2.z + P3.z + P4.z + P5.z + P6.z + P7.z) / 8;
-
-/* we compute here the position of the centers of the 6 surfaces */
-xp = average_4vectors(P1, P3, P5, P7);
-xm = average_4vectors(P0, P2, P4, P6); 
-yp = average_4vectors(P2, P3, P6, P7); 
-ym = average_4vectors(P0, P1, P4, P5);
-zp = average_4vectors(P4, P5, P6, P7);
-zm = average_4vectors(P0, P1, P2, P3); 
-
-/* we find the distence of the centers from such 6 surfece centers */
-
-xp = vector_difference( center_V[IDX(i, j, k)], xp);
-xm = vector_difference( center_V[IDX(i, j, k)], xm);
-yp = vector_difference( center_V[IDX(i, j, k)], yp);
-ym = vector_difference( center_V[IDX(i, j, k)], ym);
-zp = vector_difference( center_V[IDX(i, j, k)], zp);
-zm = vector_difference( center_V[IDX(i, j, k)], zm);
-
-/* we compute the vector length (norm) */
-interp_xp[IDX(i,j,k)] = vector_length(xp);
-interp_xm[IDX(i,j,k)] = vector_length(xm);
-interp_yp[IDX(i,j,k)] = vector_length(yp);
-interp_ym[IDX(i,j,k)] = vector_length(ym);
-interp_zp[IDX(i,j,k)] = vector_length(zp);
-interp_zm[IDX(i,j,k)] = vector_length(zm);
-
-			}/*i,j,k*/
-
-	/*  send receive the borders */
-	sendrecv_borders_scalar(interp_xp);
-	sendrecv_borders_scalar(interp_xm);
-	sendrecv_borders_scalar(interp_yp);
-	sendrecv_borders_scalar(interp_ym);
-	sendrecv_borders_scalar(interp_zp);
-	sendrecv_borders_scalar(interp_zm);
-
-	/* now compute the coefficients */
-	for (i = BRD; i < LNX + BRD; i++) 
-		for (j = BRD; j < LNY + BRD; j++) 
-			for (k = BRD; k < LNZ + BRD; k++) {
-
-interp_xp[IDX(i,j,k)] =  interp_xp[IDX(i,j,k)] / (interp_xm[IDX(i+1,j,k)]+interp_xp[IDX(i,j,k)]);
-interp_xm[IDX(i,j,k)] =  interp_xm[IDX(i,j,k)] / (interp_xp[IDX(i-1,j,k)]+interp_xm[IDX(i,j,k)]);
-interp_yp[IDX(i,j,k)] =  interp_yp[IDX(i,j,k)] / (interp_ym[IDX(i,j+1,k)]+interp_yp[IDX(i,j,k)]);
-interp_ym[IDX(i,j,k)] =  interp_ym[IDX(i,j,k)] / (interp_yp[IDX(i,j-1,k)]+interp_ym[IDX(i,j,k)]);
-interp_zp[IDX(i,j,k)] =  interp_zp[IDX(i,j,k)] / (interp_zm[IDX(i,j,k+1)]+interp_zp[IDX(i,j,k)]);
-interp_zm[IDX(i,j,k)] =  interp_zm[IDX(i,j,k)] / (interp_zp[IDX(i,j,k-1)]+interp_zm[IDX(i,j,k)]);
-
-			}/* i,j,k*/
-#endif
-
-
-#ifdef METHOD_CENTERED
-
+#ifdef METHOD_STREAMING
 	/* exchange centers */
 	sendrecv_borders_vector(center_V);
+
+	for (j = BRD; j < LNY + BRD ; j++) 
+	for (k = BRD; k < LNZ + BRD ; k++){
+	if(LNX_START == 0){
+	  center_V[IDX(0, j, k)].x = - center_V[IDX(1, j , k)].x;
+	}	
+	if(LNX_END == NX){
+	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (property.SX - center_V[IDX(LNX+BRD-1, j, k)].x)+property.SX;
+	}
+	}
+	
+
+       	for (i = BRD; i < LNX + BRD; i++) 
+	for (k = BRD; k < LNZ + BRD; k++) {
+	if(LNY_START == 0){
+	  center_V[IDX(i, 0, k)].y = - center_V[IDX(i, 1 , k)].y;
+	}	
+	if(LNY_END == NY){
+	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (property.SY - center_V[IDX(i, LNY+BRD-1, k)].y)+property.SY;
+	}
+	}
+
+	
+	for (i = BRD; i < LNX + BRD ; i++) 
+	for (j = BRD; j < LNY + BRD ; j++){ 
+	if(LNZ_START == 0){
+	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;
+	}	
+	if(LNZ_END == NZ){
+	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+property.SZ;
+	}
+	}
+
+#ifdef DEBUG_HARD
+	
+	fprintf(stderr,"\n TWO_BRD %d LNX %d , LNY %d LNZ %d\n", TWO_BRD, LNX+TWO_BRD, LNY+TWO_BRD, LNZ+TWO_BRD);
+	/*	
+	for (i = 0; i < LNX + TWO_BRD; i++) 
+	  for (j = 0; j < LNY + TWO_BRD; j++) 
+	    for (k = 0; k < LNZ + TWO_BRD; k++) {
+		
+	      //fprintf(stderr,"i j k %ld %ld %ld\n",i,j,k);
+	        fprintf(stderr,"%lf %lf %lf\n", center_V[IDX(i,j,k)].x , center_V[IDX(i,j,k)].y , center_V[IDX(i,j,k)].z );
+
+			}	
+	*/	
+#endif
+	
+#endif
+
+#ifdef METHOD_CENTERED
+	/* exchange centers */
+	sendrecv_borders_vector(center_V);
+
+	for (j = BRD; j < LNY + BRD ; j++) 
+	for (k = BRD; k < LNZ + BRD ; k++){
+	if(LNX_START == 0){
+	  center_V[IDX(0, j, k)].x = - center_V[IDX(1, j , k)].x;
+	}	
+	if(LNX_END == NX){
+	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (property.SX - center_V[IDX(LNX+BRD-1, j, k)].x)+property.SX;
+	}
+	}
+	
+
+       	for (i = BRD; i < LNX + BRD; i++) 
+	for (k = BRD; k < LNZ + BRD; k++) {
+	if(LNY_START == 0){
+	  center_V[IDX(i, 0, k)].y = - center_V[IDX(i, 1 , k)].y;
+	}	
+	if(LNY_END == NY){
+	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (property.SY - center_V[IDX(i, LNY+BRD-1, k)].y)+property.SY;
+	}
+	}
+
+	
+	for (i = BRD; i < LNX + BRD ; i++) 
+	for (j = BRD; j < LNY + BRD ; j++){ 
+	if(LNZ_START == 0){
+	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;
+	}	
+	if(LNZ_END == NZ){
+	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+property.SZ;
+	}
+	}
+
 
 	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
 		for (j = BRD; j < LNYG + BRD - 1; j++) 

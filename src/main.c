@@ -18,8 +18,8 @@ int main(int argc, char **argv){
 	//#endif
 	initial_conditions(resume); 
 	hydro_fields();
-	//dump_averages();
-	//exit(1);
+	//	dump_averages();
+	//      exit(1);
 
 	itime=0;
 	for (time_now=property.time_start; time_now <= property.time_end; time_now += property.time_dt){
@@ -35,6 +35,7 @@ int main(int argc, char **argv){
 #ifdef LB_SCALAR
 	  sendrecv_borders_pop(h);
 #endif
+
 
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
 	  boundary_conditions();

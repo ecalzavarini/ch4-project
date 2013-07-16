@@ -221,8 +221,10 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  inv_lx = 1./lx;
 			  inv_ly = 1./ly;
 			  inv_lz = 1./lz;
-			  //fprintf(stderr,"%d %d %d vol %e\n",i,j,k,vol);
+#ifdef DEBUG			 
+			  fprintf(stderr,"%d %d %d vol %e lx %e,ly %e, lz %e\n",i,j,k,vol,lx,ly,lz);
 			  //vol=1.0;
+#endif
 
 #ifdef LB_FLUID
 			  
@@ -241,7 +243,6 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_y_local[j -BRD + LNY_START].z += z;
 			  ruler_z_local[k -BRD + LNZ_START].z += z;
 			  
-
 			  out_local.ux += ux = u[IDX(i, j, k)].x*vol;
 			  ruler_x_local[i -BRD + LNX_START].ux += ux*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].ux += ux*inv_ly;
