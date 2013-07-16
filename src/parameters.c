@@ -447,6 +447,36 @@ void allocate_fields(){
  zm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_pop == NULL || zm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_pop\n"); exit(-1);}
 
+
+#ifdef EDGES_AND_CORNERS
+/* 8 corners */
+ xp_yp_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_yp_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_ym_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_ym_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_yp_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_yp_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_ym_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_ym_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+
+/* 12 edges */
+xp_yp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD)); 
+xp_ym_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+xm_yp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+xm_ym_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+
+xp_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xp_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xm_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xm_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+
+yp_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+yp_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+ym_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+#endif
+
+
 #endif
 
 #ifdef LB_FLUID

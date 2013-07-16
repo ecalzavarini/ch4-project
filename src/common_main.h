@@ -77,6 +77,36 @@ pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;
 pop *norm_xp_pop,*norm_xm_pop,*norm_yp_pop,*norm_ym_pop,*norm_zp_pop,*norm_zm_pop;
 #endif
 
+#ifdef EDGES_AND_CORNERS
+/* 8 corners */
+pop *xp_yp_zp_corner_pop;
+pop *xp_yp_zm_corner_pop;
+pop *xp_ym_zp_corner_pop;
+pop *xp_ym_zm_corner_pop;
+pop *xm_yp_zp_corner_pop;
+pop *xm_yp_zm_corner_pop;
+pop *xm_ym_zp_corner_pop;
+pop *xm_ym_zm_corner_pop;
+
+/* 12 edges */
+pop *xp_yp_edge_pop;
+pop *xp_ym_edge_pop;
+pop *xm_yp_edge_pop;
+pop *xm_ym_edge_pop;
+
+pop *xp_zp_edge_pop;
+pop *xp_zm_edge_pop;
+pop *xm_zp_edge_pop;
+pop *xm_zm_edge_pop;
+
+pop *yp_zp_edge_pop;
+pop *yp_zm_edge_pop;
+pop *ym_zp_edge_pop;
+pop *ym_zm_edge_pop;
+#endif
+
+
+
 /* Populations */
 int NPOP;
 
