@@ -108,7 +108,8 @@ typedef struct {
 
 /* index on the vertices */
 #define IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
-/* and index for vertices planes for BRD thickness slice */
+
+/* and index for vertices planes for BRD thickness slices (faces)*/
 #define IDX_XBRD(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(BRD)+(int)(j)*(BRD)+(int)(i) )
 #define IDX_YBRD(i,j,k) ( (int)(k)*(BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 #define IDX_ZBRD(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
@@ -120,6 +121,12 @@ typedef struct {
 
 /* index for corner cubelets */
 #define IDX_CORNER(i,j,k) ( (int)(k)*BRD*BRD+(int)(j)*BRD+(int)(i) )
+
+/* index for corner edges */
+#define IDX_EDGE_X(i,j,k) ( (int)(k)*(BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+#define IDX_EDGE_Y(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(BRD)+(int)(j)*(BRD)+(int)(i) )
+#define IDX_EDGE_Z(i,j,k) ( (int)(k)*(BRD)*(BRD)+(int)(j)*(BRD)+(int)(i) )
+
 
 /* neighbouring index for processors*/
 #define IDX_NEXT(i,j,k) ( (int)(k+1)*9+(int)(j+1)*3+(int)(i+1) )
