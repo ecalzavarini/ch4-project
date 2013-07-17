@@ -186,19 +186,24 @@ void streaming(pop *f, pop *rhs_f){
  int i, j, k, pp;
  int ii, jj, kk;
 
+ 
  for(k=BRD;k<LNZ+BRD;k++){
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
      for(pp=0;pp<NPOP;pp++){
-
+       
        ii = i-(int)c[pp].x;
        jj = j-(int)c[pp].y;
        kk = k-(int)c[pp].z;
-
-       //if(ii>=BRD && ii<LNX+BRD && jj>=BRD && jj<LNY+BRD && kk>=BRD && kk<LNZ+BRD){
        f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
-       //}
+       
+       /*
+       ii = i+(int)c[pp].x;
+       jj = j+(int)c[pp].y;
+       kk = k+(int)c[pp].z;
+       f[IDX(ii,jj,kk)].p[pp]  = rhs_f[IDX(i,j,k)].p[pp];
+       */
      }/* pp */
 
       }/* i */
@@ -268,7 +273,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
       }/* for i,j,k */
 
 #ifdef METHOD_STREAMING
-    sendrecv_borders_pop(rhs_f);
+    sendrecv_borders_pop(rhs_f); 
     streaming(f, rhs_f);
 #endif
 }
@@ -393,7 +398,8 @@ void sendrecv_borders_pop(pop *f){
 
 #ifdef EDGES_AND_CORNERS
 
-  /* First we communicate the 8 corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */
+  /* First we communicate the 8 corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */ 
+  
   brd_size = BRD*BRD*BRD;
 
   for(k=0;k<BRD;k++)
@@ -443,9 +449,12 @@ void sendrecv_borders_pop(pop *f){
 	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)] = xp_ym_zp_corner_pop[IDX_CORNER(i,j,k)];
 	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)] = xm_yp_zp_corner_pop[IDX_CORNER(i,j,k)];
       }
+ 
 
  /* Then we communicate the 12 edges  */
+ 
  /* along x */
+ 
   brd_size = BRD*BRD*LNX;
 
   for(k=0;k<BRD;k++)
@@ -513,7 +522,7 @@ void sendrecv_borders_pop(pop *f){
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){ 
 	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)] = xp_zp_edge_pop[IDX_EDGE_Y(i,j,k)];
-	f[IDX(i+LNY+BRD,j,k)] = xp_zm_edge_pop[IDX_EDGE_Y(i,j,k)];
+	f[IDX(i+LNX+BRD,j,k)] = xp_zm_edge_pop[IDX_EDGE_Y(i,j,k)];
       }
  
  
