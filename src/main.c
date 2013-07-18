@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 
 #ifdef LB_FLUID
-	  sendrecv_borders_pop(p);
+	  sendrecv_borders_pop(p);	 
 #endif
 #ifdef LB_TEMPERATURE
 	  sendrecv_borders_pop(g);

@@ -198,6 +198,8 @@ void streaming(pop *f, pop *rhs_f){
        kk = k-(int)c[pp].z;
        f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
        
+       // if(j==50) fprintf(stderr,"%d %d %d pp %d %e %e\n", ii , jj , kk, pp, f[IDX(i,j,k)].p[pp], m(f[IDX(i,j,k)]) );
+
        /*
        ii = i+(int)c[pp].x;
        jj = j+(int)c[pp].y;
@@ -284,6 +286,14 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 void sendrecv_borders_pop(pop *f){
   int i,j,k,brd_size;
   MPI_Status status1;
+
+#ifdef DEBUG_HARD
+ fprintf(stderr,"before\n");
+ for(k=0;k<LNZ+TWO_BRD;k++)
+    for(j=0;j<LNY+TWO_BRD;j++)
+      for(i=0;i<LNX+TWO_BRD;i++)
+	fprintf(stderr,"%d %d %d %e\n", i , j , k, m(f[IDX(i,j,k)]));
+#endif 
 
 #ifdef METHOD_MYQUICK
   /* if the method is Quick, then  BRD=2 : we have to be careful  when the NX,NY or NZ values are =1 */
@@ -455,7 +465,7 @@ void sendrecv_borders_pop(pop *f){
  
  /* along x */
  
-  brd_size = BRD*BRD*LNX;
+ brd_size = BRD*BRD*(LNX+TWO_BRD);
 
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
@@ -491,7 +501,7 @@ void sendrecv_borders_pop(pop *f){
  
  /* along y */
  
-  brd_size = BRD*BRD*LNY;
+ brd_size = BRD*BRD*(LNY+TWO_BRD);
 
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -528,7 +538,7 @@ void sendrecv_borders_pop(pop *f){
  
  /* along z */
  
-  brd_size = BRD*BRD*LNZ;
+ brd_size = BRD*BRD*(LNZ+TWO_BRD);
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -564,7 +574,14 @@ void sendrecv_borders_pop(pop *f){
  
 #endif
 
-
+#ifdef DEBUG_HARD
+ fprintf(stderr,"after\n");
+ for(k=0;k<LNZ+TWO_BRD;k++)
+    for(j=0;j<LNY+TWO_BRD;j++)
+      for(i=0;i<LNX+TWO_BRD;i++)
+	fprintf(stderr,"%d %d %d %e\n", i , j , k, m(f[IDX(i,j,k)]));
+#endif
+       
 }/* end send rcv */
 
 /*************************************************************/

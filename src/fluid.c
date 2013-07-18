@@ -545,7 +545,7 @@ void add_forcing(){
 
 #ifdef LB_FLUID_FORCING
 
-#ifndef METHOD_FORCING_GUO	  	  
+#ifndef METHOD_FORCING_GUO	  	  	  
 	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
