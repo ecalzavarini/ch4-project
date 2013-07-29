@@ -275,7 +275,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
       }/* for i,j,k */
 
 #ifdef METHOD_STREAMING
-    sendrecv_borders_pop(rhs_f); 
+  //sendrecv_borders_pop(rhs_f); 
     streaming(f, rhs_f);
 #endif
 }

@@ -62,6 +62,11 @@ int main(int argc, char **argv){
 	  add_forcing();
 #endif
 
+
+#ifdef METHOD_STREAMING
+         boundary_conditions_for_streaming();
+#endif
+
 #ifdef LB_FLUID	  
 	  time_stepping(p,rhs_p,old_rhs_p,property.tau_u);
 #endif

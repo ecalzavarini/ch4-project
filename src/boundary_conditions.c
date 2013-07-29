@@ -75,7 +75,7 @@ if(LNX_START == 0){
 #ifdef LB_FLUID_BC_XM_SLIP
 		
 	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
-	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
 #else
 	/* NO SLIP */
 	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
@@ -313,4 +313,109 @@ if(LNY_START == 0){
 
 
 }
+#endif
+
+
+/**********************************************************************************************************/
+/* When STREAMING is active bc shall be implemented in a different way*/
+#ifdef LB_FLUID_BC
+#ifdef METHOD_STREAMING
+void boundary_conditions_for_streaming(){
+
+  int i,j,k,pp;
+  vector vel;
+  my_double rho;
+  pop p_eq,p_neq;
+
+
+sendrecv_borders_pop(rhs_p);
+
+
+
+
+  /************************************/
+
+	/* Y direction */
+  int ii,jj,kk;	
+#ifdef LB_FLUID_BC_Y
+
+  for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+	  ii = i+(int)c[pp].x;
+	  kk = k+(int)c[pp].z;	
+
+if(LNY_END == NY){
+	j = LNY+BRD-1;	 
+	  /* NO SLIP */
+	  rhs_p[IDX(i,j+1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];	
+}
+
+if(LNY_START == 0){
+  j = BRD; 
+	/* NO SLIP */
+         rhs_p[IDX(i,j-1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
+ }
+
+      }/* for pp */
+    }/* for i,k */
+#endif
+
+
+
+
+	/* Y direction */	
+#ifdef LB_TEMPERATURE_BC_Y
+
+  pop g_eq, g_eq_w;
+  my_double effDT, rho2;
+  my_double T_wall;
+  my_double fac;
+
+  /************************/
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
+
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
+
+}
+
+      
+    }
+#endif
+
+
+
+
+}
+#endif
 #endif
