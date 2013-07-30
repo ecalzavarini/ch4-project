@@ -38,7 +38,9 @@ int main(int argc, char **argv){
 
 
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
+#ifndef METHOD_STREAMING
 	  boundary_conditions();
+#endif
 #endif
 	  
 #ifdef LB_FLUID
@@ -62,7 +64,7 @@ int main(int argc, char **argv){
 	  add_forcing();
 #endif
 
-
+ 
 #ifdef METHOD_STREAMING
          boundary_conditions_for_streaming();
 #endif
