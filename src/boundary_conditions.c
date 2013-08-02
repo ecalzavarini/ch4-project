@@ -392,9 +392,9 @@ if(LNY_END == NY){
 	  T_wall = 0.0;
 #endif
 	  /*
-	  vel.x = 0.0
-	  vel.y = 0.0
-	  vel.z = 0.0
+	  vel.x = u[IDX(i,j,k)].x;
+	  vel.y = u[IDX(i,j,k)].y;
+	  vel.z = u[IDX(i,j,k)].z;
 	    rho = 1.0;
 	  p_neq = equilibrium_given_velocity(vel,rho);
 	  p_neq.p[pp] -= p[IDX(i,j,k)].p[pp];

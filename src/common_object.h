@@ -145,6 +145,9 @@ extern int itime;
 extern my_double time_now;
 extern char OutDir[256];
 
+#ifdef TIMING
+extern my_double t1,t2,tick;
+#endif
 
 
 

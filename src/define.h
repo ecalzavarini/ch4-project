@@ -6,6 +6,7 @@
 /* OUTPUT */
 //#define OUTPUT_ASCII
 #define OUTPUT_H5
+#define TIMING
 
 /* GRID */
 #define GRID_REGULAR
@@ -18,24 +19,22 @@
 
 //#define GRID_IRREGULAR_RANDOM
 
-#define EDGES_AND_CORNERS
-
 /* LB */
 #define LB
 
 /* FLUID */
 #define LB_FLUID
-#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_VORTICES 
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
-//#define METHOD_FORCING_GUO
+#define METHOD_FORCING_GUO
 //#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_PENALIZATION
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YP_SLIP                                           
 //#define LB_FLUID_BC_YM_SLIP                         
 //#define LB_FLUID_BC_X                                                     
@@ -47,26 +46,27 @@
 
 /* METHODS for time stepping or convective term */
 //#define METHOD_EXPONENTIAL
-//#define METHOD_STEPPING_EULER
+#define METHOD_STEPPING_EULER
 //#define METHOD_STEPPING_AB2
 //#define METHOD_MIXED
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
-//#define METHOD_MYQUICK
+#define METHOD_MYQUICK
 //#define METHOD_TRAPEZOID
-#define METHOD_STREAMING
+//#define METHOD_STREAMING
+//#define EDGES_AND_CORNERS
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-//#define LB_TEMPERATURE_INITIAL_LINEAR
+#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-//#define LB_TEMPERATURE_BUOYANCY
-//#define LB_TEMPERATURE_BC
-//#define LB_TEMPERATURE_BC_Y
+#define LB_TEMPERATURE_BUOYANCY
+#define LB_TEMPERATURE_BC
+#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
 //#define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_SOURCE

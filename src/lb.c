@@ -200,12 +200,6 @@ void streaming(pop *f, pop *rhs_f){
        
        // if(j==50) fprintf(stderr,"%d %d %d pp %d %e %e\n", ii , jj , kk, pp, f[IDX(i,j,k)].p[pp], m(f[IDX(i,j,k)]) );
 
-       /*
-       ii = i+(int)c[pp].x;
-       jj = j+(int)c[pp].y;
-       kk = k+(int)c[pp].z;
-       f[IDX(ii,jj,kk)].p[pp]  = rhs_f[IDX(i,j,k)].p[pp];
-       */
      }/* pp */
 
       }/* i */

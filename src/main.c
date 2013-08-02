@@ -21,6 +21,11 @@ int main(int argc, char **argv){
 	//	dump_averages();
 	//      exit(1);
 
+
+#ifdef TIMING
+	t1 = MPI_Wtime();
+#endif
+
 	itime=0;
 	for (time_now=property.time_start; time_now <= property.time_end; time_now += property.time_dt){
 	  itime++;
@@ -81,6 +86,18 @@ int main(int argc, char **argv){
 	 hydro_fields();	
 	 dump_averages();
 	}
+
+#ifdef TIMING
+	t2 = MPI_Wtime();
+	tick = MPI_Wtick();
+	if(ROOT){ 
+	 fprintf(stdout,"Total time %e\n",t2-t1);
+	 fprintf(stdout,"Time steps %d\n",itime);
+	 fprintf(stdout,"Time per time step %e\n",(t2-t1)/(double)itime);
+	 fprintf(stdout,"Time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
+	 fprintf(stdout,"Time ticks on this machine %e\n", tick);
+	}
+#endif
 
 #ifdef OUTPUT_H5
        	write_pop_h5();
