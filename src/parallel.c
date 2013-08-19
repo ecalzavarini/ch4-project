@@ -230,7 +230,7 @@ void processor_splitting()
 			}
 
 
-#ifdef EDGES_AND_CORNERS
+#ifdef METHOD_EDGES_AND_CORNERS
 
  /* for the corners */
  me_xp_yp_zp = me_next[IDX_NEXT(  1,  1,  1)];

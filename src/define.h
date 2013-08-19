@@ -46,15 +46,15 @@
 
 /* METHODS for time stepping or convective term */
 //#define METHOD_EXPONENTIAL
-#define METHOD_STEPPING_EULER
+//#define METHOD_STEPPING_EULER
 //#define METHOD_STEPPING_AB2
 //#define METHOD_MIXED
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
-#define METHOD_MYQUICK
+//#define METHOD_MYQUICK
 //#define METHOD_TRAPEZOID
-//#define METHOD_STREAMING
-//#define EDGES_AND_CORNERS
+#define METHOD_STREAMING
+#define METHOD_EDGES_AND_CORNERS
 
 /* TEMPERATURE */
 #define LB_TEMPERATURE

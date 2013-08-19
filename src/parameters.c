@@ -448,7 +448,7 @@ void allocate_fields(){
  if(zp_pop == NULL || zm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_pop\n"); exit(-1);}
 
 
-#ifdef EDGES_AND_CORNERS
+#ifdef METHOD_EDGES_AND_CORNERS
 /* 8 corners */
  xp_yp_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
  xp_yp_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);

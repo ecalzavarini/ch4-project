@@ -400,7 +400,7 @@ void sendrecv_borders_pop(pop *f){
       }
 
 
-#ifdef EDGES_AND_CORNERS
+#ifdef METHOD_EDGES_AND_CORNERS
 
   /* First we communicate the 8 corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */ 
   
