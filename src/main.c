@@ -91,10 +91,11 @@ int main(int argc, char **argv){
 	t2 = MPI_Wtime();
 	tick = MPI_Wtick();
 	if(ROOT){ 
-	 fprintf(stdout,"Total time %e\n",t2-t1);
-	 fprintf(stdout,"Time steps %d\n",itime);
-	 fprintf(stdout,"Time per time step %e\n",(t2-t1)/(double)itime);
-	 fprintf(stdout,"Time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
+	 fprintf(stdout,"Total execution time %e\n",t2-t1);
+	 fprintf(stdout,"Time steps %d\n",itime);	 
+	 fprintf(stdout,"Execution time per time step %e\n",(t2-t1)/(double)itime);
+	 fprintf(stdout,"Execution time per grid point %e\n",(t2-t1)/(double)(NX*NY*NZ));
+	 fprintf(stdout,"Execution time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
 	 fprintf(stdout,"Time ticks on this machine %e\n", tick);
 	}
 #endif

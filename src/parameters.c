@@ -105,7 +105,11 @@ void assign_parameters(){
   sprintf(name,"tau_u");
   property.tau_u = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
+#ifdef METHOD_STREAMING
+  property.nu = (property.tau_u-0.5)/3.0;
+#else
   property.nu = property.tau_u/3.0;
+#endif
   fprintf(stderr,"viscosity %g\n",(double)property.nu);
 #ifdef LB_FLUID_FORCING
   /* forcing Amplitude */
@@ -128,7 +132,11 @@ void assign_parameters(){
   sprintf(name,"tau_t");
   property.tau_t = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
+#ifdef METHOD_STREAMING
+  property.kappa = (property.tau_t-0.5)/3.0;
+#else
   property.kappa = property.tau_t/3.0;
+#endif
   fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
   sprintf(name,"T_bot");
   property.T_bot = read_parameter(name);
@@ -179,7 +187,11 @@ void assign_parameters(){
   sprintf(name,"tau_s");
   property.tau_s = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_s %g\n",(double)property.tau_s);
+#ifdef METHOD_STREAMING
+  property.chi = (property.tau_s-0.5)/3.0;
+#else
   property.chi = property.tau_s/3.0;
+#endif
   fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
 #endif
 
