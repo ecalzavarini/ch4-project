@@ -41,15 +41,16 @@ void initial_conditions(int restart)
 
   
 #ifdef LB_FLUID_INITIAL_VORTICES 
-    fn=0.01;
-    kn=1.0;
+    fn=0.0001;
+    kn=10.0;
     LY=(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;
     LX=(my_double)property.SX; //NX;
     x = (my_double)center_V[IDX(i,j,k)].x;
         
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*( c[pp].y*sin(0.5*kn*two_pi*x/LX) + c[pp].y*sin(kn*two_pi*x/LX) );	
+	  //p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*( c[pp].y*sin(0.5*kn*two_pi*x/LX) + c[pp].y*sin(kn*two_pi*x/LX) );
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*( c[pp].y*sin(0.5*kn*two_pi*x/LX) - c[pp].x*cos(kn*two_pi*y/LY) );	
 #endif  
 
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
@@ -77,6 +78,20 @@ void initial_conditions(int restart)
 
 #endif  
 
+
+#ifdef LB_FLUID_INITIAL_PERTURBATION 
+    fn=1.e-4;
+    kn=16;
+    //Lx=(my_double)property.SY; //NX;
+    //x = (my_double)center_V[IDX(i,j,k)].x;
+    L=(my_double)property.SX; //NX;
+    x = (my_double)center_V[IDX(i,j,k)].x;
+
+        /* along x */
+       	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=   3.0*wgt[pp]*c[pp].y*fn*sin(kn*two_pi*x/L);
+
+#endif 
 
 }/* for i,j,k */
 

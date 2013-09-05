@@ -391,24 +391,26 @@ if(LNY_END == NY){
 #else
 	  T_wall = 0.0;
 #endif
-	  /*
-	  vel.x = u[IDX(i,j,k)].x;
-	  vel.y = u[IDX(i,j,k)].y;
-	  vel.z = u[IDX(i,j,k)].z;
-	    rho = 1.0;
-	  p_neq = equilibrium_given_velocity(vel,rho);
-	  p_neq.p[pp] -= p[IDX(i,j,k)].p[pp];
-	  vel.x *= -1.0;
-	  vel.y *= -1.0;
-	  vel.z *= -1.0;
-	  p_eq = equilibrium_given_velocity(vel,rho);
-	  */
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
 	  rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + fac*wgt[pp]*t[IDX(ii,j,kk)];
+	  /*
+	  vel.x = u[IDX(ii,jj,kk)].x;
+	  vel.y = u[IDX(ii,jj,kk)].y;
+	  vel.z = u[IDX(ii,jj,kk)].z;
+	  rho = t[IDX(ii,jj,kk)];
+	  g_eq = equilibrium_given_velocity(vel,rho);
+	  vel.x *= -1.0;
+	  vel.y *= -1.0;
+	  vel.z *= -1.0;
+	  rho *= fac; 
+	  g_eq_w = equilibrium_given_velocity(vel,rho);
+	  rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]]  + g_eq_w.p[pp];
+	  rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]]  + wgt[pp]*T_wall;
+	  */
 	  }
  }
 
