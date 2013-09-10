@@ -62,7 +62,6 @@ void initial_conditions(int restart)
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
-
 #endif  
 
 
@@ -80,7 +79,7 @@ void initial_conditions(int restart)
 
 
 #ifdef LB_FLUID_INITIAL_PERTURBATION 
-    fn=1.e-4;
+    fn=1.e-2;
     kn=16;
     //Lx=(my_double)property.SY; //NX;
     //x = (my_double)center_V[IDX(i,j,k)].x;
@@ -89,7 +88,8 @@ void initial_conditions(int restart)
 
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=   3.0*wgt[pp]*c[pp].y*fn*sin(kn*two_pi*x/L);
+	  p[IDX(i,j,k)].p[pp] += fn*wgt[pp]*( (2.0*drand48()-1.0)*c[pp].x + (2.0*drand48()-1.0)*c[pp].y + (2.0*drand48()-1.0)*c[pp].z );  
+	    //3.0*wgt[pp]*c[pp].y*fn*sin(kn*two_pi*x/L);
 
 #endif 
 
@@ -163,7 +163,12 @@ void initial_conditions(int restart)
 #endif
 
 #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-	if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
+      if(NZ==1){
+        if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
+      }else{
+	//if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ t[IDX(i,j,k)] += 1.e-1; }else{ t[IDX(i,j,k)] -= 0.25e-1; }
+	t[IDX(i,j,k)] += 1.e-1*sin(10.0*two_pi*center_V[IDX(i, j, k)].x/property.SX)*sin(10.0*two_pi*center_V[IDX(i, j, k)].z/property.SZ);
+      }
 #endif
 
 	/* on the populations */
