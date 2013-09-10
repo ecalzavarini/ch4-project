@@ -218,6 +218,8 @@ void output_h5(){
   fclose(fout);
   }/* end of Xdmf */
 
+  MPI_Barrier(MPI_COMM_WORLD);
+
 }
 
 
