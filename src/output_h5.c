@@ -139,7 +139,7 @@ void output_h5(){
   /* we rename the file */
 
   sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
-  rename (H5FILE_NAME, NEW_H5FILE_NAME);
+  if(ROOT) rename(H5FILE_NAME, NEW_H5FILE_NAME);
 
 
   /** Part 2: we now write the corresponding XDMF data format **/
