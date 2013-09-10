@@ -9,6 +9,7 @@ void output_h5(){
   int RANK = 3;
   char NAME[128];
   char NEW_H5FILE_NAME[128];
+  char XMF_FILE_NAME[128];
   char DATASETNAME[256];
   hid_t file_id, group, edataset, ememspace, hdf5_status;
   hid_t xfer_plist, ret, property_id, efilespace;
@@ -25,6 +26,8 @@ void output_h5(){
   int i;
   int size = (LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
   my_double  *aux;
+  
+  FILE *fout;
 
   aux  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
@@ -137,6 +140,83 @@ void output_h5(){
 
   sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
   rename (H5FILE_NAME, NEW_H5FILE_NAME);
+
+
+  /** Part 2: we now write the corresponding XDMF data format **/
+
+  if(ROOT){
+  sprintf(XMF_FILE_NAME,"%s/field_%d.xmf",OutDir,itime);
+  sprintf(NEW_H5FILE_NAME,"field_%d.h5",itime);
+  size=sizeof(my_double);
+  fout = fopen(XMF_FILE_NAME,"w");
+ 
+  fprintf(fout,"<?xml version=\"1.0\" ?>\n");
+  fprintf(fout,"<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" []>\n");
+  fprintf(fout,"<Xdmf Version=\"2.0\">\n");
+  fprintf(fout,"<Domain>\n");
+  fprintf(fout,"<Grid Name=\"FiniteVolumeLB\" GridType=\"Uniform\">\n");
+  fprintf(fout,"<Topology TopologyType=\"3DSMesh\" NumberOfElements=\"%d %d %d\"/>\n",NZ,NY,NX);
+  fprintf(fout,"<Geometry GeometryType=\"X_Y_Z\">\n");
+  fprintf(fout,"<DataItem Name=\"X\" Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/position_x\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"<DataItem Name=\"Y\" Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/position_y\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"<DataItem Name=\"Z\" Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/position_z\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Geometry>\n");
+
+#ifdef LB_FLUID
+  fprintf(fout,"<Attribute Name=\"velocity_x\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_x\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+
+  fprintf(fout,"<Attribute Name=\"velocity_y\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_y\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+
+  fprintf(fout,"<Attribute Name=\"velocity_z\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_z\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+
+  fprintf(fout,"<Attribute Name=\"density\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/density\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+#endif
+
+#ifdef LB_TEMPERATURE
+  fprintf(fout,"<Attribute Name=\"temperature\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/temperature\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+#endif
+
+#ifdef LB_SCALAR
+  fprintf(fout,"<Attribute Name=\"scalar\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/scalar\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+#endif
+
+  fprintf(fout,"<Time Value=\" %e\" />\n",time_now);
+  fprintf(fout,"</Grid>\n");
+  fprintf(fout,"</Domain>\n");
+  fprintf(fout,"</Xdmf>\n");
+
+  fclose(fout);
+  }/* end of Xdmf */
 
 }
 
