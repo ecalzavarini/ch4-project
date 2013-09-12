@@ -502,7 +502,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   out_all.nux *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuy *= norm/( property.kappa*property.deltaT/property.SY );
   out_all.nuz *= norm/( property.kappa*property.deltaT/property.SY );
+#ifdef LB_TEMPERATURE_BUOYANCY
   out_all.lb  = pow(out_all.eps,5./4.)*pow(out_all.epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+#else
+  out_all.lb  = 0.0; 
+#endif
 
   //norm = 1.0/(my_double)(NY*NZ);
   norm = 1.0/(my_double)(property.SY*property.SZ);
@@ -519,7 +523,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_x[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_x[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+#ifdef LB_TEMPERATURE_BUOYANCY
     ruler_x[i].lb = pow(ruler_x[i].eps,5./4.)*pow(ruler_x[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+#else
+    ruler_x[i].lb = 0.0;
+#endif
   }
 
   //norm = 1.0/(my_double)(NX*NZ);
@@ -537,7 +545,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_y[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_y[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+#ifdef LB_TEMPERATURE_BUOYANCY
     ruler_y[i].lb =  pow(ruler_y[i].eps,5./4.)*pow(ruler_y[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+#else
+    ruler_y[i].lb = 0.0;
+#endif
   }
 
   //norm = 1.0/(my_double)(NX*NY);
@@ -555,7 +567,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     ruler_z[i].nux *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuy *= norm/( property.kappa*property.deltaT/property.SY );
     ruler_z[i].nuz *= norm/( property.kappa*property.deltaT/property.SY );
+#ifdef LB_TEMPERATURE_BUOYANCY
     ruler_z[i].lb =  pow(ruler_z[i].eps,5./4.)*pow(ruler_z[i].epst,-3./4.)*pow(property.gravity_y*property.beta_t,-3./2.);
+#else
+    ruler_z[i].lb = 0.0;
+#endif
+
   }
 #endif
 
