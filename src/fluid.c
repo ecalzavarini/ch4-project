@@ -530,8 +530,9 @@ void build_forcing(){
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
 void add_forcing(){
   int i, j, k, pp;
-  my_double invtau ;
+  my_double invtau = 1.0/property.tau_u;
   pop f_eq;
+  my_double fac = (1.0-0.5*invtau);
   
   vector d;
   my_double ux,uy,uz,cu;
@@ -558,9 +559,9 @@ void add_forcing(){
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
         d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
 
-       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].x*d.x;
-       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].y*d.y;
-       rhs_p[IDX(i,j,k)].p[pp] += 1.0*wgt[pp]*force[IDX(i,j,k)].z*d.z;       
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].x*d.x;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].y*d.y;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].z*d.z;       
 #endif
 
 #endif

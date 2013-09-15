@@ -393,10 +393,12 @@ if(LNY_END == NY){
 #endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].y<0){
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
 	  rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];
+	    }
 	  }
  }
 
@@ -412,10 +414,12 @@ if(LNY_START == 0){
 
 	  
 	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].y>0){
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
-	  rhs_g[IDX(i,j-1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//fac*t[IDX(ii,j,kk)];	    
+	  rhs_g[IDX(i,j-1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];	    
+	    }
 	  }
  }
       
