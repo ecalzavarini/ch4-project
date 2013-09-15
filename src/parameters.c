@@ -93,10 +93,12 @@ void assign_parameters(){
     sprintf(name,"time_dump_field");
     property.time_dump_field = (double)read_parameter(name);
     fprintf(stderr,"Time dump fields: %g\n",property.time_dump_field);
-   
+    if(property.time_dump_field < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_field < property.time_dt , please change it.\n"); exit(-1);}
+
     sprintf(name,"time_dump_diagn");
     property.time_dump_diagn = (double)read_parameter(name);
     fprintf(stderr,"Time dump fields: %g\n",property.time_dump_diagn);
+    if(property.time_dump_diagn < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_diagn < property.time_dt , please change it.\n"); exit(-1);}
 
 
 #ifdef LB_FLUID
