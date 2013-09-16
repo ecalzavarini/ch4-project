@@ -89,15 +89,7 @@ int main(int argc, char **argv){
 
 #ifdef TIMING
 	t2 = MPI_Wtime();
-	tick = MPI_Wtick();
-	if(ROOT){ 
-	 fprintf(stdout,"Total execution time %e\n",t2-t1);
-	 fprintf(stdout,"Time steps %d\n",itime);	 
-	 fprintf(stdout,"Execution time per time step %e\n",(t2-t1)/(double)itime);
-	 fprintf(stdout,"Execution time per grid point %e\n",(t2-t1)/(double)(NX*NY*NZ));
-	 fprintf(stdout,"Execution time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
-	 fprintf(stdout,"Time ticks on this machine %e\n", tick);
-	}
+	measure_time();
 #endif
 
 #ifdef OUTPUT_H5
@@ -105,6 +97,7 @@ int main(int argc, char **argv){
 #endif
 
 	/* Shut down MPI */
+       if(ROOT)fprintf(stdout,"The End\n");
 	MPI_Finalize();
 	return 0;
 }/* end main */

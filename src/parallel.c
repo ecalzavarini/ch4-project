@@ -266,3 +266,24 @@ void processor_splitting()
 
 
 
+void measure_time(){
+
+  FILE* fout;
+  /* t1,t2 and tick are global variables */
+	tick = MPI_Wtick();
+	if(ROOT){ 
+	 remove("run_time.dat");
+         fout = fopen("run_time.dat","w");
+	 fprintf(fout,"Total execution time %e\n",t2-t1);
+	 fprintf(stdout,"Total execution time %e\n",t2-t1);
+	 fprintf(fout,"Time steps %d\n",itime);	 
+	 fprintf(fout,"Execution time per time step %e\n",(t2-t1)/(double)itime);
+	 fprintf(fout,"Execution time per grid point %e\n",(t2-t1)/(double)(NX*NY*NZ));
+	 fprintf(fout,"Execution time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
+	 fprintf(fout,"Time ticks on this machine %e\n", tick);
+	 fprintf(fout,"Number of processes for this run %d\n",nprocs);
+         fprintf(fout,"Execution time per process %e\n",(t2-t1)/(double)nprocs);
+	 fclose(fout);	 
+	}
+
+}

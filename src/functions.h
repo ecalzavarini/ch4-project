@@ -2,6 +2,7 @@
 
 /* parallel.c */
 void initialization_MPI();
+void measure_time();
 
 /* parameters.c */
 my_double read_parameter();
