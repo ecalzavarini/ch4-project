@@ -440,7 +440,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   //norm = 1.0/(my_double)(NY*NZ);
     norm = 1.0/(my_double)(property.SY*property.SZ);
   for (i = 0; i < NX; i++){
-    ruler_x[i].x *= norm;
+    ruler_x[i].x *= 1.0/(my_double)(NY*NZ); //norm;
     ruler_x[i].ene *= norm;
     ruler_x[i].rho *= norm;
     ruler_x[i].ux *= norm; 
@@ -455,7 +455,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   //norm = 1.0/(my_double)(NX*NZ);
   norm = 1.0/(my_double)(property.SX*property.SZ);
   for (i = 0; i < NY; i++){
-    ruler_y[i].y *= norm;
+    ruler_y[i].y *= 1.0/(my_double)(NX*NZ); //norm;
     ruler_y[i].ene *= norm;
     ruler_y[i].rho *= norm;
     ruler_y[i].ux *= norm; 
@@ -470,7 +470,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   //norm = 1.0/(my_double)(NX*NY);
   norm = 1.0/(my_double)(property.SX*property.SY);
   for (i = 0; i < NZ; i++){
-    ruler_z[i].z *= norm;
+    ruler_z[i].z *= 1.0/(my_double)(NX*NY); //norm;
     ruler_z[i].ene *= norm;
     ruler_z[i].rho *= norm;
     ruler_z[i].ux *= norm; 
