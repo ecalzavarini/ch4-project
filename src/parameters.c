@@ -47,8 +47,8 @@ void assign_parameters(){
     mkdir(OutDir, S_IWUSR|S_IXUSR|S_IRUSR);
     fprintf(stderr,"OutDir is %s\n",OutDir);   
 
-    remove("param.out");
-    remove("numbers.out");
+    remove("param.dat");
+    remove("numbers.dat");
     /* read parameters from file */
 
     /* resume */
