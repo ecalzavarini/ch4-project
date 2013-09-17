@@ -65,7 +65,23 @@ void make_grid_rulers(my_double fac){
     grid_ruler_z[i] = (1.-fac)*tanh(grid_ruler_z[i]*atanh(1./(1.-fac)));
     grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
  }
+#endif
 
+#ifdef GRID_REFINED_CHEBYSHEV /* Chebyshev polynomial nodes , from http://en.wikipedia.org/wiki/Chebyshev_nodes */
+  /* x */
+  for(i=0; i< NXG; i++){	
+    grid_ruler_x[NX-i] = 0.5*property.SX*(1.0 + cos((i+0.5)*(one_pi/NXG)) );
+ }
+	
+  /* y */	
+  for(i=0; i< NYG; i++){					    
+     grid_ruler_y[NY-i] = 0.5*property.SY*(1.0 + cos((i+0.5)*(one_pi/NYG)) );
+ }
+
+  /* z */	
+  for(i=0; i< NZG; i++){					    
+     grid_ruler_z[NZ-i] = 0.5*property.SZ*(1.0 + cos((i+0.5)*(one_pi/NZG)) );				  
+ }
 #endif
 
 }
