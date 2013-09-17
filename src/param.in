@@ -1,17 +1,17 @@
 resume 0
 
-NX 101
-NY 50
+NX 101 50
+NY 50 15
 NZ 1
 
 SX 101
 SY 50
 SZ 1
 
-time_dt 1.0
+time_dt 1.0 0.4
 time_start 0.0
-time_end 5000.0
-time_dump_field 100.0
+time_end 8000.0
+time_dump_field 8000.0
 time_dump_diagn 1.0
 
 tau_u 1.0

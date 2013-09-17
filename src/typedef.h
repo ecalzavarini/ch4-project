@@ -133,3 +133,4 @@ typedef struct {
 
 
 #define two_pi 2*3.14159265359
+#define one_pi 3.14159265359
