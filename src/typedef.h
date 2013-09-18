@@ -134,3 +134,14 @@ typedef struct {
 
 #define two_pi 2*3.14159265359
 #define one_pi 3.14159265359
+
+
+#ifdef  METHOD_STREAMING
+#define METHOD_EDGES_AND_CORNERS
+#define METHOD_FORCING_GUO
+#endif
+
+#ifdef METHOD_FINITE_VOLUME
+#define METHOD_STEPPING_EULER
+#define METHOD_MYQUICK
+#endif

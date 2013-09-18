@@ -520,6 +520,8 @@ void build_forcing(){
   t_source[IDX(i,j,k)] = t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
 #endif
 
+  /* here LB_TEMPERATURE_FORCING_RADIATION */
+  /* to be written */
 #endif
 
 
