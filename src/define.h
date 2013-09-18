@@ -34,6 +34,7 @@
 //#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_PENALIZATION
+//#define LB_FLUID_FORCING_DIRECT
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YP_SLIP                                           
@@ -48,8 +49,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-//#define METHOD_FINITE_VOLUME
-#define METHOD_STREAMING
+#define METHOD_FINITE_VOLUME
+//#define METHOD_STREAMING
 
 //#define METHOD_EXPONENTIAL
 //#define METHOD_STEPPING_EULER
@@ -89,3 +90,16 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR
 
 
+
+/***************************************************/
+/* Define dependencies not to be modified          */
+
+#ifdef METHOD_FINITE_VOLUME                                                  
+#define METHOD_STEPPING_EULER                                                 
+#define METHOD_MYQUICK                                                       
+#endif 
+
+#ifdef METHOD_STREAMING                                                         
+#define METHOD_EDGES_AND_CORNERS                                                
+#define METHOD_FORCING_GUO                                                       
+#endif

@@ -482,6 +482,7 @@ void build_forcing(){
       
 #endif
 
+
 #endif
 
 /* From here HERE SOURCE TERM ON SCALAR FIELD */
@@ -535,7 +536,6 @@ void add_forcing(){
   my_double invtau = 1.0/property.tau_u;
   pop f_eq;
   my_double fac = (1.0-0.5*invtau);
-  
   vector d;
   my_double ux,uy,uz,cu;
 
@@ -564,6 +564,17 @@ void add_forcing(){
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].y*d.y;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].z*d.z;       
+#endif
+
+#ifdef  LB_FLUID_FORCING_DIRECT
+      my_double mask;
+      /* small central spot with velocity u=0 */
+      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      ux=uy=uz=0.0;
+      cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
+      if( mask < 10.0 ){       
+	rhs_p[IDX(i,j,k)].p[pp] = (- p[IDX(i,j,k)].p[pp] + wgt[pp])*invtau;
+	  }      
 #endif
 
 #endif
