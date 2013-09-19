@@ -467,6 +467,15 @@ void compute_volumes(){
 	        + coeff_ym[IDX(i, j, k)].p[pp] + coeff_zp[IDX(i, j, k)].p[pp] + coeff_zm[IDX(i, j, k)].p[pp];
 	  fprintf(stdout, "p %d value %e\n",pp,value);
 #endif
+
+
+	  /* If the simulation is 2D we do not want any flux in those directions, therefore we set them to zero */
+	  /* Enrico: A test showed that it has no importance */
+	  /*
+	  if(NX==1){ coeff_xp[IDX(i, j, k)].p[pp] = coeff_xm[IDX(i, j, k)].p[pp] = 0.0;}
+	  if(NY==1){ coeff_yp[IDX(i, j, k)].p[pp] = coeff_ym[IDX(i, j, k)].p[pp] = 0.0;}
+	  if(NZ==1){ coeff_zp[IDX(i, j, k)].p[pp] = coeff_zm[IDX(i, j, k)].p[pp] = 0.0;}
+	  */
  			}/* for pp */	
 	}  /* for i , j , k */
 
