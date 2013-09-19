@@ -8,18 +8,6 @@ void design_lb(){
 	MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
 	MPI_Type_commit(&MPI_pop_type);
 
-	/* speed of sound constants */
-	cs  = 1.0 /sqrt(3.0);
-	cs2 = pow((double)cs,2.0); //1.0 / 3.0;
-	cs4 = pow((double)cs,4.0); //1.0 / 9.0;
-	invcs  = 1.0 / cs;
-	invcs2 = 1.0 / cs2;
-	invcs4 = 1.0 / cs4;
-	twocs2 = 2.0 * cs2;
-	twocs4 = 2.0 * cs4;
-	invtwocs2 = 1.0 / twocs2;
-	invtwocs4 = 1.0 / twocs4;
-
 	/* Settings for D3Q19 */
 	wgt[0] = 1. / 3.;
 	wgt[1] = 1. / 18.;
@@ -87,6 +75,26 @@ void design_lb(){
 	inv[16] = 17;
 	inv[17] = 16;
 	inv[18] = 15;
+
+	/* Speed of sound constants */
+
+	/* just for a check: it shall be = 1 */
+	/*
+	int pp;
+	cs2 = 0.0;
+	for(pp=0;pp<NPOP;pp++) cs2 += wgt[pp]*(c[pp].x*c[pp].x + c[pp].y*c[pp].y + c[pp].z*c[pp].z);
+	fprintf(stderr,"cs2 %e\n",cs2);
+	*/
+	cs  = 1.0 /sqrt(3.0);  /* Why this value? Is this a property of the D3Q19 lattice or just a choice of convenience?*/
+	cs2 = pow((double)cs,2.0); //1.0 / 3.0;
+	cs4 = pow((double)cs,4.0); //1.0 / 9.0;
+	invcs  = 1.0 / cs;
+	invcs2 = 1.0 / cs2;
+	invcs4 = 1.0 / cs4;
+	twocs2 = 2.0 * cs2;
+	twocs4 = 2.0 * cs4;
+	invtwocs2 = 1.0 / twocs2;
+	invtwocs4 = 1.0 / twocs4;
 
 }
 

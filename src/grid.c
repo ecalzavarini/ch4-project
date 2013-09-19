@@ -459,6 +459,14 @@ void compute_volumes(){
 		    fclose(fout);
 	  }
 #endif 
+
+#ifdef DEBUG_HARD
+	  /* check that the sum of the six coefficients sum up to zero :  \Sum_j=1,6 c_i*n_j*S_j/V = 0  */
+	  my_double  value;
+	  value = coeff_xp[IDX(i, j, k)].p[pp] + coeff_xm[IDX(i, j, k)].p[pp] + coeff_yp[IDX(i, j, k)].p[pp] 
+	        + coeff_ym[IDX(i, j, k)].p[pp] + coeff_zp[IDX(i, j, k)].p[pp] + coeff_zm[IDX(i, j, k)].p[pp];
+	  fprintf(stdout, "p %d value %e\n",pp,value);
+#endif
  			}/* for pp */	
 	}  /* for i , j , k */
 
