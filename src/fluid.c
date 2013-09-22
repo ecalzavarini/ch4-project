@@ -4,7 +4,7 @@
 void compute_advection(pop *f, pop *rhs_f){
 
   int i,j,k,pp;
-  my_double adv;
+  my_double adv,aux;
 #ifdef DEBUG
 	char            fnamein[256], fnameout[256];
 	char            name[256] = "NULL";
@@ -103,6 +103,74 @@ void compute_advection(pop *f, pop *rhs_f){
  /* Start QUICK */
 #ifdef METHOD_MYQUICK
 
+#ifdef METHOD_MYQUICK_CARTESIAN
+ /* when the grid is cartesian rectangular, the quick algorithm can be written in a more compact form */ 
+  if(pp>0){
+ if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0){
+   aux= 1.0 + interp2_xp[IDX(i,j,k)] - interp3_xm[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] 
+				      + (aux - interp_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_xm[IDX(i,j,k)])*f[IDX(i-1,j,k)].p[pp] 
+				      + interp4_xm[IDX(i,j,k)]*f[IDX(i-2,j,k)].p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_xm[IDX(i,j,k)] - interp3_xp[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_xp[IDX(i,j,k)])*f[IDX(i+1,j,k)].p[pp] 
+				      - interp4_xp[IDX(i,j,k)]*f[IDX(i+2,j,k)].p[pp] 
+				      - interp_xm[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] 
+				      - (aux - interp_xm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_yp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_yp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0  + interp2_yp[IDX(i,j,k)] - interp3_ym[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      interp_yp[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] 
+				      + (aux - interp_yp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_ym[IDX(i,j,k)])*f[IDX(i,j-1,k)].p[pp] 
+				      + interp4_ym[IDX(i,j,k)]*f[IDX(i,j-2,k)].p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_ym[IDX(i,j,k)] - interp3_yp[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_yp[IDX(i,j,k)])*f[IDX(i,j+1,k)].p[pp] 
+				      - interp4_yp[IDX(i,j,k)]*f[IDX(i,j+2,k)].p[pp] 
+				      - interp_ym[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] 
+				      - (aux - interp_ym[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_zp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_zp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0 + interp2_zp[IDX(i,j,k)] - interp3_zm[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      interp_zp[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] 
+				      + (aux - interp_zp[IDX(i,j,k)] )*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_zm[IDX(i,j,k)])*f[IDX(i,j,k-1)].p[pp] 
+				      + interp4_zm[IDX(i,j,k)]*f[IDX(i,j,k-2)].p[pp]
+				       );
+   }else{
+   aux = 1.0 + interp2_zm[IDX(i,j,k)] - interp3_zp[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_zp[IDX(i,j,k)])*f[IDX(i,j,k+1)].p[pp] 
+				      - interp4_zp[IDX(i,j,k)]*f[IDX(i,j,k+2)].p[pp] 
+				      -interp_zm[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] 
+				      - (aux - interp_zm[IDX(i,j,k)] )*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+}/*end of if pp > 0 */
+#else
+
+ /* The good old one quick, less compact but well tested */
   if(pp>0){
  if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
  if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0)
@@ -253,7 +321,9 @@ void compute_advection(pop *f, pop *rhs_f){
  */
 #endif 
 
-#endif
+
+#endif /* end of my_quick_cartesian*/
+#endif /* end of quick */
 
 #ifdef METHOD_MIXED
 adv=0.0;

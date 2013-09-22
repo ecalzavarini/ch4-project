@@ -26,12 +26,12 @@
 /* FLUID */
 #define LB_FLUID
 //#define LB_FLUID_INITIAL_KOLMOGOROV 
-//#define LB_FLUID_INITIAL_POISEUILLE
+#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
-//#define LB_FLUID_FORCING_POISEUILLE
+#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
@@ -49,8 +49,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 
 //#define METHOD_EXPONENTIAL
 //#define METHOD_STEPPING_EULER
@@ -60,6 +60,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
 //#define METHOD_MYQUICK
+//#define METHOD_MYQUICK_CARTESIAN
 
 //#define METHOD_TRAPEZOID
 
@@ -67,14 +68,14 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
 #define LB_TEMPERATURE_INITIAL_LINEAR
 #define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BUOYANCY
 #define LB_TEMPERATURE_BC
 #define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
@@ -97,6 +98,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #ifdef METHOD_FINITE_VOLUME                                                  
 #define METHOD_STEPPING_EULER                                                 
 #define METHOD_MYQUICK                                                       
+#define METHOD_MYQUICK_CARTESIAN
 #endif 
 
 #ifdef METHOD_STREAMING                                                         
