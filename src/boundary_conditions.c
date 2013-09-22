@@ -204,6 +204,7 @@ if(LNY_START == 0){
 
 
 	/* Y direction */	
+#ifdef LB_TEMPERATURE
 #ifdef LB_TEMPERATURE_BC_Y
 
   pop g_eq, g_eq_w;
@@ -267,7 +268,7 @@ if(LNY_START == 0){
       
     }
 #endif
-
+#endif
 
 
   /*****************************************************************************************/
@@ -368,7 +369,8 @@ if(LNY_START == 0){
 
 
 
-	/* Y direction */	
+	/* Y direction */
+#ifdef LB_TEMPERATURE	
 #ifdef LB_TEMPERATURE_BC_Y
 
   pop g_eq, g_eq_w;
@@ -425,7 +427,7 @@ if(LNY_START == 0){
       
 }
 #endif
-
+#endif
 
 
 
