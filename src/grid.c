@@ -84,6 +84,49 @@ void make_grid_rulers(my_double fac){
  }
 #endif
 
+#ifdef GRID_REFINED_SINH
+/*  Rudy Kunnen spacing 
+     ly = 1.0d0
+     ny = 64
+
+     ny2 = ny/2
+     by=6.5d0
+     ay=0.5d0*ly/SINH(0.5d0*by)
+
+     do 120 j=0,ny2 
+     y(j) = ay*SINH(by*j/(1.0d0*ny))
+120  continue
+
+     do 130 j=ny2+1,ny     
+     y(j) = ly - y(ny-j) 
+130  continue      
+*/
+  fac2=6.5; /* stretching factor */
+
+  /* x */
+  dx=0.5*property.SX/sinh(0.5*fac2);
+  for(i=0; i< ceil(NXG/2)+1; i++) grid_ruler_x[i+1] = dx*sinh(fac2*(i+0.5)/NX);
+  grid_ruler_x[0]=0.0;
+  for(i=1; i< ceil(NXG/2)+1; i++) grid_ruler_x[i] = 0.5*(grid_ruler_x[i+1] + grid_ruler_x[i]);
+  for(i=1; i< ceil(NXG/2)+1; i++) grid_ruler_x[NX-i] = property.SX -  grid_ruler_x[i];
+
+  /* y */		
+  dy=0.5*property.SY/sinh(0.5*fac2);
+  for(i=0; i< ceil(NYG/2)+1; i++) grid_ruler_y[i+1] = dy*sinh(fac2*(i+0.5)/NY);
+  grid_ruler_y[0]=0.0;
+  for(i=1; i< ceil(NYG/2)+1; i++) grid_ruler_y[i] = 0.5*(grid_ruler_y[i+1] + grid_ruler_y[i]);
+  for(i=1; i< ceil(NYG/2)+1; i++) grid_ruler_y[NY-i] = property.SY -  grid_ruler_y[i];
+
+  /* z */		
+  dz=0.5*property.SZ/sinh(0.5*fac2);
+  for(i=0; i< ceil(NZG/2)+1; i++) grid_ruler_z[i+1] = dz*sinh(fac2*(i+0.5)/NZ);
+  grid_ruler_z[0]=0.0;
+  for(i=1; i< ceil(NZG/2)+1; i++) grid_ruler_z[i] = 0.5*(grid_ruler_z[i+1] + grid_ruler_z[i]);
+  for(i=1; i< ceil(NZG/2)+1; i++) grid_ruler_z[NZ-i] = property.SZ -  grid_ruler_z[i];
+
+#endif
+
+
 }
 #endif
 
