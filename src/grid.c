@@ -146,10 +146,10 @@ void read_mesh(){
 	sprintf(fnamein, "mesh.in");
 	fin = fopen(fnamein, "r");
 	if (fin != NULL) {
-		fprintf(stderr, "Mesh file %s has been found!\n", fnamein);
+	  if(ROOT) fprintf(stderr, "Mesh file %s has been found!\n", fnamein);
 	} else {
 
-		fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
+	  if(ROOT) fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
 
 		/* set field to zero */

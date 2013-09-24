@@ -92,6 +92,7 @@ void processor_splitting()
 	int             tnprocs, nleft, ncubic;
 	int             sort3d[3], sort2d[2];
 	int             i, j, k, ami, next, next_x, next_y, next_z;
+	int error=0;
 
 	/* grid processor splitting */
 	LNX = NX;
@@ -122,19 +123,26 @@ void processor_splitting()
 			}
 			if (LNX % 2 != 0 && LNY % 2 != 0 && LNZ % 2 != 0)
 				break;
-		}
+		}/* end of while loop */
+
 		if (nxprocs * nyprocs * nzprocs == nprocs) {
-			if (!me)
-				fprintf(stderr, "good splitting!\n");
-		} else {
-			if (!me)
-				fprintf(stderr, "bad splitting: %d over %d\n", nxprocs * nyprocs * nzprocs, nprocs);
-		}
-		if (!me)
+			fprintf(stderr, "good splitting!\n");
 			fprintf(stderr, "LNX %d LNY %d LNZ %d\n", LNX, LNY, LNZ);
-		if (!me)
 			fprintf(stderr, "nxprocs %d nyprocs %d nzprocs %d total %d\n", nxprocs, nyprocs, nzprocs, nxprocs * nyprocs * nzprocs);
-	}			/* if ROOT */
+		} else {
+				fprintf(stderr, "bad splitting: %d over %d\nAborting.\n", nxprocs * nyprocs * nzprocs, nprocs);
+				error=1;
+		}
+
+	} /* if ROOT */
+
+	/* check for error */
+	MPI_Bcast(&error, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	if(error){
+	  MPI_Finalize();
+	  exit(-1);
+	}
+
 	/* Now broadcast */
 	MPI_Bcast(&LNX, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(&LNY, 1, MPI_INT, 0, MPI_COMM_WORLD);
