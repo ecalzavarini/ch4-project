@@ -57,7 +57,7 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_contiguous(NOUT, MPI_DOUBLE , &MPI_output_type);
  MPI_Type_commit(&MPI_output_type);
  MPI_Op_create( (MPI_User_function *)sum_output, 1, &MPI_SUM_output );
- fprintf(stderr,"--------> NOUT size %d\n",NOUT);
+ if(ROOT) fprintf(stderr,"--------> NOUT size %d\n",NOUT);
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
@@ -102,6 +102,8 @@ void processor_splitting()
 	nxprocs = nyprocs = nzprocs = 1;
 
 	if (ROOT) {
+
+	  /* Try divisibility by 2 */
 		while (nxprocs * nyprocs * nzprocs < nprocs) {
 			sort3d[0] = (LNX % 2 == 0) ? LNX : 0;
 			sort3d[1] = (LNY % 2 == 0) ? LNY : 0;
@@ -121,6 +123,8 @@ void processor_splitting()
 					}
 				}
 			}
+			//fprintf(stderr,"LNX %d , LNY %d , LNZ %d\n",LNX,LNY,LNZ);
+			//fprintf(stderr,"nxprocs %d , nyprocs %d , nzprocs %d\n",nxprocs,nyprocs,nzprocs);
 			if (LNX % 2 != 0 && LNY % 2 != 0 && LNZ % 2 != 0)
 				break;
 		}/* end of while loop */
@@ -130,7 +134,7 @@ void processor_splitting()
 			fprintf(stderr, "LNX %d LNY %d LNZ %d\n", LNX, LNY, LNZ);
 			fprintf(stderr, "nxprocs %d nyprocs %d nzprocs %d total %d\n", nxprocs, nyprocs, nzprocs, nxprocs * nyprocs * nzprocs);
 		} else {
-				fprintf(stderr, "bad splitting: %d over %d\nAborting.\n", nxprocs * nyprocs * nzprocs, nprocs);
+				fprintf(stderr, "bad splitting: expected %d procs but available %d\nAborting.\n", nxprocs * nyprocs * nzprocs, nprocs);
 				error=1;
 		}
 
