@@ -10,7 +10,7 @@
 
 /* GRID */
 //#define GRID_REGULAR
-#define GRID_REFINED
+#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
 //#define GRID_REFINED_CHEBYSHEV
