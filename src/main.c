@@ -96,7 +96,8 @@ int main(int argc, char **argv){
        	write_pop_h5();
 #endif
 
-	/* Shut down MPI */
+	/* Shut down */
+       free_fields();
        if(ROOT)fprintf(stdout,"The End\n");
 	MPI_Finalize();
 	return 0;

@@ -569,3 +569,165 @@ ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
 #endif
 
 }
+
+
+
+/* Free fields */
+void free_fields(){
+
+  free(mesh);
+  free(mesh_flag);
+  free(center_V);
+
+#ifdef GRID_REFINED
+  free(grid_ruler_x);  
+  free(grid_ruler_y);  
+  free(grid_ruler_z);  
+#endif
+
+#ifdef LB
+ free(coeff_xp); 
+ free(coeff_xm); 
+ free(coeff_yp); 
+ free(coeff_ym); 
+ free(coeff_zp); 
+ free(coeff_zm); 
+#endif
+
+
+#if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING)
+ free(interp_xp); 
+ free(interp_xm); 
+ free(interp_yp); 
+ free(interp_ym); 
+ free(interp_zp); 
+ free(interp_zm); 
+ 
+ /* borders my_double */
+ free(xp_scalar);  
+ free(xm_scalar);  
+ free(yp_scalar);  
+ free(ym_scalar);  
+ free(zp_scalar);  
+ free(zm_scalar);  
+
+/* borders vector */
+ free(xp_vector);  
+ free(xm_vector);  
+ free(yp_vector);  
+ free(ym_vector);  
+ free(zp_vector);  
+ free(zm_vector);  
+#endif
+ 
+#ifdef METHOD_MYQUICK
+ free(interp2_xp); 
+ free(interp2_xm); 
+ free(interp2_yp); 
+ free(interp2_ym); 
+ free(interp2_zp); 
+ free(interp2_zm); 
+
+ free(interp3_xp); 
+ free(interp3_xm);
+ free(interp3_yp);
+ free(interp3_ym);
+ free(interp3_zp); 
+ free(interp3_zm); 
+
+ free(interp4_xp); 
+ free(interp4_xm); 
+ free(interp4_yp);
+ free(interp4_ym); 
+ free(interp4_zp); 
+ free(interp4_zm); 
+#endif
+
+
+
+#ifdef LB_FLUID
+ free(p); 
+ free(rhs_p); 
+ free(old_rhs_p); 
+ free(u); 
+ free(dens);  
+
+#ifdef LB_FLUID_FORCING
+ free(force);  
+#endif
+
+ /* borders pop */
+ free(xp_pop); 
+ free(xm_pop);
+ free(yp_pop); 
+ free(ym_pop); 
+ free(zp_pop); 
+ free(zm_pop); 
+
+#ifdef METHOD_EDGES_AND_CORNERS
+/* 8 corners */
+ free(xp_yp_zp_corner_pop);
+ free(xp_yp_zm_corner_pop);
+ free(xp_ym_zp_corner_pop);
+ free(xp_ym_zm_corner_pop);
+ free(xm_yp_zp_corner_pop);
+ free(xm_yp_zm_corner_pop);
+ free(xm_ym_zp_corner_pop);
+ free(xm_ym_zm_corner_pop);
+
+/* 12 edges */
+free(xp_yp_edge_pop); 
+free(xp_ym_edge_pop);
+free(xm_yp_edge_pop);
+free(xm_ym_edge_pop);
+
+free(xp_zp_edge_pop);
+free(xp_zm_edge_pop);
+free(xm_zp_edge_pop);
+free(xm_zm_edge_pop);
+
+free(yp_zp_edge_pop);
+free(yp_zm_edge_pop);
+free(ym_zp_edge_pop);
+free(ym_zm_edge_pop);
+#endif
+
+
+#endif
+
+#ifdef LB_FLUID
+ free(ruler_x_local);
+ free(ruler_y_local);
+ free(ruler_z_local);
+ free(ruler_x);
+ free(ruler_y);
+ free(ruler_z);
+ free(ruler_x_running);
+ free(ruler_y_running);
+ free(ruler_z_running);
+
+#endif
+
+#ifdef LB_TEMPERATURE
+ free(g);
+ free(rhs_g);
+ free(old_rhs_g);
+ free(t);
+
+#ifdef LB_TEMPERATURE_FORCING
+ free(t_source);
+#ifdef LB_TEMPERATURE_MELTING
+ free(liquid_frac);  
+ free(liquid_frac_old);  
+#endif
+#endif
+#endif
+
+#ifdef LB_SCALAR
+ free(h); 
+ free(rhs_h);  
+ free(old_rhs_h);  
+ free(s);  
+#endif
+
+}
