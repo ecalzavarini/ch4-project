@@ -33,7 +33,10 @@ void compute_advection(pop *f, pop *rhs_f){
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
- 	for(pp=0;pp<NPOP;pp++){
+	/* population 0 does not advect anyhow*/
+	rhs_f[IDX(i,j,k)].p[0] = 0.0;
+	/* now taking care of pop 1 to 18 */
+ 	for(pp=1;pp<NPOP;pp++){
 
 	  adv=0.0;
 
@@ -105,7 +108,7 @@ void compute_advection(pop *f, pop *rhs_f){
 
 #ifdef METHOD_MYQUICK_CARTESIAN
  /* when the grid is cartesian rectangular, the quick algorithm can be written in a more compact form */ 
-  if(pp>0){
+ //if(pp>0){
  if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0){
    aux= 1.0 + interp2_xp[IDX(i,j,k)] - interp3_xm[IDX(i,j,k)];
@@ -167,11 +170,11 @@ void compute_advection(pop *f, pop *rhs_f){
 				       );
    }
  }
-}/*end of if pp > 0 */
+ //}/*end of if pp > 0 */
 #else
 
  /* The good old one quick, less compact but well tested */
-  if(pp>0){
+	  //if(pp>0){
  if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
  if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_xp[IDX(i,j,k)].p[pp]*( interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_xp[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] );
@@ -213,7 +216,7 @@ void compute_advection(pop *f, pop *rhs_f){
  else
    adv += coeff_zm[IDX(i,j,k)].p[pp]*( interp3_zm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_zm[IDX(i,j,k)] + interp4_zm[IDX(i,j,k)])*f[IDX(i,j,k-1)].p[pp] -interp4_zm[IDX(i,j,k)]*f[IDX(i,j,k-2)].p[pp] );	  
    }
-}/*end of if pp > 0 */
+ //}/*end of if pp > 0 */
 
  //#define GRID_UNIT_EQUISPACED 
 #ifdef GRID_UNIT_EQUISPACED
