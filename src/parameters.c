@@ -450,6 +450,11 @@ void allocate_fields(){
  force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(force == NULL){ fprintf(stderr,"Not enough memory to allocate force\n"); exit(-1);}
  set_to_zero_vector( force,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+ landscape  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(landscape == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
+ set_to_zero_my_double( landscape,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
 #endif
 
  /* borders pop */
@@ -659,7 +664,10 @@ void free_fields(){
  free(dens);  
 
 #ifdef LB_FLUID_FORCING
- free(force);  
+ free(force); 
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+ free(landscape);
+#endif 
 #endif
 
  /* borders pop */

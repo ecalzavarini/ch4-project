@@ -126,6 +126,9 @@ my_double *dens;
 vector *u;
 #ifdef LB_FLUID_FORCING
 vector *force;
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+my_double *landscape;
+#endif
 #endif
 #endif
 

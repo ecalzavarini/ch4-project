@@ -9,12 +9,12 @@
 #define TIMING
 
 /* GRID */
-//#define GRID_REGULAR
-#define GRID_REFINED /* the default refinement is TANH */ 
+#define GRID_REGULAR
+//#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
 //#define GRID_REFINED_CHEBYSHEV
-#define GRID_REFINED_SINH
+//#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
 #define GRID_REFINED_Y
 //#define GRID_REFINED_Z
@@ -30,10 +30,11 @@
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
-//#define LB_FLUID_FORCING_POISEUILLE
+#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
+//#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
 #define LB_FLUID_BC
@@ -69,16 +70,16 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-#define LB_TEMPERATURE_BUOYANCY
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y
+//#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
 //#define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_SOURCE
@@ -100,7 +101,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define METHOD_MYQUICK_CARTESIAN
 #endif 
 
-#ifdef METHOD_STREAMING                                                         
-#define METHOD_EDGES_AND_CORNERS                                                
-#define METHOD_FORCING_GUO                                                       
+#ifdef METHOD_STREAMING                                                  
+#define METHOD_EDGES_AND_CORNERS                                        
+#define METHOD_FORCING_GUO                                              
 #endif
