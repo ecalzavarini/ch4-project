@@ -623,6 +623,9 @@ void add_forcing(){
   my_double fac = (1.0-0.5*invtau);
   vector d;
   my_double ux,uy,uz,cu;
+  vector vel;
+  my_double rho;
+  pop p_eq;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -655,10 +658,14 @@ void add_forcing(){
       my_double mask;
       /* small central spot with velocity u=0 */
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      ux=uy=uz=0.0;
-      cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
-      if( mask < 10.0 ){       
-	rhs_p[IDX(i,j,k)].p[pp] = (- p[IDX(i,j,k)].p[pp] + wgt[pp])*invtau;
+      vel.x = 0.0;
+      vel.y = 0.0;
+      vel.z = 0.0;
+      rho = 1.0;
+      p_eq = equilibrium_given_velocity(vel,rho);
+      if( sqrt(mask) < 10.0 ){
+	/* this implementation works only when METHOD_EULER is used */
+	rhs_p[IDX(i,j,k)].p[pp] =  invtau*(p[IDX(i,j,k)].p[pp] -  p_eq.p[pp]);
 	  }      
 #endif
 
