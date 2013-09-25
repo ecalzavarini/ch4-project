@@ -1,0 +1,37 @@
+resume 1
+
+NX 256
+NY 128
+NZ 1
+
+SX 10240
+SY 2560
+SZ 1
+
+time_dt 0.2
+time_start 0.0
+time_end 1000.0
+time_dump_field 200.0
+time_dump_diagn 2.0
+
+tau_u 0.25
+
+Amp_x 0.01
+Amp_y 0.0
+Amp_z 0.0
+
+tau_t 0.25
+T_bot  1.
+T_top -1.
+T_ref 0.0
+
+beta_t 0.00020697625  0.0000827905   0.000662324     0.00026
+beta2_t 0.0
+
+gravity_x 0.0
+gravity_y 1.0
+gravity_z 0.0
+
+T_solid 1.001
+latent_heat 1
+specific_heat 1

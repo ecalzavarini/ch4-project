@@ -1,0 +1,1 @@
+p 'velocity_averages.dat' u ($1*0.433):(log($2)) 
