@@ -9,11 +9,12 @@
 #define TIMING
 
 /* GRID */
-//#define GRID_REGULAR
-#define GRID_REFINED
+#define GRID_REGULAR
+//#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
-#define GRID_REFINED_CHEBYSHEV
+//#define GRID_REFINED_CHEBYSHEV
+//#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
 #define GRID_REFINED_Y
 //#define GRID_REFINED_Z
@@ -33,6 +34,7 @@
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
+//#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
 #define LB_FLUID_BC
@@ -60,6 +62,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
 //#define METHOD_MYQUICK
+//#define METHOD_MYQUICK_CARTESIAN
 
 //#define METHOD_TRAPEZOID
 
@@ -83,12 +86,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION
 //#define LB_TEMPERATURE_MELTING
-//#define KALYAN_BC
-
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
 //#define LB_SCALAR
-
 
 
 /***************************************************/
@@ -97,9 +97,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #ifdef METHOD_FINITE_VOLUME                                                  
 #define METHOD_STEPPING_EULER                                                 
 #define METHOD_MYQUICK                                                       
+#define METHOD_MYQUICK_CARTESIAN
 #endif 
 
-#ifdef METHOD_STREAMING                                                         
-#define METHOD_EDGES_AND_CORNERS                                                
-#define METHOD_FORCING_GUO                                                       
+#ifdef METHOD_STREAMING                                                  
+#define METHOD_EDGES_AND_CORNERS                                        
+#define METHOD_FORCING_GUO                                              
 #endif
