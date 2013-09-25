@@ -1320,3 +1320,37 @@ void prepare_boundary_conditions(){
 
 }
 #endif
+
+
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+void read_landscape(){
+
+
+	char            fnamein[256], fnameout[256];
+	char            name[256] = "NULL";
+	FILE           *fin, *fout;
+	int             i, j, k;
+
+#ifdef GRID_REFINED
+	my_double stretch=0.98;
+#endif
+	sprintf(fnamein, "landscape.in");
+	fin = fopen(fnamein, "r");
+	if (fin != NULL) {
+	  if(ROOT) fprintf(stderr, "Landscape file %s has been found!\n", fnamein);
+	} else {
+
+	  if(ROOT) fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
+
+
+		/* set field to zero */
+		for (k =0; k < LNZ+TWO_BRD; k++)
+			for (j =0; j < LNY+TWO_BRD; j++)
+				for (i = 0; i < LNX+TWO_BRD; i++) {
+
+				  if( sqrt(pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)) < 1)
+				  landscape[IDX(i, j, k)] = 1.0;
+				}
+
+}
+#endif
