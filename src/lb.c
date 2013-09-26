@@ -221,6 +221,13 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
   my_double dt_over_tau,fac1,fac2;
   my_double rho1,rho2;
 
+  /* useful constants for time advancing */
+#ifdef METHOD_EXPONENTIAL
+  dt_over_tau = property.time_dt/tau;
+  fac1 = exp(-dt_over_tau);
+  fac2 =1.0/(1.0 + dt_over_tau); 
+#endif
+
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
@@ -228,8 +235,6 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 #ifdef DEBUG_HARD
 	f_eq=equilibrium(f,i,j,k);
 #endif
-	dt_over_tau = property.time_dt/tau;
-        fac1 = exp(-dt_over_tau);
       
 
 	for(pp=0;pp<NPOP;pp++){
@@ -238,8 +243,12 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 #ifdef METHOD_EXPONENTIAL
 	  /* my recipe a.k.a.  Integrating factor method (Lawson 1967) */
 	  // f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
+
 	  /* Exponential Euler Method a.k.a. Exponential time differencing (Certaine 1960)*/
-	  f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
+	     f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
+
+	  /* IMEX’ (Implicit-Explicit) or semi-implicit  Ascher, Ruuth & Wetton (1995) */
+	  //f[IDX(i,j,k)].p[pp] =  fac2*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
 #else
           f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];	
 #endif
@@ -254,7 +263,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 	  //fprintf(stderr,"itime = %d\n",itime);
 #ifdef METHOD_EXPONENTIAL
 	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
-	  /* S. M. Cox and P. C. Matthews. Exponential Time Dierencing for Sti Systems.
+	  /* S. M. Cox and P. C. Matthews. Exponential Time Differencing for Stiff Systems.
 	     J. Comput. Phys., 176:430{455, 2002. */
 	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
 	  else
