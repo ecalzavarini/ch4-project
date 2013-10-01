@@ -1,6 +1,6 @@
 #CC=mpicc 
-CC=h5pcc #-DH5_USE_16_API
-CFLAGS= -Wall #-g #-pg 
+CC=h5pcc 
+CFLAGS= -Wall -O3 # -pg #-g  
 LFLAGS= -lm -lhdf5
 SOURCES= parallel.c grid.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c output.c output_h5.c melting.c
 OBJECTS=$(SOURCES:.c=.o)
