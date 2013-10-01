@@ -117,6 +117,7 @@ if(LNY_END == NY){
 #endif
 #else
 	/* NOSLIP */
+	/*
 	  vel.x = u[IDX(i,j,k)].x;
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
@@ -127,6 +128,7 @@ if(LNY_END == NY){
 	  vel.y *= -1.0;
 	  vel.z *= -1.0;
 	  p_eq = equilibrium_given_velocity(vel,rho);
+	*/
        	  //f[IDX(i,j+1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 
        	p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
@@ -155,7 +157,7 @@ if(LNY_START == 0){
 #endif
 #else
 	/* NO SLIP */
-
+	/*
 	  vel.x = u[IDX(i,j,k)].x;
 	  vel.y = u[IDX(i,j,k)].y;
 	  vel.z = u[IDX(i,j,k)].z;
@@ -166,6 +168,7 @@ if(LNY_START == 0){
 	  vel.y *= -1.0;
 	  vel.z *= -1.0;
 	  p_eq = equilibrium_given_velocity(vel,rho);
+	*/
 	  //f[IDX(i,j-1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 	  
 	  p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];

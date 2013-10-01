@@ -9,6 +9,7 @@ my_double read_parameter();
 void assign_parameters();
 void processor_splitting();
 void allocate_fields();
+void free_fields();
 
 /* grid.c */
 void read_mesh();
