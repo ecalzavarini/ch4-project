@@ -25,6 +25,7 @@ void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,my_double tau);
 
 /* boundary_conditions.c */
 void boundary_conditions();
+void boundary_and_pbc_conditions_for_streaming();
 
 /* initial_conditions.c */
 void initial_conditions(int restart);

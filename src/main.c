@@ -12,10 +12,6 @@ int main(int argc, char **argv){
 	read_mesh();
 	compute_volumes();
 	compute_interpolation_coefficients();
-
-	//#ifdef LB_FLUID_BC
-	//	prepare_boundary_conditions();
-	//#endif
 	initial_conditions(resume); 
 	hydro_fields();
 	//	dump_averages();
@@ -31,6 +27,7 @@ int main(int argc, char **argv){
 	  itime++;
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 
+#ifndef METHOD_STREAMING
 #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);	 
 #endif
@@ -43,7 +40,7 @@ int main(int argc, char **argv){
 
 
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
-#ifndef METHOD_STREAMING
+
 	  boundary_conditions();
 #endif
 #endif
@@ -69,10 +66,8 @@ int main(int argc, char **argv){
 	  add_forcing();
 #endif
 
-#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC) 
 #ifdef METHOD_STREAMING
-         boundary_conditions_for_streaming();
-#endif
+         boundary_and_pbc_conditions_for_streaming();
 #endif
 
 #ifdef LB_FLUID	  

@@ -16,7 +16,7 @@
 //#define GRID_REFINED_CHEBYSHEV
 //#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
-#define GRID_REFINED_Y
+//#define GRID_REFINED_Y
 //#define GRID_REFINED_Z
 
 //#define GRID_IRREGULAR_RANDOM
