@@ -667,7 +667,10 @@ void add_forcing(){
       p_eq = equilibrium_given_velocity(vel,rho);
       if( sqrt(mask) < 10.0 ){
 	/* this implementation works only when METHOD_EULER is used */
-	rhs_p[IDX(i,j,k)].p[pp] =  invtau*(p[IDX(i,j,k)].p[pp] -  p_eq.p[pp]);
+	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
+	/* alterantively */
+	//rhs_p[IDX(i,j,k)].p[pp] =  invtau*(p[IDX(i,j,k)].p[pp] -  p_eq.p[pp]);
+
 	  }      
 #endif
 
