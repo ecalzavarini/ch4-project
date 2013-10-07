@@ -41,11 +41,14 @@ if(LNX_END == NX){
 
 #ifdef LB_FLUID_BC_XP_OUTLET
 	if(pp==0){
-	  vel.x = 0.0;
-	  vel.y = 0.0;
-	  vel.z = 0.0;
-	    rho = 1.0;
+	  vel.x =  u[IDX(i, j, k)].x;
+	  vel.y =  u[IDX(i, j, k)].y;
+	  vel.z =  u[IDX(i, j, k)].z;
+	    rho = dens[IDX(i, j, k)];
 	  p[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+          p[IDX(i+2,j,k)] = p[IDX(i+1,j,k)];
+#endif
 	}
 #else 
 #ifdef LB_FLUID_BC_XP_SLIP
@@ -55,6 +58,9 @@ if(LNX_END == NX){
 #else
 	/* NOSLIP */
 	p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+        p[IDX(i+2,j,k)].p[pp] = p[IDX(i-1,j,k)].p[inv[pp]];
+#endif
 #endif
 #endif
 
@@ -64,12 +70,16 @@ if(LNX_START == 0){
   i = BRD; 
 
 #ifdef LB_FLUID_BC_XM_INLET
+  /* the following if is to compute the equilibrium only one time */
 	if(pp==0){
-	  vel.x = 0.01;
-	  vel.y = 0.0;
-	  vel.z = 0.0;
+	  vel.x = property.Amp_x;
+	  vel.y = property.Amp_y;
+	  vel.z = property.Amp_z;
 	    rho = 1.0;
 	  p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+	  p[IDX(i-2,j,k)] = p[IDX(i-1,j,k)];
+#endif
 	}
 #else
 #ifdef LB_FLUID_BC_XM_SLIP
@@ -79,6 +89,9 @@ if(LNX_START == 0){
 #else
 	/* NO SLIP */
 	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+        p[IDX(i-2,j,k)].p[pp] = p[IDX(i+1,j,k)].p[inv[pp]];
+#endif
 #endif
 #endif
 
