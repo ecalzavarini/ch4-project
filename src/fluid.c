@@ -626,13 +626,36 @@ void add_forcing(){
   vector d;
   my_double ux,uy,uz,cu;
   vector vel;
-  my_double rho;
-  pop p_eq;
+  my_double rho ,temp;
+  pop p_eq , g_eq;
+  my_double mask;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-      
+
+	/* Here I prepare equilibrium pop for the direct forcing */
+#ifdef  LB_FLUID_FORCING_DIRECT
+      /* small central spot with velocity u=0 */
+      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      vel.x = 0.0;
+      vel.y = 0.0;
+      vel.z = 0.0;
+      rho = 1.0;
+      p_eq = equilibrium_given_velocity(vel,rho);
+#endif      
+
+#ifdef  LB_TEMPERATURE_FORCING_DIRECT
+      /* small central spot with velocity u=0 */
+      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      vel.x = u[IDX(i,j,k)].x;
+      vel.y = u[IDX(i,j,k)].y;
+      vel.z = u[IDX(i,j,k)].z;
+      temp = property.T_bot;
+      g_eq = equilibrium_given_velocity(vel,temp);
+#endif
+
+      /* start loop on populations */
 	for (pp=0; pp<NPOP; pp++){
 	/* forcing */
 
@@ -657,20 +680,11 @@ void add_forcing(){
 #endif
 
 #ifdef  LB_FLUID_FORCING_DIRECT
-      my_double mask;
-      /* small central spot with velocity u=0 */
-      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      vel.x = 0.0;
-      vel.y = 0.0;
-      vel.z = 0.0;
-      rho = 1.0;
-      p_eq = equilibrium_given_velocity(vel,rho);
       if( sqrt(mask) < 10.0 ){
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
 	/* alterantively */
 	//rhs_p[IDX(i,j,k)].p[pp] =  invtau*(p[IDX(i,j,k)].p[pp] -  p_eq.p[pp]);
-
 	  }      
 #endif
 
@@ -679,6 +693,15 @@ void add_forcing(){
 #ifdef LB_TEMPERATURE_FORCING
        /* Not Guo here ? */
 	    rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+#endif
+
+#ifdef  LB_TEMPERATURE_FORCING_DIRECT
+      if( sqrt(mask) < 10.0 ){
+	/* this implementation works only when METHOD_EULER is used */
+	rhs_g[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - g[IDX(i,j,k)].p[pp] )/property.time_dt;
+	/* alterantively */
+	//rhs_g[IDX(i,j,k)].p[pp] =  invtau*(g[IDX(i,j,k)].p[pp] -  g_eq.p[pp]);
+	  }      
 #endif
 
 	}/* pp */
