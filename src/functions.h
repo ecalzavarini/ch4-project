@@ -15,6 +15,7 @@ void free_fields();
 void read_mesh();
 void compute_volumes();
 void compute_interpolation_coefficients();
+void read_landscape();
 
 /* lb.c */
 void design_lb();
