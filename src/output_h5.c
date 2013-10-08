@@ -127,6 +127,13 @@ void output_h5(){
  H5Dclose(edataset);
 #endif
 
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+ edataset = H5Dcreate(group, "landscape", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, landscape);
+ H5Dclose(edataset);
+#endif
+
+
   MPI_Barrier(MPI_COMM_WORLD);
       
   H5Sclose(efilespace);
@@ -206,6 +213,14 @@ void output_h5(){
   fprintf(fout,"<Attribute Name=\"scalar\" AttributeType=\"Scalar\" Center=\"Node\">\n");
   fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
   fprintf(fout,"%s:/euler/scalar\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+#endif
+
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+  fprintf(fout,"<Attribute Name=\"landscape\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/landscape\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
 #endif
@@ -320,7 +335,6 @@ void write_pop_h5(){
   H5Dclose(edataset);
 #endif
 
-
   MPI_Barrier(MPI_COMM_WORLD);
       
   H5Sclose(efilespace);
@@ -413,7 +427,6 @@ void read_pop_h5(){
   ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, h);
   H5Dclose(edataset);
 #endif
-
 
   MPI_Barrier(MPI_COMM_WORLD);
       
