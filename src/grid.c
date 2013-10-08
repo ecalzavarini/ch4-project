@@ -1332,6 +1332,8 @@ void read_landscape(){
 	char            name[256] = "NULL";
 	FILE           *fin, *fout;
 	int             i, j, k;
+	my_double  fac;
+	int count;
 
 	sprintf(fnamein, "landscape.in");
 	fin = fopen(fnamein, "r");
@@ -1351,13 +1353,14 @@ void read_landscape(){
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
 	  */
-		for (k =0; k < LNZ+TWO_BRD; k++)
-			for (j =0; j < LNY+TWO_BRD; j++)
-				for (i = 0; i < LNX+TWO_BRD; i++) {
-				  if( sqrt(pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)) < 10)
-				  landscape[IDX(i, j, k)] = 1.0;
-				  else 
-				  landscape[IDX(i, j, k)] = 0.0;
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  //if( i%16 == 0.0){ fac = property.SY/4.0*drand48()}
+				  //   if(center_V[IDX(i,j, k)].y < fac) 
+				  if(i== 32 && j==32 )
+					landscape[IDX(i, j, k)] = 1.0;				      
 				}
 
 
