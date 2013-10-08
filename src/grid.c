@@ -1343,11 +1343,10 @@ void read_landscape(){
 	  if(ROOT) fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
 
-		/* set field to zero */
+		/* Cylinder */
 		for (k =0; k < LNZ+TWO_BRD; k++)
 			for (j =0; j < LNY+TWO_BRD; j++)
 				for (i = 0; i < LNX+TWO_BRD; i++) {
-
 				  if( sqrt(pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)) < 1)
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
