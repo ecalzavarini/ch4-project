@@ -9,13 +9,16 @@ int main(int argc, char **argv){
 #ifdef LB
 	design_lb();
 #endif
-	read_mesh();
+	read_mesh();  /* the mesh is read */
 	compute_volumes();
 	compute_interpolation_coefficients();
 	initial_conditions(resume); 
 	hydro_fields();
 	//	dump_averages();
 	//      exit(1);
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+	read_landscape(); /* is there any topography ? */
+#endif
 
 
 #ifdef TIMING

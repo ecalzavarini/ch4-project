@@ -251,8 +251,10 @@ void read_mesh(){
 	fclose(fout);
 
 #endif
+}/* end of read mesh */
 
-}
+
+
 /**************************************/
 /* Useful functions on vectors        */
 
@@ -1331,9 +1333,6 @@ void read_landscape(){
 	FILE           *fin, *fout;
 	int             i, j, k;
 
-#ifdef GRID_REFINED
-	my_double stretch=0.98;
-#endif
 	sprintf(fnamein, "landscape.in");
 	fin = fopen(fnamein, "r");
 	if (fin != NULL) {
@@ -1344,12 +1343,24 @@ void read_landscape(){
 
 
 		/* Cylinder */
+	  /*
 		for (k =0; k < LNZ+TWO_BRD; k++)
 			for (j =0; j < LNY+TWO_BRD; j++)
 				for (i = 0; i < LNX+TWO_BRD; i++) {
 				  if( sqrt(pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)) < 1)
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
+	  */
+		for (k =0; k < LNZ+TWO_BRD; k++)
+			for (j =0; j < LNY+TWO_BRD; j++)
+				for (i = 0; i < LNX+TWO_BRD; i++) {
+				  if( sqrt(pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)) < 10)
+				  landscape[IDX(i, j, k)] = 1.0;
+				  else 
+				  landscape[IDX(i, j, k)] = 0.0;
+				}
 
+
+}
 }
 #endif

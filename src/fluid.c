@@ -680,7 +680,12 @@ void add_forcing(){
 #endif
 
 #ifdef  LB_FLUID_FORCING_DIRECT
+
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+       if(landscape[IDX(i, j, k)]>0.0){
+#else
       if( sqrt(mask) < 10.0 ){
+#endif
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
 	/* alterantively */
