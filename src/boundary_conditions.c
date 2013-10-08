@@ -25,7 +25,7 @@ void boundary_conditions(){
 
   int i,j,k,pp;
   vector vel;
-  my_double rho;
+  my_double rho,fac;
   pop p_eq,p_neq;
 
 
@@ -38,18 +38,32 @@ void boundary_conditions(){
 
 if(LNX_END == NX){
 	i = LNX+BRD-1;
-
+	
 #ifdef LB_FLUID_BC_XP_OUTLET
+	
 	if(pp==0){
-	  vel.x =  u[IDX(i, j, k)].x;
-	  vel.y =  u[IDX(i, j, k)].y;
-	  vel.z =  u[IDX(i, j, k)].z;
-	    rho = dens[IDX(i, j, k)];
+	  vel.x = u[IDX(i, j, k)].x;
+	  vel.y = u[IDX(i, j, k)].y;
+	  vel.z = u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
 	  p[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+	  //p[IDX(i+1,j,k)] = p[IDX(i,j,k)];
 #ifdef METHOD_MYQUICK
-          p[IDX(i+2,j,k)] = p[IDX(i+1,j,k)];
+	  p[IDX(i+2,j,k)] = p[IDX(i+1,j,k)];
+	  //p[IDX(i+2,j,k)] = p[IDX(i-1,j,k)];
 #endif
-	}
+	/*
+          rho = 1.0;
+	  fac = 2.0*(rho)/dens[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) p[IDX(i+1,j,k)].p[pp] =  fac*p[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK
+	  fac = 2.0*(rho)/dens[IDX(i-1,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) p[IDX(i+2,j,k)].p[pp] =  fac*p[IDX(i-1,j,k)].p[pp];
+
+#endif
+	*/
+	  
+	}	  
 #else 
 #ifdef LB_FLUID_BC_XP_SLIP
 
@@ -81,6 +95,7 @@ if(LNX_START == 0){
 	  p[IDX(i-2,j,k)] = p[IDX(i-1,j,k)];
 #endif
 	}
+	
 #else
 #ifdef LB_FLUID_BC_XM_SLIP
 		
@@ -113,6 +128,20 @@ if(LNX_START == 0){
 
 if(LNY_END == NY){
 	j = LNY+BRD-1; 
+
+#ifdef LB_FLUID_BC_YP_OUTLET
+	if(pp==0){
+	  vel.x =  u[IDX(i, j, k)].x;
+	  vel.y =  u[IDX(i, j, k)].y;
+	  vel.z =  u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+          p[IDX(i,j+2,k)] = p[IDX(i,j+1,k)];
+#endif
+	}
+#else
+
 #ifdef LB_FLUID_BC_YP_SLIP
 	/*
        	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
@@ -150,7 +179,8 @@ if(LNY_END == NY){
 #endif
 
 #endif
-}
+#endif
+ }
 
 if(LNY_START == 0){
   j = BRD; 
