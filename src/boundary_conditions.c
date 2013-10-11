@@ -256,7 +256,7 @@ if(LNY_START == 0){
   pop g_eq, g_eq_w;
   my_double effDT, rho2;
   my_double T_wall;
-  my_double fac;
+  // my_double fac;
 
   /************************/
 
