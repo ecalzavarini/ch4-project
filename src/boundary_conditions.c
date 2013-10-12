@@ -314,6 +314,37 @@ if(LNY_START == 0){
       
     }
 #endif
+ 
+#ifdef LB_TEMPERATURE_BC_X
+#ifdef LB_TEMPERATURE_BC_X_NOFLUX
+ /* now along X , the default is insultaing BC*/
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNX_END == NX){
+
+ 	  i = LNX+BRD-1; 
+
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i+1,j,k)].p[pp] =  g[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK	  
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i+2,j,k)].p[pp] =  g[IDX(i-1,j,k)].p[pp];
+#endif
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+	
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i-1,j,k)].p[pp] =  g[IDX(i,j,k)].p[pp];     
+#ifdef METHOD_MYQUICK 	  
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i-2,j,k)].p[pp] =  g[IDX(i+1,j,k)].p[pp];
+#endif
+ }      
+    }
+#endif
+#endif
+
 #endif
 
 
