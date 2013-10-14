@@ -404,7 +404,7 @@ void boundary_and_pbc_conditions_for_streaming(){
   vector vel;
   my_double rho;
   pop p_eq,p_neq;
-
+  int ii,jj,kk;	
 
   /* communications to be done in any case  (especially for pbc)*/
 
@@ -421,9 +421,36 @@ sendrecv_borders_pop(rhs_h);
 #endif
 
 
+
 /************************************/
-	/* Y direction */
-  int ii,jj,kk;	
+	/* X direction */ 
+#ifdef LB_FLUID_BC_X
+
+  for (j = 0; j < LNY + TWO_BRD; j++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+
+if(LNX_END == NX){
+	i = LNX+BRD-1;	 
+	  /* NO SLIP */
+	  rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
+}
+
+if(LNX_START == 0){
+  i = BRD; 
+	/* NO SLIP */
+         rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
+ }
+
+      }/* for pp */
+    }/* for j,k */
+#endif
+
+/************************************/
+	/* Y direction */ 
 #ifdef LB_FLUID_BC_Y
 
   for (i = 0; i < LNX + TWO_BRD; i++) 			
@@ -452,16 +479,17 @@ if(LNY_START == 0){
 
 
 
-	/* Y direction */
-#ifdef LB_TEMPERATURE	
-#ifdef LB_TEMPERATURE_BC_Y
 
+#ifdef LB_TEMPERATURE	
   pop g_eq, g_eq_w;
   my_double effDT, rho2;
   my_double T_wall;
   my_double fac;
 
   /************************/
+	/* Y direction */
+#ifdef LB_TEMPERATURE_BC_Y
+
 
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
@@ -510,6 +538,62 @@ if(LNY_START == 0){
       
 }
 #endif
+
+
+
+ /************************/
+	/* X direction */
+#ifdef LB_TEMPERATURE_BC_X
+
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNX_END == NX){
+
+          i = LNX+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].x<0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
+	  rhs_g[IDX(i+1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	    }
+	  }
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].x>0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
+	  rhs_g[IDX(i-1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	    }
+	  }
+ }
+      
+}
+#endif
+
 #endif
 
 
