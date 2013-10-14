@@ -531,7 +531,8 @@ void build_forcing(){
   //temp = (t[IDX(i,j,k)] - property.T_ref);
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
   //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
-  fac = property.beta_t*temp + property.beta2_t*temp*temp;
+  fac = property.beta_t*temp; 
+  if(property.beta2_t != 0.0) fac += property.beta2_t*temp*temp;
   //fac = property.beta_t;
 
       force[IDX(i,j,k)].x += fac*property.gravity_x;
