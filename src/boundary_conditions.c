@@ -564,8 +564,8 @@ if(LNX_END == NX){
 	    if(c[pp].x<0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
-	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
-	  rhs_g[IDX(i+1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
+	  rhs_g[IDX(i+1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[pp]; //rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
 	    }
 	  }
  }
@@ -585,8 +585,8 @@ if(LNX_START == 0){
 	    if(c[pp].x>0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
-	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
-	  rhs_g[IDX(i-1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
+	  rhs_g[IDX(i-1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[pp]; //rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
 	    }
 	  }
  }
