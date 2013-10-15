@@ -42,6 +42,9 @@ typedef struct {
   my_double beta_t,beta2_t;
   my_double gravity_x,gravity_y,gravity_z;
 #endif
+#ifdef LB_TEMPERATURE_FORCING
+  my_double Amp_t;
+#endif
 #ifdef LB_TEMPERATURE_MELTING
   my_double T_solid,latent_heat,specific_heat;
 #endif

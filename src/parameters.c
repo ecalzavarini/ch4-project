@@ -172,6 +172,14 @@ void assign_parameters(){
   fclose(fout);
 
 #endif 
+#ifdef LB_TEMPERATURE_FORCING
+  sprintf(name,"Amp_t");
+  property.Amp_t = read_parameter(name);
+  fprintf(stderr,"Radiation Rayleigh Number is -> Ra_{rad} = %e\n", property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) ); 
+  fout = fopen("numbers.dat","a");
+  fprintf(fout,"Radiation Rayleigh %e\n",property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );
+  fclose(fout);
+#endif
 #ifdef LB_TEMPERATURE_MELTING
   sprintf(name,"T_solid");
   property.T_solid = read_parameter(name);
