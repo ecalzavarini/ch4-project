@@ -1325,6 +1325,31 @@ void prepare_boundary_conditions(){
 
 
 #ifdef LB_FLUID_FORCING_LANDSCAPE
+/* this makes a flag for a cylinder with axis along y */
+my_double cylinder(int i , int j , int k, vector center, my_double radius, my_double height){
+  my_double dum;
+
+  if(center_V[IDX(i,j,k)].y <= height && sqrt(pow(center_V[IDX(i,j,k)].x-center.x, 2.0)+pow(center_V[IDX(i,j,k)].z-center.z, 2.0)) <= radius )
+    dum = 1.0;
+  else
+    dum =0.0;
+
+    return dum; 
+}
+
+/* this makes a flag for a cubick block */
+my_double cubic_block(int i , int j , int k, vector center, vector size){
+  my_double dum;
+
+  if(fabs(center_V[IDX(i,j,k)].x-center.x) <= size.x/2.0 && fabs(center_V[IDX(i,j,k)].y) <= size.y/2.0 && fabs(center_V[IDX(i,j,k)].z-center.z) <= size.z/2.0 )
+    dum = 1.0;
+  else
+    dum =0.0;
+
+    return dum; 
+}
+
+
 void read_landscape(){
 
 
@@ -1334,6 +1359,11 @@ void read_landscape(){
 	int             i, j, k;
 	my_double  fac;
 	int count;
+	vector center;
+	my_double radius;
+	my_double height;
+	vector size;
+
 
 	sprintf(fnamein, "landscape.in");
 	fin = fopen(fnamein, "r");
@@ -1357,10 +1387,20 @@ void read_landscape(){
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
-				  //if( i%16 == 0.0){ fac = property.SY/4.0*drand48()}
-				  //   if(center_V[IDX(i,j, k)].y < fac) 
-				  if(i== 32 && j==32 )
-					landscape[IDX(i, j, k)] = 1.0;				      
+				  center.x = property.SX/2.0;
+				  center.y = property.SY/2.0;  /* not used */
+				  center.z = property.SZ/2.0;
+				  radius = 200.0;
+				  height = 300.0;
+				  landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
+
+				  center.x = property.SX/2.0 ;
+				  //center.y = property.SY/2.0;  /* not used */
+				  center.z = property.SZ/2.0 + 400;
+				  size.x = 80.0;
+				  size.y = 200.0;
+				  size.z =  80.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
 				}
 
 
