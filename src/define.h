@@ -9,14 +9,14 @@
 #define TIMING
 
 /* GRID */
-#define GRID_REGULAR
-//#define GRID_REFINED /* the default refinement is TANH */ 
+//#define GRID_REGULAR
+#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
-//#define GRID_REFINED_CHEBYSHEV
+#define GRID_REFINED_CHEBYSHEV
 //#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
-//#define GRID_REFINED_Y
+#define GRID_REFINED_Y
 //#define GRID_REFINED_Z
 
 //#define GRID_IRREGULAR_RANDOM
@@ -32,14 +32,14 @@
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
-//#define LB_FLUID_FORCING_POISEUILLE
+#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_KOLMOGOROV
-#define LB_FLUID_FORCING_LANDSCAPE
+//#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
-#define LB_FLUID_FORCING_DIRECT
+//#define LB_FLUID_FORCING_DIRECT
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-#define LB_FLUID_BC_YP_SLIP                                           
+//#define LB_FLUID_BC_YP_SLIP                                           
 //#define LB_FLUID_BC_YM_SLIP                         
 //#define LB_FLUID_BC_YP_OUTLET
 //#define LB_FLUID_BC_X                                                     

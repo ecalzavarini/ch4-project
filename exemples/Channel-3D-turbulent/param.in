@@ -1,12 +1,12 @@
 resume 1
 
 NX 128
-NY 64
+NY 128
 NZ 128
 
-SX 1280
-SY 640
-SZ 1280
+SX 8042 
+SY 1280
+SZ 2680
 
 time_dt 0.4
 time_start 680000.0
@@ -16,7 +16,7 @@ time_dump_diagn 40.0
 
 tau_u 0.5
 
-Amp_x 0.01
+Amp_x 0.1
 Amp_y 0.0
 Amp_z 0.0
 
