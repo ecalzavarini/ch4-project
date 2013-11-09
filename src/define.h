@@ -2,6 +2,7 @@
 //#define DEBUG
 //#define DEBUG_HARD
 
+//#define NEW_SENDRECV not working yet 
 
 /* OUTPUT */
 //#define OUTPUT_ASCII
@@ -9,14 +10,14 @@
 #define TIMING
 
 /* GRID */
-//#define GRID_REGULAR
-#define GRID_REFINED /* the default refinement is TANH */ 
+#define GRID_REGULAR
+//#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
-#define GRID_REFINED_CHEBYSHEV
+//#define GRID_REFINED_CHEBYSHEV
 //#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
-#define GRID_REFINED_Y
+//#define GRID_REFINED_Y
 //#define GRID_REFINED_Z
 
 //#define GRID_IRREGULAR_RANDOM
@@ -86,6 +87,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
 //#define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_BULK 
+//#define LB_TEMPERATURE_FORCING_RADIATION 
 //#define LB_TEMPERATURE_FORCING_SOURCE
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION

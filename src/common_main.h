@@ -24,6 +24,8 @@ int nxprocs, nyprocs, nzprocs;
 MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type, MPI_my_double_type;
 MPI_Op MPI_SUM_output;
 
+MPI_Datatype MPI_pop_plane_x,MPI_pop_plane_y,MPI_pop_plane_z;
+
 /* random seed */
 unsigned int seed;
 

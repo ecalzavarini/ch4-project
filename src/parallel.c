@@ -66,6 +66,13 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_contiguous(1, MPI_DOUBLE, &MPI_my_double_type);
  MPI_Type_commit(&MPI_my_double_type);
 
+#ifdef LB
+ NPOP = 19;
+ /* commit pop type */
+ MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
+ MPI_Type_commit(&MPI_pop_type);
+#endif
+
  /* Initialize random seeds */
   seed = time(NULL); 
   srand48(me+seed);
@@ -272,6 +279,29 @@ void processor_splitting()
 
 #ifdef DEBUG
 	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+
+#ifdef NEW_SENDRECV
+	/* Creates a vector (strided) datatype */
+	/* Input: 
+	   count -> number of blocks (nonnegative integer)
+	   blocklength -> number of elements in each block (nonnegative integer)
+	   stride -> number of elements between start of each block (integer)
+	   oldtype -> old datatype (handle)
+	   IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+	*/	
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), 1   , (LNX+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), LNX , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_y);
+    MPI_Type_vector( LNY         , LNX ,  LNX+TWO_BRD                , MPI_pop_type, &MPI_pop_plane_z);
+    MPI_Type_commit(&MPI_pop_plane_x);
+    MPI_Type_commit(&MPI_pop_plane_y);
+    MPI_Type_commit(&MPI_pop_plane_z);
+    /*
+          IDX(i,j,k) ((k) + NZP2*((j)+NYP2*(i)))
+  MPI_Type_vector(NY  , NZ , NZP2      , MPI_Poptype, &MPI_X_PopPlane);
+  MPI_Type_vector(NXP2, NZ , NZP2*NYP2 , MPI_Poptype, &MPI_Y_PopPlane);
+  MPI_Type_vector(NXP2*NYP2, 1   , NZP2, MPI_Poptype, &MPI_Z_PopPlane);
+     */	
 #endif
 
 }

@@ -613,8 +613,9 @@ void build_forcing(){
   t_source[IDX(i,j,k)] = property.Amp_t;
 #endif
 
-  /* here  LB_TEMPERATURE_FORCING_RADIATION */
-  /* to be written */
+#ifdef LB_TEMPERATURE_FORCING_RADIATION 
+  t_source[IDX(i,j,k)] = property.Amp_t*property.exct*exp(-property.exct*center_V[IDX(i,j,k)].y); 
+#endif  
 
 #endif
 
