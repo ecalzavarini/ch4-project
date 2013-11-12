@@ -296,40 +296,22 @@ void sendrecv_borders_pop(pop *f){
 
 #ifdef NEW_SENDRECV
   //IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
-  
-  MPI_Sendrecv( f + (LNX+TWO_BRD)*(LNY+TWO_BRD)*LNZ + (LNX+TWO_BRD) + BRD       , BRD, MPI_pop_plane_z, me_zp, 10,
-                f + (LNX+TWO_BRD) + BRD                                         , BRD, MPI_pop_plane_z, me_zm, 10, MPI_COMM_WORLD, &status1);
-  MPI_Sendrecv( f + (LNX+TWO_BRD)*(LNY+TWO_BRD) + (LNX+TWO_BRD) + BRD           , BRD, MPI_pop_plane_z, me_zm, 11,
-                f + (LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+BRD) + (LNX+TWO_BRD) + BRD , BRD, MPI_pop_plane_z, me_zp, 11, MPI_COMM_WORLD, &status1);
+   
+  MPI_Sendrecv( f + IDX(LNX,0,0)   , BRD, MPI_pop_plane_x, me_xp, 14,
+                f + IDX(0,0,0)     , BRD, MPI_pop_plane_x, me_xm, 14, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(BRD,0,0)    , BRD, MPI_pop_plane_x, me_xm, 15,
+                f + IDX(LNX+BRD,0,0), BRD, MPI_pop_plane_x, me_xp, 15, MPI_COMM_WORLD, &status1);
 
-  MPI_Sendrecv( f + (LNX+TWO_BRD)*(LNY) + BRD     , BRD, MPI_pop_plane_y, me_yp, 12,
-                f + BRD                           , BRD, MPI_pop_plane_y, me_ym, 12, MPI_COMM_WORLD, &status1);
-  MPI_Sendrecv( f + (LNX+TWO_BRD) + BRD           , BRD, MPI_pop_plane_y, me_ym, 13,
-                f + (LNX+TWO_BRD)*(LNY+BRD) + BRD , BRD, MPI_pop_plane_y, me_yp, 13, MPI_COMM_WORLD, &status1);
-  
-  MPI_Sendrecv( f + LNX      , BRD, MPI_pop_plane_x, me_xp, 14,
-                f            , BRD, MPI_pop_plane_x, me_xm, 14, MPI_COMM_WORLD, &status1);
-  MPI_Sendrecv( f + BRD      , BRD, MPI_pop_plane_x, me_xm, 15,
-                f + LNX+BRD  , BRD, MPI_pop_plane_x, me_xp, 15, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,LNY,0)  , BRD, MPI_pop_plane_y, me_yp, 12,
+                f + IDX(0,0,0)  , BRD, MPI_pop_plane_y, me_ym, 12, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,BRD,0)  , BRD, MPI_pop_plane_y, me_ym, 13,
+                f + IDX(0,LNY+BRD,0)  , BRD, MPI_pop_plane_y, me_yp, 13, MPI_COMM_WORLD, &status1);
 
-  /*
-
-  MPI_Sendrecv( f + NZP2*NYP2*NX + NZP2+1     , 1, MPI_X_PopPlane, pxp, 10,
-		f                + NZP2+1     , 1, MPI_X_PopPlane, pxm, 10, MPI_COMM_ALONG_X, &status1);
-  MPI_Sendrecv( f + NZP2*NYP2        + NZP2+1 , 1, MPI_X_PopPlane, pxm, 11,
-		f + NZP2*NYP2*(NX+1) + NZP2+1 , 1, MPI_X_PopPlane, pxp, 11, MPI_COMM_ALONG_X, &status1);
-
-  MPI_Sendrecv( f + NZP2*(NY) + 1             , 1, MPI_Y_PopPlane, pyp, 12,
-		f + 1                         , 1, MPI_Y_PopPlane, pym, 12, MPI_COMM_ALONG_Y, &status1);
-  MPI_Sendrecv( f + NZP2 + 1                  , 1, MPI_Y_PopPlane, pym, 13,
-		f + NZP2*(NY+1) + 1           , 1, MPI_Y_PopPlane, pyp, 13, MPI_COMM_ALONG_Y, &status1);
-
-  MPI_Sendrecv( f + NZ                        , 1, MPI_Z_PopPlane, pzp, 14,
-		f                             , 1, MPI_Z_PopPlane, pzm, 14, MPI_COMM_ALONG_Z, &status1);
-  MPI_Sendrecv( f + 1                         , 1, MPI_Z_PopPlane, pzm, 15,
-  		f + NZ+1                      , 1, MPI_Z_PopPlane, pzp, 15, MPI_COMM_ALONG_Z, &status1);
-   */
-  #else
+  MPI_Sendrecv( f + IDX(0,0,LNZ)  , BRD, MPI_pop_plane_z, me_zp, 10,
+                f + IDX(0,0,0)  , BRD, MPI_pop_plane_z, me_zm, 10, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,0,BRD)  , BRD, MPI_pop_plane_z, me_zm, 11,
+                f + IDX(0,0,LNZ+BRD)  , BRD, MPI_pop_plane_z, me_zp, 11, MPI_COMM_WORLD, &status1);
+#else /* = NEW_SENDRECV is not defined */
 
 #ifdef DEBUG_HARD
  fprintf(stderr,"before\n");
@@ -363,7 +345,7 @@ void sendrecv_borders_pop(pop *f){
 
   /*     BRD|LNX|BRD     */
   /* Copy borders along x */
-  /*
+  
   brd_size = BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -389,7 +371,7 @@ void sendrecv_borders_pop(pop *f){
       for(i=0;i<BRD;i++){ 
 	f[IDX(i+LNX+BRD,j,k)] = xp_pop[IDX_XBRD(i,j,k)];
       }
-  */
+  
 
 
   /* Copy borders along y */
