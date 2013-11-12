@@ -289,11 +289,16 @@ void processor_splitting()
 	   stride -> number of elements between start of each block (integer)
 	   oldtype -> old datatype (handle)
 	   IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+	   IDX(i,j,k) (k*(LNY+TWO_BRD)+j)*(LNX+TWO_BRD)+i
 	*/	
- 
-    MPI_Type_vector((LNY+TWO_BRD), (LNX+TWO_BRD) , (LNX+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_x);
-    MPI_Type_vector((LNZ+TWO_BRD), LNX+TWO_BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_y);
-    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), 1   , (LNX+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_z);
+	/*
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), 1 , (LNX+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD) , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_y);
+    MPI_Type_vector(1, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_z);
+	*/
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+BRD) , MPI_pop_type, &MPI_pop_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+BRD) , MPI_pop_type, &MPI_pop_plane_y);
+    MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_pop_type, &MPI_pop_plane_z);
 
     MPI_Type_commit(&MPI_pop_plane_x);
     MPI_Type_commit(&MPI_pop_plane_y);
