@@ -2,7 +2,8 @@
 //#define DEBUG
 //#define DEBUG_HARD
 
-//#define NEW_SENDRECV not working yet 
+/* PARALLEL*/
+#define NEW_SENDRECV
 
 /* OUTPUT */
 //#define OUTPUT_ASCII
