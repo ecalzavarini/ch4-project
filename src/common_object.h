@@ -25,6 +25,8 @@ extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_outp
 extern MPI_Op MPI_SUM_output;
 
 extern MPI_Datatype MPI_pop_plane_x,MPI_pop_plane_y,MPI_pop_plane_z;
+extern MPI_Datatype MPI_my_double_plane_x,MPI_my_double_plane_y,MPI_my_double_plane_z;
+extern MPI_Datatype MPI_vector_plane_x,MPI_vector_plane_y,MPI_vector_plane_z;
 
 /* random seed */
 extern unsigned int seed;

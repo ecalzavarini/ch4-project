@@ -3,7 +3,7 @@
 //#define DEBUG_HARD
 
 /* PARALLEL*/
-#define NEW_SENDRECV
+#define NEW_SENDRECV  /* does not use itermediate transfer buffers */
 
 /* OUTPUT */
 //#define OUTPUT_ASCII

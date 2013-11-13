@@ -535,6 +535,27 @@ void sendrecv_borders_scalar(my_double *f){
   int i,j,k,brd_size;
   MPI_Status status1;
 
+#ifdef NEW_SENDRECV
+  //IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+     
+  MPI_Sendrecv( f + IDX(LNX,0,0)   , 1, MPI_my_double_plane_x, me_xp, 14,
+                f + IDX(0,0,0)     , 1, MPI_my_double_plane_x, me_xm, 14, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(BRD,0,0)    , 1, MPI_my_double_plane_x, me_xm, 15,
+                f + IDX(LNX+BRD,0,0), 1, MPI_my_double_plane_x, me_xp, 15, MPI_COMM_WORLD, &status1);
+  
+  MPI_Sendrecv( f + IDX(0,LNY,0)  , 1, MPI_my_double_plane_y, me_yp, 12,
+                f + IDX(0,0,0)  , 1, MPI_my_double_plane_y, me_ym, 12, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,BRD,0)  , 1, MPI_my_double_plane_y, me_ym, 13,
+                f + IDX(0,LNY+BRD,0)  , 1, MPI_my_double_plane_y, me_yp, 13, MPI_COMM_WORLD, &status1);
+  
+  MPI_Sendrecv( f + IDX(0,0,LNZ)  , 1, MPI_my_double_plane_z, me_zp, 10,
+                f + IDX(0,0,0)  , 1, MPI_my_double_plane_z, me_zm, 10, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,0,BRD)  , 1, MPI_my_double_plane_z, me_zm, 11,
+                f + IDX(0,0,LNZ+BRD)  , 1, MPI_my_double_plane_z, me_zp, 11, MPI_COMM_WORLD, &status1);
+  
+#else /* = NEW_SENDRECV is not defined */
+
+
   /*     BRD|LNX|BRD     */
   /* Copy borders along x */
   brd_size = BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
@@ -621,12 +642,34 @@ void sendrecv_borders_scalar(my_double *f){
 	f[IDX(i,j,k+LNZ+BRD)] = zp_scalar[IDX_ZBRD(i,j,k)];
       }
 
-}/* end send rcv */
+#endif /* NEW_SENDRECV */
+
+}/* end scalar send rcv function */
 
 /****************************************************************************************************/ 
 void sendrecv_borders_vector(vector *f){
   int i,j,k,brd_size;
   MPI_Status status1;
+
+#ifdef NEW_SENDRECV
+  //IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
+     
+  MPI_Sendrecv( f + IDX(LNX,0,0)   , 1, MPI_vector_plane_x, me_xp, 14,
+                f + IDX(0,0,0)     , 1, MPI_vector_plane_x, me_xm, 14, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(BRD,0,0)    , 1, MPI_vector_plane_x, me_xm, 15,
+                f + IDX(LNX+BRD,0,0), 1, MPI_vector_plane_x, me_xp, 15, MPI_COMM_WORLD, &status1);
+  
+  MPI_Sendrecv( f + IDX(0,LNY,0)  , 1, MPI_vector_plane_y, me_yp, 12,
+                f + IDX(0,0,0)  , 1, MPI_vector_plane_y, me_ym, 12, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,BRD,0)  , 1, MPI_vector_plane_y, me_ym, 13,
+                f + IDX(0,LNY+BRD,0)  , 1, MPI_vector_plane_y, me_yp, 13, MPI_COMM_WORLD, &status1);
+  
+  MPI_Sendrecv( f + IDX(0,0,LNZ)  , 1, MPI_vector_plane_z, me_zp, 10,
+                f + IDX(0,0,0)  , 1, MPI_vector_plane_z, me_zm, 10, MPI_COMM_WORLD, &status1);
+  MPI_Sendrecv( f + IDX(0,0,BRD)  , 1, MPI_vector_plane_z, me_zm, 11,
+                f + IDX(0,0,LNZ+BRD)  , 1, MPI_vector_plane_z, me_zp, 11, MPI_COMM_WORLD, &status1);
+  
+#else /* = NEW_SENDRECV is not defined */
 
   /*     BRD|LNX|BRD     */
   /* Copy borders along x */
@@ -713,8 +756,10 @@ void sendrecv_borders_vector(vector *f){
       for(i=BRD;i<LNX+BRD;i++){ 
 	f[IDX(i,j,k+LNZ+BRD)] = zp_vector[IDX_ZBRD(i,j,k)];
       }
-}/* end send rcv */
 
+
+#endif /* NEW_SENDRECV */
+}/* end vector send rcv function */
 
 #endif
 

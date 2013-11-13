@@ -290,7 +290,8 @@ void processor_splitting()
 	   oldtype -> old datatype (handle)
 	   IDX(i,j,k) ( (int)(k)*(LNY+TWO_BRD)*(LNX+TWO_BRD)+(int)(j)*(LNX+TWO_BRD)+(int)(i) )
 	   IDX(i,j,k) (k*(LNY+TWO_BRD)+j)*(LNX+TWO_BRD)+i
-	*/	
+	*/
+	/* pop */
     MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_x);
     MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_pop_type, &MPI_pop_plane_y);
     MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_pop_type, &MPI_pop_plane_z);
@@ -298,6 +299,24 @@ void processor_splitting()
     MPI_Type_commit(&MPI_pop_plane_x);
     MPI_Type_commit(&MPI_pop_plane_y);
     MPI_Type_commit(&MPI_pop_plane_z);
+
+      /* vector */ 
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+TWO_BRD) , MPI_vector_type, &MPI_vector_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_vector_type, &MPI_vector_plane_y);
+    MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_vector_type, &MPI_vector_plane_z);
+  
+    MPI_Type_commit(&MPI_vector_plane_x);
+    MPI_Type_commit(&MPI_vector_plane_y);
+    MPI_Type_commit(&MPI_vector_plane_z);
+
+     /* scalar */
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+TWO_BRD) , MPI_my_double_type, &MPI_my_double_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_my_double_type, &MPI_my_double_plane_y);
+    MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_my_double_type, &MPI_my_double_plane_z);
+
+    MPI_Type_commit(&MPI_my_double_plane_x);
+    MPI_Type_commit(&MPI_my_double_plane_y);
+    MPI_Type_commit(&MPI_my_double_plane_z);
 #endif
 
 }
