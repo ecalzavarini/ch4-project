@@ -1,18 +1,18 @@
 resume 0
 
-NX 1
-NY 64
+NX 101
+NY 50 
 NZ 1
 
-SX 1
-SY 64
+SX 101
+SY 50
 SZ 1
 
 time_dt 0.4
 time_start 0.0
-time_end 16000.0
-time_dump_field 1000.0
-time_dump_diagn 4.0
+time_end 8000.0
+time_dump_field 40.0
+time_dump_diagn 1.0
 
 tau_u 0.5
 
@@ -22,8 +22,8 @@ Amp_z 0.0
 
 tau_t 0.5
 T_bot  1.
-T_top  1.
-T_ref 1.0
+T_top -1.
+T_ref 0.0
 
 beta_t 0.001897778
 beta2_t 0.0
@@ -32,7 +32,7 @@ gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.001
+Amp_t 0.033333333
 
 T_solid 1.001
 latent_heat 1

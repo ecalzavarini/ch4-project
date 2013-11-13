@@ -614,7 +614,8 @@ void build_forcing(){
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_RADIATION 
-  t_source[IDX(i,j,k)] = property.Amp_t*property.exct*exp(-property.exct*center_V[IDX(i,j,k)].y); 
+  my_double coeff_exct = 0.5/property.SY;
+  t_source[IDX(i,j,k)] = property.Amp_t*coeff_exct*exp(-coeff_exct*center_V[IDX(i,j,k)].y); 
 #endif  
 
 #endif
@@ -636,6 +637,7 @@ void add_forcing(){
   my_double rho ,temp;
   pop p_eq , g_eq;
   my_double mask;
+
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
