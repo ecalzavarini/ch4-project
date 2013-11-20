@@ -120,6 +120,13 @@ void initial_conditions(int restart)
   */
   /* end of density normalization*/
 
+#ifdef METHOD_LOG
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++)
+	for (pp = 0; pp < NPOP; pp++) 
+	  p[IDX(i,j,k)].p[pp]=property.tau_u*log(p[IDX(i,j,k)].p[pp]);
+#endif
 
    /* communicate borders for populations */
    sendrecv_borders_pop(p);

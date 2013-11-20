@@ -106,7 +106,11 @@ pop equilibrium(pop * f, int i, int j, int k){
 	my_double       cu, u2;
 	pop             f_eq;
 
+#ifdef METHOD_LOG
+	rhof = m(f[IDX(i, j, k)],1./property.tau_u);
+#else
 	rhof = m(f[IDX(i, j, k)]);
+#endif
 
 	ux = u[IDX(i, j, k)].x;
 	uy = u[IDX(i, j, k)].y;
@@ -118,7 +122,12 @@ pop equilibrium(pop * f, int i, int j, int k){
 	for (pp = 0; pp < NPOP; pp++) {
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 		f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	       
+
+		
+#ifdef METHOD_LOG
+		f_eq.p[pp] = property.tau_u*log(f_eq.p[pp]);
+#endif
+		
 	}
 
 	//fprintf(stderr,"i %d j %d k %d\n",i,j,k);
@@ -141,7 +150,14 @@ void hydro_fields(){
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
 
+
 #ifdef LB_FLUID
+#ifdef METHOD_LOG
+			  dens[IDX(i, j, k)] = m(p[IDX(i, j, k)],1./property.tau_u);			       
+			  u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
+			  u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
+			  u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
+#else
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
 
 				#ifndef METHOD_FORCING_GUO
@@ -154,12 +170,13 @@ void hydro_fields(){
    				u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];	
 				#endif
-
+#endif
 #endif
 
 #ifdef LB_TEMPERATURE 
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
 #endif
+
 
 			}/* for i,j,k */
 
@@ -262,13 +279,19 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 	  /* Adams Bashforth 2nd order */
 	  //fprintf(stderr,"itime = %d\n",itime);
 #ifdef METHOD_EXPONENTIAL
-	  //  f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
+	  /* my AB2 exponential */
+	  //if(itime==1)  
+	  //f[IDX(i,j,k)].p[pp] =  fac1*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
+	  //else
+	  //f[IDX(i,j,k)].p[pp] = fac1*(f[IDX(i,j,k)].p[pp] +  property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*fac1*old_rhs_f[IDX(i,j,k)].p[pp])); 
+
 	  /* S. M. Cox and P. C. Matthews. Exponential Time Differencing for Stiff Systems.
-	     J. Comput. Phys., 176:430{455, 2002. */
+	     J. Comput. Phys., 176:430{455, 2002. */	  
 	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
 	  else
 	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
-							     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);
+	  						     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);
+	  
 #else
 	 if(itime==1) f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 	 else

@@ -84,12 +84,20 @@ typedef struct {
 
 #define NOUT SIZE_STRUCT(output)
 
-
+#ifndef METHOD_LOG
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
 #define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]  -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14])
 #define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15] +a.p[16]-a.p[17]-a.p[18])
 #define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
 #define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
+#else
+/* WARNING mvx means rho*vx momentum ,  m means rho density*/
+#define mvx(a,b) (exp(a.p[1]*b)-exp(a.p[2]*b)+exp(a.p[7]*b)+exp(a.p[8]*b)-exp(a.p[9]*b)-exp(a.p[10]*b)+exp(a.p[11]*b)-exp(a.p[12]*b)+exp(a.p[13]*b)-exp(a.p[14]*b))
+#define mvy(a,b) (exp(a.p[3]*b)-exp(a.p[4]*b)+exp(a.p[7]*b)-exp(a.p[8]*b)+exp(a.p[9]*b)-exp(a.p[10]*b)+exp(a.p[15]*b)+exp(a.p[16]*b)-exp(a.p[17]*b)-exp(a.p[18]*b))
+#define mvz(a,b) (exp(a.p[5]*b)-exp(a.p[6]*b)+exp(a.p[11]*b)+exp(a.p[12]*b)-exp(a.p[13]*b)-exp(a.p[14]*b)+exp(a.p[15]*b)-exp(a.p[16]*b)+exp(a.p[17]*b)-exp(a.p[18]*b))
+#define m(a,b) (exp(a.p[0]*b)+exp(a.p[1]*b)+exp(a.p[2]*b)+exp(a.p[3]*b)+exp(a.p[4]*b)+exp(a.p[5]*b)+exp(a.p[6]*b)+exp(a.p[7]*b)+exp(a.p[8]*b)+exp(a.p[9]*b)+exp(a.p[10]*b)+exp(a.p[11]*b)+exp(a.p[12]*b)+exp(a.p[13]*b)+exp(a.p[14]*b)+exp(a.p[15]*b)+exp(a.p[16]*b)+exp(a.p[17]*b)+exp(a.p[18]*b))
+#endif
+
 
 #define ROOT (!me)
 

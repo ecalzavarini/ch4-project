@@ -420,8 +420,13 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 	f_eq=equilibrium(f,i,j,k);
 #ifndef METHOD_EXPONENTIAL
        	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+
+#ifdef METHOD_LOG
+	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] =  ( exp(invtau*(f_eq.p[pp] - f[IDX(i,j,k)].p[pp]) ) - 1.0);
 #endif
-       
+
+#endif
+     
 #if (defined METHOD_MYQUICK && defined METHOD_TRAPEZOID)
 	f_eq_xp = equilibrium(f,i+1,j,k); 
         f_eq_xm = equilibrium(f,i-1,j,k);
@@ -637,7 +642,7 @@ void add_forcing(){
   my_double rho ,temp;
   pop p_eq , g_eq;
   my_double mask;
-
+  my_double fac;
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -674,6 +679,14 @@ void add_forcing(){
 	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
+	    
+#ifdef METHOD_LOG
+	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);
+	    rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].x*c[pp].x;
+            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].y*c[pp].y;
+            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].z*c[pp].z;
+#endif
+	    
 #else       
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
