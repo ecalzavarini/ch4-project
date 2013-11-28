@@ -126,7 +126,7 @@ my_double invcs, invcs2, invcs4;
 
 
 #ifdef LB_FLUID
-pop *p, *rhs_p, *old_rhs_p;
+pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p;
 my_double *dens;
 vector *u;
 #ifdef LB_FLUID_FORCING
@@ -138,7 +138,7 @@ my_double *landscape;
 #endif
 
 #ifdef LB_TEMPERATURE
-pop *g, *rhs_g, *old_rhs_g;
+pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g;
 my_double *t;
 #ifdef LB_TEMPERATURE_FORCING
 my_double *t_source;

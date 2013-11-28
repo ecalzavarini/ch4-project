@@ -123,7 +123,7 @@ extern my_double cs, cs2 , cs4 , cs22 , cssq;
 extern my_double invcs, invcs2, invcs4;
 
 #ifdef LB_FLUID
-extern pop *p, *rhs_p, *old_rhs_p;
+extern pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p;
 extern my_double *dens;
 extern vector *u;
 #ifdef LB_FLUID_FORCING
@@ -135,7 +135,7 @@ extern my_double *landscape;
 #endif
 
 #ifdef LB_TEMPERATURE
-extern pop *g, *rhs_g, *old_rhs_g;
+extern pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g;
 extern my_double *t;
 #ifdef LB_TEMPERATURE_FORCING
 extern my_double *t_source;

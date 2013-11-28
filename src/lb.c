@@ -232,14 +232,17 @@ void streaming(pop *f, pop *rhs_f){
 
 
 /********************************************/
-void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
+void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_double tau){
   int i,j,k,pp;
   pop f_eq;
   my_double dt_over_tau,fac1,fac2;
   my_double rho1,rho2;
+  my_double A1, A2, A3,dt,invtau;
 
   /* useful constants for time advancing */
 #ifdef METHOD_EXPONENTIAL
+  dt = property.time_dt;
+  invtau = 1.0/tau;
   dt_over_tau = property.time_dt/tau;
   fac1 = exp(-dt_over_tau);
   fac2 =1.0/(1.0 + dt_over_tau); 
@@ -288,10 +291,15 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 	  /* S. M. Cox and P. C. Matthews. Exponential Time Differencing for Stiff Systems.
 	     J. Comput. Phys., 176:430{455, 2002. */	  
 	  if(itime==1)   f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
-	  else
-	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
-	  						     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);
-	  
+	  else{
+	    f[IDX(i,j,k)].p[pp] *= fac1;
+	    A1 = ((fac1-1.0)*(1.0-dt_over_tau)+dt_over_tau)*(tau/dt_over_tau);
+	    A2 = (-fac1+1.0-dt_over_tau)*(tau/dt_over_tau);  
+	    f[IDX(i,j,k)].p[pp] += ( rhs_f[IDX(i,j,k)].p[pp]*A1 + old_rhs_f[IDX(i,j,k)].p[pp]*A2 );
+	      // was working fine:
+	      //f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
+	      //+ old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);
+	  }
 #else
 	 if(itime==1) f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
 	 else
@@ -300,6 +308,32 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f,my_double tau){
 
 	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
 #endif
+
+	 /* 3rd order */
+#ifdef METHOD_STEPPING_AB3
+#ifdef METHOD_EXPONENTIAL
+	  /* S. M. Cox and P. C. Matthews. Exponential Time Differencing for Stiff Systems J. Comput. Phys., 176:430{455, 2002. */	  
+	  if(itime==1) f[IDX(i,j,k)].p[pp] =  fac1*f[IDX(i,j,k)].p[pp] + (1.0-fac1)*tau*rhs_f[IDX(i,j,k)].p[pp];
+	  if(itime==2)
+	  f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + ( rhs_f[IDX(i,j,k)].p[pp]*((1.0-dt_over_tau)*fac1-1.0+2.0*dt_over_tau) 
+	  						     + old_rhs_f[IDX(i,j,k)].p[pp]*(-fac1+1.0-dt_over_tau) )*(tau/dt_over_tau);	 
+	  if(itime > 2){
+	    A1 = -( (-2.0 + (2.0 - dt_over_tau*(3.0 - 2.0*dt_over_tau) )*exp(-dt_over_tau) + dt_over_tau*(5.0 - 6.0*dt_over_tau) )*pow(tau,3.0))/(2.0*pow(dt,2.0));
+	    A2 = -( ( 4.0 - (4.0 * (1.0 - dt_over_tau) ) / exp(dt_over_tau) -  dt_over_tau*( 8.0 - 6.0*dt_over_tau)  )*pow(tau,3.0))/(2.0*pow(dt,2.0));
+	    A3 = -( (-2.0 + (2.0 - dt_over_tau)/exp(dt_over_tau) + dt_over_tau*(3.0 - 2.0*dt_over_tau) )*pow(tau,3.0))/ (2.0*pow(dt,2.0));
+
+          f[IDX(i,j,k)].p[pp] = f[IDX(i,j,k)].p[pp]*fac1 + A1*rhs_f[IDX(i,j,k)].p[pp] + A2*old_rhs_f[IDX(i,j,k)].p[pp] + A3*old_old_rhs_f[IDX(i,j,k)].p[pp];
+	  }
+#else 
+	  /* here normal 3rd order AB */
+	 if(itime==1) f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+	 if(itime==2) f[IDX(i,j,k)].p[pp] += property.time_dt*(1.5*rhs_f[IDX(i,j,k)].p[pp]-0.5*old_rhs_f[IDX(i,j,k)].p[pp]);
+	 if(itime>2)  f[IDX(i,j,k)].p[pp] += (property.time_dt/12.)*(23.*rhs_f[IDX(i,j,k)].p[pp]-16.*old_rhs_f[IDX(i,j,k)].p[pp] + 5.0*old_old_rhs_f[IDX(i,j,k)].p[pp]);
+#endif
+	 old_old_rhs_f[IDX(i,j,k)].p[pp] = old_rhs_f[IDX(i,j,k)].p[pp];
+	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
+#endif
+
 
 	}/* pp */
       }/* for i,j,k */

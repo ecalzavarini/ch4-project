@@ -74,13 +74,13 @@ int main(int argc, char **argv){
 #endif
 
 #ifdef LB_FLUID	  
-	  time_stepping(p,rhs_p,old_rhs_p,property.tau_u);
+	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u);
 #endif
 #ifdef LB_TEMPERATURE
-	  time_stepping(g,rhs_g,old_rhs_g,property.tau_t);
+	 time_stepping(g,rhs_g,old_rhs_g,old_old_rhs_g,property.tau_t);
 #endif
 #ifdef LB_SCALAR
-	  time_stepping(h,rhs_h,old_rhs_h,property.tau_s);
+	 time_stepping(h,rhs_h,old_rhs_h,old_old_rhs_h,property.tau_s);
 #endif	
 	 hydro_fields();	
 	 dump_averages();
