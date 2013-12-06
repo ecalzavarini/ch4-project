@@ -33,7 +33,7 @@ void initial_conditions(int restart);
 
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau);
-void compute_advection(pop * f, pop *rhs_f);
+void compute_advection(pop * f, pop *rhs_f, pop *f_eq);
 void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);

@@ -445,6 +445,12 @@ void allocate_fields(){
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_p\n"); exit(-1);}
  set_to_zero_pop( rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
+#ifdef METHOD_REDEFINED_POP
+ p_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(p_eq == NULL){ fprintf(stderr,"Not enough memory to allocate p_eq\n"); exit(-1);}
+ set_to_zero_pop( p_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
+
 #if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3)
  old_rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_p\n"); exit(-1);}

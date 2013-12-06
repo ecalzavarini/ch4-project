@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-void compute_advection(pop *f, pop *rhs_f){
+void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
 
   int i,j,k,pp;
   my_double adv,aux;
@@ -9,6 +9,14 @@ void compute_advection(pop *f, pop *rhs_f){
 	char            fnamein[256], fnameout[256];
 	char            name[256] = "NULL";
 	FILE           *fin, *fout;
+#endif
+
+#ifdef METHOD_REDEFINED_POP
+  my_double fac;
+  pop f0;
+  pop fxp1, fxm1 ,fxm2 ,fxp2;
+  pop fyp1, fym1, fym2, fyp2; 
+  pop fzp1, fzm1 , fzm2, fzp2;
 #endif
 
 #ifdef DEBUG
@@ -26,7 +34,16 @@ void compute_advection(pop *f, pop *rhs_f){
 	fclose(fout);
 #endif
 
-
+#ifdef METHOD_REDEFINED_POP
+      /* We store the equilibrium distribution in all points */
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+      	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
+      }
+  /* send the borders, needed to compute the advection */ 
+        sendrecv_borders_pop(f_eq);
+#endif
 
   /* check this index */
   for(k=BRD;k<LNZ+BRD;k++)
@@ -107,6 +124,94 @@ void compute_advection(pop *f, pop *rhs_f){
 #ifdef METHOD_MYQUICK
 
 #ifdef METHOD_MYQUICK_CARTESIAN
+#ifdef METHOD_REDEFINED_POP
+ /* The population to be advected is different */
+ /* it is  f + (dt/(2*tau))*(f_eq-f) */
+ /* we prepare such a population here */
+fac = 0.5*(property.time_dt/property.tau_u); // be careful works only for fluid not for temperature!!!
+
+f0.p[pp]  = f[IDX(i,j,k)].p[pp] + fac*(f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp]);
+
+fxp1.p[pp] = f[IDX(i+1,j,k)].p[pp] + fac*(f_eq[IDX(i+1,j,k)].p[pp] - f[IDX(i+1,j,k)].p[pp]);
+fxm1.p[pp] = f[IDX(i-1,j,k)].p[pp] + fac*(f_eq[IDX(i-1,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp]);
+fxm2.p[pp] = f[IDX(i-2,j,k)].p[pp] + fac*(f_eq[IDX(i-2,j,k)].p[pp] - f[IDX(i-2,j,k)].p[pp]);
+fxp2.p[pp] = f[IDX(i+2,j,k)].p[pp] + fac*(f_eq[IDX(i+2,j,k)].p[pp] - f[IDX(i+2,j,k)].p[pp]);
+
+fyp1.p[pp] = f[IDX(i,j+1,k)].p[pp] + fac*(f_eq[IDX(i,j+1,k)].p[pp] - f[IDX(i,j+1,k)].p[pp]);
+fym1.p[pp] = f[IDX(i,j-1,k)].p[pp] + fac*(f_eq[IDX(i,j-1,k)].p[pp] - f[IDX(i,j-1,k)].p[pp]);
+fym2.p[pp] = f[IDX(i,j-2,k)].p[pp] + fac*(f_eq[IDX(i,j-2,k)].p[pp] - f[IDX(i,j-2,k)].p[pp]);
+fyp2.p[pp] = f[IDX(i,j+2,k)].p[pp] + fac*(f_eq[IDX(i,j+2,k)].p[pp] - f[IDX(i,j+2,k)].p[pp]);
+
+fzp1.p[pp] = f[IDX(i,j,k+1)].p[pp] + fac*(f_eq[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k+1)].p[pp]);
+fzm1.p[pp] = f[IDX(i,j,k-1)].p[pp] + fac*(f_eq[IDX(i,j,k-1)].p[pp] - f[IDX(i,j,k-1)].p[pp]);
+fzm2.p[pp] = f[IDX(i,j,k-2)].p[pp] + fac*(f_eq[IDX(i,j,k-2)].p[pp] - f[IDX(i,j,k-2)].p[pp]);
+fzp2.p[pp] = f[IDX(i,j,k+2)].p[pp] + fac*(f_eq[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k+2)].p[pp]);
+
+
+ if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0){
+   aux= 1.0 + interp2_xp[IDX(i,j,k)] - interp3_xm[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      interp_xp[IDX(i,j,k)]*fxp1.p[pp] 
+				      + (aux - interp_xp[IDX(i,j,k)])*f0.p[pp] 
+				      - (aux + interp4_xm[IDX(i,j,k)])*fxm1.p[pp] 
+				      + interp4_xm[IDX(i,j,k)]*fxm2.p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_xm[IDX(i,j,k)] - interp3_xp[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_xp[IDX(i,j,k)])*fxp1.p[pp] 
+				      - interp4_xp[IDX(i,j,k)]*fxp2.p[pp] 
+				      - interp_xm[IDX(i,j,k)]*fxm1.p[pp] 
+				      - (aux - interp_xm[IDX(i,j,k)])*f0.p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_yp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_yp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0  + interp2_yp[IDX(i,j,k)] - interp3_ym[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      interp_yp[IDX(i,j,k)]*fyp1.p[pp] 
+				      + (aux - interp_yp[IDX(i,j,k)])*f0.p[pp] 
+				      - (aux + interp4_ym[IDX(i,j,k)])*fym1.p[pp] 
+				      + interp4_ym[IDX(i,j,k)]*fym2.p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_ym[IDX(i,j,k)] - interp3_yp[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_yp[IDX(i,j,k)])*fyp1.p[pp] 
+				      - interp4_yp[IDX(i,j,k)]*fyp2.p[pp] 
+				      - interp_ym[IDX(i,j,k)]*fym1.p[pp] 
+				      - (aux - interp_ym[IDX(i,j,k)])*f0.p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_zp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_zp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0 + interp2_zp[IDX(i,j,k)] - interp3_zm[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      interp_zp[IDX(i,j,k)]*fzp1.p[pp] 
+				      + (aux - interp_zp[IDX(i,j,k)] )*f0.p[pp] 
+				      - (aux + interp4_zm[IDX(i,j,k)])*fzm1.p[pp] 
+				      + interp4_zm[IDX(i,j,k)]*fzm2.p[pp]
+				       );
+   }else{
+   aux = 1.0 + interp2_zm[IDX(i,j,k)] - interp3_zp[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_zp[IDX(i,j,k)])*fzp1.p[pp] 
+				      - interp4_zp[IDX(i,j,k)]*fzp2.p[pp] 
+				      -interp_zm[IDX(i,j,k)]*fzm1.p[pp] 
+				      - (aux - interp_zm[IDX(i,j,k)] )*f0.p[pp] 
+				       );
+   }
+ }
+
+ /* end of redefined pop method */
+#else
  /* when the grid is cartesian rectangular, the quick algorithm can be written in a more compact form */ 
  //if(pp>0){
  if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
@@ -171,6 +276,7 @@ void compute_advection(pop *f, pop *rhs_f){
    }
  }
  //}/*end of if pp > 0 */
+#endif /* = neither METHOD_REDEFINED_POP or MY_QUICK_CARTESIAN are defined */
 #else
 
  /* The good old one quick, less compact but well tested */
