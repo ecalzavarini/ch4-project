@@ -88,7 +88,9 @@ void initial_conditions(int restart)
     y = (my_double)center_V[IDX(i,j,k)].y/LY_half;
     if(y>1.0) y=(2.0-y);
     Amp_x = (my_double)property.Amp_x;
-    fn=3.0*Amp_x*(4.0*nu)*pow(L,-2.0);
+    fn=3.0*Amp_x*(4.0*nu)*pow(LY,-2.0);
+    
+    //fprintf(stderr,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA fn = %e\n",fn);
 
     for (iy = 1; iy < 65; iy++){ 
       if( y >= channel_y[iy-1]  &&  y < channel_y[iy]){
@@ -100,7 +102,7 @@ void initial_conditions(int restart)
 
     val = fn*( channel_u[iym] + (channel_u[iyp] - channel_u[iym])*(y - channel_y[iym])/(channel_y[iyp] - channel_y[iym]) );
 
-    //fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
+    fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
         /* Profile along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*val;  //*sqrt(fn/LY)
