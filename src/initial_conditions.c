@@ -100,7 +100,7 @@ void initial_conditions(int restart)
 
     val = fn*( channel_u[iym] + (channel_u[iyp] - channel_u[iym])*(y - channel_y[iym])/(channel_y[iyp] - channel_y[iym]) );
 
-    fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
+    //fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
         /* Profile along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*val;  //*sqrt(fn/LY)
