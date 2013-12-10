@@ -103,7 +103,7 @@ void initial_conditions(int restart)
     fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
         /* Profile along x */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  3.0*sqrt(fn/LY)*wgt[pp]*c[pp].x*val;
+	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*val;  //*sqrt(fn/LY)
 
 	 free(channel_y); 
 	 free(channel_u); 
