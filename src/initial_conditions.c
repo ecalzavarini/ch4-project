@@ -7,6 +7,9 @@ void initial_conditions(int restart)
   my_double fn,kn;
   my_double y,x;
   my_double L,LX,LY;
+  my_double LY_half;
+  my_double val;
+  int iy,iyp,iym;
 
 
 #ifdef LB_FLUID
@@ -74,9 +77,37 @@ void initial_conditions(int restart)
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
-
 #endif  
 
+#ifdef LB_FLUID_INITIAL_CHANNEL 
+    /* first we load a turbulent channel profile*/
+    turbulent_channel_profile();
+
+    LY=(my_double)property.SY;
+    LY_half = LY/2.0;
+    y = (my_double)center_V[IDX(i,j,k)].y/LY_half;
+    if(y>1.0) y=(2.0-y);
+    Amp_x = (my_double)property.Amp_x;
+    fn=3.0*Amp_x*(4.0*nu)*pow(L,-2.0);
+
+    for (iy = 1; iy < 65; iy++){ 
+      if( y >= channel_y[iy-1]  &&  y < channel_y[iy]){
+       iym = iy-1;
+       iyp = iy;
+      }
+      //fprintf(stderr,"%d %d \n",iym,iyp);
+    }  
+
+    val = fn*( channel_u[iym] + (channel_u[iyp] - channel_u[iym])*(y - channel_y[iym])/(channel_y[iyp] - channel_y[iym]) );
+
+    fprintf(stdout,"%e %e \n",center_V[IDX(i,j,k)].y, val);
+        /* Profile along x */
+       	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*sqrt(fn/LY)*wgt[pp]*c[pp].x*val;
+
+	 free(channel_y); 
+	 free(channel_u); 
+#endif  
 
 #ifdef LB_FLUID_INITIAL_PERTURBATION 
     fn=1.e-2;
@@ -226,6 +257,103 @@ void initial_conditions(int restart)
 #ifdef LB_SCALAR
   sendrecv_borders_pop(h);
 #endif
+#endif
+
+}
+
+
+
+
+void turbulent_channel_profile(){
+
+int iy;
+
+channel_y  = (my_double*) malloc(sizeof(my_double)*65);
+channel_u  = (my_double*) malloc(sizeof(my_double)*65); 
+  /*
+# Authors: Moser, Kim & Mansour
+# Reference: DNS of Turbulent Channel Flow up to Re_tau=590, 1999,
+#            Physics of Fluids, vol 11, 943-945.
+# Numerical Method: Kim, Moin & Moser, 1987, J. Fluid Mech. vol 177, 133-166 
+# Re_tau = 178.12
+# Normalization: U_max, h 
+# Description: Mean velocities 
+# Filename: chan180/profiles/chan180.means 
+# Date File Created: Mar 01, 2000 
+#---------------- 
+# ny = 129,  Re = 178.12  
+  */
+/*  Number of points  N = 65 */   
+/*  y coordinate [0,1]    |   U(y) profile [0,1]  */
+channel_y[0]=0.000000e+00; channel_u[0]=0.000000e+00;
+channel_y[1]=3.011800e-04; channel_u[1]=2.930933e-03;
+channel_y[2]=1.204500e-03; channel_u[2]=1.171685e-02;
+channel_y[3]=2.709500e-03; channel_u[3]=2.633572e-02;
+channel_y[4]=4.815300e-03; channel_u[4]=4.674881e-02;
+channel_y[5]=7.520500e-03; channel_u[5]=7.288673e-02;
+channel_y[6]=1.082300e-02; channel_u[6]=1.046282e-01;
+channel_y[7]=1.472200e-02; channel_u[7]=1.417354e-01;
+channel_y[8]=1.921500e-02; channel_u[8]=1.837714e-01;
+channel_y[9]=2.429800e-02; channel_u[9]=2.300148e-01;
+channel_y[10]=2.996900e-02; channel_u[10]=2.794000e-01;
+channel_y[11]=3.622400e-02; channel_u[11]=3.305448e-01;
+channel_y[12]=4.306000e-02; channel_u[12]=3.819026e-01;
+channel_y[13]=5.047200e-02; channel_u[13]=4.319545e-01;
+channel_y[14]=5.845600e-02; channel_u[14]=4.794328e-01;
+channel_y[15]=6.700700e-02; channel_u[15]=5.234140e-01;
+channel_y[16]=7.612000e-02; channel_u[16]=5.634118e-01;
+channel_y[17]=8.579000e-02; channel_u[17]=5.992569e-01;
+channel_y[18]=9.601100e-02; channel_u[18]=6.311131e-01;
+channel_y[19]=1.067800e-01; channel_u[19]=6.593082e-01;
+channel_y[20]=1.180800e-01; channel_u[20]=6.841156e-01;
+channel_y[21]=1.299100e-01; channel_u[21]=7.060270e-01;
+channel_y[22]=1.422700e-01; channel_u[22]=7.254248e-01;
+channel_y[23]=1.551500e-01; channel_u[23]=7.425824e-01;
+channel_y[24]=1.685300e-01; channel_u[24]=7.578821e-01;
+channel_y[25]=1.824200e-01; channel_u[25]=7.715972e-01;
+channel_y[26]=1.967900e-01; channel_u[26]=7.840555e-01;
+channel_y[27]=2.116500e-01; channel_u[27]=7.954210e-01;
+channel_y[28]=2.269900e-01; channel_u[28]=8.059669e-01;
+channel_y[29]=2.427900e-01; channel_u[29]=8.158571e-01;
+channel_y[30]=2.590500e-01; channel_u[30]=8.251462e-01;
+channel_y[31]=2.757500e-01; channel_u[31]=8.340528e-01;
+channel_y[32]=2.928900e-01; channel_u[32]=8.425223e-01;
+channel_y[33]=3.104600e-01; channel_u[33]=8.507185e-01;
+channel_y[34]=3.284400e-01; channel_u[34]=8.586416e-01;
+channel_y[35]=3.468300e-01; channel_u[35]=8.663461e-01;
+channel_y[36]=3.656100e-01; channel_u[36]=8.738867e-01;
+channel_y[37]=3.847700e-01; channel_u[37]=8.812633e-01;
+channel_y[38]=4.043000e-01; channel_u[38]=8.884760e-01;
+channel_y[39]=4.241900e-01; channel_u[39]=8.955248e-01;
+channel_y[40]=4.444300e-01; channel_u[40]=9.024097e-01;
+channel_y[41]=4.650000e-01; channel_u[41]=9.090760e-01;
+channel_y[42]=4.859000e-01; channel_u[42]=9.155784e-01;
+channel_y[43]=5.071000e-01; channel_u[43]=9.219168e-01;
+channel_y[44]=5.286000e-01; channel_u[44]=9.280914e-01;
+channel_y[45]=5.503900e-01; channel_u[45]=9.340473e-01;
+channel_y[46]=5.724400e-01; channel_u[46]=9.398394e-01;
+channel_y[47]=5.947600e-01; channel_u[47]=9.454128e-01;
+channel_y[48]=6.173200e-01; channel_u[48]=9.507677e-01;
+channel_y[49]=6.401000e-01; channel_u[49]=9.559040e-01;
+channel_y[50]=6.631100e-01; channel_u[50]=9.608765e-01;
+channel_y[51]=6.863200e-01; channel_u[51]=9.656303e-01;
+channel_y[52]=7.097200e-01; channel_u[52]=9.702202e-01;
+channel_y[53]=7.332900e-01; channel_u[53]=9.745369e-01;
+channel_y[54]=7.570200e-01; channel_u[54]=9.786897e-01;
+channel_y[55]=7.809000e-01; channel_u[55]=9.825146e-01;
+channel_y[56]=8.049100e-01; channel_u[56]=9.860117e-01;
+channel_y[57]=8.290400e-01; channel_u[57]=9.891809e-01;
+channel_y[58]=8.532700e-01; channel_u[58]=9.919677e-01;
+channel_y[59]=8.775900e-01; channel_u[59]=9.943719e-01;
+channel_y[60]=9.019800e-01; channel_u[60]=9.963936e-01;
+channel_y[61]=9.264400e-01; channel_u[61]=9.979783e-01;
+channel_y[62]=9.509300e-01; channel_u[62]=9.991257e-01;
+channel_y[63]=9.754600e-01; channel_u[63]=9.997814e-01;
+channel_y[64]=1.000000e+00; channel_u[64]=1.000000e+00;
+
+#ifdef DEBUG
+for (iy = 0; iy < 65; iy++) 
+  fprintf(stderr,"%d %e %e\n",iy, channel_y[iy],channel_y[iy]);
 #endif
 
 }

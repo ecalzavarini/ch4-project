@@ -741,14 +741,17 @@ void add_forcing(){
   int i, j, k, pp;
   my_double invtau = 1.0/property.tau_u;
   pop f_eq;
-  my_double fac = (1.0-0.5*invtau);
+  my_double fac;
   vector d;
   my_double ux,uy,uz,cu;
   vector vel;
   my_double rho ,temp;
   pop p_eq , g_eq;
   my_double mask;
-  my_double fac;
+
+#ifdef METHOD_FORCING_GUO
+  my_double fac = (1.0-0.5*invtau);
+#endif
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)

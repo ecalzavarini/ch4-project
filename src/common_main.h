@@ -51,6 +51,9 @@ int LNXG_START , LNYG_START , LNZG_START;
 /* Array of properties*/
 prop property;
 
+/* for intial conditions */
+my_double *channel_u, *channel_y;
+
 /* Array of outputs */
 output out_local,out_all;
 output *ruler_x_local, *ruler_y_local, *ruler_z_local;
