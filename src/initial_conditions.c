@@ -87,8 +87,7 @@ void initial_conditions(int restart)
     LY_half = LY/2.0;
     y = (my_double)center_V[IDX(i,j,k)].y/LY_half;
     if(y>1.0) y=(2.0-y);
-    Amp_x = (my_double)property.Amp_x;
-    fn=3.0*Amp_x*(4.0*nu)*pow(LY,-2.0);
+    fn = (my_double)property.Amp_x;
     
     //fprintf(stderr,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA fn = %e\n",fn);
 

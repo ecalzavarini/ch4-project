@@ -612,10 +612,19 @@ void build_forcing(){
 	force[IDX(i,j,k)].z = 0.0;
 
 #ifdef LB_FLUID_FORCING_POISEUILLE 
-	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is just an arbitrary choice */
+	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
+	/* Here Amp indicates the maximal velocity at the center of the channel , note that in poiseuille flow U_max = Force * L^2/(8 \nu)  */
 	force[IDX(i,j,k)].x += 2.0*property.Amp_x*((4.*nu)*pow(LY,-2.0));  
 	force[IDX(i,j,k)].y += 2.0*property.Amp_y*((4.*nu)*pow(LX,-2.0));  
 	force[IDX(i,j,k)].z += 2.0*property.Amp_z*((4.*nu)*pow(LY,-2.0));  
+#endif
+
+#ifdef LB_FLUID_FORCING_CHANNEL
+	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
+	/* Here Amp indicates the maximal velocity at the center of the turbulent channel , note that in this case we write U_max = sqrt(Force*L/2)  */
+	force[IDX(i,j,k)].x += 2.0*pow(property.Amp_x,2.0)/LY;
+	force[IDX(i,j,k)].y += 2.0*pow(property.Amp_y,2.0)/LX;
+	force[IDX(i,j,k)].z += 2.0*pow(property.Amp_z,2.0)/LY;
 #endif
 
 #ifdef LB_FLUID_FORCING_KOLMOGOROV 

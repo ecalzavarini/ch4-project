@@ -125,6 +125,18 @@ void assign_parameters(){
   fprintf(stderr,"Properties:\Amp_x %g\n",(double)property.Amp_x);
   fprintf(stderr,"Properties:\Amp_y %g\n",(double)property.Amp_y);
   fprintf(stderr,"Properties:\Amp_z %g\n",(double)property.Amp_z);
+#ifdef LB_FLUID_FORCING_POISEUILLE
+  fprintf(stderr,"Reynolds (Poiseuille) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
+  fout = fopen("numbers.dat","a");
+  fprintf(stdout,"Reynolds (Poiseuille) %e\n", property.Amp_x * property.SY /property.nu);
+  fclose(fout); 
+#endif
+#ifdef LB_FLUID_FORCING_CHANNEL
+  fprintf(stderr,"Reynolds (turbulent shar) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
+  fout = fopen("numbers.dat","a");
+  fprintf(stdout,"Reynolds (turbulent shear) %e\n", property.Amp_x * property.SY /property.nu);
+  fclose(fout); 
+#endif
 #endif
 #endif
 
