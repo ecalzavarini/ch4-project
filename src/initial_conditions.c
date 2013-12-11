@@ -111,17 +111,10 @@ void initial_conditions(int restart)
 #endif  
 
 #ifdef LB_FLUID_INITIAL_PERTURBATION 
-    fn=1.e-2;
-    kn=16;
-    //Lx=(my_double)property.SY; //NX;
-    //x = (my_double)center_V[IDX(i,j,k)].x;
-    L=(my_double)property.SX; //NX;
-    x = (my_double)center_V[IDX(i,j,k)].x;
-
-        /* along x */
+    fn=0.2*property.Amp_x;
+        /* random component of amplitude 0.1 U_max in each direction */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] += fn*wgt[pp]*( (2.0*drand48()-1.0)*c[pp].x + (2.0*drand48()-1.0)*c[pp].y + (2.0*drand48()-1.0)*c[pp].z );  
-	    //3.0*wgt[pp]*c[pp].y*fn*sin(kn*two_pi*x/L);
+	  p[IDX(i,j,k)].p[pp] += 3.0*fn*wgt[pp]*( (2.0*drand48()-1.0)*c[pp].x + (2.0*drand48()-1.0)*c[pp].y + (2.0*drand48()-1.0)*c[pp].z );  
 
 #endif 
 
