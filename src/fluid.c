@@ -627,6 +627,14 @@ void build_forcing(){
 	force[IDX(i,j,k)].z += 2.0*pow(property.Amp_z,2.0)/LY;
 #endif
 
+#ifdef LB_FLUID_FORCING_CONSTANT_POWER
+	/* Here Amp indicates the power Force*velocity  */
+	/* note that out_all.uxt is computed only when we dumpe the averages */	
+	if(out_all.ux != 0) force[IDX(i,j,k)].x += property.Amp_x/out_all.ux; 
+	if(out_all.uy != 0) force[IDX(i,j,k)].y += property.Amp_y/out_all.uy;
+	if(out_all.uz != 0) force[IDX(i,j,k)].z += property.Amp_z/out_all.uz;
+#endif
+
 #ifdef LB_FLUID_FORCING_KOLMOGOROV 
  
     kn=1.0;
