@@ -11,8 +11,10 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
 	FILE           *fin, *fout;
 #endif
 
+   my_double fac, dt_over_tau;
+   pop ff_eq;
 #ifdef METHOD_REDEFINED_POP
-  my_double fac;
+  //my_double fac;
   pop f0;
   pop fxp1, fxm1 ,fxm2 ,fxp2;
   pop fyp1, fym1, fym2, fyp2; 
@@ -43,6 +45,20 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
       }
   /* send the borders, needed to compute the advection */ 
         sendrecv_borders_pop(f_eq);
+#endif
+
+#ifdef METHOD_COLLISION_IMPLICIT
+      /* We change f in  ( f + (dt/tau)f_eq ) /(1+dt/tau)  */
+	dt_over_tau = property.time_dt/property.tau_u;  // be careful only fluid!!!
+	fac = 1./(1. + dt_over_tau);
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+      	ff_eq=equilibrium(f,i,j,k);
+	for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp]= fac*(f[IDX(i,j,k)].p[pp] + dt_over_tau* ff_eq.p[pp] );
+      }
+  /* send the borders, needed to compute the advection */ 
+        sendrecv_borders_pop(f);
 #endif
 
   /* check this index */
@@ -495,15 +511,81 @@ adv=0.0;
       }/* for i, j , k */
 
 #ifdef METHOD_STREAMING
+#ifndef METHOD_STREAMING_INTERPOLATE
  for(k=BRD;k<LNZ+BRD;k++){
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
 		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
-     
+   
       }/* i */
    }/* j */
  }/* k */
+#else
+ /* here METHOD_STREAMING_INTERPOLATE is active */
+ /* Interpolation method when the grid is cartesian rectangular, the quick algorithm can be written in a more compact form */ 
+ if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0){
+   aux= 1.0 + interp2_xp[IDX(i,j,k)] - interp3_xm[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] 
+				      + (aux - interp_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_xm[IDX(i,j,k)])*f[IDX(i-1,j,k)].p[pp] 
+				      + interp4_xm[IDX(i,j,k)]*f[IDX(i-2,j,k)].p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_xm[IDX(i,j,k)] - interp3_xp[IDX(i,j,k)];
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_xp[IDX(i,j,k)])*f[IDX(i+1,j,k)].p[pp] 
+				      - interp4_xp[IDX(i,j,k)]*f[IDX(i+2,j,k)].p[pp] 
+				      - interp_xm[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] 
+				      - (aux - interp_xm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_yp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_yp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0  + interp2_yp[IDX(i,j,k)] - interp3_ym[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      interp_yp[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] 
+				      + (aux - interp_yp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_ym[IDX(i,j,k)])*f[IDX(i,j-1,k)].p[pp] 
+				      + interp4_ym[IDX(i,j,k)]*f[IDX(i,j-2,k)].p[pp] 
+				       );
+   }else{
+   aux = 1.0 + interp2_ym[IDX(i,j,k)] - interp3_yp[IDX(i,j,k)];
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_yp[IDX(i,j,k)])*f[IDX(i,j+1,k)].p[pp] 
+				      - interp4_yp[IDX(i,j,k)]*f[IDX(i,j+2,k)].p[pp] 
+				      - interp_ym[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] 
+				      - (aux - interp_ym[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+
+
+ if(coeff_zp[IDX(i,j,k)].p[pp] != 0.0){
+   if(coeff_zp[IDX(i,j,k)].p[pp] > 0.0){
+   aux = 1.0 + interp2_zp[IDX(i,j,k)] - interp3_zm[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      interp_zp[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] 
+				      + (aux - interp_zp[IDX(i,j,k)] )*f[IDX(i,j,k)].p[pp] 
+				      - (aux + interp4_zm[IDX(i,j,k)])*f[IDX(i,j,k-1)].p[pp] 
+				      + interp4_zm[IDX(i,j,k)]*f[IDX(i,j,k-2)].p[pp]
+				       );
+   }else{
+   aux = 1.0 + interp2_zm[IDX(i,j,k)] - interp3_zp[IDX(i,j,k)];
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( 
+				      (aux + interp4_zp[IDX(i,j,k)])*f[IDX(i,j,k+1)].p[pp] 
+				      - interp4_zp[IDX(i,j,k)]*f[IDX(i,j,k+2)].p[pp] 
+				      -interp_zm[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] 
+				      - (aux - interp_zm[IDX(i,j,k)] )*f[IDX(i,j,k)].p[pp] 
+				       );
+   }
+ }
+#endif
 #endif
 }
 
@@ -518,6 +600,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
   my_double fac;
  
     invtau = 1.0/tau;
+
+#ifndef METHOD_COLLISION_IMPLICIT
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -587,6 +671,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 
 	}/* pp */
       }/* i,j,k */
+#endif
+
 }
 
 
@@ -767,7 +853,7 @@ void add_forcing(){
   my_double mask;
 
 #ifdef METHOD_FORCING_GUO
-  my_double fac = (1.0-0.5*invtau);
+  fac = (1.0-0.5*invtau);
 #endif
 
   for(k=BRD;k<LNZ+BRD;k++)
