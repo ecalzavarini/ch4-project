@@ -14,7 +14,7 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
    my_double fac, dt_over_tau;
    pop ff_eq;
 #ifdef METHOD_REDEFINED_POP
-  //my_double fac;
+  my_double fac2;
   pop f0;
   pop fxp1, fxm1 ,fxm2 ,fxp2;
   pop fyp1, fym1, fym2, fyp2; 
@@ -144,7 +144,7 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
  /* The population to be advected is different */
  /* it is  f + (dt/(2*tau))*(f_eq-f) */
  /* we prepare such a population here */
-fac = 0.5*(property.time_dt/property.tau_u); // be careful works only for fluid not for temperature!!!
+ fac = 0.5*(property.time_dt/property.tau_u); // be careful works only for fluid not for temperature!!!
 
 f0.p[pp]  = f[IDX(i,j,k)].p[pp] + fac*(f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp]);
 
@@ -856,6 +856,11 @@ void add_forcing(){
   fac = (1.0-0.5*invtau);
 #endif
 
+#ifdef METHOD_REDEFINED_POP
+  fac = 1.0;//(1.0-property.time_dt*invtau);
+#endif
+
+
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
@@ -888,9 +893,16 @@ void add_forcing(){
 #ifdef LB_FLUID_FORCING
 
 #ifndef METHOD_FORCING_GUO	  	  	  
+	  //#ifndef METHOD_REDEFINED_POP
 	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
+	    //#else
+	    /* here METHOD_REDEFINED_POP is on */
+	    //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
+            //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
+            //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
+	    //#endif
 	    
 #ifdef METHOD_LOG
 	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);

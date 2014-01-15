@@ -110,7 +110,11 @@ void assign_parameters(){
 #ifdef METHOD_STREAMING
   property.nu = (property.tau_u-0.5)/3.0;
 #else
+#ifdef METHOD_REDEFINED_POP
+  property.nu = (property.tau_u-0.5*property.time_dt)/3.0;
+#else
   property.nu = property.tau_u/3.0;
+#endif
 #endif
   fprintf(stderr,"viscosity %g\n",(double)property.nu);
 #ifdef LB_FLUID_FORCING
