@@ -138,7 +138,7 @@ extern my_double *landscape;
 #endif
 
 #ifdef LB_TEMPERATURE
-extern pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g;
+extern pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g , *g_eq;
 extern my_double *t;
 #ifdef LB_TEMPERATURE_FORCING
 extern my_double *t_source;

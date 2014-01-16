@@ -32,7 +32,7 @@ void boundary_and_pbc_conditions_for_streaming();
 void initial_conditions(int restart);
 
 /* fluid.c */
-void add_collision(pop * f, pop *rhs_f,my_double tau);
+void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq);
 void compute_advection(pop * f, pop *rhs_f, pop *f_eq);
 void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);

@@ -141,7 +141,7 @@ my_double *landscape;
 #endif
 
 #ifdef LB_TEMPERATURE
-pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g;
+pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g, *g_eq;
 my_double *t;
 #ifdef LB_TEMPERATURE_FORCING
 my_double *t_source;

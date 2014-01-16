@@ -50,15 +50,15 @@ int main(int argc, char **argv){
 	  
 #ifdef LB_FLUID
 	  compute_advection(p,rhs_p,p_eq);
-	  add_collision(p,rhs_p,property.tau_u);
+	  add_collision(p,rhs_p,property.tau_u,p_eq);
 #endif
 #ifdef LB_TEMPERATURE
-	  compute_advection(g,rhs_g,p_eq);
-	  add_collision(g,rhs_g,property.tau_t);
+	  compute_advection(g,rhs_g,g_eq);
+	  add_collision(g,rhs_g,property.tau_t,g_eq);
 #endif
 #ifdef LB_SCALAR
-	  compute_advection(h,rhs_h,p_eq);
-	  add_collision(h,rhs_h,property.tau_s);
+	  compute_advection(h,rhs_h,h_eq);
+	  add_collision(h,rhs_h,property.tau_s,h_eq);
 #endif 
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)

@@ -28,7 +28,7 @@
 
 /* FLUID */
 #define LB_FLUID
-#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
@@ -57,8 +57,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG

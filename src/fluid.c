@@ -51,11 +51,13 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
       /* We change f in  ( f + (dt/tau)f_eq ) /(1+dt/tau)  */
 	dt_over_tau = property.time_dt/property.tau_u;  // be careful only fluid!!!
 	fac = 1./(1. + dt_over_tau);
+	//fac= exp(-dt_over_tau);
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
       	ff_eq=equilibrium(f,i,j,k);
-	for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp]= fac*(f[IDX(i,j,k)].p[pp] + dt_over_tau* ff_eq.p[pp] );
+	for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] = fac*(f[IDX(i,j,k)].p[pp] + dt_over_tau* ff_eq.p[pp] );
+	//for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp]= ff_eq.p[pp] + fac*(f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
       }
   /* send the borders, needed to compute the advection */ 
         sendrecv_borders_pop(f);
@@ -591,10 +593,10 @@ adv=0.0;
 
 
 
-void add_collision(pop *f, pop *rhs_f, my_double tau){
+void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq){
   int i, j, k, pp;
   my_double invtau;
-  pop f_eq;
+  pop ff_eq;
   pop f_eq_xp,f_eq_xm,f_eq_yp,f_eq_ym,f_eq_zp,f_eq_zm;
   pop fcoll, fcoll_xp,fcoll_xm,fcoll_yp,fcoll_ym,fcoll_zp,fcoll_zm;
   my_double fac;
@@ -606,13 +608,19 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-     
-	f_eq=equilibrium(f,i,j,k);
+
+#ifdef METHOD_REDEFINED_POP
+	ff_eq = f_eq[IDX(i,j,k)];
+#else     
+	ff_eq=equilibrium(f,i,j,k);
+#endif
+
+
 #ifndef METHOD_EXPONENTIAL
-       	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+       	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
 
 #ifdef METHOD_LOG
-	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] =  ( exp(invtau*(f_eq.p[pp] - f[IDX(i,j,k)].p[pp]) ) - 1.0);
+	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] =  ( exp(invtau*(ff_eq.p[pp] - f[IDX(i,j,k)].p[pp]) ) - 1.0);
 #endif
 
 #endif
@@ -645,7 +653,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau){
 
 	/* collision */
 #ifdef METHOD_EXPONENTIAL
-	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * f_eq.p[pp];
+	  	rhs_f[IDX(i,j,k)].p[pp] +=   invtau * ff_eq.p[pp];
 #else
 
 		
@@ -860,6 +868,9 @@ void add_forcing(){
   fac = 1.0;//(1.0-property.time_dt*invtau);
 #endif
 
+  //#ifdef METHOD_COLLISION_IMPLICIT
+  //fac = 1.0;// + exp(-property.time_dt*invtau);
+  //#endif
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -894,11 +905,12 @@ void add_forcing(){
 
 #ifndef METHOD_FORCING_GUO	  	  	  
 	  //#ifndef METHOD_REDEFINED_POP
+          //  #ifndef METHOD_COLLISION_IMPLICIT
 	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
             rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
 	    //#else
-	    /* here METHOD_REDEFINED_POP is on */
+	    ///* here METHOD_REDEFINED_POP is on */
 	    //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
             //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
             //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
