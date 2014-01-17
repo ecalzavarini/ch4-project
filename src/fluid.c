@@ -38,13 +38,54 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
 
 #ifdef METHOD_REDEFINED_POP
       /* We store the equilibrium distribution in all points */
-  for(k=BRD;k<LNZ+BRD;k++)
-    for(j=BRD;j<LNY+BRD;j++)
-      for(i=BRD;i<LNX+BRD;i++){ 
+ for(k=BRD;k<LNZ+BRD;k++)
+   for(j=BRD;j<LNY+BRD;j++)
+    for(i=BRD;i<LNX+BRD;i++){ 
       	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
       }
   /* send the borders, needed to compute the advection */ 
-        sendrecv_borders_pop(f_eq);
+     sendrecv_borders_pop(f_eq);
+
+#ifdef LB_FLUID_BC_Y
+  vector vel;
+  my_double rho;
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+if(LNY_END == NY){
+	j = LNY+BRD-1;
+
+	  vel.x = -u[IDX(i, j, k)].x;
+	  vel.y = -u[IDX(i, j, k)].y;
+	  vel.z = -u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+
+	  vel.x = -u[IDX(i, j-1, k)].x;
+	  vel.y = -u[IDX(i, j-1, k)].y;
+	  vel.z = -u[IDX(i, j-1, k)].z;
+	  rho = dens[IDX(i, j-1, k)];
+	  p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
+ }
+
+if(LNY_START == 0){
+       j = BRD; 
+
+	  vel.x = -u[IDX(i, j, k)].x;
+	  vel.y = -u[IDX(i, j, k)].y;
+	  vel.z = -u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
+
+	  vel.x = -u[IDX(i, j+1, k)].x;
+	  vel.y = -u[IDX(i, j+1, k)].y;
+	  vel.z = -u[IDX(i, j+1, k)].z;
+	  rho = dens[IDX(i, j+1, k)];
+	  p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho); 
+ }
+
+    }
+#endif
 #endif
 
 #ifdef METHOD_COLLISION_IMPLICIT

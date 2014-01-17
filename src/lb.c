@@ -111,10 +111,9 @@ pop equilibrium(pop * f, int i, int j, int k){
 #else
 	rhof = m(f[IDX(i, j, k)]);
 #endif
-
 	ux = u[IDX(i, j, k)].x;
 	uy = u[IDX(i, j, k)].y;
-	uz = u[IDX(i, j, k)].z;
+	uz = u[IDX(i, j, k)].z;				
 
 	u2 = (ux * ux + uy * uy + uz * uz);
 

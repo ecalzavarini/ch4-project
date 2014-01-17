@@ -26,8 +26,8 @@ void boundary_conditions(){
   int i,j,k,pp;
   vector vel;
   my_double rho,fac;
-  pop p_eq,p_neq;
-
+  pop p_eq;
+  pop p_neq;
 
 	/* X direction */	
 #ifdef LB_FLUID_BC_X
