@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
+void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
 
   int i,j,k,pp;
   my_double adv,aux;
@@ -46,51 +46,12 @@ void compute_advection(pop *f, pop *rhs_f, pop *f_eq){
   /* send the borders, needed to compute the advection */ 
      sendrecv_borders_pop(f_eq);
 
-#ifdef LB_FLUID_BC_Y
-  vector vel;
-  my_double rho;
-  for (i = BRD; i < LNX + BRD; i++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
-
-if(LNY_END == NY){
-	j = LNY+BRD-1;
-
-	  vel.x = -u[IDX(i, j, k)].x;
-	  vel.y = -u[IDX(i, j, k)].y;
-	  vel.z = -u[IDX(i, j, k)].z;
-	  rho = dens[IDX(i, j, k)];
-	  p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
-
-	  vel.x = -u[IDX(i, j-1, k)].x;
-	  vel.y = -u[IDX(i, j-1, k)].y;
-	  vel.z = -u[IDX(i, j-1, k)].z;
-	  rho = dens[IDX(i, j-1, k)];
-	  p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
- }
-
-if(LNY_START == 0){
-       j = BRD; 
-
-	  vel.x = -u[IDX(i, j, k)].x;
-	  vel.y = -u[IDX(i, j, k)].y;
-	  vel.z = -u[IDX(i, j, k)].z;
-	  rho = dens[IDX(i, j, k)];
-	  p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
-
-	  vel.x = -u[IDX(i, j+1, k)].x;
-	  vel.y = -u[IDX(i, j+1, k)].y;
-	  vel.z = -u[IDX(i, j+1, k)].z;
-	  rho = dens[IDX(i, j+1, k)];
-	  p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho); 
- }
-
-    }
-#endif
+     boundary_conditions_for_equilibrium();
 #endif
 
 #ifdef METHOD_COLLISION_IMPLICIT
       /* We change f in  ( f + (dt/tau)f_eq ) /(1+dt/tau)  */
-	dt_over_tau = property.time_dt/property.tau_u;  // be careful only fluid!!!
+	dt_over_tau = property.time_dt/tau;  
 	fac = 1./(1. + dt_over_tau);
 	//fac= exp(-dt_over_tau);
   for(k=BRD;k<LNZ+BRD;k++)
@@ -187,7 +148,7 @@ if(LNY_START == 0){
  /* The population to be advected is different */
  /* it is  f + (dt/(2*tau))*(f_eq-f) */
  /* we prepare such a population here */
- fac = 0.5*(property.time_dt/property.tau_u); // be careful works only for fluid not for temperature!!!
+ fac = 0.5*(property.time_dt/tau); 
 
 f0.p[pp]  = f[IDX(i,j,k)].p[pp] + fac*(f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp]);
 

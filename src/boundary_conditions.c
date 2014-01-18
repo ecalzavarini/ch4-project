@@ -601,3 +601,64 @@ if(LNX_START == 0){
 }/* end of bc for streaming */
 #endif
 //#endif
+
+
+
+/***********************************************/
+
+#ifdef LB_FLUID_BC
+void boundary_conditions_for_equilibrium(){
+
+  int i,j,k;
+  vector vel;
+  my_double rho;
+
+
+  /* y direction */
+#ifdef LB_FLUID_BC_Y
+ 
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+      /*  top  */
+if(LNY_END == NY){
+	j = LNY+BRD-1;
+
+	/* no slip is the default */
+	  vel.x = -u[IDX(i, j, k)].x;
+	  vel.y = -u[IDX(i, j, k)].y;
+	  vel.z = -u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+
+	  vel.x = -u[IDX(i, j-1, k)].x;
+	  vel.y = -u[IDX(i, j-1, k)].y;
+	  vel.z = -u[IDX(i, j-1, k)].z;
+	  rho = dens[IDX(i, j-1, k)];
+	  p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
+ }
+
+    /*  bottom  */
+if(LNY_START == 0){
+       j = BRD; 
+
+	/* no slip is the default */
+	  vel.x = -u[IDX(i, j, k)].x;
+	  vel.y = -u[IDX(i, j, k)].y;
+	  vel.z = -u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
+
+	  vel.x = -u[IDX(i, j+1, k)].x;
+	  vel.y = -u[IDX(i, j+1, k)].y;
+	  vel.z = -u[IDX(i, j+1, k)].z;
+	  rho = dens[IDX(i, j+1, k)];
+	  p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho); 
+ }
+
+    }
+#endif
+
+}
+
+#endif

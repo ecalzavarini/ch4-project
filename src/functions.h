@@ -27,13 +27,14 @@ void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,pop *old_old_rhs_f,my_doubl
 /* boundary_conditions.c */
 void boundary_conditions();
 void boundary_and_pbc_conditions_for_streaming();
+void boundary_conditions_for_equilibrium();
 
 /* initial_conditions.c */
 void initial_conditions(int restart);
 
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq);
-void compute_advection(pop * f, pop *rhs_f, pop *f_eq);
+void compute_advection(pop * f, pop *rhs_f, my_double tau, pop *f_eq);
 void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);
