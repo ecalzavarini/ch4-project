@@ -609,7 +609,7 @@ if(LNX_START == 0){
 #ifdef LB_FLUID_BC
 void boundary_conditions_for_equilibrium(){
 
-  int i,j,k;
+  int i,j,k,pp;
   vector vel;
   my_double rho;
 
@@ -620,22 +620,25 @@ void boundary_conditions_for_equilibrium(){
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
 
+      for(pp=0;pp<NPOP;pp++){
       /*  top  */
 if(LNY_END == NY){
 	j = LNY+BRD-1;
 
 	/* no slip is the default */
-	  vel.x = -u[IDX(i, j, k)].x;
-	  vel.y = -u[IDX(i, j, k)].y;
-	  vel.z = -u[IDX(i, j, k)].z;
-	  rho = dens[IDX(i, j, k)];
-	  p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+	//vel.x = -u[IDX(i, j, k)].x;
+	//vel.y = -u[IDX(i, j, k)].y;
+	//vel.z = -u[IDX(i, j, k)].z;
+	//rho = dens[IDX(i, j, k)];
+	//p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+	  p_eq[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 
-	  vel.x = -u[IDX(i, j-1, k)].x;
-	  vel.y = -u[IDX(i, j-1, k)].y;
-	  vel.z = -u[IDX(i, j-1, k)].z;
-	  rho = dens[IDX(i, j-1, k)];
-	  p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
+	  //vel.x = -u[IDX(i, j-1, k)].x;
+	  //vel.y = -u[IDX(i, j-1, k)].y;
+	  //vel.z = -u[IDX(i, j-1, k)].z;
+	  //rho = dens[IDX(i, j-1, k)];
+	  //p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
+	  p_eq[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
  }
 
     /*  bottom  */
@@ -643,19 +646,22 @@ if(LNY_START == 0){
        j = BRD; 
 
 	/* no slip is the default */
-	  vel.x = -u[IDX(i, j, k)].x;
-	  vel.y = -u[IDX(i, j, k)].y;
-	  vel.z = -u[IDX(i, j, k)].z;
-	  rho = dens[IDX(i, j, k)];
-	  p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
+       //vel.x = -u[IDX(i, j, k)].x;
+       //vel.y = -u[IDX(i, j, k)].y;
+       //vel.z = -u[IDX(i, j, k)].z;
+       //rho = dens[IDX(i, j, k)];
+       //p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
+	 p_eq[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 
-	  vel.x = -u[IDX(i, j+1, k)].x;
-	  vel.y = -u[IDX(i, j+1, k)].y;
-	  vel.z = -u[IDX(i, j+1, k)].z;
-	  rho = dens[IDX(i, j+1, k)];
-	  p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho); 
+       //vel.x = -u[IDX(i, j+1, k)].x;
+       //vel.y = -u[IDX(i, j+1, k)].y;
+       //vel.z = -u[IDX(i, j+1, k)].z;
+       //rho = dens[IDX(i, j+1, k)];
+       //p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho);
+	  p_eq[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[inv[pp]]; 
  }
 
+      }
     }
 #endif
 
