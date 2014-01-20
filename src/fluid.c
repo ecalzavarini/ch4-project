@@ -230,6 +230,18 @@ fzp2.p[pp] = f[IDX(i,j,k+2)].p[pp] + fac*(f_eq[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k
    }
  }
 
+ /**** method centered only on the borders */
+if((LNY_END == NY && j==BRD ) || (LNY_START == 0 && j==LNY+BRD-1)){
+	  adv += coeff_xp[IDX(i,j,k)].p[pp]*( (1.0 - interp_xp[IDX(i,j,k)])* fxp1.p[pp] + interp_xp[IDX(i,j,k)]*f0.p[pp] )+ 
+	         coeff_xm[IDX(i,j,k)].p[pp]*( (1.0 - interp_xm[IDX(i,j,k)])* fxm1.p[pp] + interp_xm[IDX(i,j,k)]*f0.p[pp] );
+	  
+	  adv += coeff_yp[IDX(i,j,k)].p[pp]*( (1.0 - interp_yp[IDX(i,j,k)])* fyp1.p[pp] + interp_yp[IDX(i,j,k)]*f0.p[pp] )+
+	         coeff_ym[IDX(i,j,k)].p[pp]*( (1.0 - interp_ym[IDX(i,j,k)])* fym1.p[pp] + interp_ym[IDX(i,j,k)]*f0.p[pp] );
+
+          adv += coeff_zp[IDX(i,j,k)].p[pp]*( (1.0 - interp_zp[IDX(i,j,k)])* fzp1.p[pp] + interp_zp[IDX(i,j,k)]*f0.p[pp] )+
+                 coeff_zm[IDX(i,j,k)].p[pp]*( (1.0 - interp_zm[IDX(i,j,k)])* fzm1.p[pp] + interp_zm[IDX(i,j,k)]*f0.p[pp] );
+ }
+
  /* end of redefined pop method */
 #else
  /* when the grid is cartesian rectangular, the quick algorithm can be written in a more compact form */ 
