@@ -46,20 +46,31 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
   /* send the borders, needed to compute the advection */ 
      sendrecv_borders_pop(f_eq);
 
+#ifdef LB_FLUID_BC
      boundary_conditions_for_equilibrium();
+#endif
 #endif
 
 #ifdef METHOD_COLLISION_IMPLICIT
       /* We change f in  ( f + (dt/tau)f_eq ) /(1+dt/tau)  */
 	dt_over_tau = property.time_dt/tau;  
 	fac = 1./(1. + dt_over_tau);
-	//fac= exp(-dt_over_tau);
+
+/* We store the equilibrium distribution in all points */
+ for(k=BRD;k<LNZ+BRD;k++)
+   for(j=BRD;j<LNY+BRD;j++)
+    for(i=BRD;i<LNX+BRD;i++){ 
+      	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
+      }
+
+#ifdef LB_FLUID_BC
+	/* bc for equilibrium function */
+        boundary_conditions_for_equilibrium();
+#endif
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-      	ff_eq=equilibrium(f,i,j,k);
-	for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] = fac*(f[IDX(i,j,k)].p[pp] + dt_over_tau* ff_eq.p[pp] );
-	//for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp]= ff_eq.p[pp] + fac*(f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
+	for(pp=1;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] = fac*(f[IDX(i,j,k)].p[pp] + dt_over_tau* f_eq[IDX(i,j,k)].p[pp] );
       }
   /* send the borders, needed to compute the advection */ 
         sendrecv_borders_pop(f);
@@ -150,6 +161,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
  /* we prepare such a population here */
  fac = 0.5*(property.time_dt/tau); 
 
+
 f0.p[pp]  = f[IDX(i,j,k)].p[pp] + fac*(f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp]);
 
 fxp1.p[pp] = f[IDX(i+1,j,k)].p[pp] + fac*(f_eq[IDX(i+1,j,k)].p[pp] - f[IDX(i+1,j,k)].p[pp]);
@@ -229,6 +241,7 @@ fzp2.p[pp] = f[IDX(i,j,k+2)].p[pp] + fac*(f_eq[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k
 				       );
    }
  }
+
 
  /* end of redefined pop method */
 #else

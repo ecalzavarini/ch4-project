@@ -461,7 +461,8 @@ void allocate_fields(){
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_p\n"); exit(-1);}
  set_to_zero_pop( rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-#ifdef METHOD_REDEFINED_POP
+ //#ifdef METHOD_REDEFINED_POP
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
  p_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(p_eq == NULL){ fprintf(stderr,"Not enough memory to allocate p_eq\n"); exit(-1);}
  set_to_zero_pop( p_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -572,7 +573,8 @@ ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
  if(rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_g\n"); exit(-1);}
  set_to_zero_pop( rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-#ifdef METHOD_REDEFINED_POP
+ //#ifdef METHOD_REDEFINED_POP
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
  g_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(g_eq == NULL){ fprintf(stderr,"Not enough memory to allocate g_eq\n"); exit(-1);}
  set_to_zero_pop( g_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -622,7 +624,8 @@ ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
  if(rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_h\n"); exit(-1);}
  set_to_zero_pop( rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-#ifdef METHOD_REDEFINED_POP
+ //#ifdef METHOD_REDEFINED_POP
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
  h_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(h_eq == NULL){ fprintf(stderr,"Not enough memory to allocate h_eq\n"); exit(-1);}
  set_to_zero_pop( h_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));

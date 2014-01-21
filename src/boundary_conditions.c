@@ -626,19 +626,8 @@ if(LNY_END == NY){
 	j = LNY+BRD-1;
 
 	/* no slip is the default */
-	//vel.x = -u[IDX(i, j, k)].x;
-	//vel.y = -u[IDX(i, j, k)].y;
-	//vel.z = -u[IDX(i, j, k)].z;
-	//rho = dens[IDX(i, j, k)];
-	//p_eq[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
 	  p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
-
-	  //vel.x = -u[IDX(i, j-1, k)].x;
-	  //vel.y = -u[IDX(i, j-1, k)].y;
-	  //vel.z = -u[IDX(i, j-1, k)].z;
-	  //rho = dens[IDX(i, j-1, k)];
-	  //p_eq[IDX(i,j+2,k)] = equilibrium_given_velocity(vel,rho);
-	  p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
+	  p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];	  
  }
 
     /*  bottom  */
@@ -646,19 +635,9 @@ if(LNY_START == 0){
        j = BRD; 
 
 	/* no slip is the default */
-       //vel.x = -u[IDX(i, j, k)].x;
-       //vel.y = -u[IDX(i, j, k)].y;
-       //vel.z = -u[IDX(i, j, k)].z;
-       //rho = dens[IDX(i, j, k)];
-       //p_eq[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
-       p_eq[IDX(i,j-1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
+             p_eq[IDX(i,j-1,k)].p[pp] =  p_eq[IDX(i,j,k)].p[inv[pp]];
+             p_eq[IDX(i,j-2,k)].p[pp] =  p_eq[IDX(i,j+1,k)].p[inv[pp]]; 	    
 
-       //vel.x = -u[IDX(i, j+1, k)].x;
-       //vel.y = -u[IDX(i, j+1, k)].y;
-       //vel.z = -u[IDX(i, j+1, k)].z;
-       //rho = dens[IDX(i, j+1, k)];
-       //p_eq[IDX(i,j-2,k)] = equilibrium_given_velocity(vel,rho);
-         p_eq[IDX(i,j-2,k)].p[pp] = p_eq[IDX(i,j+1,k)].p[inv[pp]]; 
  }
 
       }
@@ -668,3 +647,4 @@ if(LNY_START == 0){
 }
 
 #endif
+

@@ -490,8 +490,8 @@ void compute_volumes(){
 	  coeff_zp[IDX(i, j, k)].p[pp] = 0.5*scalar_product(N4567, c[pp])/V; 
 	  coeff_zm[IDX(i, j, k)].p[pp] = 0.5*scalar_product(N0123, c[pp])/V; 
 	  /*
-	  if(LNY_START == 0 && j == LNY-TWO_BRD-1) coeff_xp[IDX(i, j, k)].p[pp]=0.0;
-	  if(LNY_END == NY  && j == BRD) coeff_xm[IDX(i, j, k)].p[pp]=0.0;
+	  if(LNY_START == 0 && j == BRD ) coeff_ym[IDX(i, j, k)].p[pp]=0.0;
+	  if(LNY_END == NY  && j == LNY-TWO_BRD-1 ) coeff_yp[IDX(i, j, k)].p[pp]=0.0;
 	  */
 #ifdef DEBUG_HARD
 	/* Each processor prints its mesh */
@@ -1428,26 +1428,37 @@ void read_landscape(){
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
 	  */
-
+	  /*
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
 				  center.x = property.SX/2.0;
-				  center.y = property.SY/2.0;  /* not used */
+				  center.y = property.SY/2.0;  
 				  center.z = property.SZ/2.0;
 				  radius = 200.0;
 				  height = 300.0;
 				  landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
 
 				  center.x = property.SX/2.0 ;
-				  //center.y = property.SY/2.0;  /* not used */
 				  center.z = property.SZ/2.0 + 400;
 				  size.x = 80.0;
 				  size.y = 200.0;
 				  size.z =  80.0;
 				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
 				}
+	  */
 
+	               /*  set the walls to zero */
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+
+				  if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
+				    //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
+				      landscape[IDX(i, j, k)] = 1;
+				      }
+
+                             }
 
 }
 }
