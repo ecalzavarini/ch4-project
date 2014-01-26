@@ -173,9 +173,13 @@ if(LNY_END == NY){
 	*/
        	  //f[IDX(i,j+1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 
-       	p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+       p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+       //p[IDX(i,j+1,k)].p[pp] = wgt[pp]*dens[IDX(i,j,k)];
+       //if(c[pp].y < 0) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #ifdef METHOD_MYQUICK
        	p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
+        //p[IDX(i,j+2,k)].p[pp] = wgt[pp]*dens[IDX(i,j,k)];
+	//if(c[pp].y < 0) p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
 #endif
 
 #endif
@@ -215,8 +219,12 @@ if(LNY_START == 0){
 	  //f[IDX(i,j-1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
 	  
 	  p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	//if(c[pp].y < 0 ) p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[pp];
+	//if(c[pp].y > 0 ) p[IDX(i,j-1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #ifdef METHOD_MYQUICK
-       	  p[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[inv[pp]];
+       	  p[IDX(i,j-2,k)].p[pp] = p[IDX(i,j+1,k)].p[inv[pp]];	
+	//if(c[pp].y < 0.0 ) p[IDX(i,j-2,k)].p[pp] =  p[IDX(i,j,k)].p[pp];
+	//if(c[pp].y > 0.0 ) p[IDX(i,j-2,k)].p[pp] =  p[IDX(i,j+1,k)].p[inv[pp]];	 
 #endif
   
 #endif
@@ -612,39 +620,115 @@ void boundary_conditions_for_equilibrium(){
   int i,j,k,pp;
   vector vel;
   my_double rho;
+  pop f_eq;
 
-
-  /* y direction */
+  /* y direction  velocity */
 #ifdef LB_FLUID_BC_Y
  
   for (i = BRD; i < LNX + BRD; i++) 			
     for (k = BRD; k < LNZ + BRD; k++){
-
       for(pp=0;pp<NPOP;pp++){
+
       /*  top  */
-if(LNY_END == NY){
-	j = LNY+BRD-1;
+	if(LNY_END == NY){
+	   j = LNY+BRD-1;
 
 	/* no slip is the default */
-	  p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
-	  p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];	  
- }
+	   p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
+	   p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
+	   /*
+	   p_eq[IDX(i,j+1,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp]; 
+       if(c[pp].y < 0) p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
+           p_eq[IDX(i,j+2,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp];
+       if(c[pp].y < 0) p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
 
-    /*  bottom  */
-if(LNY_START == 0){
-       j = BRD; 
+	   p[IDX(i,j+1,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp]; 
+       if(c[pp].y < 0) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+           p[IDX(i,j+2,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp];
+       if(c[pp].y < 0) p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
+	   */
+	}
+
+     /* bottom  */
+	if(LNY_START == 0){
+           j = BRD; 
 
 	/* no slip is the default */
              p_eq[IDX(i,j-1,k)].p[pp] =  p_eq[IDX(i,j,k)].p[inv[pp]];
-             p_eq[IDX(i,j-2,k)].p[pp] =  p_eq[IDX(i,j+1,k)].p[inv[pp]]; 	    
+             p_eq[IDX(i,j-2,k)].p[pp] =  p_eq[IDX(i,j+1,k)].p[inv[pp]]; 
+	                 
 
- }
+	}
 
       }
     }
 #endif
 
-}
 
+  /* y direction temperature */	
+#ifdef LB_TEMPERATURE
+#ifdef LB_TEMPERATURE_BC_Y
+
+  my_double effDT, rho2;
+  my_double T_wall,fac;
+
+  /**********************************************************/
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g_eq[IDX(i,j+1,k)].p[pp] =  fac*g_eq[IDX(i,j,k)].p[pp];
+
+#ifdef METHOD_MYQUICK
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j-1,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g_eq[IDX(i,j+2,k)].p[pp] =  fac*g_eq[IDX(i,j-1,k)].p[pp];
+
+#endif
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g_eq[IDX(i,j-1,k)].p[pp] =  fac*g_eq[IDX(i,j,k)].p[pp];
+
+     
+#ifdef METHOD_MYQUICK 	  
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif   
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) g_eq[IDX(i,j-2,k)].p[pp] =  fac*g_eq[IDX(i,j+1,k)].p[pp];
+#endif
+ }
+
+      
+    }
+#endif
+#endif
+/***************************************************************************************************/
+
+
+}
 #endif
 

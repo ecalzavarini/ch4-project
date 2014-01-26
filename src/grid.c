@@ -1454,7 +1454,7 @@ void read_landscape(){
 			        for (j =0; j < LNY+TWO_BRD; j++){
 
 				  if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
-				    //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
+				  //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
 				      landscape[IDX(i, j, k)] = 1;
 				      }
 

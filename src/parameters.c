@@ -153,7 +153,11 @@ void assign_parameters(){
 #ifdef METHOD_STREAMING
   property.kappa = (property.tau_t-0.5)/3.0;
 #else
+#ifdef METHOD_REDEFINED_POP
+  property.kappa = (property.tau_t-0.5*property.time_dt)/3.0;
+#else
   property.kappa = property.tau_t/3.0;
+#endif
 #endif
   fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
   sprintf(name,"T_bot");

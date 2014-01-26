@@ -471,7 +471,7 @@ fzp2.p[pp] = f[IDX(i,j,k+2)].p[pp] + fac*(f_eq[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k
 adv=0.0;
 
 //if((LNY_END == NY && i==BRD && j==BRD && k==BRD) || (LNY_START == 0 && i==LNX+BRD-1 && j==LNY+BRD-1 && k==LNZ+BRD-1)){
-//if((LNY_END == NY && j==BRD ) || (LNY_START == 0 && j==LNY+BRD-1)){
+//if((LNY_END == NY && j==LNY+BRD-1  ) || (LNY_START == 0 && j==BRD)){
 //if(c[pp].x*c[pp].x + c[pp].y*c[pp].y + c[pp].z*c[pp].z <2){
 
  /* first order upwind scheme */
