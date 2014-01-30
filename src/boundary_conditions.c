@@ -278,6 +278,9 @@ if(LNY_END == NY){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+#endif
 #else
 	  T_wall = 0.0;
 #endif
@@ -298,6 +301,9 @@ if(LNY_START == 0){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+#endif
 #else
 	  T_wall = 0.0;
 #endif
@@ -509,6 +515,9 @@ if(LNY_END == NY){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+#endif
 #else
 	  T_wall = 0.0;
 #endif
@@ -529,6 +538,9 @@ if(LNY_START == 0){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+#endif
 #else
 	  T_wall = 0.0;
 #endif
@@ -633,30 +645,35 @@ void boundary_conditions_for_equilibrium(){
 	if(LNY_END == NY){
 	   j = LNY+BRD-1;
 
+#ifdef LB_FLUID_BC_YP_SLIP
+	   /* free slip */
+	p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[pp];
+       	p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[pp];
+#else
 	/* no slip is the default */
 	   p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
 	   p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
-	   /*
-	   p_eq[IDX(i,j+1,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp]; 
-       if(c[pp].y < 0) p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
-           p_eq[IDX(i,j+2,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp];
-       if(c[pp].y < 0) p_eq[IDX(i,j+2,k)].p[pp] = p_eq[IDX(i,j-1,k)].p[inv[pp]];
+#endif
 
-	   p[IDX(i,j+1,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp]; 
-       if(c[pp].y < 0) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
-           p[IDX(i,j+2,k)].p[pp] = dens[IDX(i,j,k)]*wgt[pp];
-       if(c[pp].y < 0) p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
-	   */
 	}
 
      /* bottom  */
 	if(LNY_START == 0){
            j = BRD; 
 
+#ifdef LB_FLUID_BC_YM_SLIP
+	   /* free slip */
+	p_eq[IDX(i,j-1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j-1,k)].p[pp] = p_eq[IDX(i,j,k)].p[pp];
+       	p_eq[IDX(i,j-2,k)].p[pp] = p_eq[IDX(i,j+1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j-2,k)].p[pp] = p_eq[IDX(i,j+1,k)].p[pp];
+#else
 	/* no slip is the default */
              p_eq[IDX(i,j-1,k)].p[pp] =  p_eq[IDX(i,j,k)].p[inv[pp]];
              p_eq[IDX(i,j-2,k)].p[pp] =  p_eq[IDX(i,j+1,k)].p[inv[pp]]; 
-	                 
+#endif	                 
 
 	}
 
