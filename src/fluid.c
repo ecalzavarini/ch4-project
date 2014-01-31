@@ -849,7 +849,7 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_BULK
   t_source[IDX(i,j,k)] = property.Amp_t;
 #ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
-  if (center_V[IDX(i,j,k)].x > property.SX) t_source[IDX(i,j,k)] = 0.0;
+  if (center_V[IDX(i,j,k)].x > property.SX/2.) t_source[IDX(i,j,k)] = 0.0;
 #endif
 #endif
 
