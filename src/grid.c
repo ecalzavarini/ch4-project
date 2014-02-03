@@ -529,7 +529,7 @@ void compute_volumes(){
 
 //#ifdef METHOD_CENTERED
 
-#if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING)
+#if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING || defined METHOD_UPWIND)
 /****************************************************************************************************/ 
 void sendrecv_borders_scalar(my_double *f){
   int i,j,k,brd_size;
