@@ -41,6 +41,12 @@ vector gradient_scalar(my_double *t, int i, int j, int k);
 tensor gradient_vector(vector *t, int i, int j, int k);
 void add_forcing();
 void build_forcing();
+#ifdef METHOD_CENTERED
+my_double compute_flux_with_central_difference(pop * f,int i, int j, int k, int pp);
+#endif
+#ifdef METHOD_UPWIND
+my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp);
+#endif
 
 /* output.c */
 void dump_averages();
