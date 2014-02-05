@@ -506,6 +506,7 @@ adv=0.0;
    adv += 0.25*coeff_zm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k-1)].p[pp];
 
  //}else{
+ 
 	  adv += 0.75*coeff_xp[IDX(i,j,k)].p[pp]*( (1.0 - interp_xp[IDX(i,j,k)])* f[IDX(i+1,j,k)].p[pp] + interp_xp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] )+ 
 	         0.75*coeff_xm[IDX(i,j,k)].p[pp]*( (1.0 - interp_xm[IDX(i,j,k)])* f[IDX(i-1,j,k)].p[pp] + interp_xm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] );
 	  
@@ -514,6 +515,7 @@ adv=0.0;
 
           adv += 0.75*coeff_zp[IDX(i,j,k)].p[pp]*( (1.0 - interp_zp[IDX(i,j,k)])* f[IDX(i,j,k+1)].p[pp] + interp_zp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] )+
                  0.75*coeff_zm[IDX(i,j,k)].p[pp]*( (1.0 - interp_zm[IDX(i,j,k)])* f[IDX(i,j,k-1)].p[pp] + interp_zm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] );
+ 
 	  //}
 #endif
 
@@ -604,9 +606,11 @@ adv=0.0;
  }
 #endif
 #endif
-}
+}/* end of compute_advection */
 
 
+
+/*  Here Collision */
 
 void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq){
   int i, j, k, pp;

@@ -527,7 +527,7 @@ void compute_volumes(){
 }
 
 
-//#ifdef METHOD_CENTERED
+
 
 #if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING || defined METHOD_UPWIND)
 /****************************************************************************************************/ 
@@ -780,7 +780,9 @@ void compute_interpolation_coefficients(){
   vector YPF1, YPF2, YPB1, YPB2, YMF1, YMF2, YMB1, YMB2;   
   vector ZPF1, ZPF2, ZPB1, ZPB2, ZMF1, ZMF2, ZMB1, ZMB2;
 
-#ifdef METHOD_STREAMING
+#if (defined METHOD_STREAMING || defined METHOD_UPWIND)
+  //#ifdef METHOD_STREAMING
+  //#ifdef METHOD_UPWIND
 	/* exchange centers */
 	sendrecv_borders_vector(center_V);
 
