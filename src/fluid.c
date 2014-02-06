@@ -198,16 +198,18 @@ fzp2.p[pp] = f[IDX(i,j,k+2)].p[pp] + fac*(f_eq[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k
 #ifdef METHOD_MIXED
 adv=0.0;
 
-//if((LNY_END == NY && j==LNY+BRD-1  && c[pp].y > 0) || (LNY_START == 0 && j==BRD  && c[pp].y < 0)){
-if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
+if((LNY_END == NY && j==LNY+BRD-1  && c[pp].y > 0) || (LNY_START == 0 && j==BRD  && c[pp].y < 0)){
 
-          adv = compute_flux_with_upwind_first(f,i,j,k,pp);
-	  //adv = compute_flux_with_central_difference(f,i,j,k,pp);
- }else{
- 
-          //adv = compute_flux_with_central_difference(f,i,j,k,pp);
-	 adv = compute_flux_with_quick(f,i,j,k,pp);
-	  }
+        adv = compute_flux_with_upwind_first(f,i,j,k,pp);
+	 }else{
+#ifdef METHOD_CENTERED
+        adv = compute_flux_with_central_difference(f,i,j,k,pp);
+#endif
+#ifdef METHOD_MYQUICK
+        adv = compute_flux_with_quick(f,i,j,k,pp);
+#endif
+ }
+
 #endif
 
 /* with minus sign because we add it to the right hand side */
