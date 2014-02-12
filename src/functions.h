@@ -49,6 +49,10 @@ my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp);
 #endif
 #ifdef METHOD_MYQUICK
 my_double compute_flux_with_quick(pop * f, int i, int j, int k, int pp);
+#ifdef METHOD_MYQUICK_LIMITER
+my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp);
+my_double limiter(my_double r);
+#endif
 #endif
 
 /* output.c */
