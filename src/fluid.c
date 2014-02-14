@@ -217,7 +217,6 @@ if((LNY_END == NY && j==LNY+BRD-1  && c[pp].y > 0) || (LNY_START == 0 && j==BRD 
         adv = compute_flux_with_quick(f,i,j,k,pp);
 #endif
  }
-
 #endif
 
 /* with minus sign because we add it to the right hand side */
@@ -351,28 +350,28 @@ my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp){
   my_double adv=0.0;
 
  /* first order upwind scheme */
-	  
- if(coeff_xp[IDX(i,j,k)].p[pp] >= 0.0)
+  /*
+ if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i+1,j,k)].p[pp];
 
- if(coeff_xm[IDX(i,j,k)].p[pp] >= 0.0)
+ if(coeff_xm[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_xm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_xm[IDX(i,j,k)].p[pp]*f[IDX(i-1,j,k)].p[pp];
 
- if(coeff_yp[IDX(i,j,k)].p[pp] >= 0.0)
+ if(coeff_yp[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_yp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_yp[IDX(i,j,k)].p[pp]*f[IDX(i,j+1,k)].p[pp];
 
- if(coeff_ym[IDX(i,j,k)].p[pp] >= 0.0)
+ if(coeff_ym[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_ym[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_ym[IDX(i,j,k)].p[pp]*f[IDX(i,j-1,k)].p[pp];
 
- if(coeff_zp[IDX(i,j,k)].p[pp] >= 0.0)
+ if(coeff_zp[IDX(i,j,k)].p[pp] > 0.0)
    adv += coeff_zp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_zp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k+1)].p[pp];
@@ -381,8 +380,41 @@ my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp){
    adv += coeff_zm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
  else
    adv += coeff_zm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k-1)].p[pp];
+*/
 
+  /* second order upwind, to be checked ?*/
+  
+  /*
+ if(coeff_xp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( (1.0 - interp_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_xp[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] );
+ else
+   adv += coeff_xp[IDX(i,j,k)].p[pp]*( (1.0 - interp_xp[IDX(i,j,k)])*f[IDX(i+2,j,k)].p[pp] + interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] );
 
+ if(coeff_xm[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_xm[IDX(i,j,k)].p[pp]*( (1.0 - interp_xm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_xm[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] );
+ else
+   adv += coeff_xm[IDX(i,j,k)].p[pp]*( (1.0 - interp_xm[IDX(i,j,k)])*f[IDX(i-2,j,k)].p[pp] + interp_xm[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] );
+
+ if(coeff_yp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( (1.0 - interp_yp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_yp[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] );
+ else
+   adv += coeff_yp[IDX(i,j,k)].p[pp]*( (1.0 - interp_yp[IDX(i,j,k)])*f[IDX(i,j+2,k)].p[pp] + interp_yp[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] );
+
+ if(coeff_ym[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_ym[IDX(i,j,k)].p[pp]*( (1.0 - interp_ym[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_ym[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] );
+ else
+   adv += coeff_ym[IDX(i,j,k)].p[pp]*( (1.0 - interp_ym[IDX(i,j,k)])*f[IDX(i,j-2,k)].p[pp] + interp_ym[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] );
+
+ if(coeff_zp[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( (1.0 - interp_zp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_zp[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] );
+ else
+   adv += coeff_zp[IDX(i,j,k)].p[pp]*( (1.0 - interp_zp[IDX(i,j,k)])*f[IDX(i,j,k+2)].p[pp] + interp_zp[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] );
+
+ if(coeff_zm[IDX(i,j,k)].p[pp] >= 0.0)
+   adv += coeff_zm[IDX(i,j,k)].p[pp]*( (1.0 - interp_zm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] + interp_zm[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] );
+ else
+   adv += coeff_zm[IDX(i,j,k)].p[pp]*( (1.0 - interp_zm[IDX(i,j,k)])*f[IDX(i,j,k-2)].p[pp] + interp_zm[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] );
+*/
  return adv;
 }	  
 #endif
@@ -556,17 +588,27 @@ my_double compute_flux_with_quick(pop * f, int i, int j, int k, int pp){
 my_double limiter(my_double r1, my_double r2){
 
   my_double phi,r,r3;
-
+  /*
   if(r2==0.0){  
     //if(r1>0) r=0.0; else r=1.0;
-    r=0.0;
+    if(r1==0.0) r=1.0; else r=0.0;
   }else{
     //r=1.0; 
     r=r1/r2;
+    //if(r<0.0) r=0.0; else r=1.0;
   }
+  */
+
+  if(r1*r2 <= 0){
+    r=0.0;
+  }else{
+    r=r1/r2;
+  }
+  //if(fabs(r)<0.5) phi=0; else phi=1.03;
+  //phi=MIN(r,1);
 
   /* superbee */
-  /* 
+  /*
   r1 = MIN(2.0*r, 1.0);
   r2 = MIN(r, 2.0);
   r3 = MAX(r1,r2);
@@ -578,10 +620,10 @@ my_double limiter(my_double r1, my_double r2){
   phi = MAX(0,r1);
   */
   /* van Leer */  
-  phi = (r+fabs(r))/(1.0+fabs(r));
+  //phi = (r+fabs(r))/(1.0+fabs(r));
   //phi = 2.*r/(r*r + 1.0);
-  //phi = (r*r + r)/(r*r + 1.0);
-  //phi=r;
+  phi = (r*r + r)/(r*r + 1.0);
+  //phi=1.0;
   //fprintf(stderr,"r=%e\n",r);
   return phi;  
 }
@@ -599,13 +641,13 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
  if(coeff_xp[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_xp[IDX(i,j,k)].p[pp] > 0.0){
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp] )/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x); 
+     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
      r2 =  (f[IDX(i-1,j,k)].p[pp] - f[IDX(i-2,j,k)].p[pp])/(center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x);
    advL = coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_xp[IDX(i,j,k)].p[pp]*( interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_xp[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i+1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i+1, j, k)].x);
-     r2 =  (f[IDX(i+1,j,k)].p[pp] - f[IDX(i+2,j,k)].p[pp])/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i+2, j, k)].x);
+   r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
+   r2 = ( f[IDX(i+1,j,k)].p[pp] - f[IDX(i,j,k)].p[pp])/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x);
    advL = coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i+1,j,k)].p[pp];
    advH = coeff_xp[IDX(i,j,k)].p[pp]*( interp3_xp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_xp[IDX(i,j,k)] + interp4_xp[IDX(i,j,k)])*f[IDX(i+1,j,k)].p[pp] - interp4_xp[IDX(i,j,k)]*f[IDX(i+2,j,k)].p[pp] );
    }
@@ -616,13 +658,13 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
  if(coeff_xm[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_xm[IDX(i,j,k)].p[pp] > 0.0){
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i+1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i+1, j, k)].x);
-     r2 =  (f[IDX(i+1,j,k)].p[pp] - f[IDX(i+2,j,k)].p[pp])/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i+2, j, k)].x);
+    r1 =  (f[IDX(i+1,j,k)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x);
+    r2 =  ( f[IDX(i+2,j,k)].p[pp] - f[IDX(i+1,j,k)].p[pp])/(center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x);
    advL = coeff_xm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_xm[IDX(i,j,k)].p[pp]*( interp_xm[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] + (1.0 - interp_xm[IDX(i,j,k)] + interp2_xm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_xm[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp] )/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
-     r2 = ( f[IDX(i-1,j,k)].p[pp] - f[IDX(i-2,j,k)].p[pp])/(center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x);
+   r1 =  (f[IDX(i+1,j,k)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x);
+   r2 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp] )/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
    advL = coeff_xm[IDX(i,j,k)].p[pp]*f[IDX(i-1,j,k)].p[pp];
    advH = coeff_xm[IDX(i,j,k)].p[pp]*( interp3_xm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_xm[IDX(i,j,k)] + interp4_xm[IDX(i,j,k)])*f[IDX(i-1,j,k)].p[pp] - interp4_xm[IDX(i,j,k)] *f[IDX(i-2,j,k)].p[pp] );
    }
@@ -639,8 +681,8 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
    advL = coeff_yp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_yp[IDX(i,j,k)].p[pp]*( interp_yp[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] + (1.0 - interp_yp[IDX(i,j,k)] + interp2_yp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_yp[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j+1,k)].p[pp])/(center_V[IDX(i, j, k)].y - center_V[IDX(i, j+1, k)].y);
-    r2 = ( f[IDX(i,j+1,k)].p[pp] - f[IDX(i,j+2,k)].p[pp])/(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j+2, k)].y);
+    r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j-1,k)].p[pp])/(center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y);
+    r2 = ( f[IDX(i,j+1,k)].p[pp] - f[IDX(i,j,k)].p[pp])/(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y);
    advL = coeff_yp[IDX(i,j,k)].p[pp]*f[IDX(i,j+1,k)].p[pp];
    advH = coeff_yp[IDX(i,j,k)].p[pp]*( interp3_yp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_yp[IDX(i,j,k)] + interp4_yp[IDX(i,j,k)])*f[IDX(i,j+1,k)].p[pp] - interp4_yp[IDX(i,j,k)]*f[IDX(i,j+2,k)].p[pp] );
    }
@@ -650,13 +692,13 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
  if(coeff_ym[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_ym[IDX(i,j,k)].p[pp] > 0.0){
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j+1,k)].p[pp] )/(center_V[IDX(i, j, k)].y - center_V[IDX(i, j+1, k)].y);
-    r2 =  ( f[IDX(i,j+1,k)].p[pp] - f[IDX(i,j+2,k)].p[pp])/(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j+2, k)].y);
+    r1 =  (f[IDX(i,j+1,k)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y);
+    r2 =  ( f[IDX(i,j+2,k)].p[pp] - f[IDX(i,j+1,k)].p[pp])/(center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y);
    advL = coeff_ym[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_ym[IDX(i,j,k)].p[pp]*( interp_ym[IDX(i,j,k)]*f[IDX(i,j-1,k)].p[pp] + (1.0 - interp_ym[IDX(i,j,k)] + interp2_ym[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_ym[IDX(i,j,k)]*f[IDX(i,j+1,k)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j-1,k)].p[pp] )/(center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y);
-    r2 = ( f[IDX(i,j-1,k)].p[pp] - f[IDX(i,j-2,k)].p[pp])/(center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y);
+   r1 =  (f[IDX(i,j+1,k)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y);
+   r2 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j-1,k)].p[pp] )/(center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y);
    advL = coeff_ym[IDX(i,j,k)].p[pp]*f[IDX(i,j-1,k)].p[pp];
    advH = coeff_ym[IDX(i,j,k)].p[pp]*( interp3_ym[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_ym[IDX(i,j,k)] + interp4_ym[IDX(i,j,k)])*f[IDX(i,j-1,k)].p[pp] - interp4_ym[IDX(i,j,k)]*f[IDX(i,j-2,k)].p[pp] );
    }
@@ -669,13 +711,13 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
  if(coeff_zp[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_zp[IDX(i,j,k)].p[pp] > 0.0){
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k-1)].p[pp])/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z);
+    r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k-1)].p[pp])/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z);
     r2 =   (f[IDX(i,j,k-1)].p[pp] - f[IDX(i,j,k-2)].p[pp])/(center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z);
    advL = coeff_zp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_zp[IDX(i,j,k)].p[pp]*( interp_zp[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] + (1.0 - interp_zp[IDX(i,j,k)] + interp2_zp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_zp[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k+1)].p[pp] )/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k+1)].z);
-     r2 = ( f[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k+2)].p[pp])/(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k+2)].z);
+     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k-1)].p[pp] )/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z);
+     r2 = ( f[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k)].p[pp])/(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z);
    advL = coeff_zp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k+1)].p[pp];
    advH = coeff_zp[IDX(i,j,k)].p[pp]*( interp3_zp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_zp[IDX(i,j,k)] + interp4_zp[IDX(i,j,k)])*f[IDX(i,j,k+1)].p[pp] - interp4_zp[IDX(i,j,k)]*f[IDX(i,j,k+2)].p[pp] );
    }
@@ -685,13 +727,13 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
  if(coeff_zm[IDX(i,j,k)].p[pp] != 0.0){
    if(coeff_zm[IDX(i,j,k)].p[pp] > 0.0){
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k+1)].p[pp] )/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k+1)].z);
-     r2 =  (f[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k+2)].p[pp])/(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k+2)].z);
+     r1 =  (f[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z);
+     r2 =  (f[IDX(i,j,k+2)].p[pp] - f[IDX(i,j,k+1)].p[pp])/(center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z);
    advL = coeff_zm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];   
    advH = coeff_zm[IDX(i,j,k)].p[pp]*( interp_zm[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] + (1.0 - interp_zm[IDX(i,j,k)] + interp2_zm[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_zm[IDX(i,j,k)]*f[IDX(i,j,k+1)].p[pp] );
    }else{
-     r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k-1)].p[pp] )/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z);
-     r2 =  (f[IDX(i,j,k-1)].p[pp] - f[IDX(i,j,k-2)].p[pp])/(center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z);
+     r1 =  (f[IDX(i,j,k+1)].p[pp] - f[IDX(i,j,k)].p[pp] )/(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z);
+     r2 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k-1)].p[pp] )/(center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z);
    advL = coeff_zm[IDX(i,j,k)].p[pp]*f[IDX(i,j,k-1)].p[pp];
    advH = coeff_zm[IDX(i,j,k)].p[pp]*( interp3_zm[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_zm[IDX(i,j,k)] + interp4_zm[IDX(i,j,k)])*f[IDX(i,j,k-1)].p[pp] -interp4_zm[IDX(i,j,k)]*f[IDX(i,j,k-2)].p[pp] );
    }	  
