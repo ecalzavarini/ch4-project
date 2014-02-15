@@ -103,7 +103,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
 #ifndef METHOD_REDEFINED_POP
 
  /* quick scheme */
- adv = compute_flux_with_quick(f,i,j,k,pp);
+      adv = compute_flux_with_quick(f,i,j,k,pp);
 
 #else
  /* The population to be advected is different */
@@ -585,27 +585,59 @@ my_double compute_flux_with_quick(pop * f, int i, int j, int k, int pp){
 /* flux limiters */
 #ifdef METHOD_MYQUICK
 #ifdef METHOD_MYQUICK_LIMITER
+/* see http://en.wikipedia.org/wiki/Flux_limiter */
 my_double limiter(my_double r1, my_double r2){
 
-  my_double phi,r,r3;
-  /*
-  if(r2==0.0){  
-    //if(r1>0) r=0.0; else r=1.0;
-    if(r1==0.0) r=1.0; else r=0.0;
-  }else{
-    //r=1.0; 
-    r=r1/r2;
-    //if(r<0.0) r=0.0; else r=1.0;
-  }
-  */
-
-  if(r1*r2 <= 0){
+  my_double phi,b,r,r3;
+  
+  if(r2==0.0 || r1*r2 < 0.0){  
     r=0.0;
   }else{
     r=r1/r2;
+  }  
+  phi=r;
+ 
+  /* mine TVD */ 
+  b=1.035; // poiseuille value 
+  //b=1.14; // kolmogorov value
+  /*
+  if(r<0.5){ phi=2.*r; }else{
+    if(r<1.0){ phi = 1.0; }else{
+      if(r<b) phi=r; else phi=b;
+    }
   }
-  //if(fabs(r)<0.5) phi=0; else phi=1.03;
-  //phi=MIN(r,1);
+  */
+  /* osher */
+  /*
+  b=3.0;
+  r3=MIN(r,b);
+  phi=MAX(0,r3);
+  */
+
+  /* sweeby symmetric*/
+  
+  b=1.139; //poiseulle
+  //b = 1.22; //kolmogorov
+  r1=MIN(b*r,1.0);
+  r2=MIN(r,b);
+  r3=MAX(r1,r2); 
+  phi=MAX(0,r3);
+  
+
+  /* charm */
+  //if(r>0) phi = r*(3.*r+1.)/pow((r+1.0),2.0); else phi=0.0;
+
+  /* HQUICK */
+  //phi=2.0*(r+fabs(r))/(r+3.0);
+
+  /* smart */
+  /*
+  r1=2.*r;
+  r2=(0.25+0.75*r);
+  r3=MIN(r1,r2);
+  r1=MIN(r3,4.0);
+  phi=MAX(0.0,r1); 
+  */
 
   /* superbee */
   /*
@@ -614,17 +646,20 @@ my_double limiter(my_double r1, my_double r2){
   r3 = MAX(r1,r2);
   phi = MAX(0.,r3);
   */
+
   /* minmod */
   /*  
   r1 = MIN(1,r);
   phi = MAX(0,r1);
   */
+
   /* van Leer */  
   //phi = (r+fabs(r))/(1.0+fabs(r));
   //phi = 2.*r/(r*r + 1.0);
-  phi = (r*r + r)/(r*r + 1.0);
+  //phi = (r*r + r)/(r*r + 1.0);
   //phi=1.0;
   //fprintf(stderr,"r=%e\n",r);
+
   return phi;  
 }
 
@@ -646,7 +681,7 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
    advL = coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i,j,k)].p[pp];
    advH = coeff_xp[IDX(i,j,k)].p[pp]*( interp_xp[IDX(i,j,k)]*f[IDX(i+1,j,k)].p[pp] + (1.0 - interp_xp[IDX(i,j,k)] + interp2_xp[IDX(i,j,k)])*f[IDX(i,j,k)].p[pp] - interp2_xp[IDX(i,j,k)]*f[IDX(i-1,j,k)].p[pp] );
    }else{
-   r1 =  (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
+   r1 = (f[IDX(i,j,k)].p[pp] - f[IDX(i-1,j,k)].p[pp])/(center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x);
    r2 = ( f[IDX(i+1,j,k)].p[pp] - f[IDX(i,j,k)].p[pp])/(center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x);
    advL = coeff_xp[IDX(i,j,k)].p[pp]*f[IDX(i+1,j,k)].p[pp];
    advH = coeff_xp[IDX(i,j,k)].p[pp]*( interp3_xp[IDX(i,j,k)]*f[IDX(i,j,k)].p[pp] + (1.0 - interp3_xp[IDX(i,j,k)] + interp4_xp[IDX(i,j,k)])*f[IDX(i+1,j,k)].p[pp] - interp4_xp[IDX(i,j,k)]*f[IDX(i+2,j,k)].p[pp] );
