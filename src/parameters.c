@@ -465,7 +465,13 @@ void allocate_fields(){
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_p\n"); exit(-1);}
  set_to_zero_pop( rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- //#ifdef METHOD_REDEFINED_POP
+#ifdef METHOD_REDEFINED_POP
+ /* auxiliary population field for computing the advection term */
+ f_aux  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(f_aux == NULL){ fprintf(stderr,"Not enough memory to allocate f_aux\n"); exit(-1);}
+ set_to_zero_pop( f_aux,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
+
 #if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
  p_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(p_eq == NULL){ fprintf(stderr,"Not enough memory to allocate p_eq\n"); exit(-1);}

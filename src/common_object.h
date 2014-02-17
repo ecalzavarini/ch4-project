@@ -129,6 +129,9 @@ extern my_double invcs, invcs2, invcs4;
 extern pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
 extern my_double *dens;
 extern vector *u;
+#ifdef METHOD_REDEFINED_POP
+extern pop *f_aux;
+#endif
 #ifdef LB_FLUID_FORCING
 extern vector *force;
 #ifdef LB_FLUID_FORCING_LANDSCAPE

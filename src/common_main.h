@@ -132,6 +132,9 @@ my_double invcs, invcs2, invcs4;
 pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
 my_double *dens;
 vector *u;
+#ifdef METHOD_REDEFINED_POP
+pop *f_aux;
+#endif
 #ifdef LB_FLUID_FORCING
 vector *force;
 #ifdef LB_FLUID_FORCING_LANDSCAPE
