@@ -283,9 +283,9 @@ my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp){
   /*
   a=(c[pp].x*c[pp].x+c[pp].y*c[pp].y+c[pp].z*c[pp].z);
   if(a==2.0){
-    fac.x=0.61808;
-    fac.y=0.61808;
-    fac.z=0.61808;
+    fac.x = 0.61808;
+    fac.y = 0.61808;
+    fac.z = 0.61808;
   }
   */
 

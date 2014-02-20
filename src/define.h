@@ -69,10 +69,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_COLLISION_IMPLICIT
 
 //#define METHOD_CENTERED
-//#define METHOD_UPWIND
+#define METHOD_UPWIND
 //#define METHOD_MYQUICK
 //#define METHOD_MYQUICK_CARTESIAN
-#define METHOD_MYQUICK_LIMITER
+//#define METHOD_MYQUICK_LIMITER
 //#define METHOD_MIXED
 
 //#define METHOD_TRAPEZOID
@@ -114,8 +114,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 #ifdef METHOD_FINITE_VOLUME                                            
 #define METHOD_STEPPING_EULER                                           
-#define METHOD_MYQUICK                                                       
-#define METHOD_MYQUICK_CARTESIAN
+//#define METHOD_MYQUICK                                                       
+//#define METHOD_MYQUICK_CARTESIAN
 #endif 
 
 #ifdef METHOD_STREAMING                                                  
