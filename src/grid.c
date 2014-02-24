@@ -771,6 +771,7 @@ void compute_interpolation_coefficients(){
 
   int i,j,k;
   vector xp,xm,yp,ym,zp,zm;
+  vector w_xp,w_xm,w_yp,w_ym,w_zp,w_zm;
   vector dxp,dxm,dyp,dym,dzp,dzm;
   vector P0, P1, P2, P3, P4, P5, P6, P7, P8;
   vector edge;
@@ -834,6 +835,198 @@ void compute_interpolation_coefficients(){
 #endif
 	
 #endif
+
+#ifdef METHOD_UPWIND_SKEW
+	/* exchange centers */
+	/*
+	sendrecv_borders_vector(center_V);
+
+	for (j = BRD; j < LNY + BRD ; j++) 
+	for (k = BRD; k < LNZ + BRD ; k++){
+	if(LNX_START == 0){
+	  center_V[IDX(0, j, k)].x = - center_V[IDX(1, j , k)].x;
+	}	
+	if(LNX_END == NX){
+	  center_V[IDX(LNX+TWO_BRD-1, j, k)].x =  (property.SX - center_V[IDX(LNX+BRD-1, j, k)].x)+property.SX;
+	}
+	}
+	
+
+       	for (i = BRD; i < LNX + BRD; i++) 
+	for (k = BRD; k < LNZ + BRD; k++) {
+	if(LNY_START == 0){
+	  center_V[IDX(i, 0, k)].y = - center_V[IDX(i, 1 , k)].y;
+	}	
+	if(LNY_END == NY){
+	  center_V[IDX(i, LNY+TWO_BRD-1, k)].y =  (property.SY - center_V[IDX(i, LNY+BRD-1, k)].y)+property.SY;
+	}
+	}
+
+	
+	for (i = BRD; i < LNX + BRD ; i++) 
+	for (j = BRD; j < LNY + BRD ; j++){ 
+	if(LNZ_START == 0){
+	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;
+	}	
+	if(LNZ_END == NZ){
+	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+property.SZ;
+	}
+	}
+	*/
+
+	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
+		for (j = BRD; j < LNYG + BRD - 1; j++) 
+			for (k = BRD; k < LNZG + BRD - 1; k++) {
+				P0 = mesh[IDXG(i, j, k)];
+				P1 = mesh[IDXG(i + 1, j, k)];
+				P2 = mesh[IDXG(i, j + 1, k)];
+				P3 = mesh[IDXG(i + 1, j + 1, k)];
+				P4 = mesh[IDXG(i, j, k + 1)];
+				P5 = mesh[IDXG(i + 1, j, k + 1)];
+				P6 = mesh[IDXG(i, j + 1, k + 1)];
+				P7 = mesh[IDXG(i + 1, j + 1, k + 1)];
+				P8.x = (P0.x + P1.x + P2.x + P3.x + P4.x + P5.x + P6.x + P7.x) / 8;
+				P8.y = (P0.y + P1.y + P2.y + P3.y + P4.y + P5.y + P6.y + P7.y) / 8;
+				P8.z = (P0.z + P1.z + P2.z + P3.z + P4.z + P5.z + P6.z + P7.z) / 8;
+
+/* we compute here the position of the centers of the 6 surfaces */
+w_xp = average_4vectors(P1, P3, P5, P7);
+w_xm = average_4vectors(P0, P2, P4, P6); 
+w_yp = average_4vectors(P2, P3, P6, P7); 
+w_ym = average_4vectors(P0, P1, P4, P5);
+w_zp = average_4vectors(P4, P5, P6, P7);
+w_zm = average_4vectors(P0, P1, P2, P3); 
+
+/* from inside to outside */
+/* we find the distance of the centers from such 6 surface centers */
+ xp = vector_difference(w_xp, center_V[IDX(i, j, k)]);
+ xm = vector_difference(w_xm, center_V[IDX(i, j, k)]);
+ yp = vector_difference(w_yp, center_V[IDX(i, j, k)]);
+ ym = vector_difference(w_ym, center_V[IDX(i, j, k)]);
+ zp = vector_difference(w_zp, center_V[IDX(i, j, k)]);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k)]);
+ /* we find the distance between the two neighboring nodes */ 
+ dxp = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i, j, k)]);
+ dxm = vector_difference(center_V[IDX(i-1, j, k)], center_V[IDX(i, j, k)]);
+ dyp = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j, k)]);
+ dym = vector_difference(center_V[IDX(i, j-1, k)], center_V[IDX(i, j, k)]);
+ dzp = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k)]);
+ dzm = vector_difference(center_V[IDX(i, j, k-1)], center_V[IDX(i, j, k)]);
+
+/* now correct for the boundary nodes */
+/*
+ if(i == LNX+BRD-1 && LNX_END == NX){ 
+   edge.x=property.SX;edge.y=0;edge.z=0;
+   dxp = vector_difference(edge, center_V[IDX(i, j, k)]); 
+   dxp=vector_scale(2.0,dxp);
+ }
+
+ if(i == BRD && LNX_START == 0){
+  edge.x=0;edge.y=0;edge.z=0;
+  dxm = vector_difference(center_V[IDX(i, j, k)],edge);
+  dxm=vector_scale(2.0,dxm);
+ }
+ 
+ if(j == LNY+BRD-1 && LNY_END == NY){ 
+   edge.x=0;edge.y=property.SY;edge.z=0;
+   dyp = vector_difference(edge, center_V[IDX(i, j, k)]); 
+   dyp=vector_scale(2.0,dyp);
+ }
+
+ if(j == BRD && LNY_START == 0){
+  edge.x=0;edge.y=0;edge.z=0;
+  dym = vector_difference(center_V[IDX(i, j, k)],edge);
+  dym=vector_scale(2.0,dym);
+ }
+
+ if(k == LNZ+BRD-1 && LNZ_END == NZ){ 
+   edge.x=0;edge.y=0;edge.z=property.SZ;
+   dzp = vector_difference(edge, center_V[IDX(i, j, k)]); 
+   dzp=vector_scale(2.0,dzp);
+ }
+
+ if(k == BRD && LNZ_START == 0){
+  edge.x=0;edge.y=0;edge.z=0;
+  dzm = vector_difference(center_V[IDX(i, j, k)],edge);
+  dzm=vector_scale(2.0,dzm);
+ }
+*/
+ interp_xp[IDX(i,j,k)] = xp.x;
+ interp_xm[IDX(i,j,k)] = xm.x;
+ interp_yp[IDX(i,j,k)] = yp.y;
+ interp_ym[IDX(i,j,k)] = ym.y;
+ interp_zp[IDX(i,j,k)] = zp.z;
+ interp_zm[IDX(i,j,k)] = zm.z;
+
+ interp3_xp[IDX(i,j,k)] = dxp.x;
+ interp3_xm[IDX(i,j,k)] = dxm.x;
+ interp3_yp[IDX(i,j,k)] = dyp.y;
+ interp3_ym[IDX(i,j,k)] = dym.y;
+ interp3_zp[IDX(i,j,k)] = dzp.z;
+ interp3_zm[IDX(i,j,k)] = dzm.z;
+
+ /* from outside to inside */
+ xp = vector_difference(w_xp, center_V[IDX(i+1, j, k)]);
+ xm = vector_difference(w_xm, center_V[IDX(i-1, j, k)]);
+ yp = vector_difference(w_yp, center_V[IDX(i, j+1, k)]);
+ ym = vector_difference(w_ym, center_V[IDX(i, j-1, k)]);
+ zp = vector_difference(w_zp, center_V[IDX(i, j, k+1)]);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k-1)]);
+
+ dxp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i+1, j, k)]);
+ dxm = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i-1, j, k)]);
+ dyp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j+1, k)]);
+ dym = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-1, k)]);
+ dzp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k+1)]);
+ dzm = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k-1)]);
+
+ interp2_xp[IDX(i,j,k)] = xp.x;
+ interp2_xm[IDX(i,j,k)] = xm.x;
+ interp2_yp[IDX(i,j,k)] = yp.y;
+ interp2_ym[IDX(i,j,k)] = ym.y;
+ interp2_zp[IDX(i,j,k)] = zp.z;
+ interp2_zm[IDX(i,j,k)] = zm.z;
+
+ interp4_xp[IDX(i,j,k)] = dxp.x;
+ interp4_xm[IDX(i,j,k)] = dxm.x;
+ interp4_yp[IDX(i,j,k)] = dyp.y;
+ interp4_ym[IDX(i,j,k)] = dym.y;
+ interp4_zp[IDX(i,j,k)] = dzp.z;
+ interp4_zm[IDX(i,j,k)] = dzm.z;
+
+			}/*i,j,k*/
+
+	/*  send receive the coefficients */	
+	sendrecv_borders_scalar(interp_xp);
+	sendrecv_borders_scalar(interp_xm);
+	sendrecv_borders_scalar(interp_yp);
+	sendrecv_borders_scalar(interp_ym);
+	sendrecv_borders_scalar(interp_zp);
+	sendrecv_borders_scalar(interp_zm);
+
+	sendrecv_borders_scalar(interp3_xp);
+	sendrecv_borders_scalar(interp3_xm);
+	sendrecv_borders_scalar(interp3_yp);
+	sendrecv_borders_scalar(interp3_ym);
+	sendrecv_borders_scalar(interp3_zp);
+	sendrecv_borders_scalar(interp3_zm);
+
+	sendrecv_borders_scalar(interp2_xp);
+	sendrecv_borders_scalar(interp2_xm);
+	sendrecv_borders_scalar(interp2_yp);
+	sendrecv_borders_scalar(interp2_ym);
+	sendrecv_borders_scalar(interp2_zp);
+	sendrecv_borders_scalar(interp2_zm);
+
+	sendrecv_borders_scalar(interp4_xp);
+	sendrecv_borders_scalar(interp4_xm);
+	sendrecv_borders_scalar(interp4_yp);
+	sendrecv_borders_scalar(interp4_ym);
+	sendrecv_borders_scalar(interp4_zp);
+	sendrecv_borders_scalar(interp4_zm);		
+
+#endif
+
 
 #ifdef METHOD_CENTERED
 	/* exchange centers */
@@ -979,7 +1172,7 @@ zm = average_4vectors(P0, P1, P2, P3);
 
 #ifdef METHOD_MYQUICK
 
-  vector w_xp,w_xm,w_yp,w_ym,w_zp,w_zm;
+	//vector w_xp,w_xm,w_yp,w_ym,w_zp,w_zm;
   vector xp2,xm2,yp2,ym2,zp2,zm2;
   vector dxp2,dxm2,dyp2,dym2,dzp2,dzm2;
   vector xp3,xm3,yp3,ym3,zp3,zm3;

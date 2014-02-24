@@ -70,7 +70,7 @@ extern my_double *interp_xp,*interp_xm,*interp_yp,*interp_ym,*interp_zp,*interp_
 extern my_double *xp_scalar,*xm_scalar,*yp_scalar,*ym_scalar,*zp_scalar,*zm_scalar;
 extern vector *xp_vector,*xm_vector,*yp_vector,*ym_vector,*zp_vector,*zm_vector;
 #endif
-#ifdef METHOD_MYQUICK
+#if (defined METHOD_MYQUICK  || defined METHOD_UPWIND_SKEW)
 extern my_double *interp2_xp,*interp2_xm,*interp2_yp,*interp2_ym,*interp2_zp,*interp2_zm;
 extern my_double *interp3_xp,*interp3_xm,*interp3_yp,*interp3_ym,*interp3_zp,*interp3_zm;
 extern my_double *interp4_xp,*interp4_xm,*interp4_yp,*interp4_ym,*interp4_zp,*interp4_zm;

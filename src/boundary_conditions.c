@@ -121,9 +121,11 @@ if(LNX_START == 0){
 
 	/* Y direction */	
 #ifdef LB_FLUID_BC_Y
-
-  for (i = BRD; i < LNX + BRD; i++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
+ for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+      // this is the good one
+      //  for (i = BRD; i < LNX + BRD; i++) 			
+      //    for (k = BRD; k < LNZ + BRD; k++){
       for(pp=0;pp<NPOP;pp++){
 
 if(LNY_END == NY){

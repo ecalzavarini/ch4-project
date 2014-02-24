@@ -395,7 +395,8 @@ void allocate_fields(){
  if(zp_vector == NULL || zm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_vector\n"); exit(-1);}
 #endif
  
-#ifdef METHOD_MYQUICK
+ //#ifdef METHOD_MYQUICK
+#if (defined METHOD_MYQUICK || defined METHOD_UPWIND_SKEW)
  interp2_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_xp\n"); exit(-1);}
  set_to_zero_my_double( interp2_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
