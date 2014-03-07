@@ -69,8 +69,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_COLLISION_IMPLICIT
 
 //#define METHOD_CENTERED
-#define METHOD_UPWIND
-#define METHOD_UPWIND_SKEW
+//#define METHOD_UPWIND
+//#define METHOD_UPWIND_SKEW
+//#define METHOD_UPWIND_LINEAR
 //#define METHOD_MYQUICK
 //#define METHOD_MYQUICK_CARTESIAN
 //#define METHOD_MYQUICK_LIMITER
@@ -78,7 +79,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 //#define METHOD_TRAPEZOID
 
-#define METHOD_EDGES_AND_CORNERS
+//#define METHOD_EDGES_AND_CORNERS
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
@@ -115,8 +116,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 #ifdef METHOD_FINITE_VOLUME                                            
 #define METHOD_STEPPING_EULER                                           
-//#define METHOD_MYQUICK                                                       
-//#define METHOD_MYQUICK_CARTESIAN
+#define METHOD_MYQUICK                                                       
+#define METHOD_MYQUICK_CARTESIAN
 #endif 
 
 #ifdef METHOD_STREAMING                                                  
