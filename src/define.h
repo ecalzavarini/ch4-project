@@ -11,14 +11,14 @@
 #define TIMING
 
 /* GRID */
-#define GRID_REGULAR
-//#define GRID_REFINED /* the default refinement is TANH */ 
+//#define GRID_REGULAR
+#define GRID_REFINED /* the default refinement is TANH */ 
 //#define GRID_REFINED_ONESIDED
 //#define GRID_REFINED_BULK
 //#define GRID_REFINED_CHEBYSHEV
 //#define GRID_REFINED_SINH
 //#define GRID_REFINED_X
-//#define GRID_REFINED_Y
+#define GRID_REFINED_Y
 //#define GRID_REFINED_Z
 
 //#define GRID_IRREGULAR_RANDOM
@@ -71,7 +71,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
 //#define METHOD_UPWIND_SKEW
-//#define METHOD_UPWIND_LINEAR
+#define METHOD_UPWIND_LINEAR
 //#define METHOD_MYQUICK
 //#define METHOD_MYQUICK_CARTESIAN
 //#define METHOD_MYQUICK_LIMITER

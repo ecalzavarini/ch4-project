@@ -465,8 +465,6 @@ my_double compute_flux_with_upwind_first(pop * f, int i, int j, int k, int pp){
 my_double compute_flux_with_upwind_linear(pop * f, int i, int j, int k, int pp){
 
   my_double adv=0.0;
-
-
   //fprintf(stderr,"interp %e %e\n",interp_zp[IDX(i,j,k)], interp2_zp[IDX(i,j,k)]);
 
  /* linear upwind scheme */   
@@ -500,7 +498,7 @@ my_double compute_flux_with_upwind_linear(pop * f, int i, int j, int k, int pp){
  else
    adv += coeff_zm[IDX(i,j,k)].p[pp]*(interp2_zm[IDX(i,j,k)]*f[IDX(i,j,k-1)].p[pp] + (1.0 - interp2_zm[IDX(i,j,k)])*f[IDX(i,j,k-2)].p[pp] ); 
 
-
+ //fprintf(stderr,"adv %e, %d %d %d\n",adv,i,j,k);
  return adv;
 }	  
 #endif

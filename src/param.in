@@ -8,11 +8,11 @@ SX 1
 SY 100
 SZ 1
 
-time_dt 0.4
+time_dt 0.3
 time_start 0.0
-time_end 1000000.
-time_dump_field 1000.0
-time_dump_diagn 100.
+time_end 30000.
+time_dump_field 4.0
+time_dump_diagn 3.
 
 tau_u 0.5
 
