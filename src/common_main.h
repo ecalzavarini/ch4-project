@@ -77,7 +77,10 @@ my_double *interp2_xp,*interp2_xm,*interp2_yp,*interp2_ym,*interp2_zp,*interp2_z
 my_double *interp3_xp,*interp3_xm,*interp3_yp,*interp3_ym,*interp3_zp,*interp3_zm;
 my_double *interp4_xp,*interp4_xm,*interp4_yp,*interp4_ym,*interp4_zp,*interp4_zm;
 #endif
-
+#ifdef METHOD_UPWIND_LINEAR
+my_double *interp5_xp,*interp5_xm,*interp5_yp,*interp5_ym,*interp5_zp,*interp5_zm;
+my_double *interp6_xp,*interp6_xm,*interp6_yp,*interp6_ym,*interp6_zp,*interp6_zm;
+#endif
 
 pop *coeff_xp, *coeff_xm, *coeff_yp, *coeff_ym, *coeff_zp, *coeff_zm;
 pop *xp_pop,*xm_pop,*yp_pop,*ym_pop,*zp_pop,*zm_pop;

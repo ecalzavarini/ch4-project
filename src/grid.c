@@ -1413,12 +1413,12 @@ w_zm = average_4vectors(P0, P1, P2, P3);
  dzm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k+1)]);
 
  /* This is UPWIND g1 = (x-xuu)/(xu-xuu)  */
- interp_xp[IDX(i,j,k)] = fabs( xp.x/dxp.x );
- interp_xm[IDX(i,j,k)] = fabs( xm.x/dxm.x );
- interp_yp[IDX(i,j,k)] = fabs( yp.y/dyp.y );
- interp_ym[IDX(i,j,k)] = fabs( ym.y/dym.y );
- interp_zp[IDX(i,j,k)] = fabs( zp.z/dzp.z );
- interp_zm[IDX(i,j,k)] = fabs( zm.z/dzm.z );
+ interp5_xp[IDX(i,j,k)] = fabs( xp.x/dxp.x );
+ interp5_xm[IDX(i,j,k)] = fabs( xm.x/dxm.x );
+ interp5_yp[IDX(i,j,k)] = fabs( yp.y/dyp.y );
+ interp5_ym[IDX(i,j,k)] = fabs( ym.y/dym.y );
+ interp5_zp[IDX(i,j,k)] = fabs( zp.z/dzp.z );
+ interp5_zm[IDX(i,j,k)] = fabs( zm.z/dzm.z );
 
  /*******************************************************************/
 /*  Part 2: from outside to the inside */ 
@@ -1441,29 +1441,29 @@ w_zm = average_4vectors(P0, P1, P2, P3);
  dzm = vector_difference(center_V[IDX(i, j, k-1)],center_V[IDX(i, j, k-2)]);
 
  /* This is DOWNWIND g3 = (x-xuu)/(xu-xuu)    */
- interp2_xp[IDX(i,j,k)] =  fabs(xp.x/dxp.x);
- interp2_xm[IDX(i,j,k)] =  fabs(xm.x/dxm.x);
- interp2_yp[IDX(i,j,k)] =  fabs(yp.y/dyp.y);
- interp2_ym[IDX(i,j,k)] =  fabs(ym.y/dym.y);
- interp2_zp[IDX(i,j,k)] =  fabs(zp.z/dzp.z);
- interp2_zm[IDX(i,j,k)] =  fabs(zm.z/dzm.z);
+ interp6_xp[IDX(i,j,k)] =  fabs(xp.x/dxp.x);
+ interp6_xm[IDX(i,j,k)] =  fabs(xm.x/dxm.x);
+ interp6_yp[IDX(i,j,k)] =  fabs(yp.y/dyp.y);
+ interp6_ym[IDX(i,j,k)] =  fabs(ym.y/dym.y);
+ interp6_zp[IDX(i,j,k)] =  fabs(zp.z/dzp.z);
+ interp6_zm[IDX(i,j,k)] =  fabs(zm.z/dzm.z);
 
 			}/*i,j,k*/
 
 	/*  send receive the coefficients */	
-	sendrecv_borders_scalar(interp_xp);
-	sendrecv_borders_scalar(interp_xm);
-	sendrecv_borders_scalar(interp_yp);
-	sendrecv_borders_scalar(interp_ym);
-	sendrecv_borders_scalar(interp_zp);
-	sendrecv_borders_scalar(interp_zm);
+	sendrecv_borders_scalar(interp5_xp);
+	sendrecv_borders_scalar(interp5_xm);
+	sendrecv_borders_scalar(interp5_yp);
+	sendrecv_borders_scalar(interp5_ym);
+	sendrecv_borders_scalar(interp5_zp);
+	sendrecv_borders_scalar(interp5_zm);
 
-	sendrecv_borders_scalar(interp2_xp);
-	sendrecv_borders_scalar(interp2_xm);
-	sendrecv_borders_scalar(interp2_yp);
-	sendrecv_borders_scalar(interp2_ym);
-	sendrecv_borders_scalar(interp2_zp);
-	sendrecv_borders_scalar(interp2_zm);  
+	sendrecv_borders_scalar(interp6_xp);
+	sendrecv_borders_scalar(interp6_xm);
+	sendrecv_borders_scalar(interp6_yp);
+	sendrecv_borders_scalar(interp6_ym);
+	sendrecv_borders_scalar(interp6_zp);
+	sendrecv_borders_scalar(interp6_zm);  
 #endif
 
 
