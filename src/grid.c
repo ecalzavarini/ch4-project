@@ -1391,7 +1391,7 @@ w_ym = average_4vectors(P0, P1, P4, P5);
 w_zp = average_4vectors(P4, P5, P6, P7);
 w_zm = average_4vectors(P0, P1, P2, P3); 
 
-
+#ifndef METHOD_UPWIND_LINEAR_IMPROVED
 /*******************************************************************/
 /*  Part 1: from inside to the outside */ 
 
@@ -1449,27 +1449,27 @@ w_zm = average_4vectors(P0, P1, P2, P3);
  interp6_zm[IDX(i,j,k)] =  fabs(zm.z/dzm.z);
 
 
-#ifdef METHOD_UPWIND_LINEAR_IMPROVED
+#else
  /* In this case the coefficient are computed according to Kalyan improved method , comments here below shall be updated*/
 
 /*  Part 1: from inside to the outside */ 
 
 /* we find the distance of the centers from such 6 surface centers */
 /* x - xuu */
- xp = vector_difference(w_xp, center_V[IDX(i-1, j, k)]);
- xm = vector_difference(w_xm, center_V[IDX(i+1, j, k)]);
- yp = vector_difference(w_yp, center_V[IDX(i, j-1, k)]);
- ym = vector_difference(w_ym, center_V[IDX(i, j+1, k)]);
- zp = vector_difference(w_zp, center_V[IDX(i, j, k-1)]);
- zm = vector_difference(w_zm, center_V[IDX(i, j, k+1)]);
+ xp = vector_difference(w_xp, center_V[IDX(i, j, k)]);
+ xm = vector_difference(w_xm, center_V[IDX(i, j, k)]);
+ yp = vector_difference(w_yp, center_V[IDX(i, j, k)]);
+ ym = vector_difference(w_ym, center_V[IDX(i, j, k)]);
+ zp = vector_difference(w_zp, center_V[IDX(i, j, k)]);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k)]);
  /* we find the distance between the two neighboring nodes */ 
  /* xu - xuu */
- dxp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i-1, j, k)]);
- dxm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i+1, j, k)]);
- dyp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j-1, k)]);
- dym = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j+1, k)]);
- dzp = vector_difference(center_V[IDX(i, j, k)], center_V[IDX(i, j, k-1)]);
- dzm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k+1)]);
+ dxp = vector_difference(center_V[IDX(i+1, j, k)], center_V[IDX(i-1, j, k)]);
+ dxm = vector_difference(center_V[IDX(i+1, j, k)],center_V[IDX(i-1, j, k)]);
+ dyp = vector_difference(center_V[IDX(i, j+1, k)], center_V[IDX(i, j-1, k)]);
+ dym = vector_difference(center_V[IDX(i, j+1, k)],center_V[IDX(i, j-1, k)]);
+ dzp = vector_difference(center_V[IDX(i, j, k+1)], center_V[IDX(i, j, k-1)]);
+ dzm = vector_difference(center_V[IDX(i, j, k+1)],center_V[IDX(i, j, k-1)]);
 
  /* This is UPWIND g1 = (x-xuu)/(xu-xuu)  */
  interp5_xp[IDX(i,j,k)] = fabs( xp.x/dxp.x );
@@ -1484,20 +1484,20 @@ w_zm = average_4vectors(P0, P1, P2, P3);
 
 /* we find the distance of the centers from such 6 surface centers */
 /* x - xuu */
- xp = vector_difference(w_xp, center_V[IDX(i+2, j, k)]);
- xm = vector_difference(w_xm, center_V[IDX(i-2, j, k)]);
- yp = vector_difference(w_yp, center_V[IDX(i, j+2, k)]);
- ym = vector_difference(w_ym, center_V[IDX(i, j-2, k)]);
- zp = vector_difference(w_zp, center_V[IDX(i, j, k+2)]);
- zm = vector_difference(w_zm, center_V[IDX(i, j, k-2)]);
+ xp = vector_difference(w_xp, center_V[IDX(i+1, j, k)]);
+ xm = vector_difference(w_xm, center_V[IDX(i-1, j, k)]);
+ yp = vector_difference(w_yp, center_V[IDX(i, j+1, k)]);
+ ym = vector_difference(w_ym, center_V[IDX(i, j-1, k)]);
+ zp = vector_difference(w_zp, center_V[IDX(i, j, k+1)]);
+ zm = vector_difference(w_zm, center_V[IDX(i, j, k-1)]);
  /* we find the distance between the two neighboring nodes */ 
  /* xu - xuu */
- dxp = vector_difference(center_V[IDX(i+1, j, k)],center_V[IDX(i+2, j, k)]);
- dxm = vector_difference(center_V[IDX(i-1, j, k)],center_V[IDX(i-2, j, k)]);
- dyp = vector_difference(center_V[IDX(i, j+1, k)],center_V[IDX(i, j+2, k)]);
- dym = vector_difference(center_V[IDX(i, j-1, k)],center_V[IDX(i, j-2, k)]);
- dzp = vector_difference(center_V[IDX(i, j, k+1)],center_V[IDX(i, j, k+2)]);
- dzm = vector_difference(center_V[IDX(i, j, k-1)],center_V[IDX(i, j, k-2)]);
+ dxp = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i+2, j, k)]);
+ dxm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i-2, j, k)]);
+ dyp = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j+2, k)]);
+ dym = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j-2, k)]);
+ dzp = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k+2)]);
+ dzm = vector_difference(center_V[IDX(i, j, k)],center_V[IDX(i, j, k-2)]);
 
  /* This is DOWNWIND g3 = (x-xuu)/(xu-xuu)    */
  interp6_xp[IDX(i,j,k)] =  fabs(xp.x/dxp.x);
