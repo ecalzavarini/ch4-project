@@ -54,7 +54,8 @@ my_double compute_flux_with_upwind_linear(pop * f, int i, int j, int k, int pp);
 my_double compute_flux_with_quick(pop * f, int i, int j, int k, int pp);
 #ifdef METHOD_MYQUICK_LIMITER
 my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp);
-my_double limiter(my_double r1, my_double r2);
+my_double limiter(my_double r);
+my_double gradient_ratio(pop * f, int i, int j, int k, int pp,int dir);
 #endif
 #endif
 
