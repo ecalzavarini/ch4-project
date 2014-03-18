@@ -1,0 +1,39 @@
+resume 1
+
+NX 128  
+NY 128 
+NZ 256
+
+SX  128.  #64. #26880.  #6720.  #8444.  #4222.0
+SY  128.  #64. #13440.  #3360.  #1344.  #672.
+SZ  256.  #64. #13440.  #3360.  #2816.  #1408.0 
+
+time_dt 1.0  #0.2   #0.24
+time_start 0.0
+time_end 125000.0
+time_dump_field 125000.0
+time_dump_diagn 100.
+
+tau_u 0.504762  #0.502381  #0.5 #0.125
+
+Amp_x 0.004466  #0.011165   #0.015  #1.5e-8
+Amp_y 0.0
+Amp_z 0.0
+
+tau_t 0.125
+T_bot  0.25
+T_top -0.25
+T_ref 0.0
+
+beta_t 1.8603932e-05    #0.00013246
+beta2_t 0.0
+
+gravity_x 0.0
+gravity_y 1.0
+gravity_z 0.0
+
+Amp_t 0.01
+
+T_solid 1.001
+latent_heat 1
+specific_heat 1
