@@ -507,8 +507,8 @@ if(LNY_START == 0){
 #ifdef LB_TEMPERATURE_BC_Y
 
 
-  for (i = BRD; i < LNX + BRD; i++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
+ for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
 
 
 if(LNY_END == NY){
@@ -567,9 +567,8 @@ if(LNY_START == 0){
 	/* X direction */
 #ifdef LB_TEMPERATURE_BC_X
 
-
-  for (j = BRD; j < LNY + BRD; j++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
+  for (j = 0; j < LNY + TWO_BRD; j++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
 
 
 if(LNX_END == NX){
