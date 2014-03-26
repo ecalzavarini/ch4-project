@@ -453,13 +453,15 @@ sendrecv_borders_pop(rhs_h);
 if(LNX_END == NX){
 	i = LNX+BRD-1;	 
 	  /* NO SLIP */
-	  rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
+	  //rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
+	  rhs_p[IDX(i+1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 }
 
 if(LNX_START == 0){
   i = BRD; 
 	/* NO SLIP */
-         rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
+         //rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
+         rhs_p[IDX(i-1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
  }
 
       }/* for pp */
@@ -471,29 +473,30 @@ if(LNX_START == 0){
 #ifdef LB_FLUID_BC_Y
 
 
- for (i = 0; i < LNX + TWO_BRD; i++) 			
-   for (k = 0; k < LNZ + TWO_BRD; k++){
+  for (i = BRD; i < LNX + BRD; i++)                     
+  for (k = BRD; k < LNZ + BRD; k++){
+    //for (i = 0; i < LNX + TWO_BRD; i++) 			
+    //for (k = 0; k < LNZ + TWO_BRD; k++){
 
       for(pp=0;pp<NPOP;pp++){
 
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
 
-          if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
-
 if(LNY_END == NY){
 	j = LNY+BRD-1;	 
 	  /* NO SLIP */
-	  rhs_p[IDX(i,j+1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];	
+	  //rhs_p[IDX(i,j+1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
+          rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];	
 }
 
 if(LNY_START == 0){
   j = BRD; 
 	/* NO SLIP */
-         rhs_p[IDX(i,j-1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
+         //rhs_p[IDX(i,j-1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
+         rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
  }
 
-	  }
       }/* for pp */
     }/* for i,k */
 #endif
@@ -513,8 +516,10 @@ if(LNY_START == 0){
 #ifdef LB_TEMPERATURE_BC_Y
 
 
- for (i = 0; i < LNX + TWO_BRD; i++) 			
-   for (k = 0; k < LNZ + TWO_BRD; k++){
+  for (i = BRD; i < LNX + BRD; i++)                     
+  for (k = BRD; k < LNZ + BRD; k++){
+  //for (i = 0; i < LNX + TWO_BRD; i++) 			
+  //for (k = 0; k < LNZ + TWO_BRD; k++){
 
 
 if(LNY_END == NY){
@@ -531,14 +536,16 @@ if(LNY_END == NY){
 #endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
-	    if(c[pp].y<0){
+      	    if(c[pp].y>0){
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
-          if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
-	    fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
-	    rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];
-	  }
-	    }	   
+          //if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
+	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
+	  //rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+	  rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
+	    //}
+	   }	   
 	  }
  }
 
@@ -557,13 +564,15 @@ if(LNY_START == 0){
 
 	  
 	  for(pp=0;pp<NPOP;pp++){
-	    if(c[pp].y>0){
+	    if(c[pp].y<0){
 	  ii = i+(int)c[pp].x;
 	  kk = k+(int)c[pp].z;	
-         if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
-	   fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
-	   rhs_g[IDX(i,j-1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];	    
-	 }
+	  //if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
+	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
+	  // rhs_g[IDX(i,j-1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];	    
+	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
+	  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
+	  //}
 	    }
 	    //fprintf(stderr,"t %e \n",t[IDX(ii,j,kk)] );
 	  }
