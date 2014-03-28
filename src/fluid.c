@@ -140,19 +140,34 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
 //if((LNY_END == NY && j>=LNY+BRD-2) || (LNY_START == 0 && j<=BRD+1)){
 //if((LNY_END == NY && j==LNY+BRD-1  && c[pp].y < 0) || (LNY_START == 0 && j==BRD  && c[pp].y > 0)){
 //if(c[pp].x*c[pp].x + c[pp].y*c[pp].y + c[pp].z*c[pp].z ==1.0){
+#ifndef METHOD_REDEFINED_POP /* redefined pop is off */
 #ifdef METHOD_UPWIND
        adv = compute_flux_with_upwind_first(f,i,j,k,pp);
 #endif
 #ifdef METHOD_UPWIND_LINEAR
        adv = compute_flux_with_upwind_linear(f,i,j,k,pp);
 #endif
-   //adv = compute_flux_with_limiters(f,i,j,k,pp);
 	 }else{
 #ifdef METHOD_CENTERED
         adv = compute_flux_with_central_difference(f,i,j,k,pp);
 #endif
 #ifdef METHOD_MYQUICK
         adv = compute_flux_with_quick(f,i,j,k,pp);
+#endif
+#else  /* redefined pop is on */
+#ifdef METHOD_UPWIND
+       adv = compute_flux_with_upwind_first(f_aux,i,j,k,pp);
+#endif
+#ifdef METHOD_UPWIND_LINEAR
+       adv = compute_flux_with_upwind_linear(f_aux,i,j,k,pp);
+#endif
+	 }else{
+#ifdef METHOD_CENTERED
+        adv = compute_flux_with_central_difference(f_aux,i,j,k,pp);
+#endif
+#ifdef METHOD_MYQUICK
+        adv = compute_flux_with_quick(f_aux,i,j,k,pp);
+#endif
 #endif
  }
 #endif
