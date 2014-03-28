@@ -98,16 +98,28 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
 	/* now taking care of pop 1 to 18 */
  	for(pp=1;pp<NPOP;pp++){
 
-#ifdef METHOD_CENTERED	  
+#ifdef METHOD_CENTERED
+#ifdef METHOD_REDEFINED_POP
+ /* The auxiliary population is advected f_aux = f + (dt/(2*tau))*(f_eq-f) */
+	  adv=0.0;
+	  adv = compute_flux_with_central_difference(f_aux,i,j,k,pp);
+#else		  
 	  /* central difference scheme */
 	  adv=0.0;
 	  adv = compute_flux_with_central_difference(f,i,j,k,pp);
 #endif
+#endif
 
 #ifdef METHOD_UPWIND
+#ifdef METHOD_REDEFINED_POP
+ /* The auxiliary population is advected f_aux = f + (dt/(2*tau))*(f_eq-f) */
+	  adv=0.0;
+	  adv = compute_flux_with_upwind_first(f_aux,i,j,k,pp);
+#else	
  /* first order upwind scheme */
 	  adv=0.0;
 	  adv = compute_flux_with_upwind_first(f,i,j,k,pp);	  
+#endif
 #endif
 
  /* QUICK */
