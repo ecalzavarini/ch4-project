@@ -1444,7 +1444,7 @@ vector gradient_scalar(my_double *t, int i, int j, int k){
 if(LNX_START == 0 && i == BRD){
     grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
  }
- if(LNX_END == NY && i == LNX+BRD-1){ 
+ if(LNX_END == NX && i == LNX+BRD-1){ 
    grad.x = ( t[IDX(i, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
  }
 
@@ -1479,7 +1479,7 @@ if(LNX_START == 0 && i == BRD){
     grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i+1, j, k)] + a2*t[IDX(i+2, j, k)];
 
  }
- if(LNX_END == NY && i == LNX+BRD-1){ 
+ if(LNX_END == NX && i == LNX+BRD-1){ 
 
    h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
    h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
