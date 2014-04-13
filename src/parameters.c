@@ -518,7 +518,7 @@ interp6_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(
  set_to_zero_pop( p_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
-#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3)
+#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
  old_rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_p\n"); exit(-1);}
  set_to_zero_pop( old_rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -630,7 +630,7 @@ ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
  set_to_zero_pop( g_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
-#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3)
+#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
  old_rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_g\n"); exit(-1);}
  set_to_zero_pop( old_rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -681,7 +681,7 @@ ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
  set_to_zero_pop( h_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
-#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3)
+#if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
  old_rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_h\n"); exit(-1);}
  set_to_zero_pop( old_rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));

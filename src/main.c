@@ -50,14 +50,25 @@ int main(int argc, char **argv){
 	  
 #ifdef LB_FLUID
 	  compute_advection(p,rhs_p,property.tau_u,p_eq);
+#ifdef METHOD_HEUN
+          copy_pop(rhs_p,old_rhs_p);
+#endif
 	  add_collision(p,rhs_p,property.tau_u,p_eq);
 #endif
+
 #ifdef LB_TEMPERATURE
 	  compute_advection(g,rhs_g,property.tau_t,g_eq);
+#ifdef METHOD_HEUN
+	  copy_pop(rhs_g,old_rhs_g);
+#endif
 	  add_collision(g,rhs_g,property.tau_t,g_eq);
 #endif
+
 #ifdef LB_SCALAR
 	  compute_advection(h,rhs_h,property.tau_s,h_eq);
+#ifdef METHOD_HEUN
+	  copy_pop(rhs_h,old_rhs_h);
+#endif
 	  add_collision(h,rhs_h,property.tau_s,h_eq);
 #endif 
 
@@ -74,13 +85,13 @@ int main(int argc, char **argv){
 #endif
 
 #ifdef LB_FLUID	  
-	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u);
+	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u,p_eq);
 #endif
 #ifdef LB_TEMPERATURE
-	 time_stepping(g,rhs_g,old_rhs_g,old_old_rhs_g,property.tau_t);
+	 time_stepping(g,rhs_g,old_rhs_g,old_old_rhs_g,property.tau_t,g_eq);
 #endif
 #ifdef LB_SCALAR
-	 time_stepping(h,rhs_h,old_rhs_h,old_old_rhs_h,property.tau_s);
+	 time_stepping(h,rhs_h,old_rhs_h,old_old_rhs_h,property.tau_s,h_eq);
 #endif	
 	 hydro_fields();	
 	 dump_averages();

@@ -22,7 +22,8 @@ void design_lb();
 void sendrecv_borders_pop(pop *f);
 pop equilibrium(pop * f, int i, int j, int k);
 pop equilibrium_given_velocity(vector v , my_double rho);
-void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,pop *old_old_rhs_f,my_double tau);
+void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,pop *old_old_rhs_f,my_double tau,pop *f_eq);
+void copy_pop(pop *f, pop *f_copy);
 
 /* boundary_conditions.c */
 void boundary_conditions();

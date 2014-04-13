@@ -148,3 +148,19 @@ typedef struct {
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
+
+
+
+/*  Lagrangian part */
+#ifdef LAGRANGE
+
+typedef struct {
+  my_double x,y,z,vx,vy,vz,ax,ay,az;
+} point;
+
+typedef struct {
+  my_double name, kind;
+  point now,old;
+} point_particle;
+
+#endif

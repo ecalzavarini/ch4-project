@@ -174,8 +174,7 @@ if(LNY_END == NY){
 	  p_eq = equilibrium_given_velocity(vel,rho);
 	*/
        	  //f[IDX(i,j+1,k)].p[pp] = 0.5*(f_neq.p[inv[pp]]+f_eq.p[pp]);
-
-       p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
+	p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
        //p[IDX(i,j+1,k)].p[pp] = wgt[pp]*dens[IDX(i,j,k)];
        //if(c[pp].y < 0) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 #ifdef METHOD_MYQUICK

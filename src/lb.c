@@ -4,52 +4,52 @@ void design_lb(){
 
   /* 4 lines below, to be removed */
   //NPOP = 19;
-   /* commit pop type */
-   //MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
-   //MPI_Type_commit(&MPI_pop_type);
+  /* commit pop type */
+  //MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
+  //MPI_Type_commit(&MPI_pop_type);
 
-	/* Settings for D3Q19 */
-	wgt[0] = 1. / 3.;
-	wgt[1] = 1. / 18.;
-	wgt[2] = 1. / 18.;
-	wgt[3] = 1. / 18.;
-	wgt[4] = 1. / 18.;
-	wgt[5] = 1. / 18.;
-	wgt[6] = 1. / 18.;
-	wgt[7] = 1. / 36.;
-	wgt[8] = 1. / 36.;
-	wgt[9] = 1. / 36.;
-	wgt[10] = 1. / 36.;
-	wgt[11] = 1. / 36.;
-	wgt[12] = 1. / 36.;
-	wgt[13] = 1. / 36.;
-	wgt[14] = 1. / 36.;
-	wgt[15] = 1. / 36.;
-	wgt[16] = 1. / 36.;
-	wgt[17] = 1. / 36.;
-	wgt[18] = 1. / 36.;
+  /* Settings for D3Q19 */
+  wgt[0] = 1. / 3.;
+  wgt[1] = 1. / 18.;
+  wgt[2] = 1. / 18.;
+  wgt[3] = 1. / 18.;
+  wgt[4] = 1. / 18.;
+  wgt[5] = 1. / 18.;
+  wgt[6] = 1. / 18.;
+  wgt[7] = 1. / 36.;
+  wgt[8] = 1. / 36.;
+  wgt[9] = 1. / 36.;
+  wgt[10] = 1. / 36.;
+  wgt[11] = 1. / 36.;
+  wgt[12] = 1. / 36.;
+  wgt[13] = 1. / 36.;
+  wgt[14] = 1. / 36.;
+  wgt[15] = 1. / 36.;
+  wgt[16] = 1. / 36.;
+  wgt[17] = 1. / 36.;
+  wgt[18] = 1. / 36.;
 
 
-	/* Lattice speeds, D3Q19 */
-	c[0].x = 0.;	c[0].y = 0.;	c[0].z = 0.;
-	c[1].x = 1.;	c[1].y = 0.;	c[1].z = 0.;
-	c[2].x = -1.;	c[2].y = 0.;	c[2].z = 0.;
-	c[3].x = 0.;	c[3].y = 1.;	c[3].z = 0.;
-	c[4].x = 0.;	c[4].y = -1.;	c[4].z = 0.;
-	c[5].x = 0.;	c[5].y = 0.;	c[5].z = 1.;
-	c[6].x = 0.;	c[6].y = 0.;	c[6].z = -1.;
-	c[7].x = 1.;	c[7].y = 1.;	c[7].z = 0.;
-	c[8].x = 1.;	c[8].y = -1.;	c[8].z = 0.;
-	c[9].x = -1.;	c[9].y = 1.;	c[9].z = 0.;
-	c[10].x = -1.;	c[10].y = -1.;	c[10].z = 0.;
-	c[11].x = 1.;	c[11].y = 0.;	c[11].z = 1.;
-	c[12].x = -1.;	c[12].y = 0.;	c[12].z = 1.;
-	c[13].x = 1.;	c[13].y = 0.;	c[13].z = -1.;
-	c[14].x = -1.;	c[14].y = 0.;	c[14].z = -1.;
-	c[15].x = 0.;	c[15].y = 1.;	c[15].z = 1.;
-	c[16].x = 0.;	c[16].y = 1.;	c[16].z = -1.;
-	c[17].x = 0.;	c[17].y = -1.;	c[17].z = 1.;
-	c[18].x = 0.;	c[18].y = -1.;	c[18].z = -1.;
+  /* Lattice speeds, D3Q19 */
+  c[0].x = 0.;	c[0].y = 0.;	c[0].z = 0.;
+  c[1].x = 1.;	c[1].y = 0.;	c[1].z = 0.;
+  c[2].x = -1.;	c[2].y = 0.;	c[2].z = 0.;
+  c[3].x = 0.;	c[3].y = 1.;	c[3].z = 0.;
+  c[4].x = 0.;	c[4].y = -1.;	c[4].z = 0.;
+  c[5].x = 0.;	c[5].y = 0.;	c[5].z = 1.;
+  c[6].x = 0.;	c[6].y = 0.;	c[6].z = -1.;
+  c[7].x = 1.;	c[7].y = 1.;	c[7].z = 0.;
+  c[8].x = 1.;	c[8].y = -1.;	c[8].z = 0.;
+  c[9].x = -1.;	c[9].y = 1.;	c[9].z = 0.;
+  c[10].x = -1.; c[10].y = -1.;	c[10].z = 0.;
+  c[11].x = 1.;	c[11].y = 0.;	c[11].z = 1.;
+  c[12].x = -1.; c[12].y = 0.;	c[12].z = 1.;
+  c[13].x = 1.;	c[13].y = 0.;	c[13].z = -1.;
+  c[14].x = -1.; c[14].y = 0.;	c[14].z = -1.;
+  c[15].x = 0.;	c[15].y = 1.;	c[15].z = 1.;
+  c[16].x = 0.;	c[16].y = 1.;	c[16].z = -1.;
+  c[17].x = 0.;	c[17].y = -1.;	c[17].z = 1.;
+  c[18].x = 0.;	c[18].y = -1.;	c[18].z = -1.;
 
 
 	/*
@@ -231,9 +231,9 @@ void streaming(pop *f, pop *rhs_f){
 
 
 /********************************************/
-void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_double tau){
+void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_double tau,pop *f_eq){
   int i,j,k,pp;
-  pop f_eq;
+  //pop f_eq;
   my_double dt_over_tau,fac1,fac2;
   my_double rho1,rho2;
   my_double A1, A2, A3,dt,invtau;
@@ -252,7 +252,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
       for(i=BRD;i<LNX+BRD;i++){ 
 
 #ifdef DEBUG_HARD
-	f_eq=equilibrium(f,i,j,k);
+	//f_eq=equilibrium(f,i,j,k);
 #endif
       
 
@@ -273,7 +273,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 #endif
 
 #ifdef DEBUG_HARD
-	  fprintf(stderr,"f_new %e f_eq %e diff %e\n",f[IDX(i,j,k)].p[pp], f_eq.p[pp], f[IDX(i,j,k)].p[pp]-f_eq.p[pp]);
+	  //fprintf(stderr,"f_new %e f_eq %e diff %e\n",f[IDX(i,j,k)].p[pp], f_eq.p[pp], f[IDX(i,j,k)].p[pp]-f_eq.p[pp]);
 #endif 
 #endif
 
@@ -333,9 +333,31 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 	 old_rhs_f[IDX(i,j,k)].p[pp] = rhs_f[IDX(i,j,k)].p[pp];
 #endif
 
-
 	}/* pp */
       }/* for i,j,k */
+
+
+#ifdef METHOD_HEUN
+  /* this is Heun corrector scheme method, it depends on method Euler (METHOD_EULER must be defined) */
+
+  /* 0) adjust bc for the new f field*/
+ sendrecv_borders_pop(f);
+#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
+  boundary_conditions();
+#endif
+  /* 1) we compute the advection with the new f field*/
+  compute_advection(f,rhs_f,tau,f_eq);
+  /* 3) perform the corrector step */
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++)
+	for(pp=0;pp<NPOP;pp++){
+
+	  f[IDX(i,j,k)].p[pp] += 0.5*property.time_dt*( rhs_f[IDX(i,j,k)].p[pp] - old_rhs_f[IDX(i,j,k)].p[pp] );	  
+
+	}
+#endif
+
 
 #ifdef METHOD_STREAMING
   //sendrecv_borders_pop(rhs_f); 
@@ -695,6 +717,19 @@ pop equilibrium_given_velocity(vector v , my_double rho){
 	}
 
 	return f_eq;
+}
+
+
+/* function to copy a pop field */
+void copy_pop(pop *f, pop *f_copy){
+  int i,j,k;
+  for(k=0;k<LNZ+TWO_BRD;k++)
+    for(j=0;j<LNY+TWO_BRD;j++)
+      for(i=0;i<LNX+TWO_BRD;i++){
+
+	f_copy[IDX(i,j,k)] = f[IDX(i,j,k)]; 	
+
+	}
 }
 
 /*******************/
