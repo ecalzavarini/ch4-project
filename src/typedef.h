@@ -44,6 +44,9 @@ typedef struct {
 #endif
 #ifdef LB_TEMPERATURE_FORCING
   my_double Amp_t;
+#ifdef LB_TEMPERATURE_FORCING_RADIATION
+  my_double attenuation; 
+#endif
 #endif
 #ifdef LB_TEMPERATURE_MELTING
   my_double T_solid,latent_heat,specific_heat;
