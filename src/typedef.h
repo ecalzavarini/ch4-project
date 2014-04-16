@@ -17,8 +17,23 @@ typedef struct {
   my_double zx,zy,zz;
 } tensor;
 
+
+#ifdef GRID_POP_D3Q15
+#define NPOP 15
+#endif
+#ifdef GRID_POP_D3Q19
+#define NPOP 19
+#endif
+#ifdef GRID_POP_D3Q27
+#define NPOP 27
+#endif
+
+#ifdef TO_KILL
+#define NPOP 19
+#endif
+
 typedef struct {
-  my_double p[19];
+  my_double p[NPOP];
 } pop;
 
 typedef struct {
@@ -89,10 +104,34 @@ typedef struct {
 
 #ifndef METHOD_LOG
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
+#ifdef TO_KILL
 #define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]  -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14])
 #define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15] +a.p[16]-a.p[17]-a.p[18])
 #define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
 #define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
+#endif
+
+#ifdef GRID_POP_D3Q15
+#define mvx(a) (a.p[11] +a.p[12] +a.p[8]  +a.p[13]  +a.p[14]  -a.p[7] -a.p[5] -a.p[4] -a.p[6] -a.p[1])
+#define mvy(a) (a.p[7] +a.p[11] +a.p[12]  +a.p[6]  +a.p[9]  -a.p[5] -a.p[4] -a.p[14] -a.p[13] -a.p[2])
+#define mvz(a) (a.p[7] +a.p[11] +a.p[5]  +a.p[13]  +a.p[10] -a.p[4] -a.p[14] -a.p[6] -a.p[12] -a.p[3])
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14])
+#endif
+
+#ifdef GRID_POP_D3Q19 
+#define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]  -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14])
+#define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15] +a.p[16]-a.p[17]-a.p[18])
+#define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
+#endif
+
+#ifdef GRID_POP_D3Q27
+#define mvx(a) (a.p[23] +a.p[17] +a.p[24]  +a.p[20]  +a.p[26] +a.p[18] +a.p[25] +a.p[19] +a.p[14] -a.p[13] -a.p[7] -a.p[11] -a.p[4] -a.p[10] -a.p[6] -a.p[12] -a.p[5] -a.p[1])
+#define mvy(a) (a.p[13] +a.p[21] +a.p[23]  +a.p[17]  +a.p[24] +a.p[22] +a.p[12] +a.p[5] +a.p[15] -a.p[11] -a.p[4] -a.p[10] -a.p[8] -a.p[26] -a.p[18] -a.p[25] -a.p[9] -a.p[2])
+#define mvz(a) (a.p[13] +a.p[21] +a.p[23]  +a.p[19]  +a.p[25] +a.p[9] +a.p[11] +a.p[7] +a.p[16] -a.p[12] -a.p[22] -a.p[24] -a.p[20] -a.p[26] -a.p[8] -a.p[10] -a.p[6] -a.p[3])
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18]+ a.p[19]+ a.p[20]+ a.p[21]+ a.p[22]+ a.p[23]+ a.p[24]+ a.p[25]+ a.p[26])
+#endif
+
 #else
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
 #define mvx(a,b) (exp(a.p[1]*b)-exp(a.p[2]*b)+exp(a.p[7]*b)+exp(a.p[8]*b)-exp(a.p[9]*b)-exp(a.p[10]*b)+exp(a.p[11]*b)-exp(a.p[12]*b)+exp(a.p[13]*b)-exp(a.p[14]*b))

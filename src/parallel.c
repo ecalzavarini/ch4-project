@@ -67,7 +67,7 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_commit(&MPI_my_double_type);
 
 #ifdef LB
- NPOP = 19;
+ //NPOP = 19;
  /* commit pop type */
  MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
  MPI_Type_commit(&MPI_pop_type);

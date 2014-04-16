@@ -23,20 +23,25 @@
 
 //#define GRID_IRREGULAR_RANDOM
 
+/* our default is d3q19 */
+//#define GRID_POP_D3Q15
+//#define GRID_POP_D3Q19
+//#define GRID_POP_D3Q27
+
 /* LB */
 #define LB
 
 /* FLUID */
 #define LB_FLUID
 //#define LB_FLUID_INITIAL_KOLMOGOROV 
-#define LB_FLUID_INITIAL_POISEUILLE
+//#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_CHANNEL
-#define LB_FLUID_FORCING_POISEUILLE
+//#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
 //#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_LANDSCAPE
@@ -57,11 +62,11 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 
-#define METHOD_REDEFINED_POP
-#define METHOD_HEUN
+//#define METHOD_REDEFINED_POP
+//#define METHOD_HEUN
 //#define METHOD_LOG
 //#define METHOD_EXPONENTIAL
 //#define METHOD_STEPPING_EULER
@@ -85,24 +90,24 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-//#define LB_TEMPERATURE_INITIAL_LINEAR
-//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+#define LB_TEMPERATURE_INITIAL_LINEAR
+#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-//#define LB_TEMPERATURE_BUOYANCY
-//#define LB_TEMPERATURE_BC
-//#define LB_TEMPERATURE_BC_Y
+#define LB_TEMPERATURE_BUOYANCY
+#define LB_TEMPERATURE_BC
+#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_Y_VARIABLE
 //#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_NOFLUX
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
-//#define LB_TEMPERATURE_FORCING
+#define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_BULK 
 //#define LB_TEMPERATURE_FORCING_BULK_VARIABLE
-//#define LB_TEMPERATURE_FORCING_RADIATION 
+#define LB_TEMPERATURE_FORCING_RADIATION 
 //#define LB_TEMPERATURE_FORCING_SOURCE
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION
@@ -117,12 +122,16 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* Define dependencies not to be modified          */
 
 #ifdef METHOD_FINITE_VOLUME                                            
+#define GRID_POP_D3Q19
 #define METHOD_STEPPING_EULER                                           
+#define METHOD_REDEFINED_POP                                                                                                                                                               
+#define METHOD_HEUN    
 #define METHOD_MYQUICK                                                       
 #define METHOD_MYQUICK_CARTESIAN
 #endif 
 
 #ifdef METHOD_STREAMING                                                  
+#define GRID_POP_D3Q19
 #define METHOD_EDGES_AND_CORNERS                                        
 #define METHOD_FORCING_GUO                                              
 #endif

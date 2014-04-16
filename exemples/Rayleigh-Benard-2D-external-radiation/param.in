@@ -32,7 +32,7 @@ gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.002
+Amp_t 0.02
 attenuation 0.0921
 
 T_solid 1.001
