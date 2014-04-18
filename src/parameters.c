@@ -136,7 +136,7 @@ void assign_parameters(){
   fclose(fout); 
 #endif
 #ifdef LB_FLUID_FORCING_CHANNEL
-  fprintf(stderr,"Reynolds (turbulent shar) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
+  fprintf(stderr,"Reynolds (turbulent shear) Number is -> Re= %e\n", property.Amp_x * (property.SY/2.) /property.nu);
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Reynolds (turbulent shear) %e\n", property.Amp_x * (property.SY/2.) /property.nu);
   fclose(fout); 
