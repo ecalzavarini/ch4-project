@@ -116,12 +116,16 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* Define dependencies not to be modified          */
 
 #ifdef METHOD_FINITE_VOLUME                                            
-#define METHOD_STEPPING_EULER                                           
+#define GRID_POP_D3Q19
+#define METHOD_STEPPING_EULER
+#define METHOD_REDEFINED_POP
+#define METHOD_HEUN
 #define METHOD_MYQUICK                                                       
 #define METHOD_MYQUICK_CARTESIAN
 #endif 
 
-#ifdef METHOD_STREAMING                                                  
+#ifdef METHOD_STREAMING
+#define GRID_POP_D3Q19                                                  
 #define METHOD_EDGES_AND_CORNERS                                        
 #define METHOD_FORCING_GUO                                              
 #endif
