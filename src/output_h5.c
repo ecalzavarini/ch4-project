@@ -199,6 +199,21 @@ void output_h5(){
   fprintf(fout,"%s:/euler/density\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
+
+  /* to read the velocity as a vector */
+  fprintf(fout,"<Attribute Name=\"velocity\" AttributeType=\"Vector\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d %d %d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",NZ,NY,NX);
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_x\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_y\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/velocity_z\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
 #endif
 
 #ifdef LB_TEMPERATURE
