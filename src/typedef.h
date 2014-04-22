@@ -28,9 +28,6 @@ typedef struct {
 #define NPOP 27
 #endif
 
-#ifdef TO_KILL
-#define NPOP 19
-#endif
 
 typedef struct {
   my_double p[NPOP];
