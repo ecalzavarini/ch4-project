@@ -80,6 +80,19 @@ void initial_conditions(int restart)
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
 #endif  
 
+#ifdef LB_FLUID_INITIAL_HALF_POISEUILLE 
+    L=2.0*(my_double)property.SY; //NY;
+    y = (my_double)center_V[IDX(i,j,k)].y;
+    Amp_x = (my_double)property.Amp_x;
+    //fn=-3.0*Amp_x*(4.0*nu)*pow(L,-2.0);
+    fn=-Amp_x*4.0*pow(L/2.0,-2.0);
+  
+        /* along x */
+       	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
+#endif  
+
+
 #ifdef LB_FLUID_INITIAL_CHANNEL 
     /* first we load a turbulent channel profile*/
     turbulent_channel_profile();
