@@ -143,6 +143,9 @@ void output_h5(){
   H5Gclose(group);
   H5Fclose(file_id);  
 
+  /* free scalar auxiliary field */
+  free(aux);
+
   /* we rename the file */
 
   sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
@@ -275,7 +278,7 @@ void write_pop_h5(){
 
   int i;
   int size = (LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
-  my_double  *aux;
+  //my_double  *aux;
 
 
   efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
