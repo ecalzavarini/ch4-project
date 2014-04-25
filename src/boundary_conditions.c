@@ -510,6 +510,8 @@ if(LNY_START == 0){
   my_double T_wall;
   my_double fac;
 
+  
+
   /************************/
 	/* Y direction */
 #ifdef LB_TEMPERATURE_BC_Y
@@ -534,17 +536,17 @@ if(LNY_END == NY){
 	  T_wall = 0.0;
 #endif
 
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
-	  ii = i+(int)c[pp].x;
-	  kk = k+(int)c[pp].z;	
-          //if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
-	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
-	  //rhs_g[IDX(i,j+1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];
-	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
-	  rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
-	    //}
-	   }	   
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;	
+	  
+	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
+	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  wgt[pp]*(fac+t[IDX(i,j,k)]);	  
+	  	rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }	   
 	  }
  }
 
@@ -561,23 +563,24 @@ if(LNY_START == 0){
 	  T_wall = 0.0;
 #endif
 
+	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
 	  
+	  //effDT=0.0;
+	  //for(pp=0;pp<NPOP;pp++) if(c[pp].y<0)  effDT += wgt[inv[pp]];
+
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].y<0){
-	  ii = i+(int)c[pp].x;
-	  kk = k+(int)c[pp].z;	
-	  //if(ii>=0 && kk>=0 && ii<LNX+TWO_BRD && kk<LNZ+TWO_BRD){ 
-	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(ii,j,kk)] - 1.0;
-	  // rhs_g[IDX(i,j-1,k)].p[pp] =  rhs_g[IDX(ii,j,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;//t[IDX(ii,j,kk)];	    
-	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
-	  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
-	  //}
-	    }
-	    //fprintf(stderr,"t %e \n",t[IDX(ii,j,kk)] );
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;
+            //rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
+	    //  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  wgt[pp]*(fac+t[IDX(i,j,k)]);	
+	    //  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]]*(fac/t[IDX(i,j,k)] + 1.0);
+	      rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;	
+	  }
 	  }
  }
       
-}
+ }
 #endif
 
 
