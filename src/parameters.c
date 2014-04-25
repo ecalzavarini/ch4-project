@@ -204,11 +204,11 @@ void assign_parameters(){
 #ifdef LB_TEMPERATURE_FORCING_RADIATION
   sprintf(name,"attenuation");
   property.attenuation = read_parameter(name);
-  fprintf(stderr,"Bo Number is -> Bo = %e\n", property.attenuation*property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
+  fprintf(stderr,"Bo Number is -> Bo = %e\n", property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
   fprintf(stderr,"Er Number is -> Er = %e\n", property.attenuation*property.SY );
   fprintf(stderr,"Radiation Rayleigh Number is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fout = fopen("numbers.dat","a");
-  fprintf(fout,"Bo Number is -> Bo = %e\n", property.attenuation*property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
+  fprintf(fout,"Bo Number is -> Bo = %e\n", property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
   fprintf(fout,"Er Number is -> Er = %e\n", property.attenuation*property.SY ); 
   fprintf(fout,"Radiation Rayleigh Number is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fclose(fout);
