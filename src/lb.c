@@ -328,7 +328,16 @@ void hydro_fields(){
 #endif
 
 #ifdef LB_TEMPERATURE 
+                               #ifndef METHOD_FORCING_GUO
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
+                               #else
+                       	/* to be used only with METHOD_STREAMING */
+                                    #ifndef LB_TEMPERATURE_FORCING
+	                            t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
+                                    #else
+	                            t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)]; 
+                                    #endif
+                               #endif
 #endif
 
 
