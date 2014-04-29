@@ -17,7 +17,9 @@ typedef struct {
   my_double zx,zy,zz;
 } tensor;
 
-
+#ifdef GRID_POP_D2Q9
+#define NPOP 9
+#endif
 #ifdef GRID_POP_D3Q15
 #define NPOP 15
 #endif
@@ -101,11 +103,12 @@ typedef struct {
 
 #ifndef METHOD_LOG
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
-#ifdef TO_KILL
-#define mvx(a) (a.p[1] -a.p[2] +a.p[7]  +a.p[8]  -a.p[9]  -a.p[10] +a.p[11] -a.p[12]+a.p[13]-a.p[14])
-#define mvy(a) (a.p[3] -a.p[4] +a.p[7]  -a.p[8]  +a.p[9]  -a.p[10] +a.p[15] +a.p[16]-a.p[17]-a.p[18])
-#define mvz(a) (a.p[5] -a.p[6] +a.p[11] +a.p[12] -a.p[13] -a.p[14] +a.p[15] -a.p[16]+a.p[17]-a.p[18])
-#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8]+a.p[9]+a.p[10]+a.p[11]+a.p[12]+a.p[13]+a.p[14]+a.p[15]+a.p[16]+a.p[17]+a.p[18])
+
+#ifdef GRID_POP_D2Q9
+#define mvx(a) (a.p[7] +a.p[6] +a.p[5] -a.p[1] -a.p[2] -a.p[3])
+#define mvy(a) (a.p[1] +a.p[8] +a.p[7] -a.p[3] -a.p[4] -a.p[5])
+#define mvz(a) 0.0
+#define m(a) (a.p[0]+a.p[1]+a.p[2]+a.p[3]+a.p[4]+a.p[5]+a.p[6]+a.p[7]+a.p[8])
 #endif
 
 #ifdef GRID_POP_D3Q15

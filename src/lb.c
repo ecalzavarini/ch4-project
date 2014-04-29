@@ -8,6 +8,49 @@ void design_lb(){
   //MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
   //MPI_Type_commit(&MPI_pop_type);
 
+#ifdef GRID_POP_D2Q9
+	wgt[0] = 4. / 9.;
+	wgt[1] = 1. / 36.;
+	wgt[2] = 1. / 9.;
+	wgt[3] = 1. / 36.;
+	wgt[4] = 1. / 9.;
+	wgt[5] = 1. / 36.;
+	wgt[6] = 1. / 9.;
+	wgt[7] = 1. / 36.;
+	wgt[8] = 1. / 9.;
+
+	c[0].x = 0.;	c[0].y = 0.;   c[0].z=0.;
+	c[1].x = -1.;	c[1].y = 1.;   c[1].z=0.;
+	c[2].x = -1.;	c[2].y = 0.;   c[2].z=0.;
+	c[3].x = -1.;	c[3].y = -1.;  c[3].z=0.;
+	c[4].x = 0.;	c[4].y = -1.;  c[4].z=0.;
+	c[5].x = 1.;	c[5].y = -1.;  c[5].z=0.;
+	c[6].x = 1.;	c[6].y = 0.;   c[6].z=0.;
+	c[7].x = 1.;	c[7].y = 1.;   c[7].z=0.;
+	c[8].x = 0.;	c[8].y = 1.;   c[8].z=0.;
+
+	inv[0] = 0;
+	inv[1] = 5;
+	inv[2] = 6;
+	inv[3] = 7;
+	inv[4] = 8;
+	inv[5] = 1;
+	inv[6] = 2;
+	inv[7] = 3;
+	inv[8] = 4;
+
+	inv_x[0] = 0;	       inv_y[0] = 0;   inv_z[0] = 0;
+	inv_x[1] = 7;	       inv_y[1] = 3;   inv_z[1] = 1;
+	inv_x[2] = 6;	       inv_y[2] = 2;   inv_z[2] = 2;
+	inv_x[3] = 5;	       inv_y[3] = 1;   inv_z[3] = 3;
+	inv_x[4] = 4;	       inv_y[4] = 8;   inv_z[4] = 4;
+	inv_x[5] = 3;	       inv_y[5] = 7;   inv_z[5] = 5;
+	inv_x[6] = 2;	       inv_y[6] = 6;   inv_z[6] = 6;
+	inv_x[7] = 1;	       inv_y[7] = 5;   inv_z[7] = 7;
+	inv_x[8] = 8;	       inv_y[8] = 4;   inv_z[8] = 8;
+
+#endif
+
 #ifdef GRID_POP_D3Q15
 	wgt[0] = 2. / 9.;
 	wgt[1] = 1. / 9.;
@@ -62,6 +105,23 @@ void design_lb(){
 	inv[12] = 5;
 	inv[13] = 6;
 	inv[14] = 7;
+
+
+	inv_x[0] = 0;	       inv_y[0] = 0;	     inv_z[0] = 0;
+	inv_x[1] = 8;	       inv_y[1] = 1;	     inv_z[1] = 1;
+	inv_x[2] = 2;	       inv_y[2] = 9;	     inv_z[2] = 2;
+	inv_x[3] = 3;	       inv_y[3] = 3;	     inv_z[3] = 10;
+	inv_x[4] = 14;	       inv_y[4] = 6;	     inv_z[4] = 5;
+	inv_x[5] = 13;	       inv_y[5] = 7;	     inv_z[5] = 4;
+	inv_x[6] = 12;	       inv_y[6] = 4;	     inv_z[6] = 7;
+	inv_x[7] = 11;	       inv_y[7] = 5;	     inv_z[7] = 6;
+	inv_x[8] = 1;	       inv_y[8] = 8;	     inv_z[8] = 8;
+	inv_x[9] = 9;	       inv_y[9] = 2;	     inv_z[9] = 9;
+	inv_x[10] = 10;        inv_y[10] = 10;	     inv_z[10] = 3;
+	inv_x[11] = 7;	       inv_y[11] = 13;	     inv_z[11] = 12;
+	inv_x[12] = 6;	       inv_y[12] = 14;	     inv_z[12] = 11;
+	inv_x[13] = 5;	       inv_y[13] = 11;	     inv_z[13] = 14;  
+	inv_x[14] = 4;	       inv_y[14] = 12;	     inv_z[14] = 13;
 #endif
 
 #ifdef GRID_POP_D3Q19
@@ -132,6 +192,29 @@ void design_lb(){
 	inv[16] = 17;
 	inv[17] = 16;
 	inv[18] = 15;
+
+
+
+	inv_x[0] = 0;	       inv_y[0] = 0;	     inv_z[0] = 0;
+	inv_x[1] = 2;	       inv_y[1] = 1;	     inv_z[1] = 1;
+	inv_x[2] = 1;	       inv_y[2] = 2;	     inv_z[2] = 2;
+	inv_x[3] = 3;	       inv_y[3] = 4;	     inv_z[3] = 3;
+	inv_x[4] = 4;	       inv_y[4] = 3;	     inv_z[4] = 4;
+	inv_x[5] = 5;	       inv_y[5] = 5;	     inv_z[5] = 6;
+	inv_x[6] = 6;	       inv_y[6] = 6;	     inv_z[6] = 5;
+	inv_x[7] = 9;	       inv_y[7] = 8;	     inv_z[7] = 7;
+	inv_x[8] = 10;	       inv_y[8] = 7;	     inv_z[8] = 8;
+	inv_x[9] = 7;	       inv_y[9] = 10;	     inv_z[9] = 9;
+	inv_x[10] = 8;        inv_y[10] = 9;	     inv_z[10] = 10;
+	inv_x[11] = 12;       inv_y[11] = 11;	     inv_z[11] = 13;
+	inv_x[12] = 11;       inv_y[12] = 12;	     inv_z[12] = 14;
+	inv_x[13] = 14;       inv_y[13] = 13;	     inv_z[13] = 11;  
+	inv_x[14] = 13;       inv_y[14] = 14;	     inv_z[14] = 12;
+	inv_x[15] = 15;       inv_y[15] = 17;	     inv_z[15] = 16;
+	inv_x[16] = 16;       inv_y[16] = 18;	     inv_z[16] = 15;
+	inv_x[17] = 17;       inv_y[17] = 15;	     inv_z[17] = 18;  
+	inv_x[18] = 18;       inv_y[18] = 16;	     inv_z[18] = 17;
+
 #endif
 
 #ifdef GRID_POP_D3Q27
@@ -226,6 +309,36 @@ void design_lb(){
 	inv[24] = 11;
 	inv[25] = 12;
 	inv[26] = 13;
+
+
+
+	inv_x[0] = 0;	       inv_y[0] = 0;	     inv_z[0] = 0;
+	inv_x[1] = 14;	       inv_y[1] = 1;	     inv_z[1] = 1;
+	inv_x[2] = 2;	       inv_y[2] = 15;	     inv_z[2] = 2;
+	inv_x[3] = 3;	       inv_y[3] = 3;	     inv_z[3] = 16;
+	inv_x[4] = 18;	       inv_y[4] = 5;	     inv_z[4] = 4;
+	inv_x[5] = 17;	       inv_y[5] = 4;	     inv_z[5] = 5;
+	inv_x[6] = 20;	       inv_y[6] = 6;	     inv_z[6] = 7;
+	inv_x[7] = 19;	       inv_y[7] = 7;	     inv_z[7] = 6;
+	inv_x[8] = 8;	       inv_y[8] = 22;	     inv_z[8] = 9;
+	inv_x[9] = 9;	       inv_y[9] = 21;	     inv_z[9] = 8;
+	inv_x[10] = 26;       inv_y[10] = 12;	     inv_z[10] = 11;
+	inv_x[11] = 25;       inv_y[11] = 13;	     inv_z[11] = 10;
+	inv_x[12] = 24;       inv_y[12] = 10;	     inv_z[12] = 13;
+	inv_x[13] = 23;       inv_y[13] = 11;	     inv_z[13] = 12;  
+	inv_x[14] = 1;	      inv_y[14] = 14;	     inv_z[14) = 14;
+	inv_x[15] = 15;       inv_y[15] = 2;	     inv_z[15) = 15;
+	inv_x[16] = 16;       inv_y[16] = 16;	     inv_z[16] = 3;
+	inv_x[17] = 5;        inv_y[17] = 18;	     inv_z[17]= 17;
+	inv_x[18] = 4;        inv_y[18] = 17;	     inv_z[18] = 18;
+	inv_x[19] = 7;        inv_y[19] = 19;	     inv_z[19] = 20;
+	inv_x[20] = 6;	      inv_y[20] = 20;	     inv_z[20] = 19;
+	inv_x[21] = 21;       inv_y[21] = 9;	     inv_z[21] = 22;
+	inv_x[22] = 22;       inv_y[22] = 8;	     inv_z[22] = 21;
+	inv_x[23] = 13;       inv_y[23] = 25;	     inv_z[23] = 24;
+	inv_x[24] = 12;       inv_y[24] = 26;	     inv_z[24] = 23;
+	inv_x[25] = 11;       inv_y[25] = 23;	     inv_z[25] = 26;  
+	inv_x[26] = 10;       inv_y[26] = 24;	     inv_z[26] = 25;
 
 #endif
 

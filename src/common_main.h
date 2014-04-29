@@ -124,7 +124,7 @@ pop *ym_zm_edge_pop;
 /* LB speeds & weights */
 my_double wgt[NPOP]; 
 vector c[NPOP];
-int dirp[NPOP] ,inv[NPOP];
+int dirp[NPOP] ,inv[NPOP] , inv_x[NPOP], inv_y[NPOP], inv_z[NPOP];
 my_double twocs2 , twocs4;
 my_double invtwocs2 , invtwocs4;
 my_double cs, cs2 , cs4 , cs22 , cssq;
