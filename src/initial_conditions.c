@@ -80,7 +80,7 @@ void initial_conditions(int restart)
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*y*(y-L);
 #endif  
 
-#ifdef LB_FLUID_INITIAL_HALF_POISEUILLE 
+#ifdef LB_FLUID_INITIAL_POISEUILLE_HALF 
     L=2.0*(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;
     Amp_x = (my_double)property.Amp_x;
