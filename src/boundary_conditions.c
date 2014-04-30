@@ -437,30 +437,76 @@ sendrecv_borders_pop(rhs_h);
 #endif
 
 
-
 /************************************/
 	/* X direction */ 
 #ifdef LB_FLUID_BC_X
 
-  for (j = BRD; j < LNY + BRD; j++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
+   for (j = 0; j < LNY + TWO_BRD; j++) 			
+   for (k = 0; k < LNZ + TWO_BRD; k++){
+
+     //    for (j = BRD; j < LNY + BRD; j++) 			
+     //    for (k = BRD; k < LNZ + BRD; k++){
+
       for(pp=0;pp<NPOP;pp++){
 
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
 
 if(LNX_END == NX){
-	i = LNX+BRD-1;	 
+	i = LNX+BRD-1;
+
+#ifdef LB_FLUID_BC_XP_OUTLET
+	if (j>= BRD && j< LNY && k >= BRD && k < LNZ){ 
+	if(pp==0){
+	  vel.x = u[IDX(i, j, k)].x;
+	  vel.y = u[IDX(i, j, k)].y;
+	  vel.z = u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+	}
+	}	  
+#else
+
+#ifdef LB_FLUID_BC_XP_SLIP
+	//          rhs_p[IDX(i+1,jj,kk)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+          rhs_p[IDX(i+1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#else	 
 	  /* NO SLIP */
 	  //rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
-	  rhs_p[IDX(i+1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  if (jj>= 0 && jj< LNY+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(i+1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#endif
+#endif
 }
 
 if(LNX_START == 0){
-  i = BRD; 
+  i = BRD;
+ 
+#ifdef LB_FLUID_BC_XM_INLET
+  /* the following if is to compute the equilibrium only one time */
+	if (j>= BRD && j< LNY && k >= BRD && k < LNZ){ 
+	if(pp==0){
+	  vel.x = property.Amp_x;
+	  vel.y = property.Amp_y;
+	  vel.z = property.Amp_z;
+	    rho = 1.0;
+	  p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
+	}
+	}
+#else
+#ifdef LB_FLUID_BC_XM_SLIP
+  //          rhs_p[IDX(i-1,jj,kk)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+          rhs_p[IDX(i-1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
 	/* NO SLIP */
          //rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
-         rhs_p[IDX(i-1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+         if (jj>= 0 && jj< LNY+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(i-1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#endif
+#endif
  }
 
       }/* for pp */
@@ -471,34 +517,101 @@ if(LNX_START == 0){
 	/* Y direction */ 
 #ifdef LB_FLUID_BC_Y
 
+      //    for (i = BRD; i < LNX + BRD; i++)                     
+      //   for (k = BRD; k < LNZ + BRD; k++){
+   for (i = 0; i < LNX + TWO_BRD; i++) 			
+   for (k = 0; k < LNZ + TWO_BRD; k++){
 
-  for (i = BRD; i < LNX + BRD; i++)                     
-  for (k = BRD; k < LNZ + BRD; k++){
-    //for (i = 0; i < LNX + TWO_BRD; i++) 			
-    //for (k = 0; k < LNZ + TWO_BRD; k++){
+         for(pp=0;pp<NPOP;pp++){
 
-      for(pp=0;pp<NPOP;pp++){
-
-	  ii = i+(int)c[pp].x;
-	  kk = k+(int)c[pp].z;	
-
+	 ii = i+(int)c[pp].x;
+	 kk = k+(int)c[pp].z;
+	
 if(LNY_END == NY){
-	j = LNY+BRD-1;	 
+          j = LNY+BRD-1;	 
+
+#ifdef LB_FLUID_BC_YP_SLIP
+	  //	  rhs_p[IDX(ii,j+1,kk)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+          rhs_p[IDX(i,j+1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#else
 	  /* NO SLIP */
-	  //rhs_p[IDX(i,j+1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
-          rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];	
+	  if (ii>= 0 && ii< LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  //      rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#endif	
 }
 
 if(LNY_START == 0){
   j = BRD; 
+
+#ifdef LB_FLUID_BC_YM_SLIP
+
+          rhs_p[IDX(i,j-1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
 	/* NO SLIP */
-         //rhs_p[IDX(i,j-1,k)].p[pp] = rhs_p[IDX(ii,j,kk)].p[inv[pp]];
-         rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+          if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  //        rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
+ }
+
+     }/* for pp */
+    }/* for i,k */
+#endif
+
+/************************************/
+	/* Z direction */ 
+#ifdef LB_FLUID_BC_Z
+
+   for (i = 0; i < LNX + TWO_BRD; i++) 			
+   for (j = 0; j < LNY + TWO_BRD; j++){
+
+     //    for (i = BRD; i < LNX + BRD; i++) 			
+     //    for (j = BRD; j < LNY + BRD; j++){
+
+      for(pp=0;pp<NPOP;pp++){
+
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;	
+
+if(LNZ_END == NZ){
+	k = LNZ+BRD-1;
+
+#ifdef LB_FLUID_BC_ZP_SLIP
+	//          rhs_p[IDX(i+1,jj,kk)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+ 
+          rhs_p[IDX(i,j,k+1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#else	 
+	  /* NO SLIP */
+	  //rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
+	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k+1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#endif	
+}
+
+if(LNZ_START == 0){
+  k = BRD; 
+
+#ifdef LB_FLUID_BC_ZM_SLIP
+
+          rhs_p[IDX(i,j,k-1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+         //rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
+	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k-1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
  }
 
       }/* for pp */
-    }/* for i,k */
+    }/* for j,k */
 #endif
+
+/************************************/
+
+
 
 
 
