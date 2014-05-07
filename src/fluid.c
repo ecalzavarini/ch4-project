@@ -1142,9 +1142,14 @@ void build_forcing(){
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
       */
+
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+       if(landscape[IDX(i, j, k)]>0.0){
+#else
       /* small central spot penalization */
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( mask < 1.0 ){       
+#endif
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
