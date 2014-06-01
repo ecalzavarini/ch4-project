@@ -647,12 +647,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
     sprintf(fname,"velocity_averages_y_run.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].ene/(double)irun, (double)ruler_y_running[j].rho/(double)irun, (double)ruler_y_running[j].ux/(double)irun, (double)ruler_y_running[j].uy/(double)irun, (double)ruler_y_running[j].uz/(double)irun, (double)ruler_y_running[j].ux2/(double)irun , (double)ruler_y_running[j].uy2/(double)irun, (double)ruler_y_running[j].uz2/(double)irun,(double)ruler_y_running[i].eps/(double)irun);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].ene/(double)irun, (double)ruler_y_running[j].rho/(double)irun, (double)ruler_y_running[j].ux/(double)irun, (double)ruler_y_running[j].uy/(double)irun, (double)ruler_y_running[j].uz/(double)irun, (double)ruler_y_running[j].ux2/(double)irun , (double)ruler_y_running[j].uy2/(double)irun, (double)ruler_y_running[j].uz2/(double)irun,(double)ruler_y_running[j].eps/(double)irun);
     fclose(fout);
 
     sprintf(fname,"velocity_averages_z_run.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].ene/(double)irun, (double)ruler_z_running[k].rho/(double)irun, (double)ruler_z_running[k].ux/(double)irun, (double)ruler_z_running[k].uy/(double)irun, (double)ruler_z_running[k].uz/(double)irun, (double)ruler_z_running[k].ux2/(double)irun , (double)ruler_z_running[k].uy2/(double)irun, (double)ruler_z_running[k].uz2/(double)irun, (double)ruler_z_running[i].eps/(double)irun);
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].ene/(double)irun, (double)ruler_z_running[k].rho/(double)irun, (double)ruler_z_running[k].ux/(double)irun, (double)ruler_z_running[k].uy/(double)irun, (double)ruler_z_running[k].uz/(double)irun, (double)ruler_z_running[k].ux2/(double)irun , (double)ruler_z_running[k].uy2/(double)irun, (double)ruler_z_running[k].uz2/(double)irun, (double)ruler_z_running[k].eps/(double)irun);
     fclose(fout);
 
 
@@ -673,12 +673,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
     sprintf(fname,"temperature_averages_y.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[i].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[j].lb);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[j].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[j].lb);
     fclose(fout);
 
     sprintf(fname,"temperature_averages_z.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[i].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[k].lb );
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[k].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[k].lb );
     fclose(fout);
 
 
@@ -689,12 +689,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
     sprintf(fname,"temperature_averages_y_run.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].t/(double)irun, (double)ruler_y_running[j].t2/(double)irun, (double)ruler_y_running[j].epst/(double)irun, (double)ruler_y_running[j].dxt/(double)irun, (double)ruler_y_running[j].dyt/(double)irun, (double)ruler_y_running[j].dzt/(double)irun , (double)ruler_y_running[j].uxt/(double)irun, (double)ruler_y_running[j].uyt/(double)irun,(double)ruler_y_running[i].uzt/(double)irun, (double)ruler_y_running[j].nux/(double)irun, (double)ruler_y_running[j].nuy/(double)irun, (double)ruler_y_running[j].nuz/(double)irun,(double)ruler_y_running[j].lb/(double)irun);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].t/(double)irun, (double)ruler_y_running[j].t2/(double)irun, (double)ruler_y_running[j].epst/(double)irun, (double)ruler_y_running[j].dxt/(double)irun, (double)ruler_y_running[j].dyt/(double)irun, (double)ruler_y_running[j].dzt/(double)irun , (double)ruler_y_running[j].uxt/(double)irun, (double)ruler_y_running[j].uyt/(double)irun,(double)ruler_y_running[j].uzt/(double)irun, (double)ruler_y_running[j].nux/(double)irun, (double)ruler_y_running[j].nuy/(double)irun, (double)ruler_y_running[j].nuz/(double)irun,(double)ruler_y_running[j].lb/(double)irun);
     fclose(fout);
 
     sprintf(fname,"temperature_averages_z_run.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].t/(double)irun, (double)ruler_z_running[k].t2/(double)irun, (double)ruler_z_running[k].epst/(double)irun, (double)ruler_z_running[k].dxt/(double)irun, (double)ruler_z_running[k].dyt/(double)irun, (double)ruler_z_running[k].dzt/(double)irun , (double)ruler_z_running[k].uxt/(double)irun, (double)ruler_z_running[k].uyt/(double)irun, (double)ruler_z_running[i].uzt/(double)irun, (double)ruler_z_running[k].nux/(double)irun, (double)ruler_z_running[k].nuy/(double)irun, (double)ruler_z_running[k].nuz/(double)irun,(double)ruler_z_running[k].lb/(double)irun );
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].t/(double)irun, (double)ruler_z_running[k].t2/(double)irun, (double)ruler_z_running[k].epst/(double)irun, (double)ruler_z_running[k].dxt/(double)irun, (double)ruler_z_running[k].dyt/(double)irun, (double)ruler_z_running[k].dzt/(double)irun , (double)ruler_z_running[k].uxt/(double)irun, (double)ruler_z_running[k].uyt/(double)irun, (double)ruler_z_running[k].uzt/(double)irun, (double)ruler_z_running[k].nux/(double)irun, (double)ruler_z_running[k].nuy/(double)irun, (double)ruler_z_running[k].nuz/(double)irun,(double)ruler_z_running[k].lb/(double)irun );
     fclose(fout);
   }
 
