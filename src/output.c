@@ -289,7 +289,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  //S=strain_tensor(p,i, j, k);
 			  grad_u = gradient_vector(u,i,j,k);
 			  // fprintf(stderr,"SXY %e\n",S.xy);
-			  out_local.eps += eps = ( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+			                   eps = ( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
 			                           (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
 			                           (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
 			                           (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
@@ -298,6 +298,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
                                                    (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
 			                           (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
 			                           (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu * vol;
+			  out_local.eps += eps;			  
 			  ruler_x_local[i -BRD + LNX_START].eps += eps*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].eps += eps*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].eps += eps*inv_lz;
