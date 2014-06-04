@@ -1271,27 +1271,17 @@ void add_forcing(){
 
 #ifdef LB_FLUID_FORCING
 
-#ifndef METHOD_FORCING_GUO	  	  	  
-	  //#ifndef METHOD_REDEFINED_POP
-          //  #ifndef METHOD_COLLISION_IMPLICIT
-	    rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
-            rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
-            rhs_p[IDX(i,j,k)].p[pp] += 3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
-	    //#else
-	    ///* here METHOD_REDEFINED_POP is on */
-	    //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].x*c[pp].x;
-            //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].y*c[pp].y;
-            //rhs_p[IDX(i,j,k)].p[pp] += fac*3.0*wgt[pp]*force[IDX(i,j,k)].z*c[pp].z;
-	    //#endif
-	    
-#ifdef METHOD_LOG
-	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);
-	    rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].x*c[pp].x;
-            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].y*c[pp].y;
-            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].z*c[pp].z;
-#endif
-	    
-#else       
+#ifndef METHOD_FORCING_GUO
+		  	  
+	  /* Old version , simple but probably incomplete
+	    rho = dens[IDX(i,j,k)];	  
+	    rhs_p[IDX(i,j,k)].p[pp] += invcs2*wgt[pp]*rho*force[IDX(i,j,k)].x*c[pp].x;
+            rhs_p[IDX(i,j,k)].p[pp] += invcs2*wgt[pp]*rho*force[IDX(i,j,k)].y*c[pp].y;
+            rhs_p[IDX(i,j,k)].p[pp] += invcs2*wgt[pp]*rho*force[IDX(i,j,k)].z*c[pp].z;
+	  */
+
+	  /* New version , like in GUO or in PhD thesis EPFL MALASPINAS */	  
+	rho = dens[IDX(i,j,k)];
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
 	uz=u[IDX(i,j,k)].z;
@@ -1300,9 +1290,30 @@ void add_forcing(){
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
         d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
 
-       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].x*d.x;
-       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].y*d.y;
-       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*force[IDX(i,j,k)].z*d.z;       
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;   
+
+#ifdef METHOD_LOG
+	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);
+	    rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].x*c[pp].x;
+            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].y*c[pp].y;
+            rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].z*c[pp].z;
+#endif
+	    
+#else   
+	rho = dens[IDX(i,j,k)];    
+	ux=u[IDX(i,j,k)].x;
+	uy=u[IDX(i,j,k)].y;
+	uz=u[IDX(i,j,k)].z;
+        cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
+        d.x = (c[pp].x-ux)*invcs2 + c[pp].x*cu*invcs4;
+        d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
+        d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
+
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;       
 #endif
 
 #ifdef  LB_FLUID_FORCING_DIRECT
