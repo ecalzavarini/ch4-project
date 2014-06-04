@@ -1148,7 +1148,7 @@ void build_forcing(){
 #else
       /* small central spot penalization */
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( mask < 1.0 ){       
+      if( mask < 10.0 ){       
 #endif
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
@@ -1229,7 +1229,7 @@ void add_forcing(){
   my_double mask;
 
 #ifdef METHOD_FORCING_GUO
-  fac = (1.0-0.5*invtau);
+  fac = (1.0-0.5*property.time_dt*invtau);
 #endif
 
 #ifdef METHOD_REDEFINED_POP
