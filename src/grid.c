@@ -1659,12 +1659,13 @@ void prepare_boundary_conditions(){
 #endif
 
 
+
 #ifdef LB_FLUID_FORCING_LANDSCAPE
 /* this makes a flag for a cylinder with axis along y */
 my_double cylinder(int i , int j , int k, vector center, my_double radius, my_double height){
   my_double dum;
 
-  if(center_V[IDX(i,j,k)].y <= height && sqrt(pow(center_V[IDX(i,j,k)].x-center.x, 2.0)+pow(center_V[IDX(i,j,k)].z-center.z, 2.0)) <= radius )
+  if(center_V[IDX(i,j,k)].z <= height && sqrt(pow(center_V[IDX(i,j,k)].x-center.x, 2.0)+pow(center_V[IDX(i,j,k)].y-center.y, 2.0)) <= radius )
     dum = 1.0;
   else
     dum =0.0;
@@ -1676,14 +1677,13 @@ my_double cylinder(int i , int j , int k, vector center, my_double radius, my_do
 my_double cubic_block(int i , int j , int k, vector center, vector size){
   my_double dum;
 
-  if(fabs(center_V[IDX(i,j,k)].x-center.x) <= size.x/2.0 && fabs(center_V[IDX(i,j,k)].y) <= size.y/2.0 && fabs(center_V[IDX(i,j,k)].z-center.z) <= size.z/2.0 )
+  if(fabs(center_V[IDX(i,j,k)].x-center.x) <= size.x/2.0 && fabs(center_V[IDX(i,j,k)].y) <= size.y && fabs(center_V[IDX(i,j,k)].z-center.z) <= size.z/2.0 )
     dum = 1.0;
   else
     dum =0.0;
 
     return dum; 
 }
-
 
 void read_landscape(){
 
@@ -1709,7 +1709,6 @@ void read_landscape(){
 	  if(ROOT) fprintf(stderr, "Warning message -> %s file is missing!\n Starting from grid generated on the fly\n ", fnamein);
 
 
-		/* Cylinder */
 	  /*
 		for (k =0; k < LNZ+TWO_BRD; k++)
 			for (j =0; j < LNY+TWO_BRD; j++)
@@ -1718,41 +1717,95 @@ void read_landscape(){
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
 	  */
-	  
+
+	  // defining different types of bluff bodies : cyinder, cube, buildings 
+#ifdef  CYLINDER
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
-				  //center.x = property.SX/2.0;
-				  //center.y = property.SY/2.0;  
-				  //center.z = property.SZ/2.0;
-				  //radius = 200.0;
-				  //height = 300.0;
-				  //landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
+				  center.x = (property.SX/5.0)+1.0;     //property.SX/2.0;
+				  center.y = (property.SY/2.0)+3.0;     //property.SY/2.0;  
+				  center.z = property.SZ/2.0;
+				  radius = (property.SY/10.0)+1.0;   //200.0;
+				  height = 300.0;
+				  landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
+				}
+#endif
 
+#ifdef CUBE
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
 				  center.x = property.SX/2.0 ;
-				  center.z = property.SZ/2.0 ;
-				  size.x = 10.0;
-				  size.y = 40.0;
-				  size.z = 10.0;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 50.0;        //80.0;
+				  size.y = 50.0;           //200.0;
+				  size.z =  80.0;
 				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
 				}
-	  
+#endif
 
-	               /*  set the walls to zero */
-	  /*
+#ifdef BUILDINGS
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
-	  */
-				  //if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
-	  /*			  //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
-	
-			  if
+				  center.x = property.SX/2.58 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 20.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  center.x = property.SX/2.05 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 50.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  center.x = property.SX/1.57 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 30.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  center.x = property.SX/1.27 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 60.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+#endif
+			    /*
+
+	               //  for setting the walls to zero 
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+
+				  if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
+				  //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
 				      landscape[IDX(i, j, k)] = 1;
 				      }
 
                              }
-	  */
+*/
 }
 }
 #endif

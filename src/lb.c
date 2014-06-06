@@ -493,9 +493,17 @@ void streaming(pop *f, pop *rhs_f){
        ii = i-(int)c[pp].x;
        jj = j-(int)c[pp].y;
        kk = k-(int)c[pp].z;
+       //f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];            
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+       /* Here we avoid streaming for solid regions, i.e., for landscape = 1 */
+       if(landscape[IDX(i, j, k)] == 0.0) f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
+#else
+       /* the normal streaming case */
        f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
-       
-       // if(j==50) fprintf(stderr,"%d %d %d pp %d %e %e\n", ii , jj , kk, pp, f[IDX(i,j,k)].p[pp], m(f[IDX(i,j,k)]) );
+#endif
+
+// if(j==50) fprintf(stderr,"%d %d %d pp %d %e %e\n", ii , jj , kk, pp, f[IDX(i,j,k)].p[pp], m(f[IDX(i,j,k)]) );
+
 
      }/* pp */
 

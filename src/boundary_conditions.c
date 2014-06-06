@@ -435,7 +435,24 @@ sendrecv_borders_pop(rhs_g);
 #ifdef LB_SCALAR
 sendrecv_borders_pop(rhs_h);
 #endif
+/***************** Bounce-back BC for the complex boundaries  ********************/
+  int iii, jjj, kkk;
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
 
+     for(pp=0;pp<NPOP;pp++){
+          iii = i+(int)c[pp].x;
+	  jjj = j+(int)c[pp].y;
+	  kkk = k+(int)c[pp].z;
+
+	  if(landscape[IDX(i, j, k)] == 0.0 && landscape[IDX(iii, jjj, kkk)] == 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+     }/* pp */   
+      }/* i */
+   }/* j */
+ }/* k */
+#endif
 
 /************************************/
 	/* X direction */ 

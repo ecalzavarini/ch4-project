@@ -133,6 +133,15 @@ void initial_conditions(int restart)
 
 #endif 
 
+   
+#ifdef LB_FLUID_INITIAL_LANDSCAPE
+	/* assigning density value 1 in solid regions (landscape = 1) */  
+	if(landscape[IDX(i, j, k)] == 1.0){  	
+	  for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
+	}
+#endif
+
+
 }/* for i,j,k */
 
 

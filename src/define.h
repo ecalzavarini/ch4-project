@@ -40,6 +40,7 @@
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
+//#define LB_FLUID_INITIAL_LANDSCAPE
 //#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_CHANNEL
@@ -49,6 +50,13 @@
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
+
+/* LANDSCAPE DEFINITION IN THE DOMAIN */
+//#define LB_FLUID_FORCING_LANDSCAPE
+//#define CYLINDER
+//#define CUBE
+//#define BUILDINGS
+
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YP_SLIP                                           
@@ -64,8 +72,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
