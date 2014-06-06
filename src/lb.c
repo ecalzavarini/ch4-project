@@ -508,7 +508,7 @@ void streaming(pop *f, pop *rhs_f){
 
 
 /********************************************/
-void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_double tau,pop *f_eq){
+void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_double tau,pop *f_eq,char which_pop){
   int i,j,k,pp;
   //pop f_eq;
   my_double dt_over_tau,fac1,fac2;
@@ -623,7 +623,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
   boundary_conditions();
 #endif
   /* 1) we compute the advection with the new f field*/
-  compute_advection(f,rhs_f,tau,f_eq);
+  compute_advection(f,rhs_f,tau,f_eq,which_pop);
   /* 3) perform the corrector step */
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)

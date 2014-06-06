@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
+void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_pop){
 
   int i,j,k,pp;
   my_double adv,aux;
@@ -19,6 +19,10 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
   pop fxp1, fxm1 ,fxm2 ,fxp2;
   pop fyp1, fym1, fym2, fyp2; 
   pop fzp1, fzm1 , fzm2, fzp2;
+#ifdef METHOD_REDEFINED_POP_GUO
+  vector d;
+  my_double rho, ux,uy,uz,cu;
+#endif
 #endif
 
 #ifdef DEBUG
@@ -61,7 +65,37 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq){
        for(pp=0;pp<NPOP;pp++)        
 	 f_aux[IDX(i,j,k)].p[pp]  = f[IDX(i,j,k)].p[pp] + fac*( f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp] );
     }
-#endif
+#ifdef METHOD_REDEFINED_POP_GUO
+#ifdef LB_FLUID
+if(which_pop == 'p'){
+  /* this method is going to be very expensive */
+   sendrecv_borders_vector(force);
+   sendrecv_borders_vector(u);
+   sendrecv_borders_scalar(dens);
+
+  fac = 0.5*property.time_dt;
+
+ for(k=0;k<LNZ+TWO_BRD;k++)
+   for(j=0;j<LNY+TWO_BRD;j++)
+     for(i=0;i<LNX+TWO_BRD;i++){  
+	      rho = dens[IDX(i,j,k)];
+	      ux=u[IDX(i,j,k)].x;
+	      uy=u[IDX(i,j,k)].y;
+	      uz=u[IDX(i,j,k)].z;
+	        for(pp=0;pp<NPOP;pp++){    
+                cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
+                d.x = (c[pp].x-ux)*invcs2 + c[pp].x*cu*invcs4;
+                d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
+                d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
+       f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
+       f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
+       f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;  
+        }
+       }
+}
+#endif /* end LB_FLUID */
+#endif /* end METHOD_REDEFINED_POP_GUO */
+#endif /* end METHOD_REDEFINED_POP */
 
 #ifdef METHOD_COLLISION_IMPLICIT  /* this is for Euler implicit time stepping */
       /* We change f in  ( f + (dt/tau)f_eq ) /(1+dt/tau)  */
@@ -1234,6 +1268,9 @@ void add_forcing(){
 
 #ifdef METHOD_REDEFINED_POP
   fac = 1.0;//(1.0-property.time_dt*invtau);
+#ifdef METHOD_REDEFINED_POP_GUO
+  fac = (1.0-0.5*property.time_dt*invtau);
+#endif
 #endif
 
   //#ifdef METHOD_COLLISION_IMPLICIT

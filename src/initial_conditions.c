@@ -58,6 +58,7 @@ void initial_conditions(int restart)
 
 #ifdef LB_FLUID_INITIAL_KOLMOGOROV 
     fn=0.01;
+    //Amp_x = (my_double)property.Amp_x;
     kn=1.0;
     L=(my_double)property.SY; //NY;
     y = (my_double)center_V[IDX(i,j,k)].y;

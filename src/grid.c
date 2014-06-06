@@ -1718,38 +1718,41 @@ void read_landscape(){
 				  landscape[IDX(i, j, k)] = 1.0;
 				}
 	  */
+	  
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  //center.x = property.SX/2.0;
+				  //center.y = property.SY/2.0;  
+				  //center.z = property.SZ/2.0;
+				  //radius = 200.0;
+				  //height = 300.0;
+				  //landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
+
+				  center.x = property.SX/2.0 ;
+				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;
+				  size.y = 40.0;
+				  size.z = 10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+	  
+
+	               /*  set the walls to zero */
 	  /*
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
-				  center.x = property.SX/2.0;
-				  center.y = property.SY/2.0;  
-				  center.z = property.SZ/2.0;
-				  radius = 200.0;
-				  height = 300.0;
-				  landscape[IDX(i, j, k)] += cylinder(i,j,k, center, radius,  height);
-
-				  center.x = property.SX/2.0 ;
-				  center.z = property.SZ/2.0 + 400;
-				  size.x = 80.0;
-				  size.y = 200.0;
-				  size.z =  80.0;
-				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
-				}
 	  */
-
-	               /*  set the walls to zero */
-			    for (i = 0; i < LNX+TWO_BRD; i++) 
-			      for (k =0; k < LNZ+TWO_BRD; k++)
-			        for (j =0; j < LNY+TWO_BRD; j++){
-
-				  if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
-				  //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
+				  //if((LNY_END == NY && j==LNY+BRD-1 ) || (LNY_START == 0 && j==BRD )){
+	  /*			  //if((LNY_END == NY && j>=LNY+BRD-2  ) || (LNY_START == 0 &&  j<=BRD+1 )){
+	
+			  if
 				      landscape[IDX(i, j, k)] = 1;
 				      }
 
                              }
-
+	  */
 }
 }
 #endif
