@@ -1420,11 +1420,15 @@ tensor strain_tensor(pop *f,int i, int j, int k){
 }
 #endif
 
+/* to define the order of the next gradients */
+#define FIRST_ORDER_GRAD
+//#define SECOND_ORDER_GRAD
 
 #ifdef LB_FLUID
 tensor gradient_vector(vector *t, int i, int j, int k){
 
   tensor tens;
+  my_double a0,a1,a2,h1,h2;
 
 /* in the bulk , centered 2nd order finite difference */
    tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i-1, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
@@ -1439,6 +1443,7 @@ tensor gradient_vector(vector *t, int i, int j, int k){
    tens.zy = ( t[IDX(i, j+1, k)].z - t[IDX(i, j-1, k)].z )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
    tens.zz = ( t[IDX(i, j, k+1)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
 
+#ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(LNX_START == 0 && i == BRD){
    tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
@@ -1474,6 +1479,81 @@ if(LNZ_START == 0 && k == BRD){
    tens.yz = ( t[IDX(i, j, k)].y - t[IDX(i, j, k-1)].y )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
    tens.zz = ( t[IDX(i, j, k)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
  }
+#endif
+
+#ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(LNX_START == 0 && i == BRD){
+    h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+    h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i+1, j, k)].x + a2*t[IDX(i+2, j, k)].x;
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i+1, j, k)].y + a2*t[IDX(i+2, j, k)].y;
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i+1, j, k)].z + a2*t[IDX(i+2, j, k)].z;
+ }
+ if(LNX_END == NX && i == LNX+BRD-1){ 
+    h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+    h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i-1, j, k)].x + a2*t[IDX(i-2, j, k)].x;  
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i-1, j, k)].y + a2*t[IDX(i-2, j, k)].y;  
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i-1, j, k)].z + a2*t[IDX(i-2, j, k)].z;   
+ }
+
+   /* at the y boundaries */
+if(LNY_START == 0 && j == BRD){
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j+1, k)].x + a2*t[IDX(i, j+2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j+1, k)].y + a2*t[IDX(i, j+2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j+1, k)].z + a2*t[IDX(i, j+2, k)].z;
+
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(LNY_END == NY && j == LNY+BRD-1){ 
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j-1, k)].x + a2*t[IDX(i, j-2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j-1, k)].y + a2*t[IDX(i, j-2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j-1, k)].z + a2*t[IDX(i, j-2, k)].z; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+
+   /* at the z boundaries */
+if(LNZ_START == 0 && k == BRD){
+  h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+  h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k+1)].x + a2*t[IDX(i, j, k+2)].x;
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k+1)].y + a2*t[IDX(i, j, k+2)].y;
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k+1)].z + a2*t[IDX(i, j, k+2)].z;
+
+ }
+ if(LNZ_END == NZ && k == LNZ+BRD-1){ 
+   h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+   h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k-1)].x + a2*t[IDX(i, j, k-2)].x; 
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k-1)].y + a2*t[IDX(i, j, k-2)].y; 
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k-1)].z + a2*t[IDX(i, j, k-2)].z; 
+ }
+#endif
+
       return tens;
 }
 #endif
@@ -1491,7 +1571,6 @@ vector gradient_scalar(my_double *t, int i, int j, int k){
    grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
 
 
-#define FIRST_ORDER_GRAD
 #ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(LNX_START == 0 && i == BRD){
