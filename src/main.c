@@ -12,14 +12,13 @@ int main(int argc, char **argv){
 	read_mesh();  /* the mesh is read */
 	compute_volumes();
 	compute_interpolation_coefficients();
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+	read_landscape(); /* is there any topography ? */
+#endif
 	initial_conditions(resume); 
 	hydro_fields();
 	//	dump_averages();
 	//      exit(1);
-#ifdef LB_FLUID_FORCING_LANDSCAPE
-	read_landscape(); /* is there any topography ? */
-#endif
-
 
 #ifdef TIMING
 	t1 = MPI_Wtime();
