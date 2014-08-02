@@ -212,6 +212,7 @@ typedef struct {
 typedef struct {
   my_double name, kind;
   my_double x,y,z,vx,vy,vz,ax,ay,az;
+  my_double x_old,y_old,z_old,vx_old,vy_old,vz_old;
 } point_particle;
 
 

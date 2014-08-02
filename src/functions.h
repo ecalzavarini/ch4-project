@@ -73,4 +73,5 @@ void allocate_particles();
 void initial_conditions_particles();
 void interpolate_vector_at_particles(vector *f); 
 void output_particles();
+void move_particles();
 #endif

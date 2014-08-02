@@ -126,6 +126,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* EXTRA SCALAR FIELD e.g. CH4 */
 //#define LB_SCALAR
 
+/* Lagragian parts */
+#define LAGRANGE
+
 
 /***************************************************/
 /* Define dependencies not to be modified          */

@@ -25,7 +25,7 @@ int main(int argc, char **argv){
 #ifdef LAGRANGE
         initial_conditions_particles();
         interpolate_vector_at_particles(u);
-	output_particles();
+	//output_particles();
 	//exit(-1);
 #endif
 
@@ -103,7 +103,12 @@ int main(int argc, char **argv){
 #endif	
 	 hydro_fields();	
 	 dump_averages();
-	}
+
+#ifdef LAGRANGE       
+	move_particles();
+        output_particles();
+#endif
+	}/* loop on time: time_now */
 
 #ifdef TIMING
 	t2 = MPI_Wtime();

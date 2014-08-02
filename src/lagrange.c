@@ -82,9 +82,9 @@ void interpolate_vector_at_particles(vector *f){
 int i,j,k;
 sendrecv_borders_vector(f);
 
-/*
-  for (j = BRD; j < LNY + BRD; j++)                     
-    for (k = BRD; k < LNZ + BRD; k++){
+#ifdef LB_FLUID_BC_X
+  for (j = 0; j < LNY + TWO_BRD; j++)                     
+    for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNX_START == 0){
             i = BRD; 
             f[IDX(i-1,j,k)].x =  -f[IDX(i,j,k)].x;
@@ -98,7 +98,7 @@ sendrecv_borders_vector(f);
             f[IDX(i+1,j,k)].z =  -f[IDX(i,j,k)].z;
         }
 }
-*/
+#endif
 
 #ifdef LB_FLUID_BC_Y
   for (i = 0; i < LNX + TWO_BRD; i++)                     
@@ -120,13 +120,13 @@ sendrecv_borders_vector(f);
 
  for (ipart=0;ipart<npart;ipart++) {
 
- fprintf(stderr,"vel %g %g\n", f[IDX(BRD-1,BRD,BRD)].x , f[IDX(BRD,BRD,BRD)].x );
+   // fprintf(stderr,"vel %g %g\n", f[IDX(BRD-1,BRD,BRD)].x , f[IDX(BRD,BRD,BRD)].x );
 
   part.x = wrap( (tracer+ipart)->x ,  property.SX);
   part.y = wrap( (tracer+ipart)->y ,  property.SY);
   part.z = wrap( (tracer+ipart)->z ,  property.SZ); 
 
-fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
+  //fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
 
 for (i=0; i<LNX+TWO_BRD-1; i++) if(center_V[IDX(i, BRD, BRD)].x <= part.x && part.x < center_V[IDX(i+1,BRD, BRD)].x) im = i; 
 ip =  im + 1;
@@ -135,7 +135,7 @@ jp =  jm + 1;
 for (k=0; k<LNZ+TWO_BRD-1; k++) if(center_V[IDX(BRD, BRD, k)].z <= part.z && part.z < center_V[IDX(BRD, BRD, k+1)].z) km = k;
 kp =  km + 1;
 
-fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
+//fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
 
 //for (j=0;j<10;j++) fprintf(stderr,"%d center_V %e\n",j,center_V[IDX(im, j, km)].y);
 
@@ -146,7 +146,7 @@ fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
   dzm = part.z - center_V[IDX(BRD, BRD, km)].z;
   dzp = center_V[IDX(BRD, BRD, kp)].z - part.z;
 
-fprintf(stderr,"distance %g %g %g %g %g %g\n", dxm,dxp,dym,dyp,dzm,dzp);
+  //fprintf(stderr,"distance %g %g %g %g %g %g\n", dxm,dxp,dym,dyp,dzm,dzp);
 
   vol_ip_jp_kp = dxp*dyp*dzp;
   vol_im_jp_kp = dxm*dyp*dzp;
@@ -186,11 +186,9 @@ fprintf(stderr,"distance %g %g %g %g %g %g\n", dxm,dxp,dym,dyp,dzm,dzp);
         f[IDX(ip, jp, kp)].z * vol_im_jm_km ;
 
 
-
 (tracer+ipart)->vx = v.x;
 (tracer+ipart)->vy = v.y;
 (tracer+ipart)->vz = v.z; 
-
 
   }
 
@@ -202,44 +200,44 @@ void output_particles(){
   int i,j;
 
   for (j=0;j<nprocs;j++){
-    if(1==me){
+    //if(0==me){
     for (i=0;i<npart;i++) {
-      fprintf(stdout,"%e %e %e %e %e %e\n",(tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
-    }
-    }
+      if( (tracer+i)->name == 0 )
+	fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
+
+     }
+    //}
   }
 
 }
 
 
 
-#ifdef AAAA
 /* advance in time particles and assign them to the right processors */
-void move_partilces(){
+void move_particles(){
 
+  int ipart;
 
 /* Begin loop on particles */
- for (i=0;i<npart_here;i++) {
+ for (ipart=0;ipart<npart;ipart++) {
 
-min = mesh[IDXG(BRD+LNXG_START, BRD, BRD)].x
-max = mesh[IDXG(BRD+LNXG_END, BRD, BRD)].x
-
-if ( (tracer+i)->x < min ){
-
- npart_here -= 1;
- npart_xm += 1;
-/* realloc */
- tracer_xm  = (point_particle*) realloc(sizeof(point_particle)*npart_xm);
- /* copy the particle */
- (tracer_xm + npart_xm-1) = (tracer+i);
-}
+   /* Adams-Bashforth 2nd order */
+   (tracer+ipart)->x += property.time_dt*0.5*(3.0*(tracer+ipart)->vx - (tracer+ipart)->vx_old);
+   (tracer+ipart)->y += property.time_dt*0.5*(3.0*(tracer+ipart)->vy - (tracer+ipart)->vy_old);
+   (tracer+ipart)->z += property.time_dt*0.5*(3.0*(tracer+ipart)->vz - (tracer+ipart)->vz_old);
+   
+   (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
+   (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
+   (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
 
 
 }/* end of loop on particles */
 
+
+
+
 /* here we perform the MPI send recv*/
 }
-#endif
 
 
 
