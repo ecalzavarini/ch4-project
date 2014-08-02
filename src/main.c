@@ -6,6 +6,9 @@ int main(int argc, char **argv){
 	assign_parameters();
 	processor_splitting();
 	allocate_fields();
+#ifdef LAGRANGE
+        allocate_particles();
+#endif
 #ifdef LB
 	design_lb();
 #endif
@@ -19,6 +22,12 @@ int main(int argc, char **argv){
 	hydro_fields();
 	//	dump_averages();
 	//      exit(1);
+#ifdef LAGRANGE
+        initial_conditions_particles();
+        interpolate_vector_at_particles(u);
+	output_particles();
+	//exit(-1);
+#endif
 
 #ifdef TIMING
 	t1 = MPI_Wtime();
