@@ -114,6 +114,34 @@ pop *yp_zp_edge_pop;
 pop *yp_zm_edge_pop;
 pop *ym_zp_edge_pop;
 pop *ym_zm_edge_pop;
+
+/* And now the same for vector */
+/* 8 corners */
+vector *xp_yp_zp_corner_vector;
+vector *xp_yp_zm_corner_vector;
+vector *xp_ym_zp_corner_vector;
+vector *xp_ym_zm_corner_vector;
+vector *xm_yp_zp_corner_vector;
+vector *xm_yp_zm_corner_vector;
+vector *xm_ym_zp_corner_vector;
+vector *xm_ym_zm_corner_vector;
+
+/* 12 edges */
+vector *xp_yp_edge_vector;
+vector *xp_ym_edge_vector;
+vector *xm_yp_edge_vector;
+vector *xm_ym_edge_vector;
+
+vector *xp_zp_edge_vector;
+vector *xp_zm_edge_vector;
+vector *xm_zp_edge_vector;
+vector *xm_zm_edge_vector;
+
+vector *yp_zp_edge_vector;
+vector *yp_zm_edge_vector;
+vector *ym_zp_edge_vector;
+vector *ym_zm_edge_vector;
+
 #endif
 
 
@@ -169,8 +197,11 @@ my_double t1,t2,tick;
 #endif
 
 
-
-
+/* From here Lagrangian definitions */
+#ifdef LAGRANGE
+point_particle *tracer;
+int npart;
+#endif
 
 
 

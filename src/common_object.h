@@ -115,6 +115,34 @@ extern pop *yp_zp_edge_pop;
 extern pop *yp_zm_edge_pop;
 extern pop *ym_zp_edge_pop;
 extern pop *ym_zm_edge_pop;
+
+/* And now the same for vector */
+/* 8 corners */
+extern vector *xp_yp_zp_corner_vector;
+extern vector *xp_yp_zm_corner_vector;
+extern vector *xp_ym_zp_corner_vector;
+extern vector *xp_ym_zm_corner_vector;
+extern vector *xm_yp_zp_corner_vector;
+extern vector *xm_yp_zm_corner_vector;
+extern vector *xm_ym_zp_corner_vector;
+extern vector *xm_ym_zm_corner_vector;
+
+/* 12 edges */
+extern vector *xp_yp_edge_vector;
+extern vector *xp_ym_edge_vector;
+extern vector *xm_yp_edge_vector;
+extern vector *xm_ym_edge_vector;
+
+extern vector *xp_zp_edge_vector;
+extern vector *xp_zm_edge_vector;
+extern vector *xm_zp_edge_vector;
+extern vector *xm_zm_edge_vector;
+
+extern vector *yp_zp_edge_vector;
+extern vector *yp_zm_edge_vector;
+extern vector *ym_zp_edge_vector;
+extern vector *ym_zm_edge_vector;
+
 #endif
 
 
@@ -166,6 +194,13 @@ extern char OutDir[256];
 #ifdef TIMING
 extern my_double t1,t2,tick;
 #endif
+
+/* From here Lagrangian definitions */
+#ifdef LAGRANGE
+extern point_particle *tracer;
+extern int npart;
+#endif
+
 
 
 

@@ -196,6 +196,9 @@ typedef struct {
 /*  Lagrangian part */
 #ifdef LAGRANGE
 
+#define wrap(x,s) ( (x) - floor((x) / s) * s )
+
+/*
 typedef struct {
   my_double x,y,z,vx,vy,vz,ax,ay,az;
 } point;
@@ -204,5 +207,12 @@ typedef struct {
   my_double name, kind;
   point now,old;
 } point_particle;
+*/
+
+typedef struct {
+  my_double name, kind;
+  my_double x,y,z,vx,vy,vz,ax,ay,az;
+} point_particle;
+
 
 #endif

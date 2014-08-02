@@ -66,3 +66,11 @@ void dump_averages();
 /* output_h5.c */
 void write_pop_h5();
 void read_pop_h5();
+
+/* lagrange */
+#ifdef LAGRANGE 
+void allocate_particles();
+void initial_conditions_particles();
+void interpolate_vector_at_particles(vector *f); 
+void output_particles();
+#endif
