@@ -275,7 +275,7 @@ void output_particles(){
 void move_particles(){
 
   int ipart,i;
-  int npart_here,npart_there,all_npart_there;  
+  int npart_here,npart_there,all_npart_there,all_npart;  
   point_particle part;
 
   int *displs,*rcounts; 
@@ -304,6 +304,7 @@ void move_particles(){
  npart_here = 0;
  npart_there= 0;
  all_npart_there = 0;
+ all_npart = 0;
 
 for (ipart=0;ipart<npart;ipart++) {
 
@@ -397,6 +398,10 @@ for (ipart=0;ipart<npart;ipart++) {
 	                                         center_V[IDX(BRD, 0 , BRD)].y , center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y,
 	                                         center_V[IDX(BRD, BRD, 0)].z , center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z );
       */
+
+      /* final check */
+       MPI_Allreduce(&npart, &all_npart, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+       if(ROOT)fprintf(stderr,"-----------------All npart %d\n",all_npart);
 
 }/* end of move particles */
 
