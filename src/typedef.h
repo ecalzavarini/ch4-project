@@ -213,7 +213,12 @@ typedef struct {
   my_double name, kind;
   my_double x,y,z,vx,vy,vz,ax,ay,az;
   my_double x_old,y_old,z_old,vx_old,vy_old,vz_old;
+#ifdef LB_TEMPERATURE
+  my_double t;
+#endif
+
 } point_particle;
 
+#define SIZE_OF_POINT_PARTICLE SIZE_STRUCT(point_particle)
 
 #endif

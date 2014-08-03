@@ -28,6 +28,10 @@ extern MPI_Datatype MPI_pop_plane_x,MPI_pop_plane_y,MPI_pop_plane_z;
 extern MPI_Datatype MPI_my_double_plane_x,MPI_my_double_plane_y,MPI_my_double_plane_z;
 extern MPI_Datatype MPI_vector_plane_x,MPI_vector_plane_y,MPI_vector_plane_z;
 
+#ifdef LAGRANGE
+extern MPI_Datatype MPI_point_particle_type;
+#endif
+
 /* random seed */
 extern unsigned int seed;
 
@@ -224,7 +228,7 @@ extern my_double t1,t2,tick;
 
 /* From here Lagrangian definitions */
 #ifdef LAGRANGE
-extern point_particle *tracer;
+extern point_particle *tracer , *tracer_here, *tracer_there, *all_tracer_there;
 extern int npart;
 #endif
 

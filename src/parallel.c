@@ -57,7 +57,7 @@ void initialization_MPI(int argc, char **argv){
  MPI_Type_contiguous(NOUT, MPI_DOUBLE , &MPI_output_type);
  MPI_Type_commit(&MPI_output_type);
  MPI_Op_create( (MPI_User_function *)sum_output, 1, &MPI_SUM_output );
- if(ROOT) fprintf(stderr,"--------> NOUT size %d\n",NOUT);
+ if(ROOT) fprintf(stderr,"--------> NOUT size %d\n",(int)NOUT);
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
@@ -71,6 +71,11 @@ void initialization_MPI(int argc, char **argv){
  /* commit pop type */
  MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
  MPI_Type_commit(&MPI_pop_type);
+#endif
+
+#ifdef LAGRANGE 
+ MPI_Type_contiguous(SIZE_OF_POINT_PARTICLE, MPI_DOUBLE, &MPI_point_particle_type);
+ MPI_Type_commit(&MPI_point_particle_type);
 #endif
 
  /* Initialize random seeds */
