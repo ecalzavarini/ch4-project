@@ -8,7 +8,7 @@ NPART = total number of particles in the simulation
 NPART_PROC = NPART/nprocs
 */
 
-#define PARTICLE_NUMBER 1000
+#define PARTICLE_NUMBER 100
 
 
 
@@ -260,14 +260,12 @@ void output_particles(){
   int i,j;
   FILE *fout;
 
-  for (j=0;j<nprocs;j++){
-    //if(0==me){
-    for (i=0;i<npart;i++) {
+    if(ROOT){
+     for (i=0;i<npart;i++) {
 	fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
 
      }
-    //}
-  }
+    }
 
 }
 
@@ -276,9 +274,11 @@ void output_particles(){
 /* advance in time particles and assign them to the right processors */
 void move_particles(){
 
-  int ipart;
+  int ipart,i;
   int npart_here,npart_there,all_npart_there;  
   point_particle part;
+
+  int *displs,*rcounts; 
 
   fprintf(stderr,"I am here, npart %d\n",npart);
 
@@ -286,6 +286,7 @@ void move_particles(){
  for (ipart=0;ipart<npart;ipart++) {
 
    /* Adams-Bashforth 2nd order */
+   
    (tracer+ipart)->x += property.time_dt*0.5*(3.0*(tracer+ipart)->vx - (tracer+ipart)->vx_old);
    (tracer+ipart)->y += property.time_dt*0.5*(3.0*(tracer+ipart)->vy - (tracer+ipart)->vy_old);
    (tracer+ipart)->z += property.time_dt*0.5*(3.0*(tracer+ipart)->vz - (tracer+ipart)->vz_old);
@@ -293,7 +294,7 @@ void move_particles(){
    (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
    (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
-
+   
 
 }/* end of loop on particles */
 
@@ -310,16 +311,20 @@ for (ipart=0;ipart<npart;ipart++) {
   part.y = wrap( (tracer+ipart)->y ,  property.SY);
   part.z = wrap( (tracer+ipart)->z ,  property.SZ); 
 
+  //fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
+
   /* check how many particles are still in the local domain (here) and how many have to go (there) */
-  if( part.x >= center_V[IDX(BRD, BRD, BRD)].x && part.x < center_V[IDX(LNX+BRD-1,BRD, BRD)].x &&
-      part.y >= center_V[IDX(BRD, BRD, BRD)].y && part.y < center_V[IDX(BRD,LNY+BRD-1, BRD)].y &&
-      part.z >= center_V[IDX(BRD, BRD, BRD)].z && part.z < center_V[IDX(BRD, BRD,LNZ+BRD-1)].z ){
+
+ if(  part.x >= center_V[IDX(0, BRD, BRD)].x && part.x < center_V[IDX(LNX+TWO_BRD-1,BRD, BRD)].x &&
+      part.y >= center_V[IDX(BRD, 0, BRD)].y && part.y < center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y &&
+      part.z >= center_V[IDX(BRD, BRD, 0)].z && part.z < center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z ){
 
       npart_here += 1;
 
       tracer_here  = (point_particle*) realloc( tracer_here, sizeof(point_particle)*npart_here);
       tracer_here[npart_here-1] = tracer[ipart];
 
+      //fprintf(stderr,"Ehi! ipart %d\n",ipart);
   }else{
 
       npart_there += 1;   
@@ -330,19 +335,30 @@ for (ipart=0;ipart<npart;ipart++) {
 
  }/* for loop on ipart */
 
- fprintf(stderr,"npart_here %d , npart_there %d\n",npart_here, npart_there);
+ fprintf(stderr,"me %d : npart_here %d , npart_there %d\n",me,npart_here, npart_there);
 
 /* first we communicate to other procs how many particles we have to give away and we sum up them among all the processors */
 
  MPI_Allreduce(&npart_there, &all_npart_there, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 
-fprintf(stderr,"all_npart_here %d\n",all_npart_there);
+ fprintf(stderr,"me %d : all_npart_there %d\n",me, all_npart_there);
 
+ if(all_npart_there != 0){
+    displs = (int *)malloc(nprocs*sizeof(int)); 
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart_there, 1 , MPI_INT, rcounts, 1 , MPI_INT,MPI_COMM_WORLD);
+
+    for (i=0;i<nprocs;i++) displs[i]=0.0;
+
+    for (i=0;i<nprocs;i++) fprintf(stderr,"me %d : rcounts[%d] = %d\n",me,i, rcounts[i]);    
+ }
  /* space is allocate for coming particles */
  all_tracer_there = (point_particle*) realloc(all_tracer_there,sizeof(point_particle)*all_npart_there);
  
  /* Allgather to get all the migrant particles */
- MPI_Allgather(tracer_there, npart_there, MPI_point_particle_type, all_tracer_there, all_npart_there, MPI_point_particle_type,MPI_COMM_WORLD);
+ MPI_Allgatherv(tracer_there, npart_there, MPI_point_particle_type, all_tracer_there, rcounts,displs, MPI_point_particle_type,MPI_COMM_WORLD);
+
 
 /* Begin loop on particles which just arrived */
  for (ipart=0;ipart<all_npart_there;ipart++) {
@@ -352,9 +368,9 @@ fprintf(stderr,"all_npart_here %d\n",all_npart_there);
   part.z = wrap( (all_tracer_there+ipart)->z ,  property.SZ); 
 
   /* check how many particles are still in the local domain (here) and how many have to go (there) */
-  if( part.x >= center_V[IDX(BRD, BRD, BRD)].x && part.x < center_V[IDX(LNX+BRD-1,BRD, BRD)].x &&
-      part.y >= center_V[IDX(BRD, BRD, BRD)].y && part.y < center_V[IDX(BRD,LNY+BRD-1, BRD)].y &&
-      part.z >= center_V[IDX(BRD, BRD, BRD)].z && part.z < center_V[IDX(BRD, BRD,LNZ+BRD-1)].z ){
+  if( part.x >= center_V[IDX(0, BRD, BRD)].x && part.x < center_V[IDX(LNX+TWO_BRD-1, BRD, BRD)].x &&
+      part.y >= center_V[IDX(BRD, 0, BRD)].y && part.y < center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y &&
+      part.z >= center_V[IDX(BRD, BRD, 0)].z && part.z < center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z ){
 
       npart_here += 1;
 
@@ -373,11 +389,14 @@ fprintf(stderr,"all_npart_here %d\n",all_npart_there);
 
       npart = npart_here;
 
-      /* for debuug */
-      fprintf(stderr," %g %g\n %g %g\n %g %g\n", center_V[IDX(BRD, BRD, BRD)].x , center_V[IDX(LNX+BRD-1,BRD, BRD)].x, 
-	                                         center_V[IDX(BRD, BRD, BRD)].y , center_V[IDX(BRD,LNY+BRD-1, BRD)].y,
-	                                         center_V[IDX(BRD, BRD, BRD)].z , center_V[IDX(BRD, BRD,LNZ+BRD-1)].z );
+      fprintf(stderr,"me %d : new npart is %d\n",me, npart);
 
+      /* for debug */
+      /*
+      fprintf(stderr," %g %g\n %g %g\n %g %g\n", center_V[IDX(0, BRD, BRD)].x , center_V[IDX(LNX+TWO_BRD-1,BRD, BRD)].x, 
+	                                         center_V[IDX(BRD, 0 , BRD)].y , center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y,
+	                                         center_V[IDX(BRD, BRD, 0)].z , center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z );
+      */
 
 }/* end of move particles */
 
