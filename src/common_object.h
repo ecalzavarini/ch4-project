@@ -143,6 +143,33 @@ extern vector *yp_zm_edge_vector;
 extern vector *ym_zp_edge_vector;
 extern vector *ym_zm_edge_vector;
 
+/* And now the same for scalar */
+/* 8 corners */
+extern my_double *xp_yp_zp_corner_scalar;
+extern my_double *xp_yp_zm_corner_scalar;
+extern my_double *xp_ym_zp_corner_scalar;
+extern my_double *xp_ym_zm_corner_scalar;
+extern my_double *xm_yp_zp_corner_scalar;
+extern my_double *xm_yp_zm_corner_scalar;
+extern my_double *xm_ym_zp_corner_scalar;
+extern my_double *xm_ym_zm_corner_scalar;
+
+/* 12 edges */
+extern my_double *xp_yp_edge_scalar;
+extern my_double *xp_ym_edge_scalar;
+extern my_double *xm_yp_edge_scalar;
+extern my_double *xm_ym_edge_scalar;
+
+extern my_double *xp_zp_edge_scalar;
+extern my_double *xp_zm_edge_scalar;
+extern my_double *xm_zp_edge_scalar;
+extern my_double *xm_zm_edge_scalar;
+
+extern my_double *yp_zp_edge_scalar;
+extern my_double *yp_zm_edge_scalar;
+extern my_double *ym_zp_edge_scalar;
+extern my_double *ym_zm_edge_scalar;
+
 #endif
 
 

@@ -633,6 +633,33 @@ yp_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
 ym_zp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
 ym_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
 
+/* and for scalar */
+/* 8 corners */
+ xp_yp_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_yp_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_ym_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_ym_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_yp_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_yp_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_ym_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_ym_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+
+/* 12 edges */
+xp_yp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD)); 
+xp_ym_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+xm_yp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+xm_ym_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+
+xp_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xp_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xm_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xm_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+
+yp_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+yp_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+ym_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+
 #endif
 
 
