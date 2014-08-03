@@ -280,13 +280,13 @@ void move_particles(){
 
   int *displs,*rcounts; 
 
-  fprintf(stderr,"I am here, npart %d\n",npart);
+  //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
 
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
    /* Adams-Bashforth 2nd order */
-   
+   ///*
    (tracer+ipart)->x += property.time_dt*0.5*(3.0*(tracer+ipart)->vx - (tracer+ipart)->vx_old);
    (tracer+ipart)->y += property.time_dt*0.5*(3.0*(tracer+ipart)->vy - (tracer+ipart)->vy_old);
    (tracer+ipart)->z += property.time_dt*0.5*(3.0*(tracer+ipart)->vz - (tracer+ipart)->vz_old);
@@ -294,7 +294,7 @@ void move_particles(){
    (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
    (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
-   
+   //*/
 
 }/* end of loop on particles */
 
@@ -316,9 +316,14 @@ for (ipart=0;ipart<npart;ipart++) {
 
   /* check how many particles are still in the local domain (here) and how many have to go (there) */
 
+  /*
  if(  part.x >= center_V[IDX(0, BRD, BRD)].x && part.x < center_V[IDX(LNX+TWO_BRD-1,BRD, BRD)].x &&
       part.y >= center_V[IDX(BRD, 0, BRD)].y && part.y < center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y &&
       part.z >= center_V[IDX(BRD, BRD, 0)].z && part.z < center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z ){
+  */
+if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD, BRD)].x &&
+     part.y >= mesh[IDXG(BRD, BRD, BRD)].y && part.y < mesh[IDXG(BRD,LNYG+BRD-1, BRD)].y &&
+     part.z >= mesh[IDXG(BRD, BRD, BRD)].z && part.z < mesh[IDXG(BRD, BRD,LNZG+BRD-1)].z ){
 
       npart_here += 1;
 
@@ -331,6 +336,8 @@ for (ipart=0;ipart<npart;ipart++) {
       npart_there += 1;   
       tracer_there  = (point_particle*) realloc(tracer_there,sizeof(point_particle)*npart_there);
       tracer_there[npart_there-1] = tracer[ipart];
+
+      //fprintf(stderr,"AAA me %d , tracer_there[%d] %g,  tracer[%d] %g \n",me, npart_there-1, tracer_there[npart_there-1].x , ipart, tracer[ipart].x);
 
   }/* end of if else */
 
@@ -345,33 +352,47 @@ for (ipart=0;ipart<npart;ipart++) {
  fprintf(stderr,"me %d : all_npart_there %d\n",me, all_npart_there);
 
  if(all_npart_there != 0){
-    displs = (int *)malloc(nprocs*sizeof(int)); 
+
+    displs  = (int *)malloc(nprocs*sizeof(int)); 
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
     MPI_Allgather(&npart_there, 1 , MPI_INT, rcounts, 1 , MPI_INT,MPI_COMM_WORLD);
 
-    for (i=0;i<nprocs;i++) displs[i]=0.0;
+
+    //displs[0]=0;
+    //for (i=1;i<nprocs;i++) displs[i] += rcounts[i];
+    //for (i=0;i<nprocs;i++) displs[i] = rcounts[i];
+    displs[0] = 0;
+    for (i=1; i<nprocs; i++) displs[i] = displs[i-1] + rcounts[i-1];
+
 
     for (i=0;i<nprocs;i++) fprintf(stderr,"me %d : rcounts[%d] = %d\n",me,i, rcounts[i]);    
- }
- /* space is allocate for coming particles */
- all_tracer_there = (point_particle*) realloc(all_tracer_there,sizeof(point_particle)*all_npart_there);
+ 
+  /* space is allocate for coming particles */
+  all_tracer_there = (point_particle*) realloc(all_tracer_there,sizeof(point_particle)*all_npart_there);
  
  /* Allgather to get all the migrant particles */
- MPI_Allgatherv(tracer_there, npart_there, MPI_point_particle_type, all_tracer_there, rcounts,displs, MPI_point_particle_type,MPI_COMM_WORLD);
+ MPI_Allgatherv(tracer_there, npart_there, MPI_point_particle_type, all_tracer_there, rcounts, displs, MPI_point_particle_type,MPI_COMM_WORLD);
+ 
 
-
-/* Begin loop on particles which just arrived */
+ /* Begin loop on particles which just arrived */
  for (ipart=0;ipart<all_npart_there;ipart++) {
+
+   //fprintf(stderr,"BBB me %d , part %g\n",me,(all_tracer_there+ipart)->x);
 
   part.x = wrap( (all_tracer_there+ipart)->x ,  property.SX);
   part.y = wrap( (all_tracer_there+ipart)->y ,  property.SY);
   part.z = wrap( (all_tracer_there+ipart)->z ,  property.SZ); 
 
   /* check how many particles are still in the local domain (here) and how many have to go (there) */
+  /*
   if( part.x >= center_V[IDX(0, BRD, BRD)].x && part.x < center_V[IDX(LNX+TWO_BRD-1, BRD, BRD)].x &&
       part.y >= center_V[IDX(BRD, 0, BRD)].y && part.y < center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y &&
       part.z >= center_V[IDX(BRD, BRD, 0)].z && part.z < center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z ){
+  */
+  if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD, BRD)].x &&
+       part.y >= mesh[IDXG(BRD, BRD, BRD)].y && part.y < mesh[IDXG(BRD,LNYG+BRD-1, BRD)].y &&
+       part.z >= mesh[IDXG(BRD, BRD, BRD)].z && part.z < mesh[IDXG(BRD, BRD,LNZG+BRD-1)].z ){
 
       npart_here += 1;
 
@@ -388,9 +409,14 @@ for (ipart=0;ipart<npart;ipart++) {
 
       for (ipart=0;ipart<npart_here;ipart++){  tracer[ipart] = tracer_here[ipart];}
 
+       free(rcounts);
+       free(displs);
+ }/* end on if on all_npart_there */
+
       npart = npart_here;
 
       fprintf(stderr,"me %d : new npart is %d\n",me, npart);
+
 
       /* for debug */
       /*
@@ -398,10 +424,17 @@ for (ipart=0;ipart<npart;ipart++) {
 	                                         center_V[IDX(BRD, 0 , BRD)].y , center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y,
 	                                         center_V[IDX(BRD, BRD, 0)].z , center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z );
       */
-
+      /*
+     fprintf(stderr," %g %g\n %g %g\n %g %g\n", mesh[IDXG(BRD, BRD, BRD)].x , mesh[IDXG(LNXG+BRD-1,BRD, BRD)].x, 
+	                                         mesh[IDXG(BRD, BRD , BRD)].y , mesh[IDXG(BRD,LNYG+BRD-1, BRD)].y,
+	                                         mesh[IDXG(BRD, BRD, BRD)].z , mesh[IDXG(BRD, BRD,LNZG+BRD-1)].z );
+      */
       /* final check */
        MPI_Allreduce(&npart, &all_npart, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
-       if(ROOT)fprintf(stderr,"-----------------All npart %d\n",all_npart);
+       if(ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
+
+
+ 
 
 }/* end of move particles */
 
