@@ -8,16 +8,35 @@ NPART = total number of particles in the simulation
 NPART_PROC = NPART/nprocs
 */
 
-#define PARTICLE_NUMBER 100
+#define PARTICLE_NUMBER 3335
 
 
 
 /* allocate particle containers */
 void allocate_particles(){        
 
-npart = PARTICLE_NUMBER/nprocs; 
+  int i;
 
- fprintf(stderr,"We have %d particles\n",npart);
+  if(PARTICLE_NUMBER%nprocs ==0 ){
+
+    /* ALL processor will take the same number of particles  */
+    npart = PARTICLE_NUMBER/nprocs;
+
+
+  }else{
+
+   if(ROOT) fprintf(stderr,"Warning : total particle number is different from the process number!\n");
+
+  for (i=0;i<nprocs;i++){
+
+    /* ROOT processor will take just a little bit more particles */
+    if(ROOT) npart = PARTICLE_NUMBER - (nprocs-1)*(int)floor(PARTICLE_NUMBER/nprocs); else npart = (int)floor(PARTICLE_NUMBER/nprocs);  
+					       
+  }
+
+  }/* end if on PARTICLE_NUMBER */
+
+  fprintf(stderr,"me %d : I have %d particles\n",me, npart);
 
 tracer  = (point_particle*) malloc(sizeof(point_particle)*npart);
 if(tracer == NULL){ fprintf(stderr,"Not enough memory to allocate tracer\n"); exit(-1);}
@@ -343,13 +362,13 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
 
  }/* for loop on ipart */
 
- fprintf(stderr,"me %d : npart_here %d , npart_there %d\n",me,npart_here, npart_there);
+//fprintf(stderr,"me %d : npart_here %d , npart_there %d\n",me,npart_here, npart_there);
 
 /* first we communicate to other procs how many particles we have to give away and we sum up them among all the processors */
 
  MPI_Allreduce(&npart_there, &all_npart_there, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 
- fprintf(stderr,"me %d : all_npart_there %d\n",me, all_npart_there);
+ if(ROOT)fprintf(stderr,"me %d : all_npart_there %d\n",me, all_npart_there);
 
  if(all_npart_there != 0){
 
@@ -366,7 +385,7 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
     for (i=1; i<nprocs; i++) displs[i] = displs[i-1] + rcounts[i-1];
 
 
-    for (i=0;i<nprocs;i++) fprintf(stderr,"me %d : rcounts[%d] = %d\n",me,i, rcounts[i]);    
+    //for (i=0;i<nprocs;i++) fprintf(stderr,"me %d : rcounts[%d] = %d\n",me,i, rcounts[i]);    
  
   /* space is allocate for coming particles */
   all_tracer_there = (point_particle*) realloc(all_tracer_there,sizeof(point_particle)*all_npart_there);
@@ -415,7 +434,7 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
 
       npart = npart_here;
 
-      fprintf(stderr,"me %d : new npart is %d\n",me, npart);
+      //fprintf(stderr,"me %d : new npart is %d\n",me, npart);
 
 
       /* for debug */
