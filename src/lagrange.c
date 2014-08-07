@@ -8,7 +8,7 @@ NPART = total number of particles in the simulation
 NPART_PROC = NPART/nprocs
 */
 
-#define PARTICLE_NUMBER 3335
+#define PARTICLE_NUMBER 100
 
 
 
@@ -55,12 +55,24 @@ if(all_tracer_there == NULL){ fprintf(stderr,"Not enough memory to allocate all_
 /* initial conditions for particles */
 void initial_conditions_particles(){  
 
-int i;
+  int i;
+  int *rcounts;
+  int name_offset = 0;
+
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
+
+    fprintf(stderr,"me : %d , name_offset %d\n", me , name_offset);
 
 for (i=0;i<npart;i++) {
 
 /* name */
-(tracer+i)->name = i+me*npart;
+(tracer+i)->name = i+name_offset;
 
 /* position: randomly distributed particles */
 (tracer+i)->x = LNX_START + drand48()*LNX;
@@ -311,8 +323,7 @@ void output_particles(){
 
     if(ROOT){
      for (i=0;i<npart;i++) {
-	fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
-
+      fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
      }
     }
 
