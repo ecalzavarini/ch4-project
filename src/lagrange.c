@@ -502,15 +502,18 @@ void output_particles(){
 
                 fprintf(fout,"</Geometry>\n");                
 
+		/* velocity as a vector */
                 fprintf(fout,"<Attribute Name=\"velocity\" AttributeType=\"Vector\" Center=\"Node\"> \n");
-                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/vx\n",NEW_H5FILE_NAME); 
                 fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/vy\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/vz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");  
 
