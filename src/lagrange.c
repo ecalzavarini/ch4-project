@@ -316,6 +316,8 @@ if(which_scalar == 's')  (tracer+ipart)->s = s;
 }
 #endif
 
+#define H5FILE_NAME_PARTICLE "part.h5"
+
 /* general output function for particles */
 void output_particles(){
   int i,j;
@@ -358,21 +360,15 @@ void output_particles(){
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
 
-#define H5FILE_NAME_PARTICLE "part.h5"
-
     aux  = (my_double*) malloc(sizeof(my_double)*npart); 
     if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
 
     hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
 
-                /* create the file names */
-                sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
-                sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf" ,OutDir,itime);
-
                 /* Create a new file using default properties */
 		plist_id = H5Pcreate(H5P_FILE_ACCESS);
 		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
-
+		
 		file_id = H5Fcreate(H5FILE_NAME_PARTICLE, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 		group   = H5Gcreate (file_id, "/lagrange", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
@@ -468,6 +464,12 @@ void output_particles(){
   /* free scalar auxiliary field */
   free(aux);
 
+ /* create the file names */
+  sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
+  sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf" ,OutDir,itime);
+
+  /* we rename the file */
+  if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
 
   /* Xml file */
                 fout = fopen(XMF_FILE_NAME,"w");
