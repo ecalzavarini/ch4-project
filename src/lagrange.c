@@ -340,86 +340,120 @@ void output_particles(){
     free(rcounts);
 
 
-#ifdef OUTPUT_H5_AAA
-    hid_t       file_id, dataset_id, dataspace_id;  /* identifiers */
-    hsize_t     dims[1], offset, count;
-    herr_t      status;
+#ifdef OUTPUT_H5
+    hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
+    hid_t	plist_id;                 /* property list identifier */
     hid_t hdf5_type;
+    hid_t xfer_plist, ret, property_id;
+    hid_t       filespace, memspace;      /* file and memory dataspace identifiers */
+    hsize_t     dims[1], offset[1], count[1];
+    herr_t      hdf5_status;
+    herr_t status;
+    
+    int RANK = 1;
+
     my_double *aux;
 
-    FILE *fout;
-    double * dset_data = (double *) malloc (npart*sizeof(double));
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
 
+#define H5FILE_NAME_PARTICLE "part.h5"
 
     aux  = (my_double*) malloc(sizeof(my_double)*npart); 
     if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
 
     hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
 
-    /* create the file names */
-                sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
-                sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf",OutDir,itime);
+                /* create the file names */
+                //sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
+                sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf" ,OutDir,itime);
 
-                /* Create a new file using default properties. */
+                /* Create a new file using default properties */
 		plist_id = H5Pcreate(H5P_FILE_ACCESS);
+		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
 
-		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
-
-		file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+		file_id = H5Fcreate(H5FILE_NAME_PARTICLE, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 		group   = H5Gcreate (file_id, "/lagrange", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
 		H5Pclose(plist_id);
-                
-                if( file_id < 0 )
-                {
-                    fprintf(stderr,"Error file_id while creating the file at timestep%d\n",itime);
-                    break;
-                }
 
+		property_id  = H5Pcreate(H5P_DATASET_CREATE);
 
-		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
-		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
 
                 /* Create the data space for the dataset. */
                 dims[0] = PARTICLE_NUMBER;
 
-		//filespace = H5Screate_simple(RANK, dims, NULL);
-    
-
+		filespace = H5Screate_simple(RANK, dims, NULL);   
     /* 
      * Each process defines dataset in memory and writes it to the hyperslab
      * in the file.
      */
-    count[0] = npart;
-    offset[0] = name_offset;
-    memspace = H5Screate_simple(RANK, count, NULL);
+		count[0] = npart;
+		offset[0] = name_offset;
+
+	        memspace = H5Screate_simple(RANK, count, NULL); 	
 
     /*
      * Select hyperslab in the file.
      */
-    filespace = H5Dget_space(dset_id);
-    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL);
+                H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-                                          
-                dataspace_id = H5Screate_simple(1, dims, NULL);
-                                
-                dataset_id = H5Dcreate2(file_id, "name", hdf5_type, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
+		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);                       
 
-		for(i=0;i<npart;i++) aux[i]=(particle + i)->name;
-
-                //status = H5Dwrite(dataset_id, hdf5_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, aux);               
-                status = H5Dwrite(dataset_id, H5T_NATIVE_INT, memspace, filespace, plist_id, aux); 
-               /* End access to the dataset and release resources used by it. */
+		/* WRITE PARTICLE NAME */
+		dataset_id = H5Dcreate(group, "name", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->name;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
                 
-                /* Terminate access to the data space. */
-                status = H5Sclose(dataspace_id);
-                
-                /* Close the file. */
-                status = H5Fclose(file_id);
-                
+		/* WRITE PARTICLE POSITIONS */
+		dataset_id = H5Dcreate(group, "x", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->x;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "y", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->y;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "z", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->z;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		/* WRITE PARTICLE POSITIONS */
+		dataset_id = H5Dcreate(group, "vx", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->vx;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "vy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->vy;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "vz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->vz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+
+
+  MPI_Barrier(MPI_COMM_WORLD);
+      
+  H5Sclose(filespace);
+  H5Sclose(memspace);
+  H5Pclose(xfer_plist);
+  H5Pclose(property_id);
+  H5Gclose(group);
+  H5Fclose(file_id);  
+
+  /* free scalar auxiliary field */
+  free(aux);
+
+      
 #endif
 
 
