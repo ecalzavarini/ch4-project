@@ -319,6 +319,7 @@ if(which_scalar == 's')  (tracer+ipart)->s = s;
 /* general output function for particles */
 void output_particles(){
   int i,j;
+  int np = (int)PARTICLE_NUMBER;
   FILE *fout;
 
     if(ROOT){
@@ -365,7 +366,7 @@ void output_particles(){
     hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
 
                 /* create the file names */
-                //sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
+                sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
                 sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf" ,OutDir,itime);
 
                 /* Create a new file using default properties */
@@ -423,7 +424,7 @@ void output_particles(){
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
-		/* WRITE PARTICLE POSITIONS */
+		/* WRITE PARTICLE VELOCITIES */
 		dataset_id = H5Dcreate(group, "vx", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->vx;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
@@ -439,7 +440,21 @@ void output_particles(){
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
+#ifdef LB_TEMPERATURE
+		/* WRITE PARTICLE TEMPERATURE */
+		dataset_id = H5Dcreate(group, "t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->t;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+#endif
 
+#ifdef LB_SCALAR
+		/* WRITE PARTICLE SCALAR */
+		dataset_id = H5Dcreate(group, "s", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->s;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+#endif
 
   MPI_Barrier(MPI_COMM_WORLD);
       
@@ -453,7 +468,66 @@ void output_particles(){
   /* free scalar auxiliary field */
   free(aux);
 
-      
+
+  /* Xml file */
+                fout = fopen(XMF_FILE_NAME,"w");
+		              
+                fprintf(fout,"<?xml version=\"1.0\" ?>\n");
+                fprintf(fout,"<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" []>\n");
+                fprintf(fout,"<Xdmf Version=\"2.0\">\n");
+                fprintf(fout,"<Domain>\n");
+                fprintf(fout,"<Grid Name=\"Points\" GridType=\"Uniform\">\n");
+                fprintf(fout,"<Topology TopologyType=\"Polyvertex\" NumberOfElements=\"%d\"/>\n",np);
+                fprintf(fout,"<Geometry GeometryType=\"X_Y_Z\">\n");
+                
+                fprintf(fout,"<DataItem Name=\"x\" Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/x\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                
+                fprintf(fout,"<DataItem Name=\"y\" Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/y\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+
+                fprintf(fout,"<DataItem Name=\"z\" Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/z\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+
+                fprintf(fout,"</Geometry>\n");
+                
+                fprintf(fout,"<Attribute Name=\"velocity\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/vx\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/vy\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/vz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+
+#ifdef LB_TEMPERATURE
+                fprintf(fout,"<Attribute Name=\"t\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/t\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");          
+#endif
+
+#ifdef LB_SCALAR
+                fprintf(fout,"<Attribute Name=\"s\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, sizeof(my_double));
+                fprintf(fout,"%s:/lagrange/s\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");          
+#endif
+                
+                fprintf(fout,"</Grid>\n");
+                fprintf(fout,"</Domain>\n");
+                fprintf(fout,"</Xdmf>\n");
+		                
+                fclose(fout);
+
 #endif
 
 
