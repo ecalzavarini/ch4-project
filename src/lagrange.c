@@ -327,6 +327,102 @@ void output_particles(){
      }
     }
 
+
+  int *rcounts;
+  int name_offset = 0;
+
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
+
+
+#ifdef OUTPUT_H5_AAA
+    hid_t       file_id, dataset_id, dataspace_id;  /* identifiers */
+    hsize_t     dims[1], offset, count;
+    herr_t      status;
+    hid_t hdf5_type;
+    my_double *aux;
+
+    FILE *fout;
+    double * dset_data = (double *) malloc (npart*sizeof(double));
+    char NEW_H5FILE_NAME[128];
+    char XMF_FILE_NAME[128];
+
+
+    aux  = (my_double*) malloc(sizeof(my_double)*npart); 
+    if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
+
+    hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+
+    /* create the file names */
+                sprintf(NEW_H5FILE_NAME,"%s/particles_%d.h5",OutDir,itime);
+                sprintf(XMF_FILE_NAME,"%s/particles_%d.xmf",OutDir,itime);
+
+                /* Create a new file using default properties. */
+		plist_id = H5Pcreate(H5P_FILE_ACCESS);
+
+		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
+
+		file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+		group   = H5Gcreate (file_id, "/lagrange", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+
+		H5Pclose(plist_id);
+                
+                if( file_id < 0 )
+                {
+                    fprintf(stderr,"Error file_id while creating the file at timestep%d\n",itime);
+                    break;
+                }
+
+
+		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
+		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
+
+                /* Create the data space for the dataset. */
+                dims[0] = PARTICLE_NUMBER;
+
+		//filespace = H5Screate_simple(RANK, dims, NULL);
+    
+
+    /* 
+     * Each process defines dataset in memory and writes it to the hyperslab
+     * in the file.
+     */
+    count[0] = npart;
+    offset[0] = name_offset;
+    memspace = H5Screate_simple(RANK, count, NULL);
+
+    /*
+     * Select hyperslab in the file.
+     */
+    filespace = H5Dget_space(dset_id);
+    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+                                          
+                dataspace_id = H5Screate_simple(1, dims, NULL);
+                                
+                dataset_id = H5Dcreate2(file_id, "name", hdf5_type, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+		for(i=0;i<npart;i++) aux[i]=(particle + i)->name;
+
+                //status = H5Dwrite(dataset_id, hdf5_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, aux);               
+                status = H5Dwrite(dataset_id, H5T_NATIVE_INT, memspace, filespace, plist_id, aux); 
+               /* End access to the dataset and release resources used by it. */
+                status = H5Dclose(dataset_id);
+                
+                /* Terminate access to the data space. */
+                status = H5Sclose(dataspace_id);
+                
+                /* Close the file. */
+                status = H5Fclose(file_id);
+                
+#endif
+
+
 }
 
 
