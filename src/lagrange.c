@@ -8,7 +8,7 @@ NPART = total number of particles in the simulation
 NPART_PROC = NPART/nprocs
 */
 
-#define PARTICLE_NUMBER 100
+//#define PARTICLE_NUMBER 100
 
 
 
@@ -17,10 +17,10 @@ void allocate_particles(){
 
   int i;
 
-  if(PARTICLE_NUMBER%nprocs ==0 ){
+  if((int)property.particle_number%nprocs ==0 ){
 
     /* ALL processor will take the same number of particles  */
-    npart = PARTICLE_NUMBER/nprocs;
+    npart = property.particle_number/nprocs;
 
 
   }else{
@@ -30,7 +30,7 @@ void allocate_particles(){
   for (i=0;i<nprocs;i++){
 
     /* ROOT processor will take just a little bit more particles */
-    if(ROOT) npart = PARTICLE_NUMBER - (nprocs-1)*(int)floor(PARTICLE_NUMBER/nprocs); else npart = (int)floor(PARTICLE_NUMBER/nprocs);  
+    if(ROOT) npart = (int)property.particle_number - (nprocs-1)*(int)floor((int)property.particle_number/nprocs); else npart = (int)floor((int)property.particle_number /nprocs);  
 					       
   }
 
@@ -321,7 +321,7 @@ if(which_scalar == 's')  (tracer+ipart)->s = s;
 /* general output function for particles */
 void output_particles(){
   int i,j;
-  int np = (int)PARTICLE_NUMBER;
+  int np = (int)property.particle_number;
   FILE *fout;
 
     if(ROOT){
@@ -378,7 +378,7 @@ void output_particles(){
 
 
                 /* Create the data space for the dataset. */
-                dims[0] = PARTICLE_NUMBER;
+                dims[0] = (int)property.particle_number;
 
 		filespace = H5Screate_simple(RANK, dims, NULL);   
     /* 

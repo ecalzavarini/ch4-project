@@ -70,6 +70,10 @@ typedef struct {
   my_double tau_s, chi;
 #endif
 #endif
+
+#ifdef LAGRANGE
+  my_double particle_number;
+#endif
 } prop;
 
 

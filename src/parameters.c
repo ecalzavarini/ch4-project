@@ -249,6 +249,14 @@ void assign_parameters(){
 #endif
 
 
+#ifdef LAGRANGE
+    /* total number of particles or tracers */
+  fprintf(stderr,"YES <- LAGRANGE\n");
+  sprintf(name,"particle_number");
+  property.particle_number = read_parameter(name);
+  fprintf(stderr,"Properties:\n particle_number %g\n",(double)property.particle_number);
+#endif
+
   /* size of types, just for a check */
     fprintf(stderr,"Size of float %d\n",sizeof(float));
     fprintf(stderr,"Size of double %d\n",sizeof(double));
