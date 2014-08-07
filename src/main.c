@@ -24,7 +24,6 @@ int main(int argc, char **argv){
 	//      exit(1);
 #ifdef LAGRANGE
         initial_conditions_particles();
-        interpolate_vector_at_particles(u);
 	//output_particles();
 	//exit(-1);
 #endif
@@ -104,7 +103,16 @@ int main(int argc, char **argv){
 	 hydro_fields();	
 	 dump_averages();
 
+	 /* Now the lagrangian part */
 #ifdef LAGRANGE       
+	boundary_conditions_hydro();
+        interpolate_vector_at_particles(u,'u');
+#ifdef LB_TEMPERATURE
+        interpolate_scalar_at_particles(t,'t');
+#endif
+#ifdef LB_SCALAR
+        interpolate_scalar_at_particles(s,'s');
+#endif
 	move_particles();
         output_particles();
 #endif

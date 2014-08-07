@@ -34,8 +34,8 @@
 
 /* FLUID */
 #define LB_FLUID
-//#define LB_FLUID_INITIAL_KOLMOGOROV 
-#define LB_FLUID_INITIAL_POISEUILLE
+#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
@@ -44,9 +44,9 @@
 //#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_CHANNEL
-#define LB_FLUID_FORCING_POISEUILLE
+//#define LB_FLUID_FORCING_POISEUILLE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
-//#define LB_FLUID_FORCING_KOLMOGOROV
+#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
@@ -57,8 +57,8 @@
 //#define CUBE
 //#define BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YP_SLIP                                           
 //#define LB_FLUID_BC_YM_SLIP                         
 //#define LB_FLUID_BC_YP_OUTLET

@@ -216,6 +216,9 @@ typedef struct {
 #ifdef LB_TEMPERATURE
   my_double t;
 #endif
+#ifdef LB_SCALAR
+  my_double s;
+#endif
 
 } point_particle;
 

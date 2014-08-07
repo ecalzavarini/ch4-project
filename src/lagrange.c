@@ -78,33 +78,28 @@ for (i=0;i<npart;i++) {
 
 
 
-/* Interpolation for the moment only with regular grid */
-void interpolate_vector_at_particles(vector *f){
+/* this function implement periodic or wall boundary conditions for the hydrodynamics fields 
+   it is needed to correctly interpolate these fields at the particle positions */
+void boundary_conditions_hydro(){
 
- point_particle part;
- vector v;
-
- int ipart,im,jm,km,ip,jp,kp;
- double dxm,dxp,dym,dyp,dzm,dzp;
- double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km; 
-
-int i,j,k;
-sendrecv_borders_vector(f);
+  /* bc for the velocity field */
+#ifdef LB_FLUID
+sendrecv_borders_vector(u);
 
 #ifdef LB_FLUID_BC_X
   for (j = 0; j < LNY + TWO_BRD; j++)                     
     for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNX_START == 0){
             i = BRD; 
-            f[IDX(i-1,j,k)].x =  -f[IDX(i,j,k)].x;
-            f[IDX(i-1,j,k)].y =  -f[IDX(i,j,k)].y;
-            f[IDX(i-1,j,k)].z =  -f[IDX(i,j,k)].z;
+            u[IDX(i-1,j,k)].x =  -u[IDX(i,j,k)].x;
+            u[IDX(i-1,j,k)].y =  -u[IDX(i,j,k)].y;
+            u[IDX(i-1,j,k)].z =  -u[IDX(i,j,k)].z;
         }
 	if(LNX_END == NX){
             i = LNX+BRD-1;
-            f[IDX(i+1,j,k)].x =  -f[IDX(i,j,k)].x;
-            f[IDX(i+1,j,k)].y =  -f[IDX(i,j,k)].y;
-            f[IDX(i+1,j,k)].z =  -f[IDX(i,j,k)].z;
+            u[IDX(i+1,j,k)].x =  -u[IDX(i,j,k)].x;
+            u[IDX(i+1,j,k)].y =  -u[IDX(i,j,k)].y;
+            u[IDX(i+1,j,k)].z =  -u[IDX(i,j,k)].z;
         }
 }
 #endif
@@ -114,18 +109,47 @@ sendrecv_borders_vector(f);
     for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNY_START == 0){
             j = BRD; 
-            f[IDX(i,j-1,k)].x =  -f[IDX(i,j,k)].x;
-            f[IDX(i,j-1,k)].y =  -f[IDX(i,j,k)].y;
-            f[IDX(i,j-1,k)].z =  -f[IDX(i,j,k)].z;
+            f[IDX(i,j-1,k)].x =  -u[IDX(i,j,k)].x;
+            f[IDX(i,j-1,k)].y =  -u[IDX(i,j,k)].y;
+            f[IDX(i,j-1,k)].z =  -u[IDX(i,j,k)].z;
         }
 	if(LNY_END == NY){
             j = LNY+BRD-1;
-            f[IDX(i,j+1,k)].x =  -f[IDX(i,j,k)].x;
-            f[IDX(i,j+1,k)].y =  -f[IDX(i,j,k)].y;
-            f[IDX(i,j+1,k)].z =  -f[IDX(i,j,k)].z;
+            f[IDX(i,j+1,k)].x =  -u[IDX(i,j,k)].x;
+            f[IDX(i,j+1,k)].y =  -u[IDX(i,j,k)].y;
+            f[IDX(i,j+1,k)].z =  -u[IDX(i,j,k)].z;
         }
 }
 #endif
+#endif /* endif define LB_FLUID */
+
+#ifdef LB_TEMPERATURE
+sendrecv_borders_vector(t);
+
+#endif
+
+
+#ifdef LB_SCALAR
+sendrecv_borders_vector(t);
+
+#endif
+
+
+}
+
+
+/* Interpolation for the moment only with regular grid */
+void interpolate_vector_at_particles(vector *f,char which_vector){
+
+ point_particle part;
+ vector v;
+
+ int ipart,im,jm,km,ip,jp,kp;
+ double dxm,dxp,dym,dyp,dzm,dzp;
+ double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km; 
+
+int i,j,k;
+
 
  for (ipart=0;ipart<npart;ipart++) {
 
@@ -194,19 +218,21 @@ kp =  km + 1;
         f[IDX(ip, jm, kp)].z * vol_im_jp_km +
         f[IDX(ip, jp, kp)].z * vol_im_jm_km ;
 
-
-(tracer+ipart)->vx = v.x;
-(tracer+ipart)->vy = v.y;
-(tracer+ipart)->vz = v.z; 
-
+  /* if it is the velocity */
+  if(which_vector == 'u'){
+    (tracer+ipart)->vx = v.x;
+    (tracer+ipart)->vy = v.y;
+    (tracer+ipart)->vz = v.z; 
   }
+
+ }/* end of for on ipart */
 
 }
 
 
 #ifdef LB_TEMPERATURE
 /* Interpolation for the moment only with regular grid */
-void interpolate_temperature_at_particles(my_double *f){
+void interpolate_scalar_at_particles(my_double *f,char which_scalar){
 
  point_particle part;
  my_double s;
@@ -216,7 +242,6 @@ void interpolate_temperature_at_particles(my_double *f){
  double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km; 
 
 int i,j,k;
-sendrecv_borders_vector(f);
 
  for (ipart=0;ipart<npart;ipart++) {
 
@@ -267,7 +292,12 @@ kp =  km + 1;
         f[IDX(ip, jm, kp)] * vol_im_jp_km +
         f[IDX(ip, jp, kp)] * vol_im_jm_km ;
 
-(tracer+ipart)->t = s;
+   /* if it is temperature */
+if(which_scalar == 't')  (tracer+ipart)->t = s;
+
+  /* if it is a scalar */
+if(which_scalar == 's')  (tracer+ipart)->s = s;
+
 
   }
 
