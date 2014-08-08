@@ -475,11 +475,12 @@ void output_particles(){
                 status = H5Dclose(dataset_id);
 
 #ifdef LB_TEMPERATURE
-		/* WRITE PARTICLE TEMPERATURE */
+		/* WRITE PARTICLE TEMPERATURE */		
 		dataset_id = H5Dcreate(group, "temperature", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->t;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+		
 #endif
 
 #ifdef LB_SCALAR
@@ -508,6 +509,7 @@ void output_particles(){
   /* we rename the file */
   if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
 
+
   /* Xml file */
   if(ROOT){
   sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
@@ -515,8 +517,6 @@ void output_particles(){
   size=sizeof(my_double);
   fout = fopen(XMF_FILE_NAME,"w");
 
-
-                fout = fopen(XMF_FILE_NAME,"w");
 		              
                 fprintf(fout,"<?xml version=\"1.0\" ?>\n");
                 fprintf(fout,"<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" []>\n");
@@ -556,17 +556,17 @@ void output_particles(){
                 fprintf(fout,"</Attribute>\n");  
 
 #ifdef LB_TEMPERATURE
-                fprintf(fout,"<Attribute Name=\"t\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<Attribute Name=\"temperature\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
-                fprintf(fout,"%s:/lagrange/t\n",NEW_H5FILE_NAME);
+                fprintf(fout,"%s:/lagrange/temperature\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");          
 #endif
 
 #ifdef LB_SCALAR
-                fprintf(fout,"<Attribute Name=\"s\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<Attribute Name=\"scalar\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
-                fprintf(fout,"%s:/lagrange/s\n",NEW_H5FILE_NAME);
+                fprintf(fout,"%s:/lagrange/scalar\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");          
 #endif
@@ -577,6 +577,7 @@ void output_particles(){
 		                
                 fclose(fout);
   }/* end of if root */
+
 #endif
 
 
