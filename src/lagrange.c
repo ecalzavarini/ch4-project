@@ -2,15 +2,6 @@
 
 #ifdef LAGRANGE
 
-/*
-NPART = total number of particles in the simulation 
-
-NPART_PROC = NPART/nprocs
-*/
-
-//#define PARTICLE_NUMBER 100
-
-
 
 /* allocate particle containers */
 void allocate_particles(){        
@@ -271,9 +262,9 @@ kp =  km + 1;
 
   /* if it is the velocity */
   if(which_vector == 'u'){
-    (tracer+ipart)->vx = v.x;
-    (tracer+ipart)->vy = v.y;
-    (tracer+ipart)->vz = v.z; 
+    (tracer+ipart)->ux = v.x;
+    (tracer+ipart)->uy = v.y;
+    (tracer+ipart)->uz = v.z; 
   }
 
  }/* end of for on ipart */
@@ -363,16 +354,20 @@ void output_particles(){
   int np = (int)property.particle_number;
   FILE *fout;
 
+#ifdef LAGRANGE_OUTPUT_DEBUG
     if(ROOT){
      for (i=0;i<npart;i++) {
       fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
      }
     }
+#endif
 
+#ifdef OUTPUT_H5
 
-  int *rcounts;
-  int name_offset = 0;
+    int *rcounts;
+    int name_offset = 0;
 
+    /* First check how many particles in each processor and compute offset */
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
     MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
@@ -382,7 +377,7 @@ void output_particles(){
     free(rcounts);
 
 
-#ifdef OUTPUT_H5
+
     hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
     hid_t	plist_id;                 /* property list identifier */
     hid_t hdf5_type;
@@ -399,6 +394,7 @@ void output_particles(){
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
 
+    /* then alloc space */
     aux  = (my_double*) malloc(sizeof(my_double)*npart); 
     if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
 
@@ -599,21 +595,32 @@ void move_particles(){
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
+
+   /* copy fluid velocity into particle velocity NOTE that this is true only for tracers */
+   (tracer+ipart)->vx = (tracer+ipart)->ux;
+   (tracer+ipart)->vy = (tracer+ipart)->uy;
+   (tracer+ipart)->vz = (tracer+ipart)->uz;
+
+   if(itime==0){
+   /* Explicit Euler 1st order */
+   (tracer+ipart)->x += property.time_dt*(tracer+ipart)->vx;
+   (tracer+ipart)->y += property.time_dt*(tracer+ipart)->vy;
+   (tracer+ipart)->z += property.time_dt*(tracer+ipart)->vz;
+   }else{
    /* Adams-Bashforth 2nd order */
-   ///*
    (tracer+ipart)->x += property.time_dt*0.5*(3.0*(tracer+ipart)->vx - (tracer+ipart)->vx_old);
    (tracer+ipart)->y += property.time_dt*0.5*(3.0*(tracer+ipart)->vy - (tracer+ipart)->vy_old);
    (tracer+ipart)->z += property.time_dt*0.5*(3.0*(tracer+ipart)->vz - (tracer+ipart)->vz_old);
-   
+   }
+   /* copy particle velocity in old */
    (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
-   (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
-   //*/
+   (tracer+ipart)->vz_old = (tracer+ipart)->vz;  
 
 }/* end of loop on particles */
 
 
-/* Here we perform the particle rearrangement between processors */
+/* Here we perform the particle re-arrangement between processors */
 
  npart_here = 0;
  npart_there= 0;
@@ -625,6 +632,13 @@ for (ipart=0;ipart<npart;ipart++) {
   part.x = wrap( (tracer+ipart)->x ,  property.SX);
   part.y = wrap( (tracer+ipart)->y ,  property.SY);
   part.z = wrap( (tracer+ipart)->z ,  property.SZ); 
+
+#ifdef LAGRANGE_WRAP /* this really makes particles to stay in the box */
+  (tracer+ipart)->x = wrap( (tracer+ipart)->x ,  property.SX);
+  (tracer+ipart)->y = wrap( (tracer+ipart)->y ,  property.SY);
+  (tracer+ipart)->z = wrap( (tracer+ipart)->z ,  property.SZ); 
+#endif
+
 
   //fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
 

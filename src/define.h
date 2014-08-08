@@ -128,7 +128,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 /* Lagragian parts */
 #define LAGRANGE
-
+#define LAGRANGE_WRAP
+//#define LAGRANGE_OUTPUT_DEBUG
 
 /***************************************************/
 /* Define dependencies not to be modified          */

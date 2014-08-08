@@ -214,14 +214,20 @@ typedef struct {
 */
 
 typedef struct {
-  my_double name, kind;
-  my_double x,y,z,vx,vy,vz,ax,ay,az;
-  my_double x_old,y_old,z_old,vx_old,vy_old,vz_old;
+  my_double name;
+  //  my_double kind , tau_drag , beta_coeff;
+  my_double x,y,z;
+  my_double vx,vy,vz;
+  my_double vx_old,vy_old,vz_old;
+  //  my_double ax,ay,az;
+#ifdef LB_FLUID
+  my_double ux, uy , uz; /* fluid velocity */
+#endif
 #ifdef LB_TEMPERATURE
-  my_double t;
+  my_double t;  /* temperature value */
 #endif
 #ifdef LB_SCALAR
-  my_double s;
+  my_double s;  /*scalar value */
 #endif
 
 } point_particle;
