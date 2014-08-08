@@ -16,7 +16,7 @@ time_dump_diagn 100.
 
 tau_u 0.55
 
-Amp_x 0.1 
+Amp_x 0.0005 
 Amp_y 0.0
 Amp_z 0.0
 
@@ -47,4 +47,4 @@ S_ref 0.0
 beta_s 0.001897778
 beta2_s 0.0
 
-particle_number 1000
+particle_number 10000

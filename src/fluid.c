@@ -1141,6 +1141,20 @@ void build_forcing(){
 #endif  
 
 
+#ifdef LB_FLUID_FORCING_CELLULAR
+ 
+    kn=0.5;
+    y = (my_double)center_V[IDX(i,j,k)].y;
+    x = (my_double)center_V[IDX(i,j,k)].x;
+
+	/* along x */  
+        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].z += 0.0; 
+
+#endif  
+
+
 #ifdef LB_TEMPERATURE_BUOYANCY
   my_double temp, fac;
 
