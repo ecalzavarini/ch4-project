@@ -72,7 +72,7 @@ void read_pop_h5();
 void allocate_particles();
 void initial_conditions_particles();
 void interpolate_vector_at_particles(vector *f, char which_vector);
-void interpolate_scalar_at_particles(vector *f, char which_scalar); 
+void interpolate_scalar_at_particles(my_double *f, char which_scalar); 
 void output_particles();
 void move_particles();
 void boundary_conditions_hydro();

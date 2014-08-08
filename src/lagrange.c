@@ -85,6 +85,8 @@ for (i=0;i<npart;i++) {
    it is needed to correctly interpolate these fields at the particle positions */
 void boundary_conditions_hydro(){
 
+  int i,j,k;
+
   /* bc for the velocity field */
 #ifdef LB_FLUID
 sendrecv_borders_vector(u);
@@ -112,22 +114,22 @@ sendrecv_borders_vector(u);
     for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNY_START == 0){
             j = BRD; 
-            f[IDX(i,j-1,k)].x =  -u[IDX(i,j,k)].x;
-            f[IDX(i,j-1,k)].y =  -u[IDX(i,j,k)].y;
-            f[IDX(i,j-1,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i,j-1,k)].x =  -u[IDX(i,j,k)].x;
+            u[IDX(i,j-1,k)].y =  -u[IDX(i,j,k)].y;
+            u[IDX(i,j-1,k)].z =  -u[IDX(i,j,k)].z;
         }
 	if(LNY_END == NY){
             j = LNY+BRD-1;
-            f[IDX(i,j+1,k)].x =  -u[IDX(i,j,k)].x;
-            f[IDX(i,j+1,k)].y =  -u[IDX(i,j,k)].y;
-            f[IDX(i,j+1,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i,j+1,k)].x =  -u[IDX(i,j,k)].x;
+            u[IDX(i,j+1,k)].y =  -u[IDX(i,j,k)].y;
+            u[IDX(i,j+1,k)].z =  -u[IDX(i,j,k)].z;
         }
 }
 #endif
 #endif /* endif define LB_FLUID */
 
 #ifdef LB_TEMPERATURE
-sendrecv_borders_vector(t);
+sendrecv_borders_scalar(t);
 
 #ifdef LB_TEMPERATURE_BC_Y
   my_double T_wall,fac;
@@ -160,7 +162,7 @@ if(LNY_END == NY){
 	  T_wall = 0.0;
 #endif
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
-	  t[IDX(i,j+1,k)].p[pp] =  fac*t[IDX(i,j,k)];
+	  t[IDX(i,j+1,k)] =  fac*t[IDX(i,j,k)];
  }
 
 
@@ -172,8 +174,7 @@ if(LNY_END == NY){
 
 
 #ifdef LB_SCALAR
-sendrecv_borders_vector(t);
-
+sendrecv_borders_scalar(s);
 #endif
 
 
@@ -272,7 +273,6 @@ kp =  km + 1;
 }
 
 
-#ifdef LB_TEMPERATURE
 /* Interpolation for the moment only with regular grid */
 void interpolate_scalar_at_particles(my_double *f,char which_scalar){
 
@@ -334,17 +334,20 @@ kp =  km + 1;
         f[IDX(ip, jm, kp)] * vol_im_jp_km +
         f[IDX(ip, jp, kp)] * vol_im_jm_km ;
 
+#ifdef LB_TEMPERATURE
    /* if it is temperature */
 if(which_scalar == 't')  (tracer+ipart)->t = s;
+#endif
 
+#ifdef LB_SCALAR
   /* if it is a scalar */
 if(which_scalar == 's')  (tracer+ipart)->s = s;
-
+#endif
 
   }
 
-}
-#endif
+}/* end of interp scalar*/
+
 
 #define H5FILE_NAME_PARTICLE "part.h5"
 
@@ -473,7 +476,7 @@ void output_particles(){
 
 #ifdef LB_TEMPERATURE
 		/* WRITE PARTICLE TEMPERATURE */
-		dataset_id = H5Dcreate(group, "t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		dataset_id = H5Dcreate(group, "temperature", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->t;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
@@ -481,7 +484,7 @@ void output_particles(){
 
 #ifdef LB_SCALAR
 		/* WRITE PARTICLE SCALAR */
-		dataset_id = H5Dcreate(group, "s", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		dataset_id = H5Dcreate(group, "scalar", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->s;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
