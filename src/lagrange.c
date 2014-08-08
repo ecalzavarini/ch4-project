@@ -138,7 +138,46 @@ sendrecv_borders_vector(u);
 #ifdef LB_TEMPERATURE
 sendrecv_borders_vector(t);
 
+#ifdef LB_TEMPERATURE_BC_Y
+  my_double T_wall,fac;
+
+  for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+	  T_wall = property.T_bot;
+
+#ifdef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = 0.0;
 #endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  t[IDX(i,j-1,k)] =  fac*t[IDX(i,j,k)];
+}
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+	  T_wall = property.T_top;
+
+#ifdef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = 0.0;
+#endif
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  t[IDX(i,j+1,k)].p[pp] =  fac*t[IDX(i,j,k)];
+ }
+
+
+
+      
+}
+#endif
+#endif /* LB_TEMPERATURE */
 
 
 #ifdef LB_SCALAR
