@@ -1084,6 +1084,7 @@ void build_forcing(){
   my_double fnx,fny,fnz,kn;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
+  my_double temp, fac; 
 
    LX=(my_double)(property.SX);
    LY=(my_double)(property.SY);
@@ -1156,7 +1157,7 @@ void build_forcing(){
 
 
 #ifdef LB_TEMPERATURE_BUOYANCY
-  my_double temp, fac;
+	//my_double temp, fac;
 
   //temp = (t[IDX(i,j,k)] - property.T_ref);
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
@@ -1171,6 +1172,21 @@ void build_forcing(){
 
       //fprintf(stderr, "fy %e\n",property.gravity_y);
 #endif
+
+#ifdef LB_SCALAR_BUOYANCY
+      //my_double temp, fac;
+
+
+      temp =  s[IDX(i,j,k)] - 0.5*(property.S_bot + property.S_top);
+
+      fac = property.beta_s*temp;
+
+      force[IDX(i,j,k)].x += fac*property.gravity_x;
+      force[IDX(i,j,k)].y += fac*property.gravity_y;
+      force[IDX(i,j,k)].z += fac*property.gravity_z;
+
+#endif
+
 
 
 #ifdef  LB_FLUID_FORCING_PENALIZATION
