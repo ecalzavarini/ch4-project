@@ -126,7 +126,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
 #define LB_SCALAR
-//#define LB_SCALAR_BUOYANCY
+#define LB_SCALAR_BUOYANCY
+#define LB_SCALAR_BC
+#define LB_SCALAR_BC_Y
+//#define LB_SCALAR_FLUCTUATION  
 
 /* Lagragian parts */
 #define LAGRANGE

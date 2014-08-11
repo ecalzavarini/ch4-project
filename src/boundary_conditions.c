@@ -420,6 +420,7 @@ void boundary_and_pbc_conditions_for_streaming(){
   my_double rho;
   pop p_eq,p_neq;
   int ii,jj,kk;	
+  my_double fac;
 
   /* communications to be done in any case  (especially for pbc)*/
 
@@ -638,7 +639,7 @@ if(LNZ_START == 0){
   pop g_eq, g_eq_w;
   my_double effDT, rho2;
   my_double T_wall;
-  my_double fac;
+  //  my_double fac;
 
   
 
@@ -770,6 +771,70 @@ if(LNX_START == 0){
 #endif
 
 
+  /* from here the scalar part */
+
+#ifdef LB_SCALAR	
+  pop h_eq, h_eq_w;
+  my_double effDS;
+  my_double S_wall;
+
+  
+
+  /************************/
+	/* Y direction */
+#ifdef LB_SCALAR_BC_Y
+
+
+  for (i = BRD; i < LNX + BRD; i++)                     
+  for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNY_END == NY){
+
+          j = LNY+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+	  for(pp=0;pp<NPOP;pp++){ 
+      	    if(c[pp].y>0){
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;	
+	  
+	  	rhs_h[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }	   
+	  }
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+#else
+	  S_wall = 0.0;
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)-s[IDX(i,j,k)]);
+	  
+
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].y<0){
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;
+	      rhs_h[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;	
+	  }
+	  }
+ }
+      
+ }
+#endif
+#endif /* end of scalar part */
 
 }/* end of bc for streaming */
 #endif
