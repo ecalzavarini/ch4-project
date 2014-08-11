@@ -218,6 +218,11 @@ my_double *liquid_frac, *liquid_frac_old;
 #endif
 #endif
 
+#ifdef LB_SCALAR
+pop *h, *rhs_h, *old_rhs_h, *old_old_rhs_h, *h_eq;
+my_double *s;
+#endif
+
 
 /* time */
 int itime;

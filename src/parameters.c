@@ -246,6 +246,19 @@ void assign_parameters(){
   property.chi = property.tau_s/3.0;
 #endif
   fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
+
+  sprintf(name,"S_bot");
+  property.T_bot = read_parameter(name);
+  sprintf(name,"S_top");
+  property.T_top = read_parameter(name);
+  sprintf(name,"S_ref");
+  property.T_ref = read_parameter(name);
+  property.deltaT = property.T_bot-property.T_top;
+  fprintf(stderr,"S_bot %g , S_top %g , deltaS %g\n",(double)property.S_bot, (double)property.S_top, (double)property.deltaS);
+ #ifdef LB_SCALAR_BUOYANCY
+  fprintf(stderr,"YES <- LB_SCALAR_BUOYANCY\n");
+  sprintf(name,"beta_s");
+ #endif
 #endif
 
 

@@ -125,7 +125,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_DIRECT
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-//#define LB_SCALAR
+#define LB_SCALAR
+//#define LB_SCALAR_BUOYANCY
 
 /* Lagragian parts */
 #define LAGRANGE

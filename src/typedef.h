@@ -46,29 +46,33 @@ typedef struct {
   my_double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
   my_double tau_u , nu;
-#ifdef LB_FLUID_FORCING
+ #ifdef LB_FLUID_FORCING
   my_double Amp_x,Amp_y,Amp_z;
-#endif
-#ifdef LB_TEMPERATURE
+ #endif
+ #ifdef LB_TEMPERATURE
   my_double tau_t, kappa;
   my_double T_bot,T_top,T_ref,deltaT;
-#ifdef LB_TEMPERATURE_BUOYANCY
+  #ifdef LB_TEMPERATURE_BUOYANCY
   my_double beta_t,beta2_t;
   my_double gravity_x,gravity_y,gravity_z;
-#endif
-#ifdef LB_TEMPERATURE_FORCING
+  #endif
+  #ifdef LB_TEMPERATURE_FORCING
   my_double Amp_t;
-#ifdef LB_TEMPERATURE_FORCING_RADIATION
+   #ifdef LB_TEMPERATURE_FORCING_RADIATION
   my_double attenuation; 
-#endif
-#endif
-#ifdef LB_TEMPERATURE_MELTING
+   #endif
+  #endif
+  #ifdef LB_TEMPERATURE_MELTING
   my_double T_solid,latent_heat,specific_heat;
-#endif
-#endif
-#ifdef LB_SCALAR
+  #endif
+ #endif
+ #ifdef LB_SCALAR
   my_double tau_s, chi;
-#endif
+  my_double S_bot,S_top,S_ref,deltaS;
+  #ifdef LB_SCALAR_BUOYANCY
+  my_double beta_s;
+  #endif
+ #endif
 #endif
 
 #ifdef LAGRANGE
