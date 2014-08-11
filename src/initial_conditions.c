@@ -247,9 +247,32 @@ void initial_conditions(int restart)
 #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
 #endif
-    }  
+      }  
 #endif
 
+#endif
+
+
+#ifdef LB_SCALAR
+  /* this is the loop to run over the bulk of all the vertices */
+   for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+#ifdef LB_SCALAR_INITIAL_LINEAR
+	/* linear temperature gradient */
+	L=(my_double)property.SY; //LY;
+	y = (my_double)center_V[IDX(i,j,k)].y;
+	s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );
+#endif 
+	/* on the populations */
+	for (pp = 0; pp < NPOP; pp++) 
+	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];
+
+      }/* for i,j,k */
+
+   /* communicate borders for populations */
+   sendrecv_borders_pop(h);
 #endif
 
 
