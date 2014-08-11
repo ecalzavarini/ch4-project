@@ -86,6 +86,7 @@ for (i=0;i<npart;i++) {
 void boundary_conditions_hydro(){
 
   int i,j,k;
+  my_double fac, T_wall, S_wall;
 
   /* bc for the velocity field */
 #ifdef LB_FLUID
@@ -132,7 +133,7 @@ sendrecv_borders_vector(u);
 sendrecv_borders_scalar(t);
 
 #ifdef LB_TEMPERATURE_BC_Y
-  my_double T_wall,fac;
+//my_double T_wall;
 
   for (i = 0; i < LNX + TWO_BRD; i++) 			
     for (k = 0; k < LNZ + TWO_BRD; k++){
@@ -175,7 +176,45 @@ if(LNY_END == NY){
 
 #ifdef LB_SCALAR
 sendrecv_borders_scalar(s);
+
+#ifdef LB_SCALAR_BC_Y
+// my_double S_wall;
+
+  for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+	  S_wall = property.S_bot;
+
+#ifdef LB_TEMPERATURE_FLUCTUATION 
+	  S_wall = 0.0;
 #endif
+
+	  fac = 2.0*(S_wall-property.S_ref)/s[IDX(i,j,k)] - 1.0;
+	  s[IDX(i,j-1,k)] =  fac*s[IDX(i,j,k)];
+}
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+	  S_wall = property.S_top;
+
+#ifdef LB_TEMPERATURE_FLUCTUATION 
+	  S_wall = 0.0;
+#endif
+	  fac = 2.0*(T_wall-property.S_ref)/s[IDX(i,j,k)] - 1.0;
+	  s[IDX(i,j+1,k)] =  fac*s[IDX(i,j,k)];
+ }
+
+      
+    }
+#endif
+#endif /* end of SCALAR */
 
 
 }
