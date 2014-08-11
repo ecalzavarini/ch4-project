@@ -6,7 +6,7 @@
 #define NEW_SENDRECV  /* does not use itermediate transfer buffers */
 
 /* OUTPUT */
-#define OUTPUT_ASCII
+//#define OUTPUT_ASCII
 #define OUTPUT_H5
 #define TIMING
 

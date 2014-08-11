@@ -263,12 +263,12 @@ void initial_conditions(int restart)
 	/* linear temperature gradient */
 	L=(my_double)property.SY; //LY;
 	y = (my_double)center_V[IDX(i,j,k)].y;
-	s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );
+	s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );			
 #endif 
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];
-
+	
       }/* for i,j,k */
 
    /* communicate borders for populations */

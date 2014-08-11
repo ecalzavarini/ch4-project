@@ -796,6 +796,28 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   }
 #endif
 
+#ifdef LB_SCALAR
+  if(ROOT  && itime%((int)(property.time_dump_field/property.time_dt))==0){
+  /* Here dumps the temperature field */
+    sprintf(fname,"%s/scal.%d",OutDir,itime);
+  fout = fopen(fname,"w");
+
+  for(k=BRD;k<LNZ+BRD;k++){
+    for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+        fprintf(fout,"%e %e %e %e\n", 
+		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
+		(double)s[IDX(i,j,k)] );  
+      } 
+      fprintf(fout,"\n");
+    }
+    fprintf(fout,"\n");
+  }
+    fclose(fout);
+  }
+#endif
+
 #endif
 }
 

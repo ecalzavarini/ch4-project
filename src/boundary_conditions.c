@@ -436,6 +436,7 @@ sendrecv_borders_pop(rhs_g);
 #ifdef LB_SCALAR
 sendrecv_borders_pop(rhs_h);
 #endif
+
 /***************** Bounce-back BC for the complex boundaries  ********************/
   int iii, jjj, kkk;
 #ifdef LB_FLUID_FORCING_LANDSCAPE
@@ -779,7 +780,6 @@ if(LNX_START == 0){
   my_double S_wall;
 
   
-
   /************************/
 	/* Y direction */
 #ifdef LB_SCALAR_BC_Y
