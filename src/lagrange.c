@@ -515,8 +515,9 @@ void output_particles(){
   sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
   sprintf(NEW_H5FILE_NAME,"particle_%d.h5",itime);
   size=sizeof(my_double);
-  fout = fopen(XMF_FILE_NAME,"w");
+  
 
+                fout = fopen(XMF_FILE_NAME,"w");
 		              
                 fprintf(fout,"<?xml version=\"1.0\" ?>\n");
                 fprintf(fout,"<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" []>\n");

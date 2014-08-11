@@ -114,7 +114,7 @@ int main(int argc, char **argv){
         interpolate_scalar_at_particles(s,'s');
 #endif
 	move_particles();
-        output_particles();
+        if(itime%10==0)output_particles();
 #endif
 	}/* loop on time: time_now */
 
