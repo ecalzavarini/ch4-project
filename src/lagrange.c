@@ -190,7 +190,7 @@ if(LNY_START == 0){
 
 	  S_wall = property.S_bot;
 
-#ifdef LB_TEMPERATURE_FLUCTUATION 
+#ifdef LB_SCALAR_FLUCTUATION 
 	  S_wall = 0.0;
 #endif
 
@@ -204,10 +204,10 @@ if(LNY_END == NY){
 
 	  S_wall = property.S_top;
 
-#ifdef LB_TEMPERATURE_FLUCTUATION 
+#ifdef LB_SCALAR_FLUCTUATION 
 	  S_wall = 0.0;
 #endif
-	  fac = 2.0*(T_wall-property.S_ref)/s[IDX(i,j,k)] - 1.0;
+	  fac = 2.0*(S_wall-property.S_ref)/s[IDX(i,j,k)] - 1.0;
 	  s[IDX(i,j+1,k)] =  fac*s[IDX(i,j,k)];
  }
 
