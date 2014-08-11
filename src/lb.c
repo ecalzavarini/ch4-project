@@ -453,6 +453,11 @@ void hydro_fields(){
                                #endif
 #endif
 
+#ifdef LB_SCALAR                  
+				    /* compute scalar field */	    
+				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]);                            
+#endif
+
 
 			}/* for i,j,k */
 
