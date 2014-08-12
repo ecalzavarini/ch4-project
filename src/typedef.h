@@ -219,11 +219,13 @@ typedef struct {
 
 typedef struct {
   my_double name;
-  //  my_double kind , tau_drag , beta_coeff;
+  my_double tau_drag;
+  //  my_double kind ,beta_coeff;
   my_double x,y,z;
   my_double vx,vy,vz;
   my_double vx_old,vy_old,vz_old;
-  //  my_double ax,ay,az;
+  my_double ax,ay,az;
+  my_double ax_old,ay_old,az_old;
 #ifdef LB_FLUID
   my_double ux, uy , uz; /* fluid velocity */
 #endif

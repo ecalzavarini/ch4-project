@@ -74,6 +74,8 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
+(tracer+i)->tau_drag = 10.0;
+
 /* position: randomly distributed particles */
 (tracer+i)->x = LNX_START + drand48()*LNX;
 (tracer+i)->y = LNY_START + drand48()*LNY;
@@ -643,21 +645,23 @@ void move_particles(){
   int ipart,i;
   int npart_here,npart_there,all_npart_there,all_npart;  
   point_particle part;
-
-  int *displs,*rcounts; 
+  int *displs,*rcounts;
+  my_double invtau;
+ 
 
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
 
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
+   if((tracer+ipart)->tau_drag == 0.0){
 
    /* copy fluid velocity into particle velocity NOTE that this is true only for tracers */
    (tracer+ipart)->vx = (tracer+ipart)->ux;
    (tracer+ipart)->vy = (tracer+ipart)->uy;
    (tracer+ipart)->vz = (tracer+ipart)->uz;
 
-   if(itime==0){
+   if(itime==0 && resume==0){
    /* Explicit Euler 1st order */
    (tracer+ipart)->x += property.time_dt*(tracer+ipart)->vx;
    (tracer+ipart)->y += property.time_dt*(tracer+ipart)->vy;
@@ -672,6 +676,45 @@ void move_particles(){
    (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
    (tracer+ipart)->vz_old = (tracer+ipart)->vz;  
+
+   }/* end if on fluid tracer */
+
+   /* With drag force */ 
+   if((tracer+ipart)->tau_drag != 0.0){
+  
+   invtau = 1.0 / (tracer+ipart)->tau_drag;
+   (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau;
+   (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
+   (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
+
+   if(itime==0 && resume==0){
+     (tracer+ipart)->vx += property.time_dt*(tracer+ipart)->ax;
+     (tracer+ipart)->vy += property.time_dt*(tracer+ipart)->ay;
+     (tracer+ipart)->vz += property.time_dt*(tracer+ipart)->az;
+   }else{
+     (tracer+ipart)->vx += property.time_dt*0.5*(3.0*(tracer+ipart)->ax - (tracer+ipart)->ax_old);
+     (tracer+ipart)->vy += property.time_dt*0.5*(3.0*(tracer+ipart)->ay - (tracer+ipart)->ay_old);
+     (tracer+ipart)->vz += property.time_dt*0.5*(3.0*(tracer+ipart)->az - (tracer+ipart)->az_old);
+   }
+
+   (tracer+ipart)->ax_old = (tracer+ipart)->ax; 
+   (tracer+ipart)->ay_old = (tracer+ipart)->ay; 
+   (tracer+ipart)->az_old = (tracer+ipart)->az; 
+
+   if(itime==0 && resume==0){
+     (tracer+ipart)->x += property.time_dt*(tracer+ipart)->vx; 
+     (tracer+ipart)->y += property.time_dt*(tracer+ipart)->vy;
+     (tracer+ipart)->z += property.time_dt*(tracer+ipart)->vz;
+   }else{
+     (tracer+ipart)->x += property.time_dt*0.5*(3.0*(tracer+ipart)->vx - (tracer+ipart)->vx_old);
+     (tracer+ipart)->y += property.time_dt*0.5*(3.0*(tracer+ipart)->vy - (tracer+ipart)->vy_old);
+     (tracer+ipart)->z += property.time_dt*0.5*(3.0*(tracer+ipart)->vz - (tracer+ipart)->vz_old);
+   }
+   (tracer+ipart)->vx_old = (tracer+ipart)->vx; 
+   (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
+   (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
+
+   }/* end of if on tau_drag different from zero */
 
 }/* end of loop on particles */
 
@@ -898,6 +941,23 @@ void write_point_particle_h5(){
     sprintf(label,"vz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
 
+    sprintf(label,"ax");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ay");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_DOUBLE);
+    sprintf(label,"az");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"ax_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ay_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"az_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"tau_drag");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_DOUBLE);
+
 #ifdef LB_FLUID
     sprintf(label,"ux");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_DOUBLE);
@@ -1036,6 +1096,23 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_DOUBLE);
     sprintf(label,"vz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"ax");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ay");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_DOUBLE);
+    sprintf(label,"az");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"ax_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ay_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"az_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"tau_drag");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_DOUBLE);
 
 #ifdef LB_FLUID
     sprintf(label,"ux");
