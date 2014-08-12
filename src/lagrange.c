@@ -44,7 +44,7 @@ if(all_tracer_there == NULL){ fprintf(stderr,"Not enough memory to allocate all_
 }
 
 /* initial conditions for particles */
-void initial_conditions_particles(){  
+void initial_conditions_particles(int restart){  
 
   int i;
   int *rcounts;
@@ -59,6 +59,15 @@ void initial_conditions_particles(){
     free(rcounts);
 
     fprintf(stderr,"me : %d , name_offset %d\n", me , name_offset);
+
+
+/* restart from file */
+    if(restart){
+
+      read_point_particle_h5();
+
+    }else{
+      /* restart from memory */
 
 for (i=0;i<npart;i++) {
 
@@ -75,9 +84,12 @@ for (i=0;i<npart;i++) {
 (tracer+i)->vy = 0.0;
 (tracer+i)->vz = 0.0;
 
-}
+ }
 
-}
+    }/* end of if /else on restart */
+
+
+}/* end of function */
 
 
 
@@ -816,6 +828,287 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
  
 
 }/* end of move particles */
+
+
+
+/* here we have the function to write the full point_particle structure and to read it */
+
+/* general output function for particles */
+
+#ifdef OUTPUT_H5
+
+void write_point_particle_h5(){
+  int i,j;
+  int np = (int)property.particle_number;
+  FILE *fout;
+
+    int *rcounts;
+    int name_offset = 0;
+
+    /* First check how many particles in each processor and compute offset */
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
+
+
+    hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
+    hid_t	plist_id;                 /* property list identifier */
+    hid_t hdf5_type;
+    hid_t xfer_plist, ret, property_id;
+    hid_t       filespace, memspace;      /* file and memory dataspace identifiers */
+    hsize_t     dims[1], offset[1], count[1];
+    herr_t      hdf5_status;
+    herr_t status;
+    int size;    
+    int RANK = 1;
+
+    my_double *aux;
+
+    char NEW_H5FILE_NAME[128];
+    char XMF_FILE_NAME[128];
+ 
+    char label[128]; 
+
+    /* create point particle compound */
+    hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
+
+    /* define its offsets */
+    sprintf(label,"x");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
+    sprintf(label,"y");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_DOUBLE);
+    sprintf(label,"z");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"vx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"vx_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vy_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vz_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
+
+#ifdef LB_FLUID
+    sprintf(label,"ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LB_TEMPERATURE
+    sprintf(label,"t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LB_SCALAR
+    sprintf(label,"s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+#endif
+
+    /*************************************************************/
+  
+                /* Create a new file using default properties */
+		plist_id = H5Pcreate(H5P_FILE_ACCESS);
+		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
+		
+		file_id = H5Fcreate(H5FILE_NAME_PARTICLE, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+		group   = H5Gcreate (file_id, "/particles", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+
+		H5Pclose(plist_id);
+
+		property_id  = H5Pcreate(H5P_DATASET_CREATE);
+
+
+                /* Create the data space for the dataset. */
+                dims[0] = (int)property.particle_number;
+
+		filespace = H5Screate_simple(RANK, dims, NULL);   
+    /* 
+     * Each process defines dataset in memory and writes it to the hyperslab
+     * in the file.
+     */
+		count[0] = npart;
+		offset[0] = name_offset;
+
+	        memspace = H5Screate_simple(RANK, count, NULL); 	
+
+    /*
+     * Select hyperslab in the file.
+     */
+                H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
+		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);                       
+
+		/* WRITE POINT_PARTICLE STRUCTURE */
+		dataset_id = H5Dcreate(group, "point_particle", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, tracer);
+                status = H5Dclose(dataset_id);                
+
+  MPI_Barrier(MPI_COMM_WORLD);
+      
+  H5Sclose(filespace);
+  H5Sclose(memspace);
+  H5Pclose(xfer_plist);
+  H5Pclose(property_id);
+  H5Gclose(group);
+  H5Fclose(file_id);  
+
+ /* create the file names */
+  sprintf(NEW_H5FILE_NAME,"part.h5",itime);
+
+  /* we rename the file */
+  if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
+
+}/* end of write point particle */
+
+
+/* Now the function to read point particles */
+void read_point_particle_h5(){
+  int i,j;
+  int np = (int)property.particle_number;
+  FILE *fout;
+
+    int *rcounts;
+    int name_offset = 0;
+
+    /* First check how many particles in each processor and compute offset */
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
+
+
+    hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
+    hid_t	plist_id;                 /* property list identifier */
+    hid_t hdf5_type;
+    hid_t xfer_plist, ret, property_id;
+    hid_t       filespace, memspace;      /* file and memory dataspace identifiers */
+    hsize_t     dims[1], offset[1], count[1];
+    herr_t      hdf5_status;
+    herr_t status;
+    int size;    
+    int RANK = 1;
+
+    my_double *aux;
+
+    char NEW_H5FILE_NAME[128];
+    char XMF_FILE_NAME[128];
+ 
+    char label[128]; 
+
+    /* create point particle compound */
+    hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
+
+    /* define its offsets */
+    sprintf(label,"x");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
+    sprintf(label,"y");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_DOUBLE);
+    sprintf(label,"z");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"vx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"vx_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vy_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"vz_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
+
+#ifdef LB_FLUID
+    sprintf(label,"ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LB_TEMPERATURE
+    sprintf(label,"t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LB_SCALAR
+    sprintf(label,"s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+#endif
+
+    /*************************************************************/
+  
+                /* Create a new file using default properties */
+		plist_id = H5Pcreate(H5P_FILE_ACCESS);
+		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
+		
+		file_id = H5Fopen(H5FILE_NAME_PARTICLE, H5F_ACC_RDONLY, H5P_DEFAULT); 
+		group   = H5Gopen(file_id, "/particles", H5P_DEFAULT);
+
+		H5Pclose(plist_id);
+
+		property_id  = H5Pcreate(H5P_DATASET_CREATE);
+
+
+                /* Create the data space for the dataset. */
+                dims[0] = (int)property.particle_number;
+
+		filespace = H5Screate_simple(RANK, dims, NULL);   
+    /* 
+     * Each process defines dataset in memory and writes it to the hyperslab
+     * in the file.
+     */
+		count[0] = npart;
+		offset[0] = name_offset;
+
+	        memspace = H5Screate_simple(RANK, count, NULL); 	
+
+    /*
+     * Select hyperslab in the file.
+     */
+                H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
+		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);                       
+
+		/* WRITE POINT_PARTICLE STRUCTURE */
+		dataset_id = H5Dopen(group, "point_particle", H5P_DEFAULT);
+                ret = H5Dread(dataset_id, hdf5_type, memspace, filespace,  H5P_DEFAULT, tracer);
+                status = H5Dclose(dataset_id);                
+
+  MPI_Barrier(MPI_COMM_WORLD);
+      
+  H5Sclose(filespace);
+  H5Sclose(memspace);
+  H5Pclose(xfer_plist);
+  H5Pclose(property_id);
+  H5Gclose(group);
+  H5Fclose(file_id);  
+
+}/* end of write point particle */
+
+
+#endif
 
 
 #endif

@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 	//	dump_averages();
 	//      exit(1);
 #ifdef LAGRANGE
-        initial_conditions_particles();
+        initial_conditions_particles(resume);
 	//output_particles();
 	//exit(-1);
 #endif
@@ -125,6 +125,9 @@ int main(int argc, char **argv){
 
 #ifdef OUTPUT_H5
        	write_pop_h5();
+#ifdef LAGRANGE
+	write_point_particle_h5();
+#endif
 #endif
 
 	/* Shut down */

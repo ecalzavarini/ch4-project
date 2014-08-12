@@ -1,4 +1,4 @@
-resume 0
+resume 1
 
 NX 101
 NY 50
@@ -10,9 +10,9 @@ SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 10000.
-time_dump_field 16.0
-time_dump_diagn 100.
+time_end 1000.
+time_dump_field 2000.
+time_dump_diagn 2000.
 
 tau_u 1.0
 
@@ -25,7 +25,7 @@ T_bot  1.
 T_top -1.
 T_ref 0.0
 
-beta_t 0.001897778
+beta_t  0.001897778
 beta2_t 0.0
 
 gravity_x 0.0
@@ -40,11 +40,11 @@ specific_heat 1
 
 
 tau_s 1.0
-S_bot  1.
-S_top -1.
+S_bot  -1.
+S_top  1.
 S_ref 0.0
 
 beta_s 0.001897778
-beta2_s 0.0
 
-particle_number 1000
+
+particle_number 5000
