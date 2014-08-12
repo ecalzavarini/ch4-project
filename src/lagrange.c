@@ -721,7 +721,9 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
 
  MPI_Allreduce(&npart_there, &all_npart_there, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 
+#ifdef LAGRANGE_DEBUG
  if(ROOT)fprintf(stderr,"me %d : all_npart_there %d\n",me, all_npart_there);
+#endif
 
  if(all_npart_there != 0){
 
@@ -803,8 +805,13 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
       */
       /* final check */
        MPI_Allreduce(&npart, &all_npart, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
-       if(ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
+       if(itime%10==0 && ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
 
+       if(all_npart != (int)property.particle_number){
+         if(ROOT) fprintf(stderr,"Total number of bubbles has changed during run!!!!\n Was %d now is %d\n Exit.\n",(int)property.particle_number, all_npart);
+         MPI_Finalize();
+         exit(0);
+       }
 
  
 
