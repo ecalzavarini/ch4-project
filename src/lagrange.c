@@ -46,9 +46,11 @@ if(all_tracer_there == NULL){ fprintf(stderr,"Not enough memory to allocate all_
 /* initial conditions for particles */
 void initial_conditions_particles(int restart){  
 
-  int i;
+  int i,j,k,n;
   int *rcounts;
   int name_offset = 0;
+  int ip,im,jp,jm,kp,km;
+  my_double solid;
 
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
@@ -81,6 +83,30 @@ for (i=0;i<npart;i++) {
 (tracer+i)->y = LNY_START + drand48()*LNY;
 (tracer+i)->z = LNZ_START + drand48()*LNZ;
 
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+/* This part is to not to put particle in static (solid)  LANDSCAPE */
+ solid = 1.0;
+ while(solid==1.0){
+
+(tracer+i)->x = LNX_START + drand48()*LNX;
+(tracer+i)->y = LNY_START + drand48()*LNY;
+(tracer+i)->z = LNZ_START + drand48()*LNZ;
+
+for (n=0; n<LNX+TWO_BRD-1; n++) if(center_V[IDX(n, BRD, BRD)].x <= (tracer+i)->x && (tracer+i)->x < center_V[IDX(n+1,BRD, BRD)].x) im = n; 
+ip =  im + 1;
+for (j=0; j<LNY+TWO_BRD-1; j++) if(center_V[IDX(BRD, j, BRD)].y <= (tracer+i)->y && (tracer+i)->y < center_V[IDX(BRD, j+1, BRD)].y) jm = j;
+jp =  jm + 1;
+for (k=0; k<LNZ+TWO_BRD-1; k++) if(center_V[IDX(BRD, BRD, k)].z <= (tracer+i)->z && (tracer+i)->z < center_V[IDX(BRD, BRD, k+1)].z) km = k;
+kp =  km + 1;
+
+
+  solid = landscape[IDX(im, jm, km)] * landscape[IDX(ip, jm, km)] * landscape[IDX(im, jp, km)]
+        * landscape[IDX(im, jm, kp)] * landscape[IDX(ip, jp, km)] * landscape[IDX(im, jp, kp)]
+        * landscape[IDX(ip, jm, kp)] * landscape[IDX(ip, jp, kp)];
+ }
+#endif
+
+
 /* velocity: null speed */
 (tracer+i)->vx = 0.0;
 (tracer+i)->vy = 0.0;
@@ -101,27 +127,58 @@ void boundary_conditions_hydro(){
 
   int i,j,k;
   my_double fac, T_wall, S_wall;
-
+  vector cp,cm; /* just two useful coefficients */
+ 
   /* bc for the velocity field */
 #ifdef LB_FLUID
 sendrecv_borders_vector(u);
+
+
+#ifdef LB_FLUID_BC_XP_SLIP
+cp.x = -1.0; 
+cp.y = cp.z = 1.0;
+#else
+cp.x = cp.y = cp.z = -1.0; 
+#endif
+
+#ifdef LB_FLUID_BC_XM_SLIP
+cm.x = -1.0; 
+cm.y = cm.z = 1.0;
+#else
+cm.x = cm.y = cm.z = -1.0; 
+#endif
 
 #ifdef LB_FLUID_BC_X
   for (j = 0; j < LNY + TWO_BRD; j++)                     
     for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNX_START == 0){
             i = BRD; 
-            u[IDX(i-1,j,k)].x =  -u[IDX(i,j,k)].x;
-            u[IDX(i-1,j,k)].y =  -u[IDX(i,j,k)].y;
-            u[IDX(i-1,j,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i-1,j,k)].x =  cm.x*u[IDX(i,j,k)].x;
+            u[IDX(i-1,j,k)].y =  cm.y*u[IDX(i,j,k)].y;
+            u[IDX(i-1,j,k)].z =  cm.z*u[IDX(i,j,k)].z;
         }
 	if(LNX_END == NX){
             i = LNX+BRD-1;
-            u[IDX(i+1,j,k)].x =  -u[IDX(i,j,k)].x;
-            u[IDX(i+1,j,k)].y =  -u[IDX(i,j,k)].y;
-            u[IDX(i+1,j,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i+1,j,k)].x =  cp.x*u[IDX(i,j,k)].x;
+            u[IDX(i+1,j,k)].y =  cp.y*u[IDX(i,j,k)].y;
+            u[IDX(i+1,j,k)].z =  cp.z*u[IDX(i,j,k)].z;
         }
 }
+#endif
+
+
+#ifdef LB_FLUID_BC_YP_SLIP
+cp.y = -1.0; 
+cp.x = cp.z = 1.0;
+#else
+cp.x = cp.y = cp.z = -1.0; 
+#endif
+
+#ifdef LB_FLUID_BC_YM_SLIP
+cm.y = -1.0; 
+cm.x = cm.z = 1.0;
+#else
+cm.x = cm.y = cm.z = -1.0; 
 #endif
 
 #ifdef LB_FLUID_BC_Y
@@ -129,15 +186,15 @@ sendrecv_borders_vector(u);
     for (k = 0; k < LNZ + TWO_BRD; k++){
         if(LNY_START == 0){
             j = BRD; 
-            u[IDX(i,j-1,k)].x =  -u[IDX(i,j,k)].x;
-            u[IDX(i,j-1,k)].y =  -u[IDX(i,j,k)].y;
-            u[IDX(i,j-1,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i,j-1,k)].x =  cm.x*u[IDX(i,j,k)].x;
+            u[IDX(i,j-1,k)].y =  cm.y*u[IDX(i,j,k)].y;
+            u[IDX(i,j-1,k)].z =  cm.z*u[IDX(i,j,k)].z;
         }
 	if(LNY_END == NY){
             j = LNY+BRD-1;
-            u[IDX(i,j+1,k)].x =  -u[IDX(i,j,k)].x;
-            u[IDX(i,j+1,k)].y =  -u[IDX(i,j,k)].y;
-            u[IDX(i,j+1,k)].z =  -u[IDX(i,j,k)].z;
+            u[IDX(i,j+1,k)].x =  cp.x*u[IDX(i,j,k)].x;
+            u[IDX(i,j+1,k)].y =  cp.y*u[IDX(i,j,k)].y;
+            u[IDX(i,j+1,k)].z =  cp.z*u[IDX(i,j,k)].z;
         }
 }
 #endif
@@ -231,6 +288,11 @@ if(LNY_END == NY){
 #endif /* end of SCALAR */
 
 
+#ifdef LB_FLUID
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+  sendrecv_borders_scalar(landscape);
+#endif
+#endif
 }
 
 
@@ -492,6 +554,12 @@ void output_particles(){
 		/* WRITE PARTICLE NAME */
 		dataset_id = H5Dcreate(group, "name", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->name;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		/* WRITE PARTICLE DRAG RESPONSE TIME */
+		dataset_id = H5Dcreate(group, "tau_drag", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->tau_drag;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
                 

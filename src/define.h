@@ -35,13 +35,13 @@
 /* FLUID */
 #define LB_FLUID
 //#define LB_FLUID_INITIAL_KOLMOGOROV 
-#define LB_FLUID_INITIAL_POISEUILLE
+//#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
-//#define LB_FLUID_INITIAL_LANDSCAPE
-#define LB_INITIAL_BAROMETRIC
+#define LB_FLUID_INITIAL_LANDSCAPE
+//#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_CHANNEL
 #define LB_FLUID_FORCING_POISEUILLE
@@ -53,15 +53,15 @@
 //#define LB_FLUID_FORCING_CELLULAR
 
 /* LANDSCAPE DEFINITION IN THE DOMAIN */
-//#define LB_FLUID_FORCING_LANDSCAPE
-//#define CYLINDER
+#define LB_FLUID_FORCING_LANDSCAPE
+#define CYLINDER
 //#define CUBE
 //#define BUILDINGS
 
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_YP_SLIP                                           
-//#define LB_FLUID_BC_YM_SLIP                         
+#define LB_FLUID_BC_YP_SLIP                                           
+#define LB_FLUID_BC_YM_SLIP                         
 //#define LB_FLUID_BC_YP_OUTLET
 //#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_XP_SLIP                                             
@@ -102,14 +102,14 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* TEMPERATURE */
 #define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-#define LB_TEMPERATURE_BUOYANCY
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y
+//#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_Y_VARIABLE
 //#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_NOFLUX
@@ -125,11 +125,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_DIRECT
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-#define LB_SCALAR
-#define LB_SCALAR_INITIAL_LINEAR
+//#define LB_SCALAR
+//#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_BUOYANCY
-#define LB_SCALAR_BC
-#define LB_SCALAR_BC_Y
+//#define LB_SCALAR_BC
+//#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_FLUCTUATION  
 
 /* Lagragian parts */
