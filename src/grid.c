@@ -1125,8 +1125,12 @@ void compute_interpolation_coefficients(){
 	/* exchange centers */
 	sendrecv_borders_vector(center_V);
 
+        /*
 	for (j = BRD; j < LNY + BRD ; j++) 
 	for (k = BRD; k < LNZ + BRD ; k++){
+        */
+	for (j = 0; j < LNY + TWO_BRD ; j++) 
+	for (k = 0; k < LNZ + TWO_BRD ; k++){
 	if(LNX_START == 0){
 	  center_V[IDX(0, j, k)].x = - center_V[IDX(1, j , k)].x;
 	}	
@@ -1135,9 +1139,12 @@ void compute_interpolation_coefficients(){
 	}
 	}
 	
-
+	/*
        	for (i = BRD; i < LNX + BRD; i++) 
 	for (k = BRD; k < LNZ + BRD; k++) {
+	*/
+       	for (i = 0; i < LNX + TWO_BRD; i++) 
+	for (k = 0; k < LNZ + TWO_BRD; k++) {
 	if(LNY_START == 0){
 	  center_V[IDX(i, 0, k)].y = - center_V[IDX(i, 1 , k)].y;
 	}	
@@ -1146,9 +1153,12 @@ void compute_interpolation_coefficients(){
 	}
 	}
 
-	
+	/*
 	for (i = BRD; i < LNX + BRD ; i++) 
 	for (j = BRD; j < LNY + BRD ; j++){ 
+	*/
+	for (i = 0; i < LNX + TWO_BRD ; i++) 
+	for (j = 0; j < LNY + TWO_BRD ; j++){ 
 	if(LNZ_START == 0){
 	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;
 	}	

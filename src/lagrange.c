@@ -76,7 +76,7 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 10.0;
+(tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
 (tracer+i)->beta_coeff = 3.0;
 #endif
@@ -718,42 +718,42 @@ void output_particles(){
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dy_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dy_ux;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dz_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dz_ux;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dx_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_uy;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dy_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dy_uy;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dz_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dz_uy;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dx_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_uz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dy_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dy_uz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
 		dataset_id = H5Dcreate(group, "dz_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dz_uz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
@@ -848,6 +848,41 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");  
 
+#ifdef LAGRANGE_GRADIENT
+		/* fluid velocity gradient */
+                fprintf(fout,"<Attribute Name=\"fluid velocity gradient\" AttributeType=\"Tensor\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 9\" \n   Function=\"JOIN($0,$1,$2,$3,$4,$5,$6,$7,$8)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dx_ux\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dy_ux\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dz_ux\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dx_uy\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dy_uy\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dz_uy\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dx_uz\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dy_uz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dz_uz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+#endif
+
 #ifdef LB_TEMPERATURE
                 fprintf(fout,"<Attribute Name=\"temperature\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
@@ -937,30 +972,32 @@ void move_particles(){
    if((tracer+ipart)->beta_coeff != 0.0){
 
   if(itime==0 && resume==0){ 
-    (tracer+ipart)->ux - (tracer+ipart)->ux_old;
-    (tracer+ipart)->uy - (tracer+ipart)->uy_old;
-    (tracer+ipart)->uz - (tracer+ipart)->uz_old;
+    (tracer+ipart)->ux_old = (tracer+ipart)->ux;
+    (tracer+ipart)->uy_old = (tracer+ipart)->uy;
+    (tracer+ipart)->uz_old = (tracer+ipart)->uz;
   }
 
    /* Here I will write the computation of the fluid material derivative */
-   Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt  
+  Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt
           + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_ux 
           + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_ux 
           + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_ux;
 
-   Dt_u.y = ((tracer+ipart)->uy - (tracer+ipart)->uy_old )/property.time_dt  
+   Dt_u.y = ((tracer+ipart)->uy - (tracer+ipart)->uy_old )/property.time_dt
           + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uy 
           + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uy 
           + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uy;
 
-   Dt_u.z = ((tracer+ipart)->uz - (tracer+ipart)->uz_old )/property.time_dt  
-          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uz 
+   Dt_u.z = ((tracer+ipart)->uz - (tracer+ipart)->uz_old )/property.time_dt         
+	  + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uz 
           + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uz 
           + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uz;
 
+   //   /*
    (tracer+ipart)->ax += Dt_u.x*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->ay += Dt_u.y*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->az += Dt_u.z*(tracer+ipart)->beta_coeff;
+   // */
    }/* end of if on addedd mass */
 #endif
 
