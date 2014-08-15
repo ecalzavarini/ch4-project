@@ -76,7 +76,10 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 0.0;
+(tracer+i)->tau_drag = 10.0;
+#ifdef LAGRANGE_ADDEDMASS
+(tracer+i)->beta_coeff = 3.0;
+#endif
 
 /* position: randomly distributed particles */
 (tracer+i)->x = LNX_START + drand48()*LNX;
@@ -883,7 +886,7 @@ void move_particles(){
   point_particle part;
   int *displs,*rcounts;
   my_double invtau;
- 
+  vector Dt_u;
 
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
 
@@ -928,6 +931,39 @@ void move_particles(){
    (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
 
+
+#ifdef LAGRANGE_ADDEDMASS
+  /* With Added mass */ 
+   if((tracer+ipart)->beta_coeff != 0.0){
+
+  if(itime==0 && resume==0){ 
+    (tracer+ipart)->ux - (tracer+ipart)->ux_old;
+    (tracer+ipart)->uy - (tracer+ipart)->uy_old;
+    (tracer+ipart)->uz - (tracer+ipart)->uz_old;
+  }
+
+   /* Here I will write the computation of the fluid material derivative */
+   Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_ux 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_ux 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_ux;
+
+   Dt_u.y = ((tracer+ipart)->uy - (tracer+ipart)->uy_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uy 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uy 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uy;
+
+   Dt_u.z = ((tracer+ipart)->uz - (tracer+ipart)->uz_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uz 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uz 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uz;
+
+   (tracer+ipart)->ax += Dt_u.x*(tracer+ipart)->beta_coeff;
+   (tracer+ipart)->ay += Dt_u.y*(tracer+ipart)->beta_coeff;
+   (tracer+ipart)->az += Dt_u.z*(tracer+ipart)->beta_coeff;
+   }/* end of if on addedd mass */
+#endif
+
    if(itime==0 && resume==0){
      (tracer+ipart)->vx += property.time_dt*(tracer+ipart)->ax;
      (tracer+ipart)->vy += property.time_dt*(tracer+ipart)->ay;
@@ -961,34 +997,6 @@ void move_particles(){
 
    }/* end of if on tau_drag different from zero */
 
-
-#ifdef LAGRANGE_ADDEDMASS
-  /* With drag force */ 
-   if((tracer+ipart)->tau_drag != 0.0 && (tracer+ipart)->beta_coeff != 0.0){
-
-   /* Here I will write the computation of the fluid material derivative */
-   Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt  
-          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_ux 
-          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_ux 
-          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_ux;
-
-   Dt_u.y = ((tracer+ipart)->uy - (tracer+ipart)->uy_old )/property.time_dt  
-          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uy 
-          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uy 
-          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uy;
-
-   Dt_u.z = ((tracer+ipart)->uz - (tracer+ipart)->uz_old )/property.time_dt  
-          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uz 
-          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uz 
-          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uz;
-
-   invtau = 1.0 / (tracer+ipart)->tau_drag;
-   (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau + Dt_u.x*(tracer+ipart)->beta_coeff;
-   (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau + Dt_u.y*(tracer+ipart)->beta_coeff;
-   (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau + Dt_u.z*(tracer+ipart)->beta_coeff;
-   /* NB, questa parte  e' da compattare */
-   }
-#endif
 
 }/* end of loop on particles */
 
