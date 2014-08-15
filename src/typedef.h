@@ -220,7 +220,7 @@ typedef struct {
 typedef struct {
   my_double name;
   my_double tau_drag;
-  //  my_double kind ,beta_coeff;
+  //  my_double kind;
   my_double x,y,z;
   my_double vx,vy,vz;
   my_double vx_old,vy_old,vz_old;
@@ -228,6 +228,15 @@ typedef struct {
   my_double ax_old,ay_old,az_old;
 #ifdef LB_FLUID
   my_double ux, uy , uz; /* fluid velocity */
+  my_double ux_old, uy_old , uz_old; 
+ #ifdef LAGRANGE_GRADIENT
+  my_double dx_ux,dy_ux,dz_ux;
+  my_double dx_uy,dy_uy,dz_uy;
+  my_double dx_uz,dy_uz,dz_uz;
+  #ifdef LAGRANGE_ADDEDMASS
+   my_double beta_coeff; 
+  #endif
+ #endif
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */

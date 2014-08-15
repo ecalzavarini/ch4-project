@@ -76,7 +76,7 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 10.0;
+(tracer+i)->tau_drag = 0.0;
 
 /* position: randomly distributed particles */
 (tracer+i)->x = LNX_START + drand48()*LNX;
@@ -306,7 +306,11 @@ void interpolate_vector_at_particles(vector *f,char which_vector){
  double dxm,dxp,dym,dyp,dzm,dzp;
  double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km; 
 
-int i,j,k;
+ int i,j,k;
+
+#ifdef LAGRANGE_GRADIENT
+ tensor grad, grad_im_jm_km , grad_ip_jm_km , grad_im_jp_km , grad_im_jm_kp , grad_ip_jp_km , grad_im_jp_kp , grad_ip_jm_kp , grad_ip_jp_kp; 
+#endif
 
 
  for (ipart=0;ipart<npart;ipart++) {
@@ -382,6 +386,114 @@ kp =  km + 1;
     (tracer+ipart)->uy = v.y;
     (tracer+ipart)->uz = v.z; 
   }
+
+#ifdef LAGRANGE_GRADIENT
+  /* here we interpolate also the gradient of the same field */
+  grad_im_jm_km = gradient_vector(f,im,jm,km);
+  grad_ip_jm_km = gradient_vector(f,ip,jm,km);
+  grad_im_jp_km = gradient_vector(f,im,jp,km);
+  grad_im_jm_kp = gradient_vector(f,im,jm,kp);
+  grad_ip_jp_km = gradient_vector(f,ip,jp,km);
+  grad_im_jp_kp = gradient_vector(f,im,jp,kp);
+  grad_ip_jm_kp = gradient_vector(f,ip,jm,kp);
+  grad_ip_jp_kp = gradient_vector(f,ip,jp,kp);
+
+ grad.xx =  grad_im_jm_km.xx * vol_ip_jp_kp + 
+            grad_ip_jm_km.xx * vol_im_jp_kp +
+            grad_im_jp_km.xx * vol_ip_jm_kp +
+            grad_im_jm_kp.xx * vol_ip_jp_km +
+            grad_ip_jp_km.xx * vol_im_jm_kp +
+            grad_im_jp_kp.xx * vol_ip_jm_km +
+            grad_ip_jm_kp.xx * vol_im_jp_km +
+            grad_ip_jp_kp.xx * vol_im_jm_km ;
+
+ grad.xy =  grad_im_jm_km.xy * vol_ip_jp_kp + 
+            grad_ip_jm_km.xy * vol_im_jp_kp +
+            grad_im_jp_km.xy * vol_ip_jm_kp +
+            grad_im_jm_kp.xy * vol_ip_jp_km +
+            grad_ip_jp_km.xy * vol_im_jm_kp +
+            grad_im_jp_kp.xy * vol_ip_jm_km +
+            grad_ip_jm_kp.xy * vol_im_jp_km +
+            grad_ip_jp_kp.xy * vol_im_jm_km ;
+
+ grad.xz =  grad_im_jm_km.xz * vol_ip_jp_kp + 
+            grad_ip_jm_km.xz * vol_im_jp_kp +
+            grad_im_jp_km.xz * vol_ip_jm_kp +
+            grad_im_jm_kp.xz * vol_ip_jp_km +
+            grad_ip_jp_km.xz * vol_im_jm_kp +
+            grad_im_jp_kp.xz * vol_ip_jm_km +
+            grad_ip_jm_kp.xz * vol_im_jp_km +
+            grad_ip_jp_kp.xz * vol_im_jm_km ;
+
+ grad.yx =  grad_im_jm_km.yx * vol_ip_jp_kp + 
+            grad_ip_jm_km.yx * vol_im_jp_kp +
+            grad_im_jp_km.yx * vol_ip_jm_kp +
+            grad_im_jm_kp.yx * vol_ip_jp_km +
+            grad_ip_jp_km.yx * vol_im_jm_kp +
+            grad_im_jp_kp.yx * vol_ip_jm_km +
+            grad_ip_jm_kp.yx * vol_im_jp_km +
+            grad_ip_jp_kp.yx * vol_im_jm_km ;
+
+ grad.yy =  grad_im_jm_km.yy * vol_ip_jp_kp + 
+            grad_ip_jm_km.yy * vol_im_jp_kp +
+            grad_im_jp_km.yy * vol_ip_jm_kp +
+            grad_im_jm_kp.yy * vol_ip_jp_km +
+            grad_ip_jp_km.yy * vol_im_jm_kp +
+            grad_im_jp_kp.yy * vol_ip_jm_km +
+            grad_ip_jm_kp.yy * vol_im_jp_km +
+            grad_ip_jp_kp.yy * vol_im_jm_km ;
+
+ grad.yz =  grad_im_jm_km.yz * vol_ip_jp_kp + 
+            grad_ip_jm_km.yz * vol_im_jp_kp +
+            grad_im_jp_km.yz * vol_ip_jm_kp +
+            grad_im_jm_kp.yz * vol_ip_jp_km +
+            grad_ip_jp_km.yz * vol_im_jm_kp +
+            grad_im_jp_kp.yz * vol_ip_jm_km +
+            grad_ip_jm_kp.yz * vol_im_jp_km +
+            grad_ip_jp_kp.yz * vol_im_jm_km ;
+
+ grad.zx =  grad_im_jm_km.zx * vol_ip_jp_kp + 
+            grad_ip_jm_km.zx * vol_im_jp_kp +
+            grad_im_jp_km.zx * vol_ip_jm_kp +
+            grad_im_jm_kp.zx * vol_ip_jp_km +
+            grad_ip_jp_km.zx * vol_im_jm_kp +
+            grad_im_jp_kp.zx * vol_ip_jm_km +
+            grad_ip_jm_kp.zx * vol_im_jp_km +
+            grad_ip_jp_kp.zx * vol_im_jm_km ;
+
+ grad.zy =  grad_im_jm_km.zy * vol_ip_jp_kp + 
+            grad_ip_jm_km.zy * vol_im_jp_kp +
+            grad_im_jp_km.zy * vol_ip_jm_kp +
+            grad_im_jm_kp.zy * vol_ip_jp_km +
+            grad_ip_jp_km.zy * vol_im_jm_kp +
+            grad_im_jp_kp.zy * vol_ip_jm_km +
+            grad_ip_jm_kp.zy * vol_im_jp_km +
+            grad_ip_jp_kp.zy * vol_im_jm_km ;
+
+grad.zz =   grad_im_jm_km.zz * vol_ip_jp_kp + 
+            grad_ip_jm_km.zz * vol_im_jp_kp +
+            grad_im_jp_km.zz * vol_ip_jm_kp +
+            grad_im_jm_kp.zz * vol_ip_jp_km +
+            grad_ip_jp_km.zz * vol_im_jm_kp +
+            grad_im_jp_kp.zz * vol_ip_jm_km +
+            grad_ip_jm_kp.zz * vol_im_jp_km +
+            grad_ip_jp_kp.zz * vol_im_jm_km ;
+
+
+  /* if it is the velocity */
+  if(which_vector == 'u'){
+    (tracer+ipart)->dx_ux = grad.xx;
+    (tracer+ipart)->dy_ux = grad.xy;
+    (tracer+ipart)->dz_ux = grad.xz;
+    (tracer+ipart)->dx_uy = grad.yx;
+    (tracer+ipart)->dy_uy = grad.yy;
+    (tracer+ipart)->dz_uy = grad.yz;
+    (tracer+ipart)->dx_uz = grad.zx;
+    (tracer+ipart)->dy_uz = grad.zy;
+    (tracer+ipart)->dz_uz = grad.zz;
+
+  }
+#endif
 
  }/* end of for on ipart */
 
@@ -595,6 +707,62 @@ void output_particles(){
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
+#ifdef LAGRANGE_GRADIENT
+		/* FLUID VELOCITY GRADIENT */
+		dataset_id = H5Dcreate(group, "dx_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dy_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dz_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dx_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dy_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dz_uy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dx_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dy_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dz_uz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_ux;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+ #ifdef LAGRANGE_ADDEDMASS
+		/* ADDED MASS BETA COEFFICIENT */
+		dataset_id = H5Dcreate(group, "beta_coeff", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->beta_coeff;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+ #endif
+#endif
+
 #ifdef LB_TEMPERATURE
 		/* WRITE PARTICLE TEMPERATURE */		
 		dataset_id = H5Dcreate(group, "temperature", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
@@ -745,6 +913,11 @@ void move_particles(){
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
    (tracer+ipart)->vz_old = (tracer+ipart)->vz;  
 
+   /* copy fluid velocity in old */
+   (tracer+ipart)->ux_old = (tracer+ipart)->ux; 
+   (tracer+ipart)->uy_old = (tracer+ipart)->uy; 
+   (tracer+ipart)->uz_old = (tracer+ipart)->uz; 
+
    }/* end if on fluid tracer */
 
    /* With drag force */ 
@@ -782,7 +955,40 @@ void move_particles(){
    (tracer+ipart)->vy_old = (tracer+ipart)->vy; 
    (tracer+ipart)->vz_old = (tracer+ipart)->vz; 
 
+   (tracer+ipart)->ux_old = (tracer+ipart)->ux; 
+   (tracer+ipart)->uy_old = (tracer+ipart)->uy; 
+   (tracer+ipart)->uz_old = (tracer+ipart)->uz; 
+
    }/* end of if on tau_drag different from zero */
+
+
+#ifdef LAGRANGE_ADDEDMASS
+  /* With drag force */ 
+   if((tracer+ipart)->tau_drag != 0.0 && (tracer+ipart)->beta_coeff != 0.0){
+
+   /* Here I will write the computation of the fluid material derivative */
+   Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_ux 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_ux 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_ux;
+
+   Dt_u.y = ((tracer+ipart)->uy - (tracer+ipart)->uy_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uy 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uy 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uy;
+
+   Dt_u.z = ((tracer+ipart)->uz - (tracer+ipart)->uz_old )/property.time_dt  
+          + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_uz 
+          + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uz 
+          + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uz;
+
+   invtau = 1.0 / (tracer+ipart)->tau_drag;
+   (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau + Dt_u.x*(tracer+ipart)->beta_coeff;
+   (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau + Dt_u.y*(tracer+ipart)->beta_coeff;
+   (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau + Dt_u.z*(tracer+ipart)->beta_coeff;
+   /* NB, questa parte  e' da compattare */
+   }
+#endif
 
 }/* end of loop on particles */
 
@@ -1033,6 +1239,38 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
     sprintf(label,"uz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"ux_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uy_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uz_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dx_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dx_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
+ #ifdef LAGRANGE_ADDEDMASS
+     sprintf(label,"beta_coeff");
+     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -1189,6 +1427,38 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
     sprintf(label,"uz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+
+    sprintf(label,"ux_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uy_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
+    sprintf(label,"uz_old");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
+#endif
+
+#ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_ux");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dx_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_uy");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dx_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_uz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
+ #ifdef LAGRANGE_ADDEDMASS
+     sprintf(label,"beta_coeff");
+     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE

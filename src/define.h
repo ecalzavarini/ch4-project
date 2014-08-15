@@ -100,7 +100,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
@@ -136,6 +136,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
+#define LAGRANGE_GRADIENT 
 
 /***************************************************/
 /* Define dependencies not to be modified          */
