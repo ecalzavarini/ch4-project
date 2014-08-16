@@ -1,4 +1,4 @@
-resume 1
+resume 0
 
 NX 101
 NY 50
@@ -10,13 +10,13 @@ SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 1000.
+time_end 10000.
 time_dump_field 2000.
-time_dump_diagn 2000.
+time_dump_diagn 100.
 
 tau_u 1.0
 
-Amp_x 0.0005 
+Amp_x 0.1
 Amp_y 0.0
 Amp_z 0.0
 

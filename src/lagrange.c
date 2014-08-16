@@ -78,7 +78,7 @@ for (i=0;i<npart;i++) {
 
 (tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 3.0;
+(tracer+i)->beta_coeff = 0.2;
 #endif
 
 /* position: randomly distributed particles */
