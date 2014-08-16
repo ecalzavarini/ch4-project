@@ -76,9 +76,9 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 100.0;
+(tracer+i)->tau_drag = 0.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 0.2;
+(tracer+i)->beta_coeff = 0.1;
 #endif
 
 /* position: randomly distributed particles */
@@ -242,7 +242,6 @@ if(LNY_END == NY){
 
 
 
-      
 }
 #endif
 #endif /* LB_TEMPERATURE */
@@ -515,6 +514,10 @@ void interpolate_scalar_at_particles(my_double *f,char which_scalar){
 
 int i,j,k;
 
+#ifdef LAGRANGE_GRADIENT
+ vector grad, grad_im_jm_km , grad_ip_jm_km , grad_im_jp_km , grad_im_jm_kp , grad_ip_jp_km , grad_im_jp_kp , grad_ip_jm_kp , grad_ip_jp_kp; 
+#endif
+
  for (ipart=0;ipart<npart;ipart++) {
 
    // fprintf(stderr,"vel %g %g\n", f[IDX(BRD-1,BRD,BRD)].x , f[IDX(BRD,BRD,BRD)].x );
@@ -574,7 +577,66 @@ if(which_scalar == 't')  (tracer+ipart)->t = s;
 if(which_scalar == 's')  (tracer+ipart)->s = s;
 #endif
 
+
+#ifdef LAGRANGE_GRADIENT
+  /* here we interpolate also the gradient of the same field */
+  grad_im_jm_km = gradient_scalar(f,im,jm,km);
+  grad_ip_jm_km = gradient_scalar(f,ip,jm,km);
+  grad_im_jp_km = gradient_scalar(f,im,jp,km);
+  grad_im_jm_kp = gradient_scalar(f,im,jm,kp);
+  grad_ip_jp_km = gradient_scalar(f,ip,jp,km);
+  grad_im_jp_kp = gradient_scalar(f,im,jp,kp);
+  grad_ip_jm_kp = gradient_scalar(f,ip,jm,kp);
+  grad_ip_jp_kp = gradient_scalar(f,ip,jp,kp);
+
+ grad.x =  grad_im_jm_km.x * vol_ip_jp_kp + 
+             grad_ip_jm_km.x * vol_im_jp_kp +
+             grad_im_jp_km.x * vol_ip_jm_kp +
+             grad_im_jm_kp.x * vol_ip_jp_km +
+             grad_ip_jp_km.x * vol_im_jm_kp +
+             grad_im_jp_kp.x * vol_ip_jm_km +
+             grad_ip_jm_kp.x * vol_im_jp_km +
+             grad_ip_jp_kp.x * vol_im_jm_km ;
+
+ grad.y =  grad_im_jm_km.y * vol_ip_jp_kp + 
+             grad_ip_jm_km.y * vol_im_jp_kp +
+             grad_im_jp_km.y * vol_ip_jm_kp +
+             grad_im_jm_kp.y * vol_ip_jp_km +
+             grad_ip_jp_km.y * vol_im_jm_kp +
+             grad_im_jp_kp.y * vol_ip_jm_km +
+             grad_ip_jm_kp.y * vol_im_jp_km +
+             grad_ip_jp_kp.y * vol_im_jm_km ;
+
+ grad.z =  grad_im_jm_km.z * vol_ip_jp_kp + 
+             grad_ip_jm_km.z * vol_im_jp_kp +
+             grad_im_jp_km.z * vol_ip_jm_kp +
+             grad_im_jm_kp.z * vol_ip_jp_km +
+             grad_ip_jp_km.z * vol_im_jm_kp +
+             grad_im_jp_kp.z * vol_ip_jm_km +
+             grad_ip_jm_kp.z * vol_im_jp_km +
+             grad_ip_jp_kp.z * vol_im_jm_km ;
+
+#ifdef LB_TEMPERATURE
+  /* if it is the temperature */
+  if(which_scalar == 't'){
+    (tracer+ipart)->dx_t = grad.x;
+    (tracer+ipart)->dy_t = grad.y;
+    (tracer+ipart)->dz_t = grad.z;
   }
+#endif
+
+#ifdef LB_SCALAR
+  /* if it is the scalar */
+  if(which_scalar == 's'){
+    (tracer+ipart)->dx_s = grad.x;
+    (tracer+ipart)->dy_s = grad.y;
+    (tracer+ipart)->dz_s = grad.z;
+  }
+#endif
+
+#endif /* endif on lagrange_gradient */
+
+ }/* end of loop on ipart */
 
 }/* end of interp scalar*/
 
@@ -772,7 +834,23 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->t;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
-		
+ #ifdef LAGRANGE_GRADIENT
+		/* TEMPERATURE GRADIENT */
+		dataset_id = H5Dcreate(group, "dx_t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_t;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dy_t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dy_t;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dz_t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dz_t;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+ #endif		
 #endif
 
 #ifdef LB_SCALAR
@@ -781,6 +859,23 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->s;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+ #ifdef LAGRANGE_GRADIENT
+		/* SCALAR GRADIENT */
+		dataset_id = H5Dcreate(group, "dx_s", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dx_s;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dy_s", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dy_s;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dz_s", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dz_s;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+ #endif		
 #endif
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -888,7 +983,23 @@ void output_particles(){
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/temperature\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"</Attribute>\n");          
+                fprintf(fout,"</Attribute>\n");   
+ #ifdef LAGRANGE_GRADIENT
+		/* temperature gradient */
+                fprintf(fout,"<Attribute Name=\"temperature gradient\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dx_t\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dy_t\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dz_t\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+ #endif       
 #endif
 
 #ifdef LB_SCALAR
@@ -896,7 +1007,23 @@ void output_particles(){
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/scalar\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"</Attribute>\n");          
+                fprintf(fout,"</Attribute>\n"); 
+ #ifdef LAGRANGE_GRADIENT
+		/* scalar gradient */
+                fprintf(fout,"<Attribute Name=\"scalar gradient\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dx_s\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dy_s\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dz_s\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+ #endif                
 #endif
                 
                 fprintf(fout,"</Grid>\n");
@@ -1321,11 +1448,27 @@ void write_point_particle_h5(){
 #ifdef LB_TEMPERATURE
     sprintf(label,"t");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+ #ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_DOUBLE);
+ #endif
 #endif
 
 #ifdef LB_SCALAR
     sprintf(label,"s");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+ #ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_DOUBLE);
+ #endif
 #endif
 
     /*************************************************************/

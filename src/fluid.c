@@ -1669,6 +1669,32 @@ if(LNZ_START == 0 && k == BRD){
 #endif
 
 
+#ifdef LAGRANGE_INTERPOLATION_FIX
+   /* at the x boundaries , one sided 1st order difference*/
+if(i == 0){
+   grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
+ }
+ if(i == LNX+TWO_BRD-1){ 
+   grad.x = ( t[IDX(i, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
+ }
+
+   /* at the y boundaries */
+if(j == 0){
+   grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y );
+ }
+ if(j == LNY+TWO_BRD-1){ 
+   grad.y = ( t[IDX(i, j, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y );
+ }
+
+   /* at the z boundaries */
+if(k == 0){
+   grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z ); 
+ }
+ if(k == LNZ+TWO_BRD-1){ 
+   grad.z = ( t[IDX(i, j, k)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
+ }
+#endif
+
 #ifdef SECOND_ORDER_GRAD
    /* at the x boundaries , one sided 2nd order difference*/
    /* but it seems to be less precise than the first order */
