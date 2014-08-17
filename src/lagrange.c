@@ -76,9 +76,9 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 0.0;
+(tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 0.1;
+(tracer+i)->beta_coeff = 0.0;
 #endif
 
 /* position: randomly distributed particles */
@@ -225,6 +225,7 @@ if(LNY_START == 0){
 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  t[IDX(i,j-1,k)] =  fac*t[IDX(i,j,k)];
+
 }
 
 if(LNY_END == NY){
@@ -1366,6 +1367,9 @@ void write_point_particle_h5(){
     hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
 
     /* define its offsets */
+    sprintf(label,"name");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_DOUBLE);
+
     sprintf(label,"x");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
     sprintf(label,"y");
@@ -1570,6 +1574,9 @@ void read_point_particle_h5(){
     hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
 
     /* define its offsets */
+    sprintf(label,"name");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_DOUBLE);
+
     sprintf(label,"x");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
     sprintf(label,"y");
@@ -1652,11 +1659,27 @@ void read_point_particle_h5(){
 #ifdef LB_TEMPERATURE
     sprintf(label,"t");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+#ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_t");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_DOUBLE);
+#endif
 #endif
 
 #ifdef LB_SCALAR
     sprintf(label,"s");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+#ifdef LAGRANGE_GRADIENT
+    sprintf(label,"dx_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dy_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dz_s");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_DOUBLE);
+#endif
 #endif
 
     /*************************************************************/
