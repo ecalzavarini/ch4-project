@@ -78,7 +78,7 @@ for (i=0;i<npart;i++) {
 
 (tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 0.0;
+(tracer+i)->beta_coeff = 3.0;
 #endif
 
 /* position: randomly distributed particles */
@@ -1162,6 +1162,28 @@ void move_particles(){
 
    }/* end of if on tau_drag different from zero */
 
+
+   /* In case of BC we use bounce-back rule for the particle */
+  
+#ifdef LB_FLUID_BC
+ #ifdef LB_FLUID_BC_Y
+
+   if( (tracer+ipart)->y < 0.0 ){
+     (tracer+ipart)->y *= -1.0; 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+
+   if( (tracer+ipart)->y >= property.SY ){
+     (tracer+ipart)->y = property.SY- ( (tracer+ipart)->y-property.SY ); 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+ #endif
+#endif
+   
 
 }/* end of loop on particles */
 
