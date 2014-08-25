@@ -51,6 +51,8 @@ void initial_conditions_particles(int restart){
   int name_offset = 0;
   int ip,im,jp,jm,kp,km;
   my_double solid;
+  char fnamein[128];
+  FILE *fin;
 
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
@@ -64,11 +66,19 @@ void initial_conditions_particles(int restart){
 
 
 /* restart from file */
-    if(restart){
+  sprintf(fnamein,"part.h5");
+  fin = fopen(fnamein,"r");
 
+    if(restart && fin != NULL){
+
+      if(ROOT) fprintf(stderr,"The %s file is present! ->  Particles will be initialized from it.\n",fnamein);
+         fclose(fin);
+      
       read_point_particle_h5();
 
     }else{
+
+      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Particles will be initialized from memory.\n",fnamein);
       /* restart from memory */
 
 for (i=0;i<npart;i++) {
@@ -78,7 +88,7 @@ for (i=0;i<npart;i++) {
 
 (tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 3.0;
+(tracer+i)->beta_coeff = 0.5;
 #endif
 
 /* position: randomly distributed particles */
@@ -1182,6 +1192,24 @@ void move_particles(){
      (tracer+ipart)->vz *= -1.0;
    }
  #endif
+
+ #ifdef LB_FLUID_BC_X
+
+   if( (tracer+ipart)->x < 0.0 ){
+     (tracer+ipart)->x *= -1.0; 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+
+   if( (tracer+ipart)->x >= property.SX ){
+     (tracer+ipart)->x = property.SX- ( (tracer+ipart)->x-property.SX ); 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+ #endif
+
 #endif
    
 
@@ -1564,16 +1592,6 @@ void read_point_particle_h5(){
     int *rcounts;
     int name_offset = 0;
 
-    /* First check how many particles in each processor and compute offset */
-    rcounts = (int *)malloc(nprocs*sizeof(int)); 
-
-    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
-
-    for (i=0;i<me;i++) name_offset += rcounts[i];
-
-    free(rcounts);
-
-
     hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
     hid_t	plist_id;                 /* property list identifier */
     hid_t hdf5_type;
@@ -1591,6 +1609,26 @@ void read_point_particle_h5(){
     char XMF_FILE_NAME[128];
  
     char label[128]; 
+
+    /*   
+      if(ROOT){
+  sprintf(fnamein,"part.h5");
+  fin = fopen(fnamein,"r");
+  if(fin == NULL){
+         fprintf(stderr,"Error message -> %s file is missing!\n Particles will be initialized in memory.\n",fnamein);
+         fclose(fin);
+  }
+      }
+    */
+
+    /* First check how many particles in each processor and compute offset */
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
 
     /* create point particle compound */
     hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
@@ -1753,7 +1791,7 @@ void read_point_particle_h5(){
   H5Gclose(group);
   H5Fclose(file_id);  
 
-}/* end of write point particle */
+}/* end of read point particle */
 
 
 #endif
