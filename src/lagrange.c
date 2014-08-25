@@ -65,21 +65,22 @@ void initial_conditions_particles(int restart){
     fprintf(stderr,"me : %d , name_offset %d\n", me , name_offset);
 
 
-/* restart from file */
-  sprintf(fnamein,"part.h5");
-  fin = fopen(fnamein,"r");
-
-    if(restart && fin != NULL){
-
-      if(ROOT) fprintf(stderr,"The %s file is present! ->  Particles will be initialized from it.\n",fnamein);
-         fclose(fin);
-      
-      read_point_particle_h5();
+ /* restart from file */
+  sprintf(fnamein,"part.h5");  
+  fin = fopen("part.h5","r");  
+  
+ if(restart && fin != NULL){
+  
+     read_point_particle_h5();
+      if(ROOT) fprintf(stderr,"The %s file is present!\n Particles will be initialized from file.\n",fnamein);
+      fclose(fin);
 
     }else{
-
+    
       if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Particles will be initialized from memory.\n",fnamein);
-      /* restart from memory */
+      fclose(fin);
+
+/* restart from memory */
 
 for (i=0;i<npart;i++) {
 
@@ -652,7 +653,7 @@ if(which_scalar == 's')  (tracer+ipart)->s = s;
 }/* end of interp scalar*/
 
 
-#define H5FILE_NAME_PARTICLE "part.h5"
+#define H5FILE_NAME_PARTICLE "particle.h5"
 
 /* general output function for particles */
 void output_particles(){
@@ -1216,6 +1217,20 @@ void move_particles(){
 }/* end of loop on particles */
 
 
+  sendrecv_particles();
+
+}/* end of move_particles */
+
+
+// /*
+void sendrecv_particles(){
+
+  int ipart,i;
+  int npart_here,npart_there,all_npart_there,all_npart;  
+  point_particle part;
+  int *displs,*rcounts;
+  // */
+
 /* Here we perform the particle re-arrangement between processors */
 
  npart_here = 0;
@@ -1367,13 +1382,15 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
 
  
 
-}/* end of move particles */
+}/* end of sendrecv particles */
 
 
 
 /* here we have the function to write the full point_particle structure and to read it */
 
 /* general output function for particles */
+
+#define H5FILE_NAME_PART "part.h5"
 
 #ifdef OUTPUT_H5
 
@@ -1531,7 +1548,7 @@ void write_point_particle_h5(){
 		plist_id = H5Pcreate(H5P_FILE_ACCESS);
 		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
 		
-		file_id = H5Fcreate(H5FILE_NAME_PARTICLE, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+		file_id = H5Fcreate(H5FILE_NAME_PART, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 		group   = H5Gcreate (file_id, "/particles", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
 		H5Pclose(plist_id);
@@ -1575,10 +1592,10 @@ void write_point_particle_h5(){
   H5Fclose(file_id);  
 
  /* create the file names */
-  sprintf(NEW_H5FILE_NAME,"part.h5",itime);
+ // sprintf(NEW_H5FILE_NAME,"part.h5");
 
   /* we rename the file */
-  if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
+  //if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
 
 }/* end of write point particle */
 
@@ -1610,16 +1627,6 @@ void read_point_particle_h5(){
  
     char label[128]; 
 
-    /*   
-      if(ROOT){
-  sprintf(fnamein,"part.h5");
-  fin = fopen(fnamein,"r");
-  if(fin == NULL){
-         fprintf(stderr,"Error message -> %s file is missing!\n Particles will be initialized in memory.\n",fnamein);
-         fclose(fin);
-  }
-      }
-    */
 
     /* First check how many particles in each processor and compute offset */
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
@@ -1748,7 +1755,7 @@ void read_point_particle_h5(){
 		plist_id = H5Pcreate(H5P_FILE_ACCESS);
 		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
 		
-		file_id = H5Fopen(H5FILE_NAME_PARTICLE, H5F_ACC_RDONLY, H5P_DEFAULT); 
+		file_id = H5Fopen(H5FILE_NAME_PART, H5F_ACC_RDONLY, H5P_DEFAULT); 
 		group   = H5Gopen(file_id, "/particles", H5P_DEFAULT);
 
 		H5Pclose(plist_id);
@@ -1777,7 +1784,7 @@ void read_point_particle_h5(){
 		xfer_plist = H5Pcreate(H5P_DATASET_XFER);
 		ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);                       
 
-		/* WRITE POINT_PARTICLE STRUCTURE */
+		/* READ POINT_PARTICLE STRUCTURE */
 		dataset_id = H5Dopen(group, "point_particle", H5P_DEFAULT);
                 ret = H5Dread(dataset_id, hdf5_type, memspace, filespace,  H5P_DEFAULT, tracer);
                 status = H5Dclose(dataset_id);                
@@ -1790,6 +1797,9 @@ void read_point_particle_h5(){
   H5Pclose(property_id);
   H5Gclose(group);
   H5Fclose(file_id);  
+
+  /* here we rearrange particles */
+  sendrecv_particles();
 
 }/* end of read point particle */
 
