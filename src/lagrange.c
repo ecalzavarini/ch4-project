@@ -89,7 +89,7 @@ for (i=0;i<npart;i++) {
 
 (tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 0.5;
+(tracer+i)->beta_coeff = 2.5;
 #endif
 
 /* position: randomly distributed particles */
@@ -1372,8 +1372,10 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
       */
       /* final check */
        MPI_Allreduce(&npart, &all_npart, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
-       if(itime%10==0 && ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
 
+#ifdef LAGRANGE_DEBUG
+       if(itime%10==0 && ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
+#endif
        if(all_npart != (int)property.particle_number){
          if(ROOT) fprintf(stderr,"Total number of bubbles has changed during run!!!!\n Was %d now is %d\n Exit.\n",(int)property.particle_number, all_npart);
          MPI_Finalize();
