@@ -89,7 +89,7 @@ for (i=0;i<npart;i++) {
 
 (tracer+i)->tau_drag = 100.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 2.5;
+(tracer+i)->beta_coeff = 0.0;
 #endif
 
 /* position: randomly distributed particles */
@@ -1105,10 +1105,23 @@ void move_particles(){
    (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
 
+#ifdef LAGRANGE_GRAVITY
+   if((tracer+ipart)->beta_coeff == 0.0){
+     (tracer+ipart)->ax -= property.gravity_x;
+     (tracer+ipart)->ay -= property.gravity_y;
+     (tracer+ipart)->az -= property.gravity_z; 
+   }
+#endif
 
 #ifdef LAGRANGE_ADDEDMASS
   /* With Added mass */ 
    if((tracer+ipart)->beta_coeff != 0.0){
+
+#ifdef LAGRANGE_GRAVITY
+     (tracer+ipart)->ax -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_x;
+     (tracer+ipart)->ay -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_y;
+     (tracer+ipart)->az -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_z; 
+#endif
 
   if(itime==0 && resume==0){ 
     (tracer+ipart)->ux_old = (tracer+ipart)->ux;
@@ -1132,11 +1145,10 @@ void move_particles(){
           + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_uz 
           + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_uz;
 
-   //   /*
    (tracer+ipart)->ax += Dt_u.x*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->ay += Dt_u.y*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->az += Dt_u.z*(tracer+ipart)->beta_coeff;
-   // */
+
    }/* end of if on addedd mass */
 #endif
 

@@ -138,6 +138,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_OUTPUT_DEBUG
 #define LAGRANGE_GRADIENT 
 #define LAGRANGE_ADDEDMASS
+#define LAGRANGE_GRAVITY
 
 /***************************************************/
 /* Define dependencies not to be modified          */
