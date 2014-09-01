@@ -78,7 +78,7 @@ void initial_conditions_particles(int restart){
     }else{
     
       if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Particles will be initialized from memory.\n",fnamein);
-      fclose(fin);
+     
 
 /* restart from memory */
 
@@ -87,9 +87,9 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 100.0;
+(tracer+i)->tau_drag = 10.0;
 #ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 0.0;
+(tracer+i)->beta_coeff = 1.0;
 #endif
 
 /* position: randomly distributed particles */
