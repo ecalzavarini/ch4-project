@@ -87,7 +87,7 @@ for (i=0;i<npart;i++) {
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 10.0;
+(tracer+i)->tau_drag = 0.0;
 #ifdef LAGRANGE_ADDEDMASS
 (tracer+i)->beta_coeff = 1.0;
 #endif

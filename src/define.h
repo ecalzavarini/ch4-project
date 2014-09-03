@@ -41,7 +41,7 @@
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING
 //#define LB_FLUID_FORCING_CHANNEL
 //#define LB_FLUID_FORCING_POISEUILLE
@@ -51,6 +51,7 @@
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
 //#define LB_FLUID_FORCING_CELLULAR
+#define LB_FLUID_FORCING_HIT
 
 /* LANDSCAPE DEFINITION IN THE DOMAIN */
 //#define LB_FLUID_FORCING_LANDSCAPE
@@ -58,8 +59,8 @@
 //#define CUBE
 //#define BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YP_SLIP                                           
 //#define LB_FLUID_BC_YM_SLIP                         
 //#define LB_FLUID_BC_YP_OUTLET
@@ -100,16 +101,16 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-#define LB_TEMPERATURE_BUOYANCY
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y
+//#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_Y_VARIABLE
 //#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_NOFLUX
@@ -136,9 +137,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-#define LAGRANGE_GRADIENT 
-#define LAGRANGE_ADDEDMASS
-#define LAGRANGE_GRAVITY
+//#define LAGRANGE_GRADIENT 
+//#define LAGRANGE_ADDEDMASS
+//#define LAGRANGE_GRAVITY
 
 /***************************************************/
 /* Define dependencies not to be modified          */

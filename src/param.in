@@ -1,35 +1,35 @@
 resume 0
 
-NX 101
-NY 50
-NZ 1
+NX 32
+NY 32
+NZ 32
 
-SX 101
-SY 50
-SZ 1
+SX 32
+SY 32
+SZ 32
 
 time_dt 1.0
 time_start 0.0
-time_end 10000.
-time_dump_field 2000.
+time_end 4000.
+time_dump_field 10.
 time_dump_diagn 100.
 
 tau_u 1.0
 
-Amp_x 0.1
-Amp_y 0.0
-Amp_z 0.0
+Amp_x 0.0001
+Amp_y 0.0001
+Amp_z 0.0001
 
 tau_t 1.0
 T_bot  1.
 T_top -1.
 T_ref 0.0
 
-beta_t  0.001897778
+beta_t  1897.778
 beta2_t 0.0
 
 gravity_x 0.0
-gravity_y 1.0
+gravity_y 0.000001
 gravity_z 0.0
 
 Amp_t 0.02
@@ -47,4 +47,4 @@ S_ref 0.0
 beta_s 0.001897778
 
 
-particle_number 5000
+particle_number 8000

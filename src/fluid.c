@@ -1080,11 +1080,12 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq){
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
 void build_forcing(){
-  int i, j, k;
+  int i, j, k , ii;
   my_double fnx,fny,fnz,kn;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
   my_double temp, fac; 
+  my_double phi[4];
 
    LX=(my_double)(property.SX);
    LY=(my_double)(property.SY);
@@ -1155,6 +1156,35 @@ void build_forcing(){
 
 #endif  
 
+#ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */
+
+    x = (my_double)center_V[IDX(i,j,k)].x;
+    y = (my_double)center_V[IDX(i,j,k)].y;
+    z = (my_double)center_V[IDX(i,j,k)].z;
+
+    /* k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 
+       Therefore :
+       kx , ky , kz 
+       1  , 0  , 0
+       0  , 1  , 0
+       0  , 0  , 1
+       1  , 1  , 0
+       0  , 1  , 1
+       1  , 0  , 1
+    */ 
+
+    for (ii=0; ii<4; ii++) phi[ii] = 0.0;
+
+    force[IDX(i,j,k)].x += property.Amp_x* ( sin(two_pi*(y/LY + phi[0])) + sin(two_pi*(z/LZ + phi[1])) + 
+					     sin(two_pi*(y/LY + phi[2])) + sin(two_pi*(z/LZ + phi[3])) + sin(two_pi*(y/LY+z/LZ + phi[4])) );
+
+    force[IDX(i,j,k)].y += property.Amp_y* ( sin(two_pi*(x/LX + phi[0])) + sin(two_pi*(z/LZ + phi[1])) + 
+					     sin(two_pi*(x/LX + phi[2])) + sin(two_pi*(z/LZ + phi[3])) + sin(two_pi*(x/LX+z/LZ + phi[4])) );
+
+    force[IDX(i,j,k)].z += property.Amp_z* ( sin(two_pi*(y/LY + phi[0])) + sin(two_pi*(x/LX + phi[1])) + 
+					     sin(two_pi*(y/LY + phi[2])) + sin(two_pi*(x/LX + phi[3])) + sin(two_pi*(y/LY+x/LX + phi[4])) );
+
+#endif
 
 #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
