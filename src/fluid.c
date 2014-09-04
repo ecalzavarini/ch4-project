@@ -1085,16 +1085,25 @@ void build_forcing(){
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
   my_double temp, fac; 
-  my_double phi[4];
+  int nk = 5; 
+  vector vk[nk], phi[nk];
 
-   LX=(my_double)(property.SX);
-   LY=(my_double)(property.SY);
-   LZ=(my_double)(property.SZ);
-   nu=property.nu;
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
+
+   LX = (my_double)(property.SX);
+   LY = (my_double)(property.SY);
+   LZ = (my_double)(property.SZ);
+
+   nu = property.nu;
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
+
+   x = (my_double)center_V[IDX(i,j,k)].x;
+   y = (my_double)center_V[IDX(i,j,k)].y;
+   z = (my_double)center_V[IDX(i,j,k)].z;
 
 #ifdef LB_FLUID_FORCING
 	force[IDX(i,j,k)].x = 0.0;
@@ -1130,8 +1139,8 @@ void build_forcing(){
     kn=1.0;
     fnx=nu*pow(two_pi/LX,2.0);
     fny=nu*pow(two_pi/LY,2.0);
-    y = (my_double)center_V[IDX(i,j,k)].y;
-    x = (my_double)center_V[IDX(i,j,k)].x;
+    //y = (my_double)center_V[IDX(i,j,k)].y;
+    //x = (my_double)center_V[IDX(i,j,k)].x;
 
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*fny*sin(kn*two_pi*y/LY); 
@@ -1146,8 +1155,8 @@ void build_forcing(){
 #ifdef LB_FLUID_FORCING_CELLULAR
  
     kn=0.5;
-    y = (my_double)center_V[IDX(i,j,k)].y;
-    x = (my_double)center_V[IDX(i,j,k)].x;
+    //y = (my_double)center_V[IDX(i,j,k)].y;
+    //x = (my_double)center_V[IDX(i,j,k)].x;
 
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
@@ -1158,10 +1167,6 @@ void build_forcing(){
 
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */
 
-    x = (my_double)center_V[IDX(i,j,k)].x;
-    y = (my_double)center_V[IDX(i,j,k)].y;
-    z = (my_double)center_V[IDX(i,j,k)].z;
-
     /* k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 
        Therefore :
        kx , ky , kz 
@@ -1171,19 +1176,33 @@ void build_forcing(){
        1  , 1  , 0
        0  , 1  , 1
        1  , 0  , 1
-    */ 
+    */
 
-    for (ii=0; ii<4; ii++) phi[ii] = 0.0;
+	
+    if(i==BRD && j==BRD && k==BRD && itime%320 == 0){ 
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi[ii].x = drand48();
+	  phi[ii].y = drand48();
+	  phi[ii].z = drand48();
+	}
+      }
+    MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
 
-    force[IDX(i,j,k)].x += property.Amp_x* ( sin(two_pi*(y/LY + phi[0])) + sin(two_pi*(z/LZ + phi[1])) + 
-					     sin(two_pi*(y/LY + phi[2])) + sin(two_pi*(z/LZ + phi[3])) + sin(two_pi*(y/LY+z/LZ + phi[4])) );
+	
+    vk[0].x=1; vk[0].y=0; vk[0].z=0; 
+    vk[1].x=0; vk[1].y=1; vk[1].z=0; 
+    vk[2].x=0; vk[2].y=0; vk[2].z=1; 
+    vk[3].x=1; vk[3].y=1; vk[3].z=0; 
+    vk[4].x=0; vk[4].y=1; vk[4].z=1; 
+    vk[5].x=1; vk[5].y=0; vk[5].z=1;
 
-    force[IDX(i,j,k)].y += property.Amp_y* ( sin(two_pi*(x/LX + phi[0])) + sin(two_pi*(z/LZ + phi[1])) + 
-					     sin(two_pi*(x/LX + phi[2])) + sin(two_pi*(z/LZ + phi[3])) + sin(two_pi*(x/LX+z/LZ + phi[4])) );
-
-    force[IDX(i,j,k)].z += property.Amp_z* ( sin(two_pi*(y/LY + phi[0])) + sin(two_pi*(x/LX + phi[1])) + 
-					     sin(two_pi*(y/LY + phi[2])) + sin(two_pi*(x/LX + phi[3])) + sin(two_pi*(y/LY+x/LX + phi[4])) );
-
+    for(ii=0; ii<nk; ii++){
+      force[IDX(i,j,k)].x += property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
+      force[IDX(i,j,k)].y += property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
+      force[IDX(i,j,k)].z += property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  );
+    }
 #endif
 
 #ifdef LB_TEMPERATURE_BUOYANCY
