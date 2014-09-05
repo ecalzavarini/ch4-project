@@ -1087,15 +1087,48 @@ void build_forcing(){
   my_double temp, fac; 
   int nk = 5; 
   vector vk[nk], phi[nk];
+  int randomization_itime;
 
-  /* initialize phases */
-   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
 
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
    LZ = (my_double)(property.SZ);
 
    nu = property.nu;
+
+
+#ifdef LB_FLUID_FORCING_HIT  /* useful for HOMOGENEOUS ISOTROPIC TURBULENCE */
+
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
+
+    randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
+    /*
+      fprintf(stderr,"random %d\n",randomization_itime);
+    */
+
+    /* 
+       k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 
+    */
+    vk[0].x=1; vk[0].y=0; vk[0].z=0; 
+    vk[1].x=0; vk[1].y=1; vk[1].z=0; 
+    vk[2].x=0; vk[2].y=0; vk[2].z=1; 
+    vk[3].x=1; vk[3].y=1; vk[3].z=0; 
+    vk[4].x=0; vk[4].y=1; vk[4].z=1; 
+    vk[5].x=1; vk[5].y=0; vk[5].z=1;
+
+    if(itime%randomization_itime == 0){ 
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi[ii].x = drand48();
+	  phi[ii].y = drand48();
+	  phi[ii].z = drand48();
+	}
+      }
+    MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
+#endif
+
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -1165,38 +1198,7 @@ void build_forcing(){
 
 #endif  
 
-#ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */
-
-    /* k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 
-       Therefore :
-       kx , ky , kz 
-       1  , 0  , 0
-       0  , 1  , 0
-       0  , 0  , 1
-       1  , 1  , 0
-       0  , 1  , 1
-       1  , 0  , 1
-    */
-
-	
-    if(i==BRD && j==BRD && k==BRD && itime%320 == 0){ 
-      if(ROOT){ 
-	for (ii=0; ii<nk; ii++){
-	  phi[ii].x = drand48();
-	  phi[ii].y = drand48();
-	  phi[ii].z = drand48();
-	}
-      }
-    MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
-    }
-
-	
-    vk[0].x=1; vk[0].y=0; vk[0].z=0; 
-    vk[1].x=0; vk[1].y=1; vk[1].z=0; 
-    vk[2].x=0; vk[2].y=0; vk[2].z=1; 
-    vk[3].x=1; vk[3].y=1; vk[3].z=0; 
-    vk[4].x=0; vk[4].y=1; vk[4].z=1; 
-    vk[5].x=1; vk[5].y=0; vk[5].z=1;
+#ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
 
     for(ii=0; ii<nk; ii++){
       force[IDX(i,j,k)].x += property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
