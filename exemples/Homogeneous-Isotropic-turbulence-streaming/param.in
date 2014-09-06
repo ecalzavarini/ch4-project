@@ -1,0 +1,50 @@
+resume 1
+
+NX 128
+NY 128
+NZ 128
+
+SX 128
+SY 128
+SZ 128
+
+time_dt 1.0
+time_start 0.0
+time_end 50000.
+time_dump_field 5000.
+time_dump_diagn 50.
+
+tau_u 0.52
+
+Amp_x 0.00001
+Amp_y 0.00001
+Amp_z 0.00001
+
+tau_t 1.0
+T_bot  1.
+T_top -1.
+T_ref 0.0
+
+beta_t  1897.778
+beta2_t 0.0
+
+gravity_x 0.0
+gravity_y 0.000001
+gravity_z 0.0
+
+Amp_t 0.02
+
+T_solid 1.001
+latent_heat 1
+specific_heat 1
+
+
+tau_s 1.0
+S_bot  -1.
+S_top  1.
+S_ref 0.0
+
+beta_s 0.001897778
+
+
+particle_number 8000
