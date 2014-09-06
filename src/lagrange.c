@@ -93,18 +93,18 @@ for (i=0;i<npart;i++) {
 #endif
 
 /* position: randomly distributed particles */
-(tracer+i)->x = LNX_START + drand48()*LNX;
-(tracer+i)->y = LNY_START + drand48()*LNY;
-(tracer+i)->z = LNZ_START + drand48()*LNZ;
+(tracer+i)->x = LNX_START + myrand()*LNX;
+(tracer+i)->y = LNY_START + myrand()*LNY;
+(tracer+i)->z = LNZ_START + myrand()*LNZ;
 
 #ifdef LB_FLUID_FORCING_LANDSCAPE
 /* This part is to not to put particle in static (solid)  LANDSCAPE */
  solid = 1.0;
  while(solid==1.0){
 
-(tracer+i)->x = LNX_START + drand48()*LNX;
-(tracer+i)->y = LNY_START + drand48()*LNY;
-(tracer+i)->z = LNZ_START + drand48()*LNZ;
+(tracer+i)->x = LNX_START + myrand()*LNX;
+(tracer+i)->y = LNY_START + myrand()*LNY;
+(tracer+i)->z = LNZ_START + myrand()*LNZ;
 
 for (n=0; n<LNX+TWO_BRD-1; n++) if(center_V[IDX(n, BRD, BRD)].x <= (tracer+i)->x && (tracer+i)->x < center_V[IDX(n+1,BRD, BRD)].x) im = n; 
 ip =  im + 1;

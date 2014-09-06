@@ -129,7 +129,7 @@ void initial_conditions(int restart)
     fn=0.2*property.Amp_x;
         /* random component of amplitude 0.1 U_max in each direction */
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] += 3.0*fn*wgt[pp]*( (2.0*drand48()-1.0)*c[pp].x + (2.0*drand48()-1.0)*c[pp].y + (2.0*drand48()-1.0)*c[pp].z );  
+	  p[IDX(i,j,k)].p[pp] += 3.0*fn*wgt[pp]*( (2.0*myrand()-1.0)*c[pp].x + (2.0*myrand()-1.0)*c[pp].y + (2.0*myrand()-1.0)*c[pp].z );  
 
 #endif 
 
@@ -284,8 +284,8 @@ void initial_conditions(int restart)
    for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*drand48()-1.0);
-	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*drand48()-1.0);
+	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
+	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
       }
 #endif
 

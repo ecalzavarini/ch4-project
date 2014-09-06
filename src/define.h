@@ -2,6 +2,9 @@
 //#define DEBUG
 //#define DEBUG_HARD
 
+/* RANDOM NUMBERS */
+//#define RANDOM48
+
 /* PARALLEL*/
 #define NEW_SENDRECV  /* does not use itermediate transfer buffers */
 
@@ -34,7 +37,7 @@
 
 /* FLUID */
 #define LB_FLUID
-//#define LB_FLUID_INITIAL_KOLMOGOROV 
+#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -134,8 +137,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FLUCTUATION  
 
 /* Lagragian parts */
-#define LAGRANGE
-#define LAGRANGE_WRAP
+//#define LAGRANGE
+//#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
 //#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS

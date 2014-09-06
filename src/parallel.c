@@ -79,11 +79,18 @@ void initialization_MPI(int argc, char **argv){
 #endif
 
  /* Initialize random seeds */
+#ifdef RANDOM48
   seed = time(NULL); 
   srand48(me+seed);
-#ifdef DEBUG_HARD
-fprintf(stderr,"me %d drand48() %e\n",me, drand48());
+#else
+  initdum = -time(NULL); /* the minus sign is very important */
+  initdum -= me;
+  idum = &initdum;
 #endif
+
+  //#ifdef DEBUG_HARD
+fprintf(stderr,"RANDOM me %d drand48() %e\n",me, myrand());
+//#endif
 
 
 }

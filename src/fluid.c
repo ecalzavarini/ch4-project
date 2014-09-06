@@ -1120,9 +1120,9 @@ void build_forcing(){
     if(itime%randomization_itime == 0){ 
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
-	  phi[ii].x = drand48();
-	  phi[ii].y = drand48();
-	  phi[ii].z = drand48();
+	  phi[ii].x = myrand();
+	  phi[ii].y = myrand();
+	  phi[ii].z = myrand();
 	}
       }
     MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);

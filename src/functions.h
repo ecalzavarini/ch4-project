@@ -80,3 +80,9 @@ void boundary_conditions_hydro();
 void write_point_particle_h5();
 void read_point_particle_h5();
 #endif
+
+/* random.c */
+double myrand();
+#ifndef RANDOM48
+double ran1();
+#endif

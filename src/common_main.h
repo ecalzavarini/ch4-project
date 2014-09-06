@@ -34,7 +34,12 @@ MPI_Datatype MPI_point_particle_type;
 
 
 /* random seed */
+#ifdef RANDOM48
 unsigned int seed;
+#else
+long * idum;
+long initdum;
+#endif
 
 /* resume */
 int resume;

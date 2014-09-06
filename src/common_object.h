@@ -33,7 +33,12 @@ extern MPI_Datatype MPI_point_particle_type;
 #endif
 
 /* random seed */
+#ifdef RANDOM48
 extern unsigned int seed;
+#else
+extern long * idum;
+extern long initdum;
+#endif
 
 /* resume */
 extern int resume;
