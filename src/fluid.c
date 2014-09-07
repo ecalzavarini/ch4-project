@@ -1719,7 +1719,7 @@ if(LNZ_START == 0 && k == BRD){
 #endif
 
 
-#ifdef LB_TEMPERATURE
+//#ifdef LB_TEMPERATURE
 vector gradient_scalar(my_double *t, int i, int j, int k){
 
   vector grad;
@@ -1848,4 +1848,4 @@ if(LNZ_START == 0 && k == BRD){
 
     return grad;
 }
-#endif
+//#endif
