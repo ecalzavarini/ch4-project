@@ -258,6 +258,8 @@ void assign_parameters(){
  #ifdef LB_SCALAR_BUOYANCY
   fprintf(stderr,"YES <- LB_SCALAR_BUOYANCY\n");
   sprintf(name,"beta_s");
+  property.beta_s = read_parameter(name);
+  fprintf(stderr,"linear volume expansion coefficient for scalar %g\n",(double)property.beta_s);
  #endif
 #endif
 
