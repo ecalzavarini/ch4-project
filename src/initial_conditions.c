@@ -196,8 +196,18 @@ void initial_conditions(int restart)
 #endif 
 
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
-        /* constant temperature */
-        t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
+#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
+        /* constant mean temperature */
+	//t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
+#endif
+#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_BOT
+        /* constant bottom temperature */
+        // t[IDX(i,j,k)] = property.T_bot;
+#endif
+#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_TOP
+        /* constant top temperature */
+         t[IDX(i,j,k)] = property.T_top;
+#endif
 #endif
 
 #ifdef LB_TEMPERATURE_INITIAL_BL
@@ -265,6 +275,15 @@ void initial_conditions(int restart)
 	y = (my_double)center_V[IDX(i,j,k)].y;
 	s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );			
 #endif 
+
+#ifdef LB_SCALAR_INITIAL_ADD_PERTURBATION	 
+      if(NZ==1){
+        if(center_V[IDX(i, j, k)].x<property.SX/2){ s[IDX(i,j,k)] += 1.e-2; }else{ s[IDX(i,j,k)] -= 1.e-2; }
+      }else{
+	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ s[IDX(i,j,k)] += 1.e-1; }else{ s[IDX(i,j,k)] -= 0.25e-1; }
+      }
+#endif
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];

@@ -1226,8 +1226,6 @@ void build_forcing(){
 
 #ifdef LB_SCALAR_BUOYANCY
       //my_double temp, fac;
-
-
       temp =  s[IDX(i,j,k)] - 0.5*(property.S_bot + property.S_top);
 
       fac = property.beta_s*temp;
@@ -1308,7 +1306,7 @@ void build_forcing(){
 
 #ifdef LB_TEMPERATURE_FORCING_REACTION
   /* make the field reactive */
-  t_source[IDX(i,j,k)] = t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
+  t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_BULK
