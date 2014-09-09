@@ -38,6 +38,21 @@ void add_output(output *f, output *g, int size){
     f[i].enth += g[i].enth;
 #endif
 #endif
+#ifdef LB_SCALAR
+    f[i].dxs += g[i].dxs;
+    f[i].dys += g[i].dys;
+    f[i].dzs += g[i].dzs;
+    f[i].uxs += g[i].uxs;
+    f[i].uys += g[i].uys;
+    f[i].uzs += g[i].uzs;
+    f[i].nusx += g[i].nusx;
+    f[i].nusy += g[i].nusy; 
+    f[i].nusz += g[i].nusz;
+    f[i].s   += g[i].s;
+    f[i].s2  += g[i].s2;
+    f[i].epss += g[i].epss; 
+#endif
+
   }
 }
 
@@ -59,12 +74,19 @@ void dump_averages(){
   my_double lf, dtlf, enth;
 #endif 
 #endif
-
+#ifdef LB_SCALAR
+  my_double scal,s2,epss,dxs,dys,dzs,uxs,uys,uzs,nusx,nusy,nusz;
+  vector grad_s;
+#endif
 
   x=y=z=ux=uy=uz=ux2=uy2=uz2=ene=rho=eps=0.0;
 
 #ifdef LB_TEMPERATURE
 temp = t2 = epst = dxt = dyt = dzt = uxt= uyt = uzt = nux = nuy = nuz= lb = 0.0;
+#endif
+
+#ifdef LB_SCALAR
+scal = s2 = epss = dxs = dys = dzs = uxs = uys = uzs = nusx = nusy = nusz = 0.0;
 #endif
 
 /* if on diagnostic */
@@ -89,41 +111,6 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     out_local.rho = 0.0;
     out_local.ene = 0.0;
     out_local.eps = 0.0;
-    /*
-    for (i = 0; i < NX; i++){ 
-      ruler_x_local[i].x   = ruler_x_local[i].y   = ruler_x_local[i].z  = 0.0;
-      ruler_x_local[i].ux  = ruler_x_local[i].uy  = ruler_x_local[i].uz  = 0.0;
-      ruler_x_local[i].ux2 = ruler_x_local[i].uy2 = ruler_x_local[i].uz2 = 0.0;
-      ruler_x_local[i].rho = ruler_x_local[i].ene = ruler_x_local[i].eps = 0.0;
-
-      ruler_x[i].x   = ruler_x[i].y   = ruler_x[i].z  = 0.0;
-      ruler_x[i].ux  = ruler_x[i].uy  = ruler_x[i].uz  = 0.0;
-      ruler_x[i].ux2 = ruler_x[i].uy2 = ruler_x[i].uz2 = 0.0;
-      ruler_x[i].rho = ruler_x[i].ene = ruler_x[i].eps = 0.0;
-    }
-    for (i = 0; i < NY; i++){ 
-      ruler_y_local[i].x   = ruler_y_local[i].y   = ruler_y_local[i].z  = 0.0;
-      ruler_y_local[i].ux  = ruler_y_local[i].uy  = ruler_y_local[i].uz  = 0.0;
-      ruler_y_local[i].ux2 = ruler_y_local[i].uy2 = ruler_y_local[i].uz2 = 0.0;
-      ruler_y_local[i].rho = ruler_y_local[i].ene = ruler_y_local[i].eps = 0.0;
-
-      ruler_y[i].x   = ruler_y[i].y   = ruler_y[i].z  = 0.0;
-      ruler_y[i].ux  = ruler_y[i].uy  = ruler_y[i].uz  = 0.0;
-      ruler_y[i].ux2 = ruler_y[i].uy2 = ruler_y[i].uz2 = 0.0;
-      ruler_y[i].rho = ruler_y[i].ene = ruler_y[i].eps = 0.0;
-    } 
-    for (i = 0; i < NZ; i++){ 
-      ruler_z_local[i].x   = ruler_z_local[i].y   = ruler_z_local[i].z  = 0.0;
-      ruler_z_local[i].ux  = ruler_z_local[i].uy  = ruler_z_local[i].uz  = 0.0;
-      ruler_z_local[i].ux2 = ruler_z_local[i].uy2 = ruler_z_local[i].uz2 = 0.0;
-      ruler_z_local[i].rho = ruler_z_local[i].ene = ruler_z_local[i].eps = 0.0;
-
-      ruler_z[i].x   = ruler_z[i].y   = ruler_z[i].z  = 0.0;
-      ruler_z[i].ux  = ruler_z[i].uy  = ruler_z[i].uz  = 0.0;
-      ruler_z[i].ux2 = ruler_z[i].uy2 = ruler_z[i].uz2 = 0.0;
-      ruler_z[i].rho = ruler_z[i].ene = ruler_z[i].eps = 0.0;
-    }
-    */
 #endif
 
 
@@ -135,68 +122,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     out_local.t2 = 0.0;
     out_local.epst = 0.0;
     out_local.lb = 0.0;
-    /*
-    for (i = 0; i < NX; i++){ 
-      ruler_x_local[i].dxt   = ruler_x_local[i].dyt   = ruler_x_local[i].dzt  = 0.0;
-      ruler_x_local[i].uxt  = ruler_x_local[i].uyt  = ruler_x_local[i].uzt  = 0.0;
-      ruler_x_local[i].nux = ruler_x_local[i].nuy = ruler_x_local[i].nuz = 0.0;
-      ruler_x_local[i].t = ruler_x_local[i].t2 = ruler_x_local[i].epst = 0.0;
-      ruler_x_local[i].lb = 0.0;
-
-      ruler_x[i].dxt   = ruler_x[i].dyt   = ruler_x[i].dzt  = 0.0;
-      ruler_x[i].uxt  = ruler_x[i].uyt  = ruler_x[i].uzt  = 0.0;
-      ruler_x[i].nux = ruler_x[i].nuy = ruler_x[i].nuz = 0.0;
-      ruler_x[i].t = ruler_x[i].t2 = ruler_x[i].epst = 0.0;
-      ruler_x[i].lb = 0.0;
-    }
-    for (i = 0; i < NY; i++){ 
-      ruler_y_local[i].dxt   = ruler_y_local[i].dyt   = ruler_y_local[i].dzt  = 0.0;
-      ruler_y_local[i].uxt  = ruler_y_local[i].uyt  = ruler_y_local[i].uzt  = 0.0;
-      ruler_y_local[i].nux = ruler_y_local[i].nuy = ruler_y_local[i].nuz = 0.0;
-      ruler_y_local[i].t = ruler_y_local[i].t2 = ruler_y_local[i].epst = 0.0;
-      ruler_y_local[i].lb = 0.0;
-
-      ruler_y[i].dxt   = ruler_y[i].dyt   = ruler_y[i].dzt  = 0.0;
-      ruler_y[i].uxt  = ruler_y[i].uyt  = ruler_y[i].uzt  = 0.0;
-      ruler_y[i].nux = ruler_y[i].nuy = ruler_y[i].nuz = 0.0;
-      ruler_y[i].t = ruler_y[i].t2 = ruler_y[i].epst = 0.0;
-      ruler_y[i].lb = 0.0;
-    } 
-    for (i = 0; i < NZ; i++){ 
-      ruler_z_local[i].dxt   = ruler_z_local[i].dyt   = ruler_z_local[i].dzt  = 0.0;
-      ruler_z_local[i].uxt  = ruler_z_local[i].uyt  = ruler_z_local[i].uzt  = 0.0;
-      ruler_z_local[i].nux = ruler_z_local[i].nuy = ruler_z_local[i].nuz = 0.0;
-      ruler_z_local[i].t = ruler_z_local[i].t2 = ruler_z_local[i].epst = 0.0;
-      ruler_z_local[i].lb = 0.0;
-
-      ruler_z[i].dxt   = ruler_z[i].dyt   = ruler_z[i].dzt  = 0.0;
-      ruler_z[i].uxt  = ruler_z[i].uyt  = ruler_z[i].uzt  = 0.0;
-      ruler_z[i].nux = ruler_z[i].nuy = ruler_z[i].nuz = 0.0;
-      ruler_z[i].t = ruler_z[i].t2 = ruler_z[i].epst = 0.0;
-      ruler_z[i].lb = 0.0;
-    }
-    */
 #ifdef LB_TEMPERATURE_MELTING
     out_local.lf = out_local.dtlf = out_local.enth = 0.0; 
-    /*
-    for (i = 0; i < NX; i++){ 
-      ruler_x_local[i].lf   = ruler_x_local[i].dtlf   = ruler_x_local[i].enth  = 0.0;
-      ruler_x[i].lf   = ruler_x[i].dtlf   = ruler_x[i].enth  = 0.0;
-    }
-
-    for (i = 0; i < NY; i++){ 
-      ruler_y_local[i].lf   = ruler_y_local[i].dtlf   = ruler_y_local[i].enth  = 0.0;
-      ruler_y[i].lf   = ruler_y[i].dtlf   = ruler_y[i].enth  = 0.0;
-    } 
-
-    for (i = 0; i < NZ; i++){ 
-      ruler_z_local[i].lf   = ruler_z_local[i].dtlf   = ruler_z_local[i].enth  = 0.0;
-      ruler_z[i].lf   = ruler_z[i].dtlf   = ruler_z[i].enth  = 0.0;
-    }
-    */
 #endif
 #endif
 
+#ifdef LB_SCALAR
+    out_local.dxs = out_local.dys = out_local.dzs = 0.0; 
+    out_local.uxs = out_local.uys = out_local.uzs = 0.0; 
+    out_local.nusx = out_local.nusy = out_local.nusz = 0.0; 
+    out_local.s = 0.0;
+    out_local.s2 = 0.0;
+    out_local.epss = 0.0;
+#endif
 
     /* Here we send recv to compute the gradients */
 #ifdef LB_FLUID
@@ -204,6 +142,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #endif
 #ifdef LB_TEMPERATURE
     sendrecv_borders_scalar(t);
+#endif
+#ifdef LB_SCALAR
+    sendrecv_borders_scalar(s);
 #endif
 
 
@@ -307,7 +248,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
 #ifdef LB_TEMPERATURE
 			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
-			  /* note thet t field must be communicate first -> it has been done above */
+			  /* note that t field must be communicated first -> it has been done above */
 			  grad_t=gradient_scalar(t,i,j,k);
 
 			  dxt = grad_t.x*vol;
@@ -407,6 +348,85 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #endif 
 
 #endif
+
+
+
+
+#ifdef LB_SCALAR
+			  /* NB: this gradient definition assumes a (refined or not) cartesian grid */
+			  /* note that s field must be communicated first -> it has been done above */
+			  grad_s=gradient_scalar(s,i,j,k);
+
+			  dxs = grad_s.x*vol;
+			  out_local.dxs += dxs;
+			  ruler_x_local[i -BRD + LNX_START].dxs += dxs*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].dxs += dxs*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].dxs += dxs*inv_lz;
+
+			  dys = grad_s.y*vol;
+			  out_local.dys += dys;
+			  ruler_x_local[i -BRD + LNX_START].dys += dys*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].dys += dys*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].dys += dys*inv_lz;
+
+			  dzs = grad_s.z*vol;
+			  out_local.dzs += dzs;
+			  ruler_x_local[i -BRD + LNX_START].dzs += dzs*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].dzs += dzs*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].dzs += dzs*inv_lz;
+			  
+
+			  out_local.uxs += uxs = u[IDX(i, j, k)].x*s[IDX(i, j, k)]*vol;
+			  ruler_x_local[i -BRD + LNX_START].uxs += uxs*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].uxs += uxs*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].uxs += uxs*inv_lz;
+
+			  out_local.uys += uys = u[IDX(i, j, k)].y*s[IDX(i, j, k)]*vol;
+			  ruler_x_local[i -BRD + LNX_START].uys += uys*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].uys += uys*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].uys += uys*inv_lz;
+
+			  out_local.uzs += uzs = u[IDX(i, j, k)].z*s[IDX(i, j, k)]*vol;
+			  ruler_x_local[i -BRD + LNX_START].uzs += uzs*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].uzs += uzs*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].uzs += uzs*inv_lz;
+
+			  nusx = ( - property.kappa*dxs + uxs );
+			  out_local.nusx += nusx;
+			  ruler_x_local[i -BRD + LNX_START].nusx += nusx*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].nusx += nusx*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].nusx += nusx*inv_lz;
+
+			  nusy = ( - property.kappa*dys + uys );
+			  out_local.nusy += nusy;
+			  ruler_x_local[i -BRD + LNX_START].nusy += nusy*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].nusy += nusy*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].nusy += nusy*inv_lz;
+
+			  nusz = ( - property.kappa*dzs + uzs );
+			  out_local.nusz += nusz;
+			  ruler_x_local[i -BRD + LNX_START].nusz += nusz*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].nusz += nusz*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].nusz += nusz*inv_lz;
+
+			  out_local.s += scal = s[IDX(i, j, k)]*vol;
+			  ruler_x_local[i -BRD + LNX_START].s += scal*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].s += scal*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].s += scal*inv_lz;
+
+			  s2=s[IDX(i, j, k)]*s[IDX(i, j, k)]*vol;
+			  out_local.s2 += s2;
+			  ruler_x_local[i -BRD + LNX_START].s2 += s2*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].s2 += s2*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].s2 += s2*inv_lz;
+			  
+			  epss = property.kappa*(grad_s.x*grad_s.x + grad_s.y*grad_s.y + grad_s.z*grad_s.z)*vol; 
+			  out_local.epst += epss; 
+			  ruler_x_local[i -BRD + LNX_START].epss += epss*inv_lx;
+			  ruler_y_local[j -BRD + LNY_START].epss += epss*inv_ly;
+			  ruler_z_local[k -BRD + LNZ_START].epss += epss*inv_lz;
+#endif
+
 
 			} /* for i j k */      
 
@@ -612,6 +632,80 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #endif 
 
 
+  /*SCALAR */
+#ifdef LB_SCALAR
+
+#ifdef OUTPUT_NORM
+  /* normalization */
+  norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+  out_all.s *= norm;
+  out_all.s2 *= norm;
+  out_all.epss  *= norm;
+  out_all.dxs  *= norm;
+  out_all.dys  *= norm;
+  out_all.dzs *= norm;
+  out_all.uxs *= norm;
+  out_all.uys *= norm;
+  out_all.uzs *= norm;
+  out_all.nusx *= norm/( property.chi*property.deltaS/property.SY );
+  out_all.nusy *= norm/( property.chi*property.deltaS/property.SY );
+  out_all.nusz *= norm/( property.chi*property.deltaS/property.SY );
+
+
+  norm = 1.0/(my_double)(property.SY*property.SZ);
+  for (i = 0; i < NX; i++){
+    ruler_x[i].s *= norm;
+    ruler_x[i].s2 *= norm;
+    ruler_x[i].epss *= norm;
+    ruler_x[i].dxs *= norm; 
+    ruler_x[i].dys *= norm;
+    ruler_x[i].dzs *= norm;
+    ruler_x[i].uxs *= norm;
+    ruler_x[i].uys *= norm;
+    ruler_x[i].uzs *= norm;
+    ruler_x[i].nusx *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_x[i].nusy *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_x[i].nusz *= norm/( property.chi*property.deltaS/property.SY );
+  }
+
+
+  norm = 1.0/(my_double)(property.SX*property.SZ);
+  for (i = 0; i < NY; i++){
+    ruler_y[i].s *= norm;
+    ruler_y[i].s2 *= norm;
+    ruler_y[i].epss *= norm;
+    ruler_y[i].dxs *= norm; 
+    ruler_y[i].dys *= norm;
+    ruler_y[i].dzs *= norm;
+    ruler_y[i].uxs *= norm;
+    ruler_y[i].uys *= norm;
+    ruler_y[i].uzs *= norm;
+    ruler_y[i].nusx *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_y[i].nusy *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_y[i].nusz *= norm/( property.chi*property.deltaS/property.SY );
+  }
+
+
+  norm = 1.0/(my_double)(property.SY*property.SZ);
+  for (i = 0; i < NZ; i++){
+    ruler_z[i].s *= norm;
+    ruler_z[i].s2 *= norm;
+    ruler_z[i].epss *= norm;
+    ruler_z[i].dxs *= norm; 
+    ruler_z[i].dys *= norm;
+    ruler_z[i].dzs *= norm;
+    ruler_z[i].uxs *= norm;
+    ruler_z[i].uys *= norm;
+    ruler_z[i].uzs *= norm;
+    ruler_z[i].nusx *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_z[i].nusy *= norm/( property.chi*property.deltaS/property.SY );
+    ruler_z[i].nusz *= norm/( property.chi*property.deltaS/property.SY );
+  }
+#endif
+#endif 
+
+
+
   /* Here running averages */
   add_output(ruler_x_running,ruler_x,NX);
   add_output(ruler_y_running,ruler_y,NY);
@@ -739,6 +833,50 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fclose(fout);
   }
 #endif
+#endif
+
+
+/*SCALAR */
+#ifdef LB_SCALAR
+  if(ROOT){
+    sprintf(fname,"scalar_averages.dat");
+    fout = fopen(fname,"a");    
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.s,(double)out_all.s2, (double)out_all.epss, (double)out_all.dxs, (double)out_all.dys, (double)out_all.dzs , (double)out_all.uxs, (double)out_all.uys, (double)out_all.uzs,(double)out_all.nusx, (double)out_all.nusy, (double)out_all.nusz);
+    fclose(fout);
+
+    sprintf(fname,"scalar_averages_x.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].s, (double)ruler_x[i].s2, (double)ruler_x[i].epss, (double)ruler_x[i].dxs, (double)ruler_x[i].dys, (double)ruler_x[i].dzs, (double)ruler_x[i].uxs, (double)ruler_x[i].uys, (double)ruler_x[i].uzs, (double)ruler_x[i].nusx, (double)ruler_x[i].nusy, (double)ruler_x[i].nusz);
+    fclose(fout);
+
+    sprintf(fname,"scalar_averages_y.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].s, (double)ruler_y[j].s2, (double)ruler_y[j].epss, (double)ruler_y[j].dxs, (double)ruler_y[j].dys, (double)ruler_y[j].dzs, (double)ruler_y[j].uxs, (double)ruler_y[j].uys,(double)ruler_y[j].uzs, (double)ruler_y[j].nusx, (double)ruler_y[j].nusy, (double)ruler_y[j].nusz);
+    fclose(fout);
+
+    sprintf(fname,"scalar_averages_z.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].s, (double)ruler_z[k].s2, (double)ruler_z[k].epss, (double)ruler_z[k].dxs, (double)ruler_z[k].dys, (double)ruler_z[k].dzs , (double)ruler_z[k].uxs, (double)ruler_z[k].uys, (double)ruler_z[k].uzs, (double)ruler_z[k].nusx, (double)ruler_z[k].nusy, (double)ruler_z[k].nusz);
+    fclose(fout);
+
+
+    sprintf(fname,"scalar_averages_x_run.dat");
+    fout = fopen(fname,"w");
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].s/(double)irun, (double)ruler_x_running[i].s2/(double)irun, (double)ruler_x_running[i].epss/(double)irun, (double)ruler_x_running[i].dxs/(double)irun, (double)ruler_x_running[i].dys/(double)irun, (double)ruler_x_running[i].dzs/(double)irun , (double)ruler_x_running[i].uxs/(double)irun, (double)ruler_x_running[i].uys/(double)irun, (double)ruler_x_running[i].uzs/(double)irun, (double)ruler_x_running[i].nusx/(double)irun, (double)ruler_x_running[i].nusy/(double)irun, (double)ruler_x_running[i].nusz/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"scalar_averages_y_run.dat");
+    fout = fopen(fname,"w");
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].s/(double)irun, (double)ruler_y_running[j].s2/(double)irun, (double)ruler_y_running[j].epss/(double)irun, (double)ruler_y_running[j].dxs/(double)irun, (double)ruler_y_running[j].dys/(double)irun, (double)ruler_y_running[j].dzs/(double)irun , (double)ruler_y_running[j].uxs/(double)irun, (double)ruler_y_running[j].uys/(double)irun,(double)ruler_y_running[j].uzs/(double)irun, (double)ruler_y_running[j].nusx/(double)irun, (double)ruler_y_running[j].nusy/(double)irun, (double)ruler_y_running[j].nusz/(double)irun);
+    fclose(fout);
+
+    sprintf(fname,"scalar_averages_z_run.dat");
+    fout = fopen(fname,"w");
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].s/(double)irun, (double)ruler_z_running[k].s2/(double)irun, (double)ruler_z_running[k].epss/(double)irun, (double)ruler_z_running[k].dxs/(double)irun, (double)ruler_z_running[k].dys/(double)irun, (double)ruler_z_running[k].dzs/(double)irun , (double)ruler_z_running[k].uxs/(double)irun, (double)ruler_z_running[k].uys/(double)irun, (double)ruler_z_running[k].uzs/(double)irun, (double)ruler_z_running[k].nusx/(double)irun, (double)ruler_z_running[k].nusy/(double)irun, (double)ruler_z_running[k].nusz/(double)irun);
+    fclose(fout);
+  }
+
+
 #endif
 
 

@@ -137,9 +137,13 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LB_SCALAR
 //#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
+#define LB_SCALAR_INITIAL_CONSTANT
+//#define LB_SCALAR_INITIAL_CONSTANT_MEAN                                                                                                                                                                          
+//#define LB_SCALAR_INITIAL_CONSTANT_BOT                                                                                                                                                                           
+#define LB_SCALAR_INITIAL_CONSTANT_TOP
 //#define LB_SCALAR_BUOYANCY
-//#define LB_SCALAR_BC
-//#define LB_SCALAR_BC_Y
+#define LB_SCALAR_BC
+#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_FLUCTUATION  
 #define LB_SCALAR_FORCING
 #define LB_SCALAR_FORCING_REACTION

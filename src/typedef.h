@@ -107,7 +107,13 @@ typedef struct {
   my_double lf, dtlf, enth;
 #endif		
 #endif
-	
+#ifdef LB_SCALAR
+  my_double s,s2,epss;
+  my_double dxs,dys,dzs;
+  my_double uxs,uys,uzs;
+  my_double nusx,nusy,nusz;
+#endif	
+
 } output;
 
 #define NOUT SIZE_STRUCT(output)

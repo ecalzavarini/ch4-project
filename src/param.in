@@ -39,9 +39,9 @@ latent_heat 1
 specific_heat 1
 
 
-tau_s 1.0
+tau_s 0.6
 S_bot  1.
-S_top  -1.
+S_top  0.
 S_ref 0.0
 
 beta_s 0.001897778

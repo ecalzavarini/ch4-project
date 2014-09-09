@@ -35,6 +35,21 @@ for (i = 0; i < *length; i++) {
   (b+i)->t    += (a+i)->t;
   (b+i)->t2   += (a+i)->t2;
   (b+i)->epst += (a+i)->epst;
+  //  (b+i)->lb += (a+i)->lb;
+#endif
+#ifdef LB_SCALAR
+  (b+i)->dxs  += (a+i)->dxs;
+  (b+i)->dys  += (a+i)->dys;
+  (b+i)->dzs  += (a+i)->dzs;
+  (b+i)->uxs  += (a+i)->uxs;
+  (b+i)->uys  += (a+i)->uys;
+  (b+i)->uzs  += (a+i)->uzs;
+  (b+i)->nusx  += (a+i)->nusx;
+  (b+i)->nusy  += (a+i)->nusy;
+  (b+i)->nusz  += (a+i)->nusz;
+  (b+i)->s    += (a+i)->s;
+  (b+i)->s2   += (a+i)->s2;
+  (b+i)->epss += (a+i)->epss;
 #endif
  }
 

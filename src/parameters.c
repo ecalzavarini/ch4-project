@@ -350,6 +350,12 @@ void set_to_zero_output(output  *f,int size){
     f[i].lf = f[i].dtlf = f[i].enth = 0.0; 
 #endif
 #endif
+#ifdef LB_SCALAR
+    f[i].dxs = f[i].dys = f[i].dzs = 0.0; 
+    f[i].uxs = f[i].uys = f[i].uzs = 0.0; 
+    f[i].nusx = f[i].nusy = f[i].nusz = 0.0; 
+    f[i].s = f[i].s2 = f[i].epss = 0.0;
+#endif
   }
 }
 

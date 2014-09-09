@@ -284,6 +284,20 @@ void initial_conditions(int restart)
       }
 #endif
 
+#ifdef LB_SCALAR_INITIAL_CONSTANT
+#ifdef LB_SCALAR_INITIAL_CONSTANT_MEAN
+        /* constant mean scalar */
+	  s[IDX(i,j,k)] = 0.5*(property.S_top + property.S_bot);
+#endif
+#ifdef LB_SCALAR_INITIAL_CONSTANT_BOT
+        /* constant bottom scalar */
+          s[IDX(i,j,k)] = property.S_bot;
+#endif
+#ifdef LB_SCALAR_INITIAL_CONSTANT_TOP
+        /* constant top scalar */
+          s[IDX(i,j,k)] = property.S_top;
+#endif
+#endif
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];
