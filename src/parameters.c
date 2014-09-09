@@ -261,6 +261,11 @@ void assign_parameters(){
   property.beta_s = read_parameter(name);
   fprintf(stderr,"linear volume expansion coefficient for scalar %g\n",(double)property.beta_s);
  #endif
+ #ifdef LB_SCALAR_FORCING
+  sprintf(name,"Amp_s");
+  property.Amp_s = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.Amp_s ); 
+ #endif
 #endif
 
 
@@ -791,6 +796,12 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
  s  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(s == NULL){ fprintf(stderr,"Not enough memory to allocate s\n"); exit(-1);}
  set_to_zero_my_double( s,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ #ifdef LB_SCALAR_FORCING
+ s_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(s_source == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
+ set_to_zero_scalar( s_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ #endif
 #endif
 
 }
@@ -959,6 +970,10 @@ free(ym_zm_edge_pop);
  free(old_rhs_h);  
  free(old_old_rhs_h);  
  free(s);  
+
+ #ifdef LB_SCALAR_FORCING
+ free(s_source);
+ #endif
 #endif
 
 }

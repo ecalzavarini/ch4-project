@@ -754,7 +754,7 @@ if(LNY_END == NY){
 	  
 	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
 	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  wgt[pp]*(fac+t[IDX(i,j,k)]);	  
-	  	rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	      rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }	   
 	  }
  }

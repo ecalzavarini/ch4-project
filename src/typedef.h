@@ -72,6 +72,9 @@ typedef struct {
   #ifdef LB_SCALAR_BUOYANCY
   my_double beta_s;
   #endif
+  #ifdef LB_SCALAR_FORCING
+  my_double Amp_s;
+  #endif
  #endif
 #endif
 

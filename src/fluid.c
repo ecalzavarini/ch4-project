@@ -1273,7 +1273,7 @@ void build_forcing(){
 
 #endif
 
-/* From here HERE SOURCE TERM ON SCALAR FIELD */
+/* From here HERE SOURCE TERM ON TEMPERATURE FIELD */
 #ifdef LB_TEMPERATURE_FORCING
       /* set to zero */ 
       t_source[IDX(i,j,k)] = 0.0;
@@ -1324,11 +1324,24 @@ void build_forcing(){
 #endif
 
 
+/* From here HERE SOURCE TERM ON SCALAR FIELD */
+#ifdef LB_SCALAR_FORCING
+      /* set to zero */ 
+      s_source[IDX(i,j,k)] = 0.0;
+
+ #ifdef LB_SCALAR_FORCING_REACTION
+  /* make the field reactive */
+  s_source[IDX(i,j,k)] = property.Amp_s*s[IDX(i,j,k)]*(property.S_bot-s[IDX(i,j,k)]);
+ #endif
+
+#endif
+
+
       }/* i,j,k */
 }
 #endif
 
-#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
 void add_forcing(){
   int i, j, k, pp;
   my_double invtau = 1.0/property.tau_u;
@@ -1461,6 +1474,13 @@ void add_forcing(){
 	//rhs_g[IDX(i,j,k)].p[pp] =  invtau*(g[IDX(i,j,k)].p[pp] -  g_eq.p[pp]);
 	  }      
 #endif
+
+
+#ifdef LB_SCALAR_FORCING
+       /* same as before: not Guo here ? */
+	    rhs_h[IDX(i,j,k)].p[pp] += wgt[pp]*s_source[IDX(i,j,k)];
+#endif
+
 
 	}/* pp */
       }/* i,j,k */

@@ -1,38 +1,38 @@
 resume 0
 
-NX 32
-NY 32
-NZ 32
+NX 1
+NY 100
+NZ 1
 
-SX 32
-SY 32
-SZ 32
+SX 1
+SY 100
+SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 4000.
-time_dump_field 10.
-time_dump_diagn 100.
+time_end 10000.
+time_dump_field 100.
+time_dump_diagn 1.
 
 tau_u 1.0
 
-Amp_x 0.0001
-Amp_y 0.0001
-Amp_z 0.0001
+Amp_x 0.00001
+Amp_y 0.00001
+Amp_z 0.00001
 
-tau_t 1.0
-T_bot  1.
-T_top -1.
+tau_t 0.6
+T_bot 1.0
+T_top 0.0
 T_ref 0.0
 
-beta_t  1897.778
+beta_t  0.001897778
 beta2_t 0.0
 
 gravity_x 0.0
-gravity_y 0.000001
+gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.02
+Amp_t 0.01
 
 T_solid 1.001
 latent_heat 1
@@ -40,11 +40,12 @@ specific_heat 1
 
 
 tau_s 1.0
-S_bot  -1.
-S_top  1.
+S_bot  1.
+S_top  -1.
 S_ref 0.0
 
 beta_s 0.001897778
 
+Amp_s 0.01
 
-particle_number 8000
+particle_number 2000
