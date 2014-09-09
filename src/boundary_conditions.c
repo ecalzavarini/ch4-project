@@ -876,7 +876,14 @@ if(LNY_END == NY){
 	  S_wall = 0.0;
 #endif
 
+
+#ifdef LB_SCALAR_BC_YP_OUTLET
+	  /* this is the default fixed-at-wall bc */
+	  fac = 0.0;
+#else
+	  /* this is the default fixed-at-wall bc */
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
