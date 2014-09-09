@@ -198,11 +198,11 @@ void initial_conditions(int restart)
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
         /* constant mean temperature */
-	//t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
+	  t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
 #endif
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_BOT
         /* constant bottom temperature */
-        // t[IDX(i,j,k)] = property.T_bot;
+          t[IDX(i,j,k)] = property.T_bot;
 #endif
 #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_TOP
         /* constant top temperature */
