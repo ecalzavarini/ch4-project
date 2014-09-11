@@ -1510,9 +1510,9 @@ tensor strain_tensor(pop *f,int i, int j, int k){
 	S.xz += c[pp].x*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 	S.yz += c[pp].y*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
       }
-      S.xy = S.yx;
-      S.xz = S.zx;
-      S.yz = S.zy;
+      S.yx = S.xy;
+      S.zz = S.xz;
+      S.zy = S.yz;
 
       //fprintf(stderr,"SXY %e\n",f_eq.p[0]);
       return S;
