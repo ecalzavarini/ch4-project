@@ -42,6 +42,16 @@ extern long initdum;
 
 /* resume */
 extern int resume;
+#ifdef LB_FLUID
+extern int resume_u;
+#endif
+#ifdef LB_TEMPERATURE
+extern int resume_t;
+#endif
+#ifdef LB_SCALAR
+extern int resume_s;
+#endif
+
 
 /* System size , center nodes */
 extern int NX , NY , NZ;

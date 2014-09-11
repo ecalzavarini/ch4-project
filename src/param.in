@@ -1,18 +1,21 @@
-resume 0
+resume 1
+resume_u 1
+resume_t 1
+resume_s 0
 
-NX 1
-NY 100
+NX 404
+NY 50
 NZ 1
 
-SX 1
-SY 100
+SX 404
+SY 50
 SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 10000.
+time_end 5000.
 time_dump_field 100.
-time_dump_diagn 1.
+time_dump_diagn 10.
 
 tau_u 1.0
 
@@ -20,12 +23,12 @@ Amp_x 0.00001
 Amp_y 0.00001
 Amp_z 0.00001
 
-tau_t 0.6
-T_bot 1.0
-T_top 0.0
+tau_t 1.0
+T_bot  1.0
+T_top -1.0
 T_ref 0.0
 
-beta_t  0.001897778
+beta_t  0.008    0.001897778
 beta2_t 0.0
 
 gravity_x 0.0
@@ -38,10 +41,9 @@ T_solid 1.001
 latent_heat 1
 specific_heat 1
 
-
 tau_s 0.6
-S_bot  1.
-S_top  0.
+S_bot 1.
+S_top 0.
 S_ref 0.0
 
 beta_s 0.001897778

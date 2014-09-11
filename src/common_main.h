@@ -43,6 +43,15 @@ long initdum;
 
 /* resume */
 int resume;
+#ifdef LB_FLUID
+int resume_u;
+#endif
+#ifdef LB_TEMPERATURE
+int resume_t;
+#endif
+#ifdef LB_SCALAR
+int resume_s;
+#endif
 
 
 /* System size , for the nodes*/

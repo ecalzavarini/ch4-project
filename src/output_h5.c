@@ -429,21 +429,27 @@ void read_pop_h5(){
   ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
 
 #ifdef LB_FLUID
+  if(resume_u){
   edataset = H5Dopen(group,"velocity",H5P_DEFAULT); 
   ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, p);
   H5Dclose(edataset);
+  }
 #endif
 
 #ifdef LB_TEMPERATURE
+  if(resume_t){
   edataset = H5Dopen(group, "temperature", H5P_DEFAULT);
   ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, g);
   H5Dclose(edataset);
+  }
 #endif
 
 #ifdef LB_SCALAR
+  if(resume_s){
   edataset = H5Dopen(group, "scalar", H5P_DEFAULT);
   ret = H5Dread(edataset, hdf5_type, ememspace, efilespace, H5P_DEFAULT, h);
   H5Dclose(edataset);
+  }
 #endif
 
   MPI_Barrier(MPI_COMM_WORLD);

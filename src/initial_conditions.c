@@ -298,6 +298,12 @@ void initial_conditions(int restart)
           s[IDX(i,j,k)] = property.S_top;
 #endif
 #endif
+
+
+#ifdef LB_SCALAR_INITIAL_BULK
+	  if( abs(center_V[IDX(i,j,k)].x - property.SX/2.0)<10   ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
+#endif
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];

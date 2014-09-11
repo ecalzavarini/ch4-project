@@ -51,9 +51,21 @@ void assign_parameters(){
     remove("numbers.dat");
     /* read parameters from file */
 
-    /* resume */
+    /* resume flags */
     sprintf(name,"resume");
     resume = (int)read_parameter(name);
+#ifdef LB_FLUID
+    sprintf(name,"resume_u");
+    resume_u = (int)read_parameter(name);
+#endif
+#ifdef LB_TEMPERATURE
+    sprintf(name,"resume_t");
+    resume_t = (int)read_parameter(name);
+#endif
+#ifdef LB_SCALAR
+    sprintf(name,"resume_s");
+    resume_s = (int)read_parameter(name);
+#endif
 
     /* size of center nodes grid */
     sprintf(name,"NX");
@@ -287,6 +299,15 @@ void assign_parameters(){
 
  /* Now broadcast all properties */
  MPI_Bcast(&resume, 1, MPI_INT, 0, MPI_COMM_WORLD);
+#ifdef LB_FLUID
+ MPI_Bcast(&resume_u, 1, MPI_INT, 0, MPI_COMM_WORLD);
+#endif
+#ifdef LB_TEMPERATURE
+ MPI_Bcast(&resume_t, 1, MPI_INT, 0, MPI_COMM_WORLD);
+#endif
+#ifdef LB_SCALAR
+ MPI_Bcast(&resume_s, 1, MPI_INT, 0, MPI_COMM_WORLD);
+#endif
 
  MPI_Bcast(&NX, 1, MPI_INT, 0, MPI_COMM_WORLD);
  MPI_Bcast(&NY, 1, MPI_INT, 0, MPI_COMM_WORLD);
