@@ -19,5 +19,7 @@ clean:
 clean-dat:
 	rm -rf ./*.dat
 
+clean-RUN:
+	rm -rf ./RUN
 tar:
 	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile 
