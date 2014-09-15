@@ -22,4 +22,4 @@ clean-dat:
 clean-RUN:
 	rm -rf ./RUN
 tar:
-	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile 
+	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile ./*.in

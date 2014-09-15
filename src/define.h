@@ -3,7 +3,7 @@
 //#define DEBUG_HARD
 
 /* RANDOM NUMBERS */
-//#define RANDOM48
+//#define RANDOM48  /* does enable drand48 , default is our random number generator */
 
 /* PARALLEL*/
 #define NEW_SENDRECV  /* does not use itermediate transfer buffers */
@@ -11,7 +11,7 @@
 /* OUTPUT */
 //#define OUTPUT_ASCII
 #define OUTPUT_H5
-#define TIMING
+#define TIMING 
 
 /* GRID */
 #define GRID_REGULAR
@@ -37,7 +37,7 @@
 
 /* FLUID */
 #define LB_FLUID 
-#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -68,6 +68,7 @@
 //#define LB_FLUID_BC_YP_SLIP  
 #define LB_FLUID_BC_YM_JET                       
 #define LB_FLUID_BC_YP_OUTLET
+
 #define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_XM_SLIP                                             
 //#define LB_FLUID_BC_XP_SLIP                                               
@@ -76,8 +77,13 @@
 //#define LB_FLUID_BC_XM_INLET_POISEUILLE_HALF
 //#define LB_FLUID_BC_XM_INLET_CONSTANT
 #define LB_FLUID_BC_XM_OUTLET 
-#define LB_FLUID_BC_XP_OUTLET                                               
-//#define LB_FLUID_BC_Z  
+#define LB_FLUID_BC_XP_OUTLET  
+                                             
+//#define LB_FLUID_BC_Z
+//#define LB_FLUID_BC_ZM_SLIP                                             
+//#define LB_FLUID_BC_ZP_SLIP  
+//#define LB_FLUID_BC_ZM_OUTLET 
+//#define LB_FLUID_BC_ZP_OUTLET  
 
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
@@ -109,21 +115,25 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
-//#define LB_TEMPERATURE_INITIAL_CONSTANT
+#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
-//#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
+#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
-//#define LB_TEMPERATURE_BUOYANCY
-//#define LB_TEMPERATURE_BC
-//#define LB_TEMPERATURE_BC_Y
-//#define LB_TEMPERATURE_BC_Y_VARIABLE
-//#define LB_TEMPERATURE_BC_X
+#define LB_TEMPERATURE_BUOYANCY
+#define LB_TEMPERATURE_BC
+#define LB_TEMPERATURE_BC_Y
+#define LB_TEMPERATURE_BC_YP_OUTLET
+//#define LB_TEMPERATURE_BC_YP_VARIABLE
+#define LB_TEMPERATURE_BC_YM_VARIABLE 
+#define LB_TEMPERATURE_BC_X
+#define LB_TEMPERATURE_BC_XP_OUTLET
+#define LB_TEMPERATURE_BC_XM_OUTLET
 //#define LB_TEMPERATURE_BC_X_NOFLUX
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
 //#define LB_TEMPERATURE_FORCING

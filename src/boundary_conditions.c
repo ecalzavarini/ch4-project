@@ -279,9 +279,12 @@ if(LNY_END == NY){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
+	  
 #ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+   T_wall = property.T_top;
+// if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
 #endif
+	  
 #else
 	  T_wall = 0.0;
 #endif
@@ -303,7 +306,8 @@ if(LNY_START == 0){
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
 #ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
+  //  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
 #endif
 #else
 	  T_wall = 0.0;
@@ -513,7 +517,7 @@ if(LNX_START == 0){
 #endif
 	  
 #ifdef GRID_POP_D3Q19 
-	  vel.x = u[IDX(i, j, k)].x;
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+2*(rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[2]))/rho; 
 #endif
 	  vel.y = 0.0; //u[IDX(i, j, k)].y;
 	  vel.z = 0.0; //u[IDX(i, j, k)].z; 
@@ -591,7 +595,7 @@ if(LNY_END == NY){
 #endif
 
 #ifdef GRID_POP_D3Q19
-	  vel.y = u[IDX(i, j, k)].y; 
+	  vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[11]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[7]))/rho; 
 #endif
  
 	  vel.x = 0.0; //u[IDX(i, j, k)].x; 
@@ -635,7 +639,7 @@ if(LNY_START == 0){
 	  rho = (1.0/(1.0-vel.y))*((rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[2])+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]));
 #endif
 #ifdef GRID_POP_D3Q19 
-	  rho=1.0;
+	  rho = (1.0/(1.0-vel.y))*(rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[11]+2*(rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[8])); 
 #endif
 	  vel.y *=  -1.0; /* we invert velocity and apply a bounce back */
 	  p_eq = equilibrium_given_velocity(vel,rho); 
@@ -667,6 +671,21 @@ if(LNY_START == 0){
 if(LNZ_END == NZ){
 	k = LNZ+BRD-1;
 
+
+#ifdef LB_FLUID_BC_ZP_OUTLET
+
+	if(pp==0){
+	  rho = 1.0;
+
+#ifdef GRID_POP_D3Q19
+	 vel.z = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[7]+2*(rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[11]))/rho; 
+#endif
+	 vel.x = 0.0; //u[IDX(i, j, k)].x; //0.0;
+	 vel.y = 0.0; //u[IDX(i, j, k)].y; //0.0;
+	  rhs_p[IDX(i,j,k+1)] = equilibrium_given_velocity(vel,rho);
+}
+
+#else
 #ifdef LB_FLUID_BC_ZP_SLIP
 	//          rhs_p[IDX(i+1,jj,kk)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
  
@@ -677,12 +696,28 @@ if(LNZ_END == NZ){
 	  //rhs_p[IDX(i+1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];	
 	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k+1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 
+#endif
 #endif	
 }
 
 if(LNZ_START == 0){
   k = BRD; 
 
+#ifdef LB_FLUID_BC_ZM_OUTLET
+
+	if(pp==0){
+	  rho = 1.0;
+
+#ifdef GRID_POP_D3Q19
+	 vel.z = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[7]+2*(rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[13]))/rho; 
+#endif
+
+	  vel.x = 0.0; //u[IDX(i, j, k)].x; //0.0;
+	  vel.y = 0.0; //u[IDX(i, j, k)].y; //0.0;
+	  rhs_p[IDX(i,j,k-1)] = equilibrium_given_velocity(vel,rho);
+}
+
+#else 
 #ifdef LB_FLUID_BC_ZM_SLIP
 
           rhs_p[IDX(i,j,k-1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
@@ -690,6 +725,7 @@ if(LNZ_START == 0){
 	/* NO SLIP */
          //rhs_p[IDX(i-1,j,k)].p[pp] = rhs_p[IDX(i,jj,kk)].p[inv[pp]];
 	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k-1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
 #endif
  }
 
@@ -706,7 +742,6 @@ if(LNZ_START == 0){
   my_double effDT, rho2;
   my_double T_wall;
   //  my_double fac;
-
   
 
   /************************/
@@ -726,14 +761,24 @@ if(LNY_END == NY){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
-#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+#ifdef LB_TEMPERATURE_BC_YP_VARIABLE
+	  //	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+	  T_wall = property.T_top;
 #endif
 #else
 	  T_wall = 0.0;
 #endif
 
+
+
+#ifdef LB_TEMPERATURE_BC_YP_OUTLET
+	  /* this is outlet */
+	  fac = ( t[IDX(i,j-1,k)] - t[IDX(i,j,k)] );
+#else
+	  /* this is the default fixed-at-wall bc */
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+#endif
+
 
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
@@ -753,8 +798,9 @@ if(LNY_START == 0){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
-#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+#ifdef LB_TEMPERATURE_BC_YM_VARIABLE
+  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
+  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
 #endif
 #else
 	  T_wall = 0.0;
@@ -800,12 +846,20 @@ if(LNX_END == NX){
 	  T_wall = 0.0;
 #endif
 
+
+#ifdef LB_TEMPERATURE_BC_XP_OUTLET
+	  /* this is outlet */
+	  fac = ( t[IDX(i-1,j,k)] - t[IDX(i,j,k)] );
+#else
+	  /* this is the default */
+	  fac = 0.0;
+#endif
+
 	  for(pp=0;pp<NPOP;pp++){ 
-	    if(c[pp].x<0){
+	    if(c[pp].x>0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
-	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
-	  rhs_g[IDX(i+1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[pp]; //rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	  rhs_g[IDX(i+1,jj,kk)].p[pp] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }
 	  }
  }
@@ -820,13 +874,19 @@ if(LNX_START == 0){
 	  T_wall = 0.0;
 #endif
 
+#ifdef LB_TEMPERATURE_BC_XM_OUTLET
+	  /* this is outlet */
+	  fac = ( t[IDX(i+1,j,k)] - t[IDX(i,j,k)] );
+#else
+	  /* this is the default */
+	  fac = 0.0;
+#endif
 	  
 	  for(pp=0;pp<NPOP;pp++){
-	    if(c[pp].x>0){
+	    if(c[pp].x<0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
-	  //fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,jj,kk)] - 1.0;
-	  rhs_g[IDX(i-1,j,k)].p[pp] =  rhs_g[IDX(i,jj,kk)].p[pp]; //rhs_g[IDX(i,jj,kk)].p[inv[pp]] + wgt[pp]*fac*T_wall;
+	  rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }
 	  }
  }
@@ -878,7 +938,7 @@ if(LNY_END == NY){
 	      ii = i+(int)c[pp].x;
 	      kk = k+(int)c[pp].z;	
 	  
-	  	rhs_h[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	  	rhs_h[IDX(ii,j+1,kk)].p[pp] =  rhs_h[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
 	    }	   
 	  }
  }
@@ -904,7 +964,7 @@ if(LNY_START == 0){
 	    if(c[pp].y<0){
 	      ii = i+(int)c[pp].x;
 	      kk = k+(int)c[pp].z;
-	      rhs_h[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;	
+	      rhs_h[IDX(ii,j-1,kk)].p[pp] =  rhs_h[IDX(i,j,k)].p[pp] + wgt[pp]*fac;	
 	  }
 	  }
  }
