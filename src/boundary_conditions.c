@@ -868,7 +868,7 @@ if(LNX_END == NX){
 	    if(c[pp].x>0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
-	  rhs_g[IDX(i+1,jj,kk)].p[pp] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	  rhs_g[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }
 	  }
  }
