@@ -484,8 +484,6 @@ if(LNX_END == NX){
 
 #ifdef GRID_POP_D3Q19
 	 vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+2*(rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[1]))/rho; 
-
-	 vel.x = u[IDX(i, j, k)].x; 
 #endif
 
 	 vel.y = 0.0; //u[IDX(i, j, k)].y; 
@@ -806,7 +804,18 @@ if(LNY_START == 0){
 	  T_wall = 0.0;
 #endif
 
+
+
+#ifdef LB_TEMPERATURE_BC_YM_OUTLET
+	  /* this is outlet */
+	  fac = ( t[IDX(i,j,k)] - t[IDX(i,j+1,k)] );
+#else
+	  /* this is the default fixed-at-wall bc */
 	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
+#endif
+
+
+
 	  
 	  //effDT=0.0;
 	  //for(pp=0;pp<NPOP;pp++) if(c[pp].y<0)  effDT += wgt[inv[pp]];
@@ -876,7 +885,7 @@ if(LNX_START == 0){
 
 #ifdef LB_TEMPERATURE_BC_XM_OUTLET
 	  /* this is outlet */
-	  fac = ( t[IDX(i+1,j,k)] - t[IDX(i,j,k)] );
+	  fac = ( t[IDX(i,j,k)] - t[IDX(i+1,j,k)] );
 #else
 	  /* this is the default */
 	  fac = 0.0;

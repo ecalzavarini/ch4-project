@@ -19,7 +19,7 @@ time_dump_diagn 100.
 
 tau_u 0.55
 
-Amp_x 0.0001
+Amp_x 0.01
 Amp_y 0.0000
 Amp_z 0.0000
 
