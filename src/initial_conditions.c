@@ -210,6 +210,10 @@ void initial_conditions(int restart)
 #endif
 #endif
 
+#ifdef LB_TEMPERATURE_INITIAL_BULK
+	  if( abs(center_V[IDX(i,j,k)].y - property.SY/2.0)<=1   ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+#endif
+
 #ifdef LB_TEMPERATURE_INITIAL_BL
 	/* BOUNDARY LAYER INITIALIZATION */
 	L=(my_double)property.SY; //LY;

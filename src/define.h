@@ -38,7 +38,7 @@
 /* FLUID */
 #define LB_FLUID 
 //#define LB_FLUID_INITIAL_KOLMOGOROV 
-#define LB_FLUID_INITIAL_POISEUILLE
+//#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
@@ -66,18 +66,18 @@
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_YM_SLIP                                           
 //#define LB_FLUID_BC_YP_SLIP  
-#define LB_FLUID_BC_YM_JET                       
-#define LB_FLUID_BC_YP_OUTLET
+//#define LB_FLUID_BC_YM_JET                       
+//#define LB_FLUID_BC_YP_OUTLET
 
-#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_XM_SLIP                                             
 //#define LB_FLUID_BC_XP_SLIP                                               
 //#define LB_FLUID_BC_XM_INLET                                         
 //#define LB_FLUID_BC_XM_INLET_POISEUILLE
 //#define LB_FLUID_BC_XM_INLET_POISEUILLE_HALF
 //#define LB_FLUID_BC_XM_INLET_CONSTANT
-#define LB_FLUID_BC_XM_OUTLET 
-#define LB_FLUID_BC_XP_OUTLET  
+//#define LB_FLUID_BC_XM_OUTLET 
+//#define LB_FLUID_BC_XP_OUTLET  
                                              
 //#define LB_FLUID_BC_Z
 //#define LB_FLUID_BC_ZM_SLIP                                             
@@ -119,22 +119,23 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
-#define LB_TEMPERATURE_INITIAL_CONSTANT
+//#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
-#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
+//#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
+#define LB_TEMPERATURE_INITIAL_BULK
 //#define LB_TEMPERATURE_BUOYANCY
 #define LB_TEMPERATURE_BC
 #define LB_TEMPERATURE_BC_Y
 #define LB_TEMPERATURE_BC_YP_OUTLET
 //#define LB_TEMPERATURE_BC_YP_VARIABLE
-#define LB_TEMPERATURE_BC_YM_VARIABLE 
-//#define LB_TEMPERATURE_BC_YM_OUTLET
-#define LB_TEMPERATURE_BC_X
-#define LB_TEMPERATURE_BC_XP_OUTLET
-#define LB_TEMPERATURE_BC_XM_OUTLET
+//#define LB_TEMPERATURE_BC_YM_VARIABLE 
+#define LB_TEMPERATURE_BC_YM_OUTLET
+//#define LB_TEMPERATURE_BC_X
+//#define LB_TEMPERATURE_BC_XP_OUTLET
+//#define LB_TEMPERATURE_BC_XM_OUTLET
 //#define LB_TEMPERATURE_BC_X_NOFLUX
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
 //#define LB_TEMPERATURE_FORCING
