@@ -771,7 +771,7 @@ if(LNY_END == NY){
 
 #ifdef LB_TEMPERATURE_BC_YP_OUTLET
 	  /* this is outlet */
-	  fac = ( t[IDX(i,j-1,k)] - t[IDX(i,j,k)] );
+	  fac = ( t[IDX(i,j,k)] - t[IDX(i,j-1,k)] );
 #else
 	  /* this is the default fixed-at-wall bc */
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
@@ -858,7 +858,7 @@ if(LNX_END == NX){
 
 #ifdef LB_TEMPERATURE_BC_XP_OUTLET
 	  /* this is outlet */
-	  fac = ( t[IDX(i-1,j,k)] - t[IDX(i,j,k)] );
+	  fac = ( t[IDX(i,j,k)] - t[IDX(i-1,j,k)] );
 #else
 	  /* this is the default */
 	  fac = 0.0;
