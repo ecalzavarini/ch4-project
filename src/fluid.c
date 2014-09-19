@@ -1088,6 +1088,7 @@ void build_forcing(){
   int nk = 5; 
   vector vk[nk], phi[nk];
   int randomization_itime;
+  vector dist,vel;
 
 
    LX = (my_double)(property.SX);
@@ -1207,11 +1208,41 @@ void build_forcing(){
     }
 #endif
 
+#ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
+    fac = 0.9;
+    dist.x = (x/LX - fac)/(1.0-fac);
+    dist.y = (y/LY - fac)/(1.0-fac);
+    dist.z = (z/LZ - fac)/(1.0-fac);
+
+    //if(dist.y>0 ){
+
+    vel.x = 0.0; //out_all.ux;
+    vel.y = out_all.uy;
+    vel.z = 0.0; //out_all.uz;
+
+    dist.x = 0.5 + pow(dist.x,2.0);
+    //    dist.y = 1.0 / ( 0.5 + pow(dist.y,2.0) );
+    //dist.y = 1.0;
+    dist.z = 0.5 + pow(dist.z,2.0);  
+
+    fprintf(stderr,"%d %d %d %d %e\n",me, i,j,k, u[IDX(i,j,k)].y);
+        
+    //force[IDX(i,j,k)].x += -dist.y*(vel.x - u[IDX(i,j,k)].x);  
+    //force[IDX(i,j,k)].y += -u[IDX(i,j,k)].y;  // dist.y*(vel.y  -u[IDX(i,j,k)].y);
+    //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);	
+    
+    //  }
+#endif
+
 #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
-
-  //temp = (t[IDX(i,j,k)] - property.T_ref);
+#ifdef LB_TEMPERATURE_BUOYANCY_TREF
+  temp = (t[IDX(i,j,k)] - property.T_ref);
+#else
+  /* the good one for RB */  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
+#endif
+
   //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
   fac = property.beta_t*temp; 
   if(property.beta2_t != 0.0) fac += property.beta2_t*temp*temp;
