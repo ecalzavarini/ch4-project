@@ -5,7 +5,6 @@ void noslip_yp(pop*f){
 
   for (j = BRD; j < LNY + BRD; j++) 			
     for (k = BRD; k < LNZ + BRD; k++){
-      
 if(LNY_END == NY){
 	j = LNY+BRD-1; 
 
@@ -770,14 +769,12 @@ if(LNY_END == NY){
 
 
 #ifdef LB_TEMPERATURE_BC_YP_OUTLET
-	  /* this is outlet */
-	  //	  fac = ( t[IDX(i,j,k)] - t[IDX(i,j-1,k)] );
-	  /* this is a zero temperature gradient bc */
-	  fac=0.0;
-#else
-	  /* this is the default fixed-at-wall bc */
-	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+	  /* this is the wall temperature in case of outlet */
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j-1,k)]);
 #endif
+	  /* this is a linear interpolation */
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
 
 
 	  for(pp=0;pp<NPOP;pp++){ 
@@ -809,14 +806,10 @@ if(LNY_START == 0){
 
 
 #ifdef LB_TEMPERATURE_BC_YM_OUTLET
-	  /* this is outlet */
-	  //fac = ( t[IDX(i,j,k)] - t[IDX(i,j+1,k)] );
-	  /* this is a zero temperature gradient bc */
-	  fac=0.0;
-#else
-	  /* this is the default fixed-at-wall bc */
-	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j+1,k)]);
 #endif
+
+	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
 
 
 
@@ -862,13 +855,10 @@ if(LNX_END == NX){
 
 #ifdef LB_TEMPERATURE_BC_XP_OUTLET
 	  /* this is outlet */
-	  //fac = ( t[IDX(i,j,k)] - t[IDX(i-1,j,k)] );
-	  /* this is a zero temperature gradient bc */
-	  fac=0.0;
-#else
-	  /* this is the default */
-	  fac = 0.0;
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i-1,j,k)]);
 #endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	    if(c[pp].x>0){
@@ -891,19 +881,78 @@ if(LNX_START == 0){
 
 #ifdef LB_TEMPERATURE_BC_XM_OUTLET
 	  /* this is outlet */
-	  //fac = ( t[IDX(i,j,k)] - t[IDX(i+1,j,k)] );
-	  /* this is a zero temperature gradient bc */
-	  fac=0.0;
-#else
-	  /* this is the default */
-	  fac = 0.0;
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i+1,j,k)]);
 #endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 	  
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].x<0){
 	  jj = j+(int)c[pp].y;
 	  kk = k+(int)c[pp].z;	
 	  rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+ /************************/
+	/* Z direction */
+#ifdef LB_TEMPERATURE_BC_Z
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (j = BRD; j < LNY + BRD; j++){
+
+
+if(LNZ_END == NZ){
+
+          k = LNZ+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+
+#ifdef LB_TEMPERATURE_BC_ZP_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k-1)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].z>0){
+	  ii = i+(int)c[pp].x;	
+	  jj = j+(int)c[pp].y;
+	  rhs_g[IDX(ii,jj,k+1)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+
+if(LNZ_START == 0){
+
+	  k = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+
+
+#ifdef LB_TEMPERATURE_BC_ZM_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k+1)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].z<0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;
+	  rhs_g[IDX(ii,jj,k-1)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }
 	  }
  }
@@ -943,12 +992,11 @@ if(LNY_END == NY){
 
 
 #ifdef LB_SCALAR_BC_YP_OUTLET
-	  /* this is the default fixed-at-wall bc */
-	  fac = 0.0;
-#else
-	  /* this is the default fixed-at-wall bc */
-	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j-1,k)]);
 #endif
+
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
 
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
@@ -971,11 +1019,11 @@ if(LNY_START == 0){
 #endif
 
 #ifdef LB_SCALAR_BC_YM_OUTLET
-	  /* this is the default fixed-at-wall bc */
-	  fac = 0.0;
-#else
-	  fac = 2.0*((S_wall-property.S_ref)-s[IDX(i,j,k)]);
-#endif	  
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j+1,k)]);
+#endif
+
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
+
 
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].y<0){
@@ -988,6 +1036,134 @@ if(LNY_START == 0){
       
  }
 #endif
+
+ /************************/
+	/* X direction */
+#ifdef LB_SCALAR_BC_X
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNX_END == NX){
+
+          i = LNX+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+
+#ifdef LB_SCALAR_BC_XP_OUTLET
+	  /* this is outlet */
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i-1,j,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].x>0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+	  rhs_h[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+#else
+	  S_wall = 0.0;
+#endif
+
+
+#ifdef LB_SCALAR_BC_XM_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i+1,j,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].x<0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+	  rhs_h[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+ /************************/
+	/* Z direction */
+#ifdef LB_SCALAR_BC_Z
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (j = BRD; j < LNY + BRD; j++){
+
+
+if(LNZ_END == NZ){
+
+          k = LNZ+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+
+#ifdef LB_SCALAR_BC_ZP_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k-1)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].z>0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;	
+	  rhs_h[IDX(ii,jj,k+1)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+
+if(LNZ_START == 0){
+
+	  k = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+#else
+	  S_wall = 0.0;
+#endif
+
+
+#ifdef LB_SCALAR_BC_ZM_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k+1)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].z<0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;	
+	  rhs_h[IDX(ii,jj,k-1)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
 #endif /* end of scalar part */
 
 }/* end of bc for streaming */
