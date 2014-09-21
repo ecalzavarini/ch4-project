@@ -775,7 +775,9 @@ if(LNY_END == NY){
 	  /* this is a linear interpolation */
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-
+#ifdef LB_TEMPERATURE_BC_YP_NOFLUX
+	  fac = 0.0;
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
@@ -811,8 +813,9 @@ if(LNY_START == 0){
 
 	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
 
-
-
+#ifdef LB_TEMPERATURE_BC_YM_NOFLUX
+	  fac = 0.0;
+#endif
 	  
 	  //effDT=0.0;
 	  //for(pp=0;pp<NPOP;pp++) if(c[pp].y<0)  effDT += wgt[inv[pp]];
@@ -859,6 +862,10 @@ if(LNX_END == NX){
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
+#ifdef LB_TEMPERATURE_BC_XP_NOFLUX
+	  fac = 0.0;
+#endif	  
+
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	    if(c[pp].x>0){
@@ -884,6 +891,11 @@ if(LNX_START == 0){
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i+1,j,k)]);
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_XM_NOFLUX
+	  fac = 0.0;
+#endif
+
 	  
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].x<0){
