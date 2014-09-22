@@ -1209,12 +1209,12 @@ void build_forcing(){
 #endif
 
 #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
-    fac = 0.9;
+    fac = 0.5;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
     dist.z = (z/LZ - fac)/(1.0-fac);
 
-    //if(dist.y>0 ){
+    if(dist.y>0 ){
 
     vel.x = 0.0; //out_all.ux;
     vel.y = out_all.uy;
@@ -1231,7 +1231,7 @@ void build_forcing(){
     //force[IDX(i,j,k)].y += -u[IDX(i,j,k)].y;  // dist.y*(vel.y  -u[IDX(i,j,k)].y);
     //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);	
     
-    //  }
+     }
 #endif
 
 #ifdef LB_TEMPERATURE_BUOYANCY
@@ -1329,6 +1329,24 @@ void build_forcing(){
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( spot < 1.0 ) t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_bot);
 #endif
+
+
+#ifdef LB_TEMPERATURE_FORCING_ABSORB  /* attempt to implement an absorbing layer for temperature */
+    fac = 0.5;
+    dist.x = (x/LX - fac)/(1.0-fac);
+    dist.y = (y/LY - fac)/(1.0-fac);
+    dist.z = (z/LZ - fac)/(1.0-fac);
+
+    if(dist.y>0){
+
+    //dist.x = 0.5 + pow(dist.x,2.0);
+    // dist.y = 1.0 / ( 0.5 + pow(dist.y,2.0) );
+    //dist.z = 0.5 + pow(dist.z,2.0);  
+        
+     t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_top);
+       }
+#endif
+
 
 #ifdef LB_TEMPERATURE_FORCING_PROFILE
   /* impose a mean linear temperature profile , note that bc for temp shall be set to 0 */
