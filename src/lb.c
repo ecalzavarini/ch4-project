@@ -460,7 +460,7 @@ void hydro_fields(){
 				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]); 
                                #else
                        	/* to be used only with METHOD_STREAMING */
-                                #ifndef LB_TEMPERATURE_FORCING
+                                #ifndef LB_SCALAR_FORCING
 	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]);
                                 #else
 	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*s_source[IDX(i, j, k)]; 
