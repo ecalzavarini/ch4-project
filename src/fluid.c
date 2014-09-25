@@ -1078,7 +1078,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq){
 }
 
 
-#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
 void build_forcing(){
   int i, j, k , ii;
   my_double fnx,fny,fnz,kn;
@@ -1397,10 +1397,10 @@ void add_forcing(){
   pop f_eq;
   my_double fac;
   vector d;
-  my_double ux,uy,uz,cu;
+  my_double ux,uy,uz,cu,u2;
   vector vel;
-  my_double rho ,temp;
-  pop p_eq , g_eq;
+  my_double rho ,temp , wgt2;
+  pop p_eq , g_eq , h_eq;
   my_double mask;
 
 #ifdef METHOD_FORCING_GUO
@@ -1513,12 +1513,18 @@ void add_forcing(){
 #ifdef LB_TEMPERATURE_FORCING
 #ifndef METHOD_FORCING_GUO
        /* Not Guo here */
-	    rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+	rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
 #else
-      /* The forcing is  as in Malaspinas PhD*/	    
-	    rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*t_source[IDX(i,j,k)];  /* and /t[IDX(i,j,k)]; ?*/
+      /* The forcing is as in Malaspinas PhD pag. 93 (bottom)*/	    
+        ux = u[IDX(i, j, k)].x;
+        uy = u[IDX(i, j, k)].y;
+        uz = u[IDX(i, j, k)].z;                         
+        u2 = (ux * ux + uy * uy + uz * uz);
+        cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+	rhs_g[IDX(i,j,k)].p[pp] += fac*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 #endif
-#endif
+
 
 #ifdef  LB_TEMPERATURE_FORCING_DIRECT
       if( sqrt(mask) < 10.0 ){
@@ -1528,14 +1534,20 @@ void add_forcing(){
 	//rhs_g[IDX(i,j,k)].p[pp] =  invtau*(g[IDX(i,j,k)].p[pp] -  g_eq.p[pp]);
 	  }      
 #endif
-
+#endif
 
 #ifdef LB_SCALAR_FORCING
 #ifndef METHOD_FORCING_GUO
        /* not Guo here  */
 	    rhs_h[IDX(i,j,k)].p[pp] += wgt[pp]*s_source[IDX(i,j,k)];
 #else
-	    rhs_h[IDX(i,j,k)].p[pp] += fac*wgt[pp]*s_source[IDX(i,j,k)]; /* and /s[IDX(i,j,k)]; ?*/
+        ux = u[IDX(i, j, k)].x;
+        uy = u[IDX(i, j, k)].y;
+        uz = u[IDX(i, j, k)].z;                         
+        u2 = (ux * ux + uy * uy + uz * uz);
+        cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+	rhs_h[IDX(i,j,k)].p[pp] += fac*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
 #endif
 #endif
 
