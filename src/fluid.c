@@ -1511,8 +1511,13 @@ void add_forcing(){
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING
-       /* Not Guo here ? */
+#ifndef METHOD_FORCING_GUO
+       /* Not Guo here */
 	    rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+#else
+      /* The forcing is  as in Malaspinas PhD*/	    
+	    rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*t_source[IDX(i,j,k)];  /* and /t[IDX(i,j,k)]; ?*/
+#endif
 #endif
 
 #ifdef  LB_TEMPERATURE_FORCING_DIRECT
@@ -1526,8 +1531,12 @@ void add_forcing(){
 
 
 #ifdef LB_SCALAR_FORCING
-       /* same as before: not Guo here ? */
+#ifndef METHOD_FORCING_GUO
+       /* not Guo here  */
 	    rhs_h[IDX(i,j,k)].p[pp] += wgt[pp]*s_source[IDX(i,j,k)];
+#else
+	    rhs_h[IDX(i,j,k)].p[pp] += fac*wgt[pp]*s_source[IDX(i,j,k)]; /* and /s[IDX(i,j,k)]; ?*/
+#endif
 #endif
 
 

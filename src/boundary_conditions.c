@@ -782,10 +782,7 @@ if(LNY_END == NY){
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
 	      ii = i+(int)c[pp].x;
-	      kk = k+(int)c[pp].z;	
-	  
-	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
-	      //rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  wgt[pp]*(fac+t[IDX(i,j,k)]);	  
+	      kk = k+(int)c[pp].z;		  
 	      rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }	   
 	  }
@@ -817,16 +814,11 @@ if(LNY_START == 0){
 	  fac = 0.0;
 #endif
 	  
-	  //effDT=0.0;
-	  //for(pp=0;pp<NPOP;pp++) if(c[pp].y<0)  effDT += wgt[inv[pp]];
 
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].y<0){
 	      ii = i+(int)c[pp].x;
 	      kk = k+(int)c[pp].z;
-            //rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
-	    //  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  wgt[pp]*(fac+t[IDX(i,j,k)]);	
-	    //  rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]]*(fac/t[IDX(i,j,k)] + 1.0);
 	      rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;	
 	  }
 	  }
@@ -933,6 +925,9 @@ if(LNZ_END == NZ){
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
+#ifdef LB_TEMPERATURE_BC_ZP_NOFLUX
+	  fac = 0.0;
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	    if(c[pp].z>0){
@@ -959,6 +954,9 @@ if(LNZ_START == 0){
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
+#ifdef LB_TEMPERATURE_BC_ZM_NOFLUX
+	  fac = 0.0;
+#endif
 	  
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].z<0){
@@ -1009,6 +1007,9 @@ if(LNY_END == NY){
 
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
+#ifdef LB_SCALAR_BC_YP_NOFLUX
+	  fac = 0.0;
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
       	    if(c[pp].y>0){
@@ -1035,6 +1036,10 @@ if(LNY_START == 0){
 #endif
 
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
+
+#ifdef LB_SCALAR_BC_YM_NOFLUX
+	  fac = 0.0;
+#endif
 
 
 	  for(pp=0;pp<NPOP;pp++){
@@ -1074,6 +1079,9 @@ if(LNX_END == NX){
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
+#ifdef LB_SCALAR_BC_XP_NOFLUX
+	  fac = 0.0;
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	    if(c[pp].x>0){
@@ -1100,6 +1108,9 @@ if(LNX_START == 0){
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
+#ifdef LB_SCALAR_BC_XM_NOFLUX
+	  fac = 0.0;
+#endif
 	  
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].x<0){
@@ -1137,6 +1148,9 @@ if(LNZ_END == NZ){
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
+#ifdef LB_SCALAR_BC_ZP_NOFLUX
+	  fac = 0.0;
+#endif
 
 	  for(pp=0;pp<NPOP;pp++){ 
 	    if(c[pp].z>0){
@@ -1163,6 +1177,9 @@ if(LNZ_START == 0){
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
+#ifdef LB_SCALAR_BC_ZM_NOFLUX
+	  fac = 0.0;
+#endif
 	  
 	  for(pp=0;pp<NPOP;pp++){
 	    if(c[pp].z<0){

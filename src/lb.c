@@ -441,23 +441,33 @@ void hydro_fields(){
 #endif
 
 #ifdef LB_TEMPERATURE 
+				/* compute temperature field */
                                #ifndef METHOD_FORCING_GUO
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
                                #else
                        	/* to be used only with METHOD_STREAMING */
-                                    #ifndef LB_TEMPERATURE_FORCING
-	                            t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
-                                    #else
-	                            t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)]; 
-                                    #endif
+                                #ifndef LB_TEMPERATURE_FORCING
+	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
+                                #else
+	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)]; 
+                                #endif
                                #endif
 #endif
 
 #ifdef LB_SCALAR                  
-				    /* compute scalar field */	    
-				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]);                            
+				    /* compute scalar field */
+                               #ifndef METHOD_FORCING_GUO	    
+				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]); 
+                               #else
+                       	/* to be used only with METHOD_STREAMING */
+                                #ifndef LB_TEMPERATURE_FORCING
+	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]);
+                                #else
+	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*s_source[IDX(i, j, k)]; 
+                                #endif
+                               #endif
+                           
 #endif
-
 
 			}/* for i,j,k */
 
