@@ -154,7 +154,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_BULK_VARIABLE
 //#define LB_TEMPERATURE_FORCING_RADIATION 
 //#define LB_TEMPERATURE_FORCING_SOURCE
-#define LB_TEMPERATURE_FORCING_ABSORB
+//#define LB_TEMPERATURE_FORCING_ABSORB
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION
 //#define LB_TEMPERATURE_MELTING
@@ -198,6 +198,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY
+
+
+/* LES */
+//#define LB_FLUID_LES
+//#define LB_TEMPERATURE_LES
+//#define LB_SCALAR_LES
 
 /***************************************************/
 /* Define dependencies not to be modified          */

@@ -34,7 +34,7 @@ void boundary_conditions_for_equilibrium();
 void initial_conditions(int restart);
 
 /* fluid.c */
-void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq);
+void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq,char which_pop);
 void compute_advection(pop * f, pop *rhs_f, my_double tau, pop *f_eq,char which_pop);
 void hydro_fields();
 tensor strain_tensor(pop *f,int i, int j, int k);
@@ -85,4 +85,15 @@ void read_point_particle_h5();
 double myrand();
 #ifndef RANDOM48
 double ran1();
+#endif
+
+/* LES */
+#ifdef LB_FLUID_LES
+my_double tau_u_les(int i , int j , int k);
+#endif
+#ifdef LB_TEMPERATURE_LES
+my_double tau_t_les(int i , int j , int k);
+#endif
+#ifdef LB_SCALAR_LES
+my_double tau_s_les(int i , int j , int k);
 #endif

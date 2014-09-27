@@ -60,7 +60,7 @@ int main(int argc, char **argv){
 #ifdef METHOD_HEUN
           copy_pop(rhs_p,old_rhs_p);
 #endif
-	  add_collision(p,rhs_p,property.tau_u,p_eq);
+	  add_collision(p,rhs_p,property.tau_u,p_eq,'p');
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -68,7 +68,7 @@ int main(int argc, char **argv){
 #ifdef METHOD_HEUN
 	  copy_pop(rhs_g,old_rhs_g);
 #endif
-	  add_collision(g,rhs_g,property.tau_t,g_eq);
+	  add_collision(g,rhs_g,property.tau_t,g_eq,'g');
 #endif
 
 #ifdef LB_SCALAR
@@ -76,10 +76,10 @@ int main(int argc, char **argv){
 #ifdef METHOD_HEUN
 	  copy_pop(rhs_h,old_rhs_h);
 #endif
-	  add_collision(h,rhs_h,property.tau_s,h_eq);
+	  add_collision(h,rhs_h,property.tau_s,h_eq,'h');
 #endif 
 
-#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING)
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING )
 	  build_forcing();
 #ifdef LB_TEMPERATURE_MELTING
 	  melting();

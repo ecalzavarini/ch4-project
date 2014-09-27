@@ -987,21 +987,46 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp){
 
 /*  Here Collision */
 
-void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq){
+void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
   int i, j, k, pp;
   my_double invtau;
   pop ff_eq;
   pop f_eq_xp,f_eq_xm,f_eq_yp,f_eq_ym,f_eq_zp,f_eq_zm;
   pop fcoll, fcoll_xp,fcoll_xm,fcoll_yp,fcoll_ym,fcoll_zp,fcoll_zm;
   my_double fac;
+  my_double tau_les;
  
-    invtau = 1.0/tau;
+ 
+invtau = 1.0/tau;
+
 
 #ifndef METHOD_COLLISION_IMPLICIT
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
+
+/* Here we begin the LES part , we compute tau for every i,j,k*/
+#ifdef LB_FLUID_LES
+  if( which_pop == 'p' ){
+    tau_les = tau_u_les(i,j,k);
+    invtau = 1.0/( tau + tau_les);
+    // fprintf(stderr,"%e %e\n",tau,tau_les);
+  }
+#endif
+#ifdef LB_TEMPERATURE_LES
+  if( which_pop == 'g' ){
+    tau_les = tau_t_les(i,j,k);
+    invtau = 1.0/( tau + tau_les);
+  }
+#endif
+#ifdef LB_SCALAR_LES
+  if( which_pop == 'h' ){
+    tau_les = tau_s_les(i,j,k);
+    invtau = 1.0/( tau + tau_les);
+  }
+#endif
+/* end of LES part */
 
 #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
