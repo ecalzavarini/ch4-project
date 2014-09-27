@@ -1010,20 +1010,20 @@ invtau = 1.0/tau;
 #ifdef LB_FLUID_LES
   if( which_pop == 'p' ){
     tau_les = tau_u_les(i,j,k);
-    invtau = 1.0/( tau + tau_les);
+    invtau = 1.0/ tau_les;
     // fprintf(stderr,"%e %e\n",tau,tau_les);
   }
 #endif
 #ifdef LB_TEMPERATURE_LES
   if( which_pop == 'g' ){
     tau_les = tau_t_les(i,j,k);
-    invtau = 1.0/( tau + tau_les);
+    invtau = 1.0/tau_les;
   }
 #endif
 #ifdef LB_SCALAR_LES
   if( which_pop == 'h' ){
     tau_les = tau_s_les(i,j,k);
-    invtau = 1.0/( tau + tau_les);
+    invtau = 1.0/tau_les;
   }
 #endif
 /* end of LES part */

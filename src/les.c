@@ -38,16 +38,16 @@ my_double tau_u_les(int i , int j , int k){
 #endif
 
 		 /* eddy viscosity */
-			  nu_les = s_norm * pow( C_smag * vol, 2.0 ); 		 
-		  
+		    nu_les = s_norm * pow( C_smag * vol, 2.0 ); 		 
+		    		    
 
 #ifdef METHOD_STREAMING
-  tau_les = 3.0*(nu_les + property.nu) + 0.5 - property.tau_u;		 
+  tau_les = 3.0*(nu_les + property.nu) + 0.5 ;		 
 #else
 #ifdef METHOD_REDEFINED_POP
-  tau_les = 3.0*nu_les + 0.5*property.time_dt;
+  tau_les = 3.0*(nu_les + property.nu) + 0.5*property.time_dt ;
 #else
-  tau_les = 3.0*nu_les;
+  tau_les = 3.0*(nu_les + property.nu) ;
 #endif
 #endif
 
@@ -67,12 +67,12 @@ my_double tau_t_les(int i , int j , int k){
     tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_temp = (tau_les+property.tau_u-0.5)/prandtl + 0.5 -property.tau_t;
+    tau_temp = (tau_les-0.5)/prandtl + 0.5 -property.tau_t;
 #else
 #ifdef METHOD_REDEFINED_POP
-    tau_temp = (tau_les+property.tau_u-0.5*property.time_dt)/prandtl + 0.5*property.time_dt -property.tau_t;
+    tau_temp = (tau_les-0.5*property.time_dt)/prandtl + 0.5*property.time_dt -property.tau_t;
 #else
-    tau_temp = (tau_les+property.tau_u)/prandtl -property.tau_t;
+    tau_temp = tau_les/prandtl -property.tau_t;
 #endif
 #endif
 
@@ -92,12 +92,12 @@ my_double tau_s_les(int i , int j , int k){
     tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_scal = (tau_les+property.tau_u-0.5)/schmidt + 0.5 -property.tau_s;
+    tau_scal = (tau_les-0.5)/schmidt + 0.5 -property.tau_s;
 #else
 #ifdef METHOD_REDEFINED_POP
-    tau_scal = (tau_les+property.tau_u-0.5*property.time_dt)/schmidt + 0.5*property.time_dt -property.tau_s;
+    tau_scal = (tau_les-0.5*property.time_dt)/schmidt + 0.5*property.time_dt -property.tau_s;
 #else
-    tau_scal = (tau_les+property.tau_u)/schmidt -property.tau_s;
+    tau_scal = tau_les/schmidt -property.tau_s;
 #endif
 #endif
 
