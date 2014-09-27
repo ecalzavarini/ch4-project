@@ -6,7 +6,7 @@ my_double tau_u_les(int i , int j , int k){
 
   tensor grad_u;
   my_double s_norm, nu_les, tau_les; 
-  my_double C_smag = 0.1;
+  my_double C_smag = 0.16; /* See Leveque , Toschi JFM on shear improved smagorinski model */
   my_double lx,ly,lz,vol;
 
   
