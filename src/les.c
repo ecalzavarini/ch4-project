@@ -1,5 +1,6 @@
 #include "common_object.h"
 
+#ifdef LB_FLUID
 #ifdef LB_FLUID_LES
 my_double tau_u_les(int i , int j , int k){
 
@@ -54,13 +55,14 @@ my_double tau_u_les(int i , int j , int k){
 return tau_les;
 }		 	  
 #endif
+#endif
 
-
+#ifdef LB_TEMPERATURE
 #ifdef LB_TEMPERATURE_LES
 my_double tau_t_les(int i , int j , int k){
 
   my_double tau_temp,tau_les;
-    my_double prandtl = property.nu/property.kappa;
+  my_double prandtl = property.nu/property.kappa;
 
     tau_les = tau_u_les(i , j , k);
 
@@ -77,7 +79,10 @@ my_double tau_t_les(int i , int j , int k){
     return tau_temp;
 }
 #endif
+#endif
 
+
+#ifdef LB_SCALAR
 #ifdef LB_SCALAR_LES
 my_double tau_s_les(int i , int j , int k){
 
@@ -98,6 +103,7 @@ my_double tau_s_les(int i , int j , int k){
 
     return tau_scal;
 }
+#endif
 #endif
 
 

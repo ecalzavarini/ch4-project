@@ -10,12 +10,15 @@ void assign_parameters();
 void processor_splitting();
 void allocate_fields();
 void free_fields();
+void set_to_zero_output(output  *f,int size);
 
 /* grid.c */
 void read_mesh();
 void compute_volumes();
 void compute_interpolation_coefficients();
 void read_landscape();
+void sendrecv_borders_vector(vector *f);
+void sendrecv_borders_scalar(my_double *f);
 
 /* lb.c */
 void design_lb();
