@@ -69,6 +69,7 @@ void dump_averages();
 /* output_h5.c */
 void write_pop_h5();
 void read_pop_h5();
+void output_h5();
 
 /* lagrange */
 #ifdef LAGRANGE 

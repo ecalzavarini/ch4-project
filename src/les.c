@@ -27,12 +27,13 @@ my_double tau_u_les(int i , int j , int k){
 #ifdef METHOD_STREAMING
 		          vol = 1.0;
 #else  		 
-                          /* computing volume local */ 
-		          /* Is this really the correct way? I think we shall we use mesh[...] ? */
-		          /* please check this also in the output.c file */
-                          lx = 0.5*(center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x);
-                          ly = 0.5*(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y);
-                          lz = 0.5*(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z);
+
+			  /* computing volume local from mesh */
+			  /*
+			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
+			  ly = (mesh[IDXG(i, j+1, k)].y - mesh[IDXG(i, j, k)].y);
+			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);
+			  */
                           vol = lx*ly*lz;
 			  vol = pow(vol,1./3.);
 #endif

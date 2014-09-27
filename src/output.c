@@ -154,10 +154,17 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			for (k = BRD; k < LNZ+BRD; k++) {
 
 
-			  /* computing volume local */
+			  /* computing volume local from mesh */
+			  
+			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
+			  ly = (mesh[IDXG(i, j+1, k)].y - mesh[IDXG(i, j, k)].y);
+			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);			  
+			  /* computing volume local from center_V , old way , small error */
+			  /*
 			  lx = 0.5*(center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x);
 			  ly = 0.5*(center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y);
 			  lz = 0.5*(center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z);
+			  */
 			  vol = lx*ly*lz;
 			  inv_lx = 1./lx;
 			  inv_ly = 1./ly;
