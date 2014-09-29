@@ -29,11 +29,11 @@ my_double tau_u_les(int i , int j , int k){
 #else  		 
 
 			  /* computing volume local from mesh */
-			  /*
+			  
 			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
 			  ly = (mesh[IDXG(i, j+1, k)].y - mesh[IDXG(i, j, k)].y);
 			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);
-			  */
+			  
                           vol = lx*ly*lz;
 			  vol = pow(vol,1./3.);
 #endif
@@ -68,12 +68,12 @@ my_double tau_t_les(int i , int j , int k){
     tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_temp = (tau_les-0.5)/prandtl + 0.5 -property.tau_t;
+    tau_temp = (tau_les-0.5)/prandtl + 0.5 ;
 #else
 #ifdef METHOD_REDEFINED_POP
-    tau_temp = (tau_les-0.5*property.time_dt)/prandtl + 0.5*property.time_dt -property.tau_t;
+    tau_temp = (tau_les-0.5*property.time_dt)/prandtl + 0.5*property.time_dt ;
 #else
-    tau_temp = tau_les/prandtl -property.tau_t;
+    tau_temp = tau_les/prandtl ;
 #endif
 #endif
 
@@ -93,12 +93,12 @@ my_double tau_s_les(int i , int j , int k){
     tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_scal = (tau_les-0.5)/schmidt + 0.5 -property.tau_s;
+    tau_scal = (tau_les-0.5)/schmidt + 0.5 ;
 #else
 #ifdef METHOD_REDEFINED_POP
-    tau_scal = (tau_les-0.5*property.time_dt)/schmidt + 0.5*property.time_dt -property.tau_s;
+    tau_scal = (tau_les-0.5*property.time_dt)/schmidt + 0.5*property.time_dt ;
 #else
-    tau_scal = tau_les/schmidt -property.tau_s;
+    tau_scal = tau_les/schmidt ;
 #endif
 #endif
 

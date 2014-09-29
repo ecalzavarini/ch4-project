@@ -1476,7 +1476,7 @@ void add_forcing(){
 
 #ifndef METHOD_FORCING_GUO
 		  	  
-	  /* Old version , simple but probably incomplete
+	  /* Old version , simple but probably incomplete 
 	    rho = dens[IDX(i,j,k)];	  
 	    rhs_p[IDX(i,j,k)].p[pp] += invcs2*wgt[pp]*rho*force[IDX(i,j,k)].x*c[pp].x;
             rhs_p[IDX(i,j,k)].p[pp] += invcs2*wgt[pp]*rho*force[IDX(i,j,k)].y*c[pp].y;
@@ -1484,6 +1484,7 @@ void add_forcing(){
 	  */
 
 	  /* New version , like in GUO or in PhD thesis EPFL MALASPINAS */	  
+	  
 	rho = dens[IDX(i,j,k)];
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
@@ -1496,7 +1497,7 @@ void add_forcing(){
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;   
-
+	  
 #ifdef METHOD_LOG
 	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);
 	    rhs_p[IDX(i,j,k)].p[pp] += fac*force[IDX(i,j,k)].x*c[pp].x;
