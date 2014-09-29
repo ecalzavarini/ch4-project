@@ -13,27 +13,24 @@ my_double tau_u_les(int i , int j , int k){
   grad_u = gradient_vector(u,i,j,k);
 
   /* Norm of S */
-  s_norm = sqrt( 0.5*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
-		       (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
-		       (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
-		       (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
-		       (grad_u.yy + grad_u.yy)*(grad_u.yy + grad_u.yy) +
-		       (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
-		       (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
-		       (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
-		       (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) );
-
+  s_norm = sqrt( 0.25*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+		        (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
+		        (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
+		        (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
+		        (grad_u.yy + grad_u.yy)*(grad_u.yy + grad_u.yy) +
+		        (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
+		        (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
+		        (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
+		        (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) );
 
 #ifdef METHOD_STREAMING
 		          vol = 1.0;
 #else  		 
 
-			  /* computing volume local from mesh */
-			  
+			  /* computing volume local from mesh */			  
 			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
 			  ly = (mesh[IDXG(i, j+1, k)].y - mesh[IDXG(i, j, k)].y);
-			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);
-			  
+			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);			  
                           vol = lx*ly*lz;
 			  vol = pow(vol,1./3.);
 #endif
