@@ -159,6 +159,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
 			  ly = (mesh[IDXG(i, j+1, k)].y - mesh[IDXG(i, j, k)].y);
 			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);			  
+			  
 			  /* computing volume local from center_V , old way , small error */
 			  /*
 			  lx = 0.5*(center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x);
