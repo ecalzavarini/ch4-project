@@ -1015,8 +1015,7 @@ if(LNY_END == NY){
       	    if(c[pp].y>0){
 	      ii = i+(int)c[pp].x;
 	      kk = k+(int)c[pp].z;	
-	  
-	  	rhs_h[IDX(ii,j+1,kk)].p[pp] =  rhs_h[IDX(i,j,k)].p[pp] + wgt[pp]*fac;
+	  	rhs_h[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;
 	    }	   
 	  }
  }
@@ -1046,7 +1045,7 @@ if(LNY_START == 0){
 	    if(c[pp].y<0){
 	      ii = i+(int)c[pp].x;
 	      kk = k+(int)c[pp].z;
-	      rhs_h[IDX(ii,j-1,kk)].p[pp] =  rhs_h[IDX(i,j,k)].p[pp] + wgt[pp]*fac;	
+	      rhs_h[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[pp]*fac;	
 	  }
 	  }
  }
