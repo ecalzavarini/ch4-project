@@ -399,19 +399,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_y_local[j -BRD + LNY_START].uzs += uzs*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].uzs += uzs*inv_lz;
 
-			  nusx = ( - property.kappa*dxs + uxs );
+			  nusx = ( - property.chi*dxs + uxs );
 			  out_local.nusx += nusx;
 			  ruler_x_local[i -BRD + LNX_START].nusx += nusx*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].nusx += nusx*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].nusx += nusx*inv_lz;
 
-			  nusy = ( - property.kappa*dys + uys );
+			  nusy = ( - property.chi*dys + uys );
 			  out_local.nusy += nusy;
 			  ruler_x_local[i -BRD + LNX_START].nusy += nusy*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].nusy += nusy*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].nusy += nusy*inv_lz;
 
-			  nusz = ( - property.kappa*dzs + uzs );
+			  nusz = ( - property.chi*dzs + uzs );
 			  out_local.nusz += nusz;
 			  ruler_x_local[i -BRD + LNX_START].nusz += nusz*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].nusz += nusz*inv_ly;
@@ -428,8 +428,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_y_local[j -BRD + LNY_START].s2 += s2*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].s2 += s2*inv_lz;
 			  
-			  epss = property.kappa*(grad_s.x*grad_s.x + grad_s.y*grad_s.y + grad_s.z*grad_s.z)*vol; 
-			  out_local.epst += epss; 
+			  epss = property.chi*(grad_s.x*grad_s.x + grad_s.y*grad_s.y + grad_s.z*grad_s.z)*vol; 
+			  out_local.epss += epss; 
 			  ruler_x_local[i -BRD + LNX_START].epss += epss*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].epss += epss*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].epss += epss*inv_lz;
