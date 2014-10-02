@@ -1,0 +1,28 @@
+#define DNS3D_VERSION_MAJOR @DNS3D_VERSION_MAJOR@
+#define DNS3D_VERSION_MINOR @DNS3D_VERSION_MINOR@
+
+#define GIT_BRANCH "@git-branch@"
+#define GIT_HASH "@git-hash@"
+#define GIT_NOT_COMMITTED @git-not-committed@
+#define GIT_NOT_STAGED @git-not-staged@
+#define GIT_EMAIL "@git-email@"
+#define GIT_NAME "@git-name@"
+#define GIT_DIFF "@git-diff@"
+#define GIT_PWD "@git-pwd@"
+
+#define FTMAKE_BRANCH "@git-ftmake-branch@"
+#define FTMAKE_HASH "@git-ftmake-hash@"
+
+#define MY_CMAKE_FLAGS "@DirDefs@"
+#define MY_COMPILE_USERNAME "@DNS3D_COMPILE_USERNAME@"
+#define MY_COMPILE_TIME "@DNS3D_COMPILE_TIME@"
+#define MY_COMPILE_HOSTNAME "@DNS3D_COMPILE_HOSTNAME@"
+#define UNAME_ALL "@uname_all@"
+#define UNAME_MACHINE "@uname_machine@"
+#define UNAME_NODE_NAME "@uname_node_name@"
+#define UNAME_OS_RELEASE "@uname_os_release@"
+#define UNAME_OS_NAME "@uname_os_name@"
+#define UNAME_OS_VERSION "@uname_os_version@"
+
+#define CC_VERSION "@cc_version@"
+
