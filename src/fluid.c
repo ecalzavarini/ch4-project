@@ -1418,9 +1418,9 @@ void build_forcing(){
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
 void add_forcing(){
   int i, j, k, pp;
-  my_double invtau = 1.0/property.tau_u;
+  my_double invtau,invtau_t,invtau_s;
   pop f_eq;
-  my_double fac;
+  my_double fac , fac_t, fac_s;
   vector d;
   my_double ux,uy,uz,cu,u2;
   vector vel;
@@ -1428,20 +1428,49 @@ void add_forcing(){
   pop p_eq , g_eq , h_eq;
   my_double mask;
 
+#ifdef LB_FLUID
+invtau = 1.0/property.tau_u;
+
 #ifdef METHOD_FORCING_GUO
   fac = (1.0-0.5*property.time_dt*invtau);
 #endif
-
 #ifdef METHOD_REDEFINED_POP
-  fac = 1.0;//(1.0-property.time_dt*invtau);
+  fac = 1.0;
 #ifdef METHOD_REDEFINED_POP_GUO
   fac = (1.0-0.5*property.time_dt*invtau);
 #endif
 #endif
+#endif /* LB_FLUID */
 
-  //#ifdef METHOD_COLLISION_IMPLICIT
-  //fac = 1.0;// + exp(-property.time_dt*invtau);
-  //#endif
+#ifdef LB_TEMPERATURE
+invtau_t = 1.0/property.tau_t;
+
+#ifdef METHOD_FORCING_GUO
+  fac_t = (1.0-0.5*property.time_dt*invtau_t);
+#endif
+#ifdef METHOD_REDEFINED_POP
+  fac_t = 1.0;
+#ifdef METHOD_REDEFINED_POP_GUO
+  fac_t = (1.0-0.5*property.time_dt*invtau_t);
+#endif
+#endif
+#endif /* LB_TEMPERATURE */
+
+
+#ifdef LB_SCALAR
+invtau_s = 1.0/property.tau_s;
+
+#ifdef METHOD_FORCING_GUO
+  fac_s = (1.0-0.5*property.time_dt*invtau_s);
+#endif
+#ifdef METHOD_REDEFINED_POP
+  fac_s = 1.0;
+#ifdef METHOD_REDEFINED_POP_GUO
+  fac_s = (1.0-0.5*property.time_dt*invtau_s);
+#endif
+#endif
+#endif /* LB_SCALAR */
+
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -1529,8 +1558,6 @@ void add_forcing(){
 #endif
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
-	/* alterantively */
-	//rhs_p[IDX(i,j,k)].p[pp] =  invtau*(p[IDX(i,j,k)].p[pp] -  p_eq.p[pp]);
 	  }      
 #endif
 
@@ -1548,16 +1575,14 @@ void add_forcing(){
         u2 = (ux * ux + uy * uy + uz * uz);
         cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	rhs_g[IDX(i,j,k)].p[pp] += fac*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+	rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 #endif
 
 
 #ifdef  LB_TEMPERATURE_FORCING_DIRECT
       if( sqrt(mask) < 10.0 ){
 	/* this implementation works only when METHOD_EULER is used */
-	rhs_g[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - g[IDX(i,j,k)].p[pp] )/property.time_dt;
-	/* alterantively */
-	//rhs_g[IDX(i,j,k)].p[pp] =  invtau*(g[IDX(i,j,k)].p[pp] -  g_eq.p[pp]);
+	rhs_g[IDX(i,j,k)].p[pp] =  (g_eq.p[pp] - g[IDX(i,j,k)].p[pp] )/property.time_dt;
 	  }      
 #endif
 #endif
@@ -1573,7 +1598,7 @@ void add_forcing(){
         u2 = (ux * ux + uy * uy + uz * uz);
         cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	rhs_h[IDX(i,j,k)].p[pp] += fac*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+	rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
 #endif
 #endif
 
