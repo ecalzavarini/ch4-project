@@ -16,8 +16,29 @@
     <cmake>
       SET(COMMON ${COMMON} grid.c)
      </cmake>
+    <cmake comment="backcompatibility">
+             SET(NEW_SENDRECV "YES")
+             add_definitions(-DNEW_SENDRECV)
+    </cmake>
     <!-- (2) GRID_REGULAR this is a fragile-comment-->
     <core name="REGULAR" file=""/>
+    <!-- (2) GRID_REFINED this is a fragile-comment-->
+    <core name="REFINED" file="">
+      <!-- (3) GRID_REFINED_ONESIDED this is a fragile-comment-->
+      <core name="ONESIDED" file=""/>
+      <!-- (3) GRID_REFINED_BULK this is a fragile-comment-->
+      <core name="BULK" file=""/>
+      <!-- (3) GRID_REFINED_CHEBYSHEV this is a fragile-comment-->
+      <core name="CHEBYSHEV" file=""/>
+      <!-- (3) GRID_REFINED_SINH this is a fragile-comment-->
+      <core name="SINH" file=""/>
+      <!-- (3) GRID_REFINED_X this is a fragile-comment-->
+      <core name="X" file=""/>
+      <!-- (3) GRID_REFINED_Y this is a fragile-comment-->
+      <core name="Y" file=""/>
+      <!-- (3) GRID_REFINED_Z this is a fragile-comment-->
+      <core name="Z" file=""/>
+    </core>
     <!-- (2) GRID_POP this is a fragile-comment-->
     <core name="POP" file="">
       <!-- (3) GRID_POP_D2Q9 this is a fragile-comment-->
@@ -33,7 +54,12 @@
   <!-- (1) METHOD this is a fragile-comment-->
   <core name="METHOD" file="">
     <!-- (2) METHOD_STREAMING this is a fragile-comment-->
-    <core name="STREAMING" file=""/>
+    <core name="STREAMING" file="">
+      <cmake comment="backcompatibility">
+	     SET(METHOD_EDGES_AND_CORNERS "YES")
+	     SET(METHOD_FORCING_GUO "YES")
+     </cmake>
+    </core>
     <!-- (2) METHOD_CENTERED this is a fragile-comment-->
     <core name="CENTERED" file=""/>
     <!-- (2) METHOD_MYQUICK this is a fragile-comment-->
@@ -47,7 +73,59 @@
       SET(COMMON ${COMMON} lb.c)
      </cmake>
     <!-- (2) LB_FLUID this is a fragile-comment-->
-    <core name="FLUID" file=""/>
+    <core name="FLUID" file="">
+      <!-- (3) LB_FLUID_INITIAL this is a fragile-comment-->
+      <core name="INITIAL" file="">
+        <!-- (4) LB_FLUID_INITIAL_KOLMOGOROV this is a fragile-comment-->
+        <core name="KOLMOGOROV" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_POISEUILLE this is a fragile-comment-->
+        <core name="POISEUILLE" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_POISEUILLE_HALF this is a fragile-comment-->
+        <core name="POISEUILLE_HALF" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_CHANNEL this is a fragile-comment-->
+        <core name="CHANNEL" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_VORTICES this is a fragile-comment-->
+        <core name="VORTICES" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_PERTURBATION this is a fragile-comment-->
+        <core name="PERTURBATION" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_LANDSCAPE this is a fragile-comment-->
+        <core name="LANDSCAPE" file=""/>
+        <!-- (4) LB_FLUID_INITIAL_BAROMETRIC this is a fragile-comment-->
+        <core name="BAROMETRIC" file=""/>
+      </core>
+      <!-- (3) LB_FLUID_FORCING this is a fragile-comment-->
+      <core name="FORCING" file="">
+        <!-- (4) LB_FLUID_FORCING_CHANNEL this is a fragile-comment-->
+        <core name="CHANNEL" file=""/>
+        <!-- (4) LB_FLUID_FORCING_POISEUILLE this is a fragile-comment-->
+        <core name="POISEUILLE" file=""/>
+        <!-- (4) LB_FLUID_FORCING_CONSTANT_POWER this is a fragile-comment-->
+        <core name="CONSTANT_POWER" file=""/>
+        <!-- (4) LB_FLUID_FORCING_KOLMOGOROV this is a fragile-comment-->
+        <core name="KOLMOGOROV" file=""/>
+        <!-- (4) LB_FLUID_FORCING_LANDSCAPE this is a fragile-comment-->
+        <core name="LANDSCAPE" file=""/>
+        <!-- (4) LB_FLUID_FORCING_PENALIZATION this is a fragile-comment-->
+        <core name="PENALIZATION" file=""/>
+        <!-- (4) LB_FLUID_FORCING_DIRECT this is a fragile-comment-->
+        <core name="DIRECT" file=""/>
+        <!-- (4) LB_FLUID_FORCING_CELLULAR this is a fragile-comment-->
+        <core name="CELLULAR" file=""/>
+        <!-- (4) LB_FLUID_FORCING_HIT this is a fragile-comment-->
+        <core name="HIT" file=""/>
+        <!-- (4) LB_FLUID_FORCING_ABSORB this is a fragile-comment-->
+        <core name="ABSORB" file=""/>
+        <!-- (4) LB_FLUID_FORCING_LANDSCAPE this is a fragile-comment-->
+        <core name="LANDSCAPE" file="">
+          <!-- (5) LB_FLUID_FORCING_LANDSCAPE_CYLINDER this is a fragile-comment-->
+          <core name="CYLINDER" file=""/>
+          <!-- (5) LB_FLUID_FORCING_LANDSCAPE_CUBE this is a fragile-comment-->
+          <core name="CUBE" file=""/>
+          <!-- (5) LB_FLUID_FORCING_LANDSCAPE_BUILDINGS this is a fragile-comment-->
+          <core name="BUILDINGS" file=""/>
+        </core>
+      </core>
+    </core>
     <!-- (2) LB_TEMPERATURE this is a fragile-comment-->
     <core name="TEMPERATURE" file=""/>
     <!-- (2) LB_SCALAR this is a fragile-comment-->
