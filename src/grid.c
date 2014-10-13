@@ -476,7 +476,8 @@ void compute_volumes(){
 
 #ifdef DEBUG
 				/* testing volume */
-#endif				fprintf(stdout, "Volume : %e \n", V);
+				fprintf(stdout, "Volume : %e \n", V);
+#endif
 
 				center_V[IDX(i, j, k)] = P8;
 			    //if(P8.x==0.5)fprintf(stdout, "WWW me %d , %d %d %d , %g %g %g\n",me, i,j,k,center_V[IDX(i, j, k)].x,center_V[IDX(i, j, k)].y,center_V[IDX(i, j, k)].z);
