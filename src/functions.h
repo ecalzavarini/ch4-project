@@ -1,4 +1,6 @@
-#include "define.h"
+#ifdef NO_XMLHEADERS
+ #include "define.h"
+#endif
 
 /* parallel.c */
 void initialization_MPI();

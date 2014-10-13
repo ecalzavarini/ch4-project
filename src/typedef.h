@@ -1,4 +1,6 @@
-#include "define.h"
+#ifdef NO_XMLHEADERS
+ #include "define.h"
+#endif
 
 //#define my_double long double 
 #define my_double double
@@ -159,6 +161,7 @@ typedef struct {
 
 
 #define ROOT (!me)
+#define AMIROOT (!me)
 
 /* total frame size */
 #ifdef METHOD_MYQUICK

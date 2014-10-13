@@ -6,7 +6,9 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <mpi.h>
-#include "define.h"
+#ifdef NO_XMLHEADERS
+ #include "define.h"
+#endif
 #include "typedef.h"
 #include "functions.h"
 
