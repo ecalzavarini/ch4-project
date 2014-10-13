@@ -15,8 +15,6 @@
   <core name="GRID" file="">
     <cmake>
       SET(COMMON ${COMMON} grid.c)
-     </cmake>
-    <cmake comment="backcompatibility">
              SET(NEW_SENDRECV "YES")
              add_definitions(-DNEW_SENDRECV)
     </cmake>
@@ -58,6 +56,8 @@
       <cmake comment="backcompatibility">
 	     SET(METHOD_EDGES_AND_CORNERS "YES")
 	     SET(METHOD_FORCING_GUO "YES")
+             add_definitions(-DMETHOD_EDGES_AND_CORNERS)
+             add_definitions(-DMETHOD_FORCING_GUO)
      </cmake>
     </core>
     <!-- (2) METHOD_CENTERED this is a fragile-comment-->
