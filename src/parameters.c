@@ -147,9 +147,9 @@ void assign_parameters(){
   property.Amp_y = read_parameter(name);
   sprintf(name,"Amp_z");
   property.Amp_z = read_parameter(name);
-  fprintf(stderr,"Properties:\Amp_x %g\n",(double)property.Amp_x);
-  fprintf(stderr,"Properties:\Amp_y %g\n",(double)property.Amp_y);
-  fprintf(stderr,"Properties:\Amp_z %g\n",(double)property.Amp_z);
+  fprintf(stderr,"Properties: Amp_x %g\n",(double)property.Amp_x);
+  fprintf(stderr,"Properties: Amp_y %g\n",(double)property.Amp_y);
+  fprintf(stderr,"Properties: Amp_z %g\n",(double)property.Amp_z);
 #ifdef LB_FLUID_FORCING_POISEUILLE
   fprintf(stderr,"Reynolds (Poiseuille) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
   fout = fopen("numbers.dat","a");

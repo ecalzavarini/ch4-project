@@ -2068,7 +2068,7 @@ void read_landscape(){
 	  */
 
 	  // defining different types of bluff bodies : cyinder, cube, buildings 
-#ifdef  CYLINDER
+#ifdef  LB_FLUID_FORCING_LANDSCAPE_CYLINDER
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
@@ -2081,7 +2081,7 @@ void read_landscape(){
 				}
 #endif
 
-#ifdef CUBE
+#ifdef LB_FLUID_FORCING_LANDSCAPE_CUBE
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
@@ -2094,7 +2094,7 @@ void read_landscape(){
 				}
 #endif
 
-#ifdef BUILDINGS
+#ifdef LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 			    for (i = 0; i < LNX+TWO_BRD; i++) 
 			      for (k =0; k < LNZ+TWO_BRD; k++)
 			        for (j =0; j < LNY+TWO_BRD; j++){
