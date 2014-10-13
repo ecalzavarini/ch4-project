@@ -7,12 +7,10 @@ set (CH4_VERSION_MAJOR 1)
 set (CH4_VERSION_MINOR 0)
 
 ENABLE_TESTING()
-#set(CTEST_BUILD_NAME "PIPPO")
 
 set(TARGET_NAME ch4)
 
 set(DOC_DIRECTORY doc)
-
 
 execute_process(
         COMMAND git rev-parse --verify --symbolic-full-name --abbrev-ref HEAD
@@ -37,8 +35,6 @@ endif(FTMAKE)
 message(STATUS "FTMAKE: ${FTMAKE}")
 
 
-
-
 SET(TRIAL_PATHS
   $ENV{HOME}/${FTMAKE}
   $ENV{HOME}/projects/${FTMAKE}
@@ -49,16 +45,6 @@ SET(TRIAL_PATHS
 
 
 FIND_PATH(FTMAKE_SOURCE_DIR CMakeLists.txt ${TRIAL_PATHS})
-#message(${TRIAL_PATHS})
-#message(${FTMAKE_SOURCE_DIR})
-
-#message(STATUS "Complete: automated merging with origin/develop")
-#execute_process(COMMAND git fetch --all
-#                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-#execute_process(COMMAND git merge origin/develop
-#                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-#message(STATUS "Complete: automated merging with origin/develop finished")
-
 
 
 # Launch cmake
@@ -75,8 +61,6 @@ ENDIF(FTMAKE_SOURCE_DIR)
 
 message(STATUS "${git-branch}")
 
-
-#set(CTEST_BUILD_NAME "${git-branch}-${git-short-hash}(${git-ftmake-branch}-${git-ftmake-short-hash}")
 set(BUILDNAME "${git-branch}@${git-short-hash} (${git-ftmake-branch}@${git-ftmake-short-hash})")
 
 INCLUDE(CTest)
