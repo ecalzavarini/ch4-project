@@ -15,8 +15,8 @@
   <core name="GRID" file="">
     <cmake>
       SET(COMMON ${COMMON} grid.c)
-             SET(NEW_SENDRECV "YES")
-             add_definitions(-DNEW_SENDRECV)
+      SET(NEW_SENDRECV "YES")
+      add_definitions(-DNEW_SENDRECV)
     </cmake>
     <!-- (2) GRID_REGULAR this is a fragile-comment-->
     <core name="REGULAR" file=""/>
@@ -53,7 +53,7 @@
   <core name="METHOD" file="">
     <!-- (2) METHOD_STREAMING this is a fragile-comment-->
     <core name="STREAMING" file="">
-      <cmake comment="backcompatibility">
+      <cmake comment="">
 	     SET(METHOD_EDGES_AND_CORNERS "YES")
 	     SET(METHOD_FORCING_GUO "YES")
              add_definitions(-DMETHOD_EDGES_AND_CORNERS)
@@ -123,6 +123,70 @@
           <core name="CUBE" file=""/>
           <!-- (5) LB_FLUID_FORCING_LANDSCAPE_BUILDINGS this is a fragile-comment-->
           <core name="BUILDINGS" file=""/>
+        </core>
+      </core>
+      <!-- (3) LB_FLUID_BC this is a fragile-comment-->
+      <core name="BC" file="">
+        <!-- (4) LB_FLUID_BC_Y this is a fragile-comment-->
+        <core name="Y" file="">
+          <!-- (5) LB_FLUID_BC_Y_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_FLUID_BC_Y_M_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_Y_M_JET this is a fragile-comment-->
+            <core name="JET" file=""/>
+          </core>
+          <!-- (5) LB_FLUID_BC_Y_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_FLUID_BC_Y_P_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_Y_P_JET this is a fragile-comment-->
+            <core name="JET" file=""/>
+            <!-- (6) LB_FLUID_BC_Y_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+          </core>
+          <!-- (5) LB_FLUID_BC_Y_X this is a fragile-comment-->
+          <core name="X" file="">
+            <!-- (6) LB_FLUID_BC_Y_X_M this is a fragile-comment-->
+            <core name="M" file="">
+              <!-- (7) LB_FLUID_BC_Y_X_M_SLIP this is a fragile-comment-->
+              <core name="SLIP" file=""/>
+              <!-- (7) LB_FLUID_BC_Y_X_M_OUTLET this is a fragile-comment-->
+              <core name="OUTLET" file=""/>
+              <!-- (7) LB_FLUID_BC_Y_X_M_INLET this is a fragile-comment-->
+              <core name="INLET" file="">
+                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_POISEUILLE this is a fragile-comment-->
+                <core name="POISEUILLE" file=""/>
+                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_CONSTANT this is a fragile-comment-->
+                <core name="CONSTANT" file=""/>
+                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_POISEUILLE_HALF this is a fragile-comment-->
+                <core name="POISEUILLE_HALF" file=""/>
+              </core>
+            </core>
+            <!-- (6) LB_FLUID_BC_Y_X_P this is a fragile-comment-->
+            <core name="P" file="">
+              <!-- (7) LB_FLUID_BC_Y_X_P_SLIP this is a fragile-comment-->
+              <core name="SLIP" file=""/>
+              <!-- (7) LB_FLUID_BC_Y_X_P_OUTLET this is a fragile-comment-->
+              <core name="OUTLET" file=""/>
+            </core>
+          </core>
+          <!-- (5) LB_FLUID_BC_Y_Z this is a fragile-comment-->
+          <core name="Z" file="">
+            <!-- (6) LB_FLUID_BC_Y_Z_M this is a fragile-comment-->
+            <core name="M" file="">
+              <!-- (7) LB_FLUID_BC_Y_Z_M_SLIP this is a fragile-comment-->
+              <core name="SLIP" file=""/>
+              <!-- (7) LB_FLUID_BC_Y_Z_M_OUTLET this is a fragile-comment-->
+              <core name="OUTLET" file=""/>
+            </core>
+            <!-- (6) LB_FLUID_BC_Y_Z_P this is a fragile-comment-->
+            <core name="P" file=""/>
+            <!-- (6) LB_FLUID_BC_Y_Z_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_Y_Z_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+          </core>
         </core>
       </core>
     </core>
