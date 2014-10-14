@@ -1,23 +1,5 @@
 #include "common_object.h"
 
-#ifdef NOSLIP
-void noslip_yp(pop*f){
-
-  for (j = BRD; j < LNY + BRD; j++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
-if(LNY_END == NY){
-	j = LNY+BRD-1; 
-
-       	for(pp=0;pp<NPOP;pp++) p[IDX(i,j+1,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
-#ifdef METHOD_MYQUICK
-       	for(pp=0;pp<NPOP;pp++) p[IDX(i,j+2,k)].p[pp] = p[IDX(i,j-1,k)].p[inv[pp]];
-#endif
-}
-
-}
-#endif
-
-
 
 #ifdef LB_FLUID_BC
 void boundary_conditions(){
