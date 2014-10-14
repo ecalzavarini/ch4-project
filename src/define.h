@@ -59,32 +59,32 @@
 
 /* Landscape definitions in the domain */
 //#define LB_FLUID_FORCING_LANDSCAPE
-//#define CYLINDER
-//#define CUBE
-//#define BUILDINGS
+//#define LB_FLUID_FORCING_LANDSCAPE_CYLINDER
+//#define LB_FLUID_FORCING_LANDSCAPE_CUBE
+//#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_YM_SLIP                                           
-//#define LB_FLUID_BC_YP_SLIP  
-#define LB_FLUID_BC_YM_JET                       
-#define LB_FLUID_BC_YP_OUTLET
+//#define LB_FLUID_BC_Y_M_SLIP                                           
+//#define LB_FLUID_BC_Y_P_SLIP  
+//#define LB_FLUID_BC_Y_M_JET                       
+//#define LB_FLUID_BC_Y_P_OUTLET
 
-#define LB_FLUID_BC_X                                                     
-//#define LB_FLUID_BC_XM_SLIP                                             
-//#define LB_FLUID_BC_XP_SLIP                                               
-//#define LB_FLUID_BC_XM_INLET                                         
-//#define LB_FLUID_BC_XM_INLET_POISEUILLE
-//#define LB_FLUID_BC_XM_INLET_POISEUILLE_HALF
-//#define LB_FLUID_BC_XM_INLET_CONSTANT
-#define LB_FLUID_BC_XM_OUTLET 
-#define LB_FLUID_BC_XP_OUTLET  
+//#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X_M_SLIP                                             
+//#define LB_FLUID_BC_X_P_SLIP                                               
+//#define LB_FLUID_BC_X_M_INLET                                         
+//#define LB_FLUID_BC_X_M_INLET_POISEUILLE
+//#define LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF
+//#define LB_FLUID_BC_X_M_INLET_CONSTANT
+//#define LB_FLUID_BC_X_M_OUTLET 
+//#define LB_FLUID_BC_X_P_OUTLET  
                                              
 //#define LB_FLUID_BC_Z
-//#define LB_FLUID_BC_ZM_SLIP                                             
-//#define LB_FLUID_BC_ZP_SLIP  
-//#define LB_FLUID_BC_ZM_OUTLET 
-//#define LB_FLUID_BC_ZP_OUTLET  
+//#define LB_FLUID_BC_Z_M_SLIP                                             
+//#define LB_FLUID_BC_Z_P_SLIP  
+//#define LB_FLUID_BC_Z_M_OUTLET 
+//#define LB_FLUID_BC_Z_P_OUTLET  
 
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
@@ -118,38 +118,39 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* TEMPERATURE */
 #define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-//#define LB_TEMPERATURE_INITIAL_LINEAR
-//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
-#define LB_TEMPERATURE_INITIAL_CONSTANT
+#define LB_TEMPERATURE_INITIAL_LINEAR
+#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
-#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
+//#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
 //#define LB_TEMPERATURE_INITIAL_BULK
-//#define LB_TEMPERATURE_BUOYANCY
+#define LB_TEMPERATURE_BUOYANCY
 //#define LB_TEMPERATURE_BUOYANCY_TREF
 #define LB_TEMPERATURE_BC
 #define LB_TEMPERATURE_BC_Y
-#define LB_TEMPERATURE_BC_YP_OUTLET
-#define LB_TEMPERATURE_BC_YP_NOFLUX
-//#define LB_TEMPERATURE_BC_YP_VARIABLE
-#define LB_TEMPERATURE_BC_YM_VARIABLE 
-//#define LB_TEMPERATURE_BC_YM_OUTLET
-//#define LB_TEMPERATURE_BC_YM_NOFLUX
-#define LB_TEMPERATURE_BC_X
-//#define LB_TEMPERATURE_BC_XP_OUTLET
-//#define LB_TEMPERATURE_BC_XM_OUTLET
-#define LB_TEMPERATURE_BC_XP_NOFLUX
-#define LB_TEMPERATURE_BC_XM_NOFLUX
+//#define LB_TEMPERATURE_BC_Y_P_OUTLET
+//#define LB_TEMPERATURE_BC_Y_P_NOFLUX
+//#define LB_TEMPERATURE_BC_Y_P_VARIABLE
+//#define LB_TEMPERATURE_BC_Y_M_VARIABLE 
+//#define LB_TEMPERATURE_BC_Y_M_OUTLET
+//#define LB_TEMPERATURE_BC_Y_M_NOFLUX
+//#define LB_TEMPERATURE_BC_X
+//#define LB_TEMPERATURE_BC_X_P_OUTLET
+//#define LB_TEMPERATURE_BC_X_M_OUTLET
+//#define LB_TEMPERATURE_BC_X_P_NOFLUX
+//#define LB_TEMPERATURE_BC_X_M_NOFLUX
+
 //#define LB_TEMPERATURE_BC_Z
-//#define LB_TEMPERATURE_BC_ZP_OUTLET
-//#define LB_TEMPERATURE_BC_ZM_OUTLET
-//#define LB_TEMPERATURE_BC_ZP_NOFLUX
-//#define LB_TEMPERATURE_BC_ZM_NOFLUX
+//#define LB_TEMPERATURE_BC_Z_P_OUTLET
+//#define LB_TEMPERATURE_BC_Z_M_OUTLET
+//#define LB_TEMPERATURE_BC_Z_P_NOFLUX
+//#define LB_TEMPERATURE_BC_Z_M_NOFLUX
 //#define LB_TEMPERATURE_BC_X_NOFLUX /* obsolete : only for finite-volume */
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
-#define LB_TEMPERATURE_FORCING
+//#define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_BULK 
 //#define LB_TEMPERATURE_FORCING_BULK_VARIABLE
 //#define LB_TEMPERATURE_FORCING_RADIATION 
@@ -161,41 +162,41 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_DIRECT
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-//#define LB_SCALAR
-//#define LB_SCALAR_INITIAL_LINEAR
+#define LB_SCALAR
+#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
 //#define LB_SCALAR_INITIAL_BULK
 //#define LB_SCALAR_INITIAL_CONSTANT
-//#define LB_SCALAR_INITIAL_CONSTANT_MEAN                                                                                                                                                                          
-//#define LB_SCALAR_INITIAL_CONSTANT_BOT                                                                                                                                                                           
+//#define LB_SCALAR_INITIAL_CONSTANT_MEAN                                                                                                      
+//#define LB_SCALAR_INITIAL_CONSTANT_BOT                                                                                                              
 //#define LB_SCALAR_INITIAL_CONSTANT_TOP
 //#define LB_SCALAR_BUOYANCY
-//#define LB_SCALAR_BC
-//#define LB_SCALAR_BC_Y
-//#define LB_SCALAR_BC_YP_OUTLET
-//#define LB_SCALAR_BC_YM_OUTLET
-//#define LB_SCALAR_BC_YP_NOFLUX
-//#define LB_SCALAR_BC_YM_NOFLUX
+#define LB_SCALAR_BC
+#define LB_SCALAR_BC_Y
+//#define LB_SCALAR_BC_Y_P_OUTLET
+//#define LB_SCALAR_BC_Y_M_OUTLET
+//#define LB_SCALAR_BC_Y_P_NOFLUX
+//#define LB_SCALAR_BC_Y_M_NOFLUX
 //#define LB_SCALAR_BC_X
-//#define LB_SCALAR_BC_XP_OUTLET
-//#define LB_SCALAR_BC_XM_OUTLET
-//#define LB_SCALAR_BC_XP_NOFLUX
-//#define LB_SCALAR_BC_XM_NOFLUX
+//#define LB_SCALAR_BC_X_P_OUTLET
+//#define LB_SCALAR_BC_X_M_OUTLET
+//#define LB_SCALAR_BC_X_P_NOFLUX
+//#define LB_SCALAR_BC_X_M_NOFLUX
 //#define LB_SCALAR_BC_Z
-//#define LB_SCALAR_BC_ZP_OUTLET
-//#define LB_SCALAR_BC_ZM_OUTLET
-//#define LB_SCALAR_BC_ZP_NOFLUX
-//#define LB_SCALAR_BC_ZM_NOFLUX
+//#define LB_SCALAR_BC_Z_P_OUTLET
+//#define LB_SCALAR_BC_Z_M_OUTLET
+//#define LB_SCALAR_BC_Z_P_NOFLUX
+//#define LB_SCALAR_BC_Z_M_NOFLUX
 //#define LB_SCALAR_FLUCTUATION  
 //#define LB_SCALAR_FORCING
 //#define LB_SCALAR_FORCING_REACTION
 
 
 /* Lagragian parts */
-//#define LAGRANGE
+#define LAGRANGE
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LAGRANGE_GRADIENT 
+#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY
 
@@ -226,3 +227,5 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define METHOD_EDGES_AND_CORNERS                                        
 #define METHOD_FORCING_GUO                                              
 #endif
+
+

@@ -38,7 +38,7 @@ void boundary_conditions(){
 if(LNX_END == NX){
 	i = LNX+BRD-1;
 	
-#ifdef LB_FLUID_BC_XP_OUTLET
+#ifdef LB_FLUID_BC_X_P_OUTLET
 	
 	if(pp==0){
 	  vel.x = u[IDX(i, j, k)].x;
@@ -64,7 +64,7 @@ if(LNX_END == NX){
 	  
 	}	  
 #else 
-#ifdef LB_FLUID_BC_XP_SLIP
+#ifdef LB_FLUID_BC_X_P_SLIP
 
 	p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
@@ -82,7 +82,7 @@ if(LNX_END == NX){
 if(LNX_START == 0){
   i = BRD; 
 
-#ifdef LB_FLUID_BC_XM_INLET
+#ifdef LB_FLUID_BC_X_M_INLET
   /* the following if is to compute the equilibrium only one time */
 	if(pp==0){
 	  vel.x = property.Amp_x;
@@ -96,7 +96,7 @@ if(LNX_START == 0){
 	}
 	
 #else
-#ifdef LB_FLUID_BC_XM_SLIP
+#ifdef LB_FLUID_BC_X_M_SLIP
 		
 	p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) p[IDX(i-1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
@@ -130,7 +130,7 @@ if(LNX_START == 0){
 if(LNY_END == NY){
 	j = LNY+BRD-1; 
 
-#ifdef LB_FLUID_BC_YP_OUTLET
+#ifdef LB_FLUID_BC_Y_P_OUTLET
 	if(pp==0){
 	  vel.x =  u[IDX(i, j, k)].x;
 	  vel.y =  u[IDX(i, j, k)].y;
@@ -143,7 +143,7 @@ if(LNY_END == NY){
 	}
 #else
 
-#ifdef LB_FLUID_BC_YP_SLIP
+#ifdef LB_FLUID_BC_Y_P_SLIP
 	/*
        	if(norm_yp_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
 	  f[IDX(i,j+1,k)].p[inv[pp]] = norm_yp_pop[IDX_Y(i, k)].p[pp]*f[IDX(i,j,k)].p[pp];
@@ -188,7 +188,7 @@ if(LNY_END == NY){
 
 if(LNY_START == 0){
   j = BRD; 
-#ifdef LB_FLUID_BC_YM_SLIP	
+#ifdef LB_FLUID_BC_Y_M_SLIP	
 	/*
         if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
 	  f[IDX(i,j-1,k)].p[inv[pp]] = norm_ym_pop[IDX_Y(i,k)].p[pp]*f[IDX(i,j,k)].p[pp];
@@ -378,7 +378,7 @@ if(LNX_START == 0){
 	if(LNZ_END == NZ){
 	k = LNZ+BRD-1;
 
-#ifdef LB_FLUID_BC_ZP_SLIP
+#ifdef LB_FLUID_BC_Z_P_SLIP
 
 	p[IDX(i,j,k+1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) p[IDX(i,j,k+1)].p[pp] = p[IDX(i,j,k)].p[pp];
@@ -392,7 +392,7 @@ if(LNX_START == 0){
 	if(LNZ_START == 0){
 	  k = BRD; 
 
-#ifdef LB_FLUID_BC_ZM_SLIP
+#ifdef LB_FLUID_BC_Z_M_SLIP
 		
 	p[IDX(i,j,k-1)].p[pp] = p[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) p[IDX(i,j,k-1)].p[pp] = p[IDX(i,j,k)].p[pp];
@@ -474,7 +474,7 @@ sendrecv_borders_pop(rhs_h);
 if(LNX_END == NX){
 	i = LNX+BRD-1;
 
-#ifdef LB_FLUID_BC_XP_OUTLET
+#ifdef LB_FLUID_BC_X_P_OUTLET
 	if(pp==0){
 	  rho = 1;
 #ifdef GRID_POP_D2Q9
@@ -491,7 +491,7 @@ if(LNX_END == NX){
 	} 
 #else
 
-#ifdef LB_FLUID_BC_XP_SLIP
+#ifdef LB_FLUID_BC_X_P_SLIP
 	  /* SLIP */
           rhs_p[IDX(i+1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 
@@ -506,7 +506,7 @@ if(LNX_END == NX){
 if(LNX_START == 0){
   i = BRD;
 
-#ifdef LB_FLUID_BC_XM_OUTLET
+#ifdef LB_FLUID_BC_X_M_OUTLET
 	if(pp==0){
 	  rho = 1;
 #ifdef GRID_POP_D2Q9
@@ -521,20 +521,20 @@ if(LNX_START == 0){
 	  rhs_p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho); 
 	}
 #else 
-#ifdef LB_FLUID_BC_XM_INLET
+#ifdef LB_FLUID_BC_X_M_INLET
 	if(pp==0){
 
-#ifdef LB_FLUID_BC_XM_INLET_POISEUILLE
+#ifdef LB_FLUID_BC_X_M_INLET_POISEUILLE
 	  /*Poiseuille flow velocity profile - inlet*/
 	     vel.x = -(4.0*(my_double)property.Amp_x*(pow(((my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-((my_double)property.SY));
 #endif
 
-#ifdef LB_FLUID_BC_XM_INLET_POISEUILLE_HALF
+#ifdef LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF
 	  /* Half Poiseuille flow velocity profile - inlet*/
 	  vel.x = -(4.0*(my_double)property.Amp_x*(pow((2.0*(my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-(2.0*(my_double)property.SY));
 #endif
 
-#ifdef LB_FLUID_BC_XM_INLET_CONSTANT
+#ifdef LB_FLUID_BC_X_M_INLET_CONSTANT
 	  /* Constant velocity = Amp_x*/        
 	  vel.x = property.Amp_x;
 	  vel.y = property.Amp_y;
@@ -552,7 +552,7 @@ if(LNX_START == 0){
 	  rhs_p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho); 
 	}		
 #else
-#ifdef LB_FLUID_BC_XM_SLIP
+#ifdef LB_FLUID_BC_X_M_SLIP
 	/* SLIP */
           rhs_p[IDX(i-1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else
@@ -582,7 +582,7 @@ if(LNX_START == 0){
 if(LNY_END == NY){
           j = LNY+BRD-1;	 
 
-#ifdef LB_FLUID_BC_YP_OUTLET
+#ifdef LB_FLUID_BC_Y_P_OUTLET
 	if(pp==0){
 
 	  rho = 1.0; //dens[IDX(i, j, k)];
@@ -601,7 +601,7 @@ if(LNY_END == NY){
 }		   	   		   		   		   
 #else
 
-#ifdef LB_FLUID_BC_YP_SLIP
+#ifdef LB_FLUID_BC_Y_P_SLIP
 	/* SLIP */
           rhs_p[IDX(i,j+1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else
@@ -615,7 +615,7 @@ if(LNY_END == NY){
 if(LNY_START == 0){
   j = BRD; 
 
-#ifdef LB_FLUID_BC_YM_SLIP
+#ifdef LB_FLUID_BC_Y_M_SLIP
         /* SLIP */
           rhs_p[IDX(i,j-1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else
@@ -624,7 +624,7 @@ if(LNY_START == 0){
 #endif
 
 
-#ifdef LB_FLUID_BC_YM_JET
+#ifdef LB_FLUID_BC_Y_M_JET
   /* inlet geometry - circle: POSITION OF CENTER COORDINATES OF THE CIRCLE SPECIFIED HERE ITSELF */
   if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0){    
 	  
@@ -645,7 +645,7 @@ if(LNY_START == 0){
 
  	
       }
-#endif /* end of LB_FLUID_BC_YM_JET */
+#endif /* end of LB_FLUID_BC_Y_M_JET */
 
  }
 
@@ -669,7 +669,7 @@ if(LNZ_END == NZ){
 	k = LNZ+BRD-1;
 
 
-#ifdef LB_FLUID_BC_ZP_OUTLET
+#ifdef LB_FLUID_BC_Z_P_OUTLET
 
 	if(pp==0){
 	  rho = 1.0;
@@ -683,7 +683,7 @@ if(LNZ_END == NZ){
 }
 
 #else
-#ifdef LB_FLUID_BC_ZP_SLIP
+#ifdef LB_FLUID_BC_Z_P_SLIP
 	//          rhs_p[IDX(i+1,jj,kk)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
  
           rhs_p[IDX(i,j,k+1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
@@ -700,7 +700,7 @@ if(LNZ_END == NZ){
 if(LNZ_START == 0){
   k = BRD; 
 
-#ifdef LB_FLUID_BC_ZM_OUTLET
+#ifdef LB_FLUID_BC_Z_M_OUTLET
 
 	if(pp==0){
 	  rho = 1.0;
@@ -715,7 +715,7 @@ if(LNZ_START == 0){
 }
 
 #else 
-#ifdef LB_FLUID_BC_ZM_SLIP
+#ifdef LB_FLUID_BC_Z_M_SLIP
 
           rhs_p[IDX(i,j,k-1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else
@@ -758,7 +758,7 @@ if(LNY_END == NY){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
-#ifdef LB_TEMPERATURE_BC_YP_VARIABLE
+#ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE
 	  //	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
 	  T_wall = property.T_top;
 #endif
@@ -768,14 +768,14 @@ if(LNY_END == NY){
 
 
 
-#ifdef LB_TEMPERATURE_BC_YP_OUTLET
+#ifdef LB_TEMPERATURE_BC_Y_P_OUTLET
 	  /* this is the wall temperature in case of outlet */
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j-1,k)]);
 #endif
 	  /* this is a linear interpolation */
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_YP_NOFLUX
+#ifdef LB_TEMPERATURE_BC_Y_P_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -794,7 +794,7 @@ if(LNY_START == 0){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
-#ifdef LB_TEMPERATURE_BC_YM_VARIABLE
+#ifdef LB_TEMPERATURE_BC_Y_M_VARIABLE
   if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
   //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
 #endif
@@ -804,13 +804,13 @@ if(LNY_START == 0){
 
 
 
-#ifdef LB_TEMPERATURE_BC_YM_OUTLET
+#ifdef LB_TEMPERATURE_BC_Y_M_OUTLET
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j+1,k)]);
 #endif
 
 	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_YM_NOFLUX
+#ifdef LB_TEMPERATURE_BC_Y_M_NOFLUX
 	  fac = 0.0;
 #endif
 	  
@@ -848,13 +848,13 @@ if(LNX_END == NX){
 #endif
 
 
-#ifdef LB_TEMPERATURE_BC_XP_OUTLET
+#ifdef LB_TEMPERATURE_BC_X_P_OUTLET
 	  /* this is outlet */
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i-1,j,k)]);
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_XP_NOFLUX
+#ifdef LB_TEMPERATURE_BC_X_P_NOFLUX
 	  fac = 0.0;
 #endif	  
 
@@ -878,13 +878,13 @@ if(LNX_START == 0){
 	  T_wall = 0.0;
 #endif
 
-#ifdef LB_TEMPERATURE_BC_XM_OUTLET
+#ifdef LB_TEMPERATURE_BC_X_M_OUTLET
 	  /* this is outlet */
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i+1,j,k)]);
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_XM_NOFLUX
+#ifdef LB_TEMPERATURE_BC_X_M_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -920,12 +920,12 @@ if(LNZ_END == NZ){
 #endif
 
 
-#ifdef LB_TEMPERATURE_BC_ZP_OUTLET
+#ifdef LB_TEMPERATURE_BC_Z_P_OUTLET
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k-1)]);
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_ZP_NOFLUX
+#ifdef LB_TEMPERATURE_BC_Z_P_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -949,12 +949,12 @@ if(LNZ_START == 0){
 #endif
 
 
-#ifdef LB_TEMPERATURE_BC_ZM_OUTLET
+#ifdef LB_TEMPERATURE_BC_Z_M_OUTLET
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k+1)]);
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
-#ifdef LB_TEMPERATURE_BC_ZM_NOFLUX
+#ifdef LB_TEMPERATURE_BC_Z_M_NOFLUX
 	  fac = 0.0;
 #endif
 	  
@@ -1001,13 +1001,13 @@ if(LNY_END == NY){
 #endif
 
 
-#ifdef LB_SCALAR_BC_YP_OUTLET
+#ifdef LB_SCALAR_BC_Y_P_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j-1,k)]);
 #endif
 
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
-#ifdef LB_SCALAR_BC_YP_NOFLUX
+#ifdef LB_SCALAR_BC_Y_P_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -1030,13 +1030,13 @@ if(LNY_START == 0){
 	  S_wall = 0.0;
 #endif
 
-#ifdef LB_SCALAR_BC_YM_OUTLET
+#ifdef LB_SCALAR_BC_Y_M_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j+1,k)]);
 #endif
 
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
 
-#ifdef LB_SCALAR_BC_YM_NOFLUX
+#ifdef LB_SCALAR_BC_Y_M_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -1072,13 +1072,13 @@ if(LNX_END == NX){
 #endif
 
 
-#ifdef LB_SCALAR_BC_XP_OUTLET
+#ifdef LB_SCALAR_BC_X_P_OUTLET
 	  /* this is outlet */
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i-1,j,k)]);
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
-#ifdef LB_SCALAR_BC_XP_NOFLUX
+#ifdef LB_SCALAR_BC_X_P_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -1102,12 +1102,12 @@ if(LNX_START == 0){
 #endif
 
 
-#ifdef LB_SCALAR_BC_XM_OUTLET
+#ifdef LB_SCALAR_BC_X_M_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i+1,j,k)]);
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
-#ifdef LB_SCALAR_BC_XM_NOFLUX
+#ifdef LB_SCALAR_BC_X_M_NOFLUX
 	  fac = 0.0;
 #endif
 	  
@@ -1142,12 +1142,12 @@ if(LNZ_END == NZ){
 #endif
 
 
-#ifdef LB_SCALAR_BC_ZP_OUTLET
+#ifdef LB_SCALAR_BC_Z_P_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k-1)]);
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
-#ifdef LB_SCALAR_BC_ZP_NOFLUX
+#ifdef LB_SCALAR_BC_Z_P_NOFLUX
 	  fac = 0.0;
 #endif
 
@@ -1171,12 +1171,12 @@ if(LNZ_START == 0){
 #endif
 
 
-#ifdef LB_SCALAR_BC_ZM_OUTLET
+#ifdef LB_SCALAR_BC_Z_M_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k+1)]);
 #endif
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
-#ifdef LB_SCALAR_BC_ZM_NOFLUX
+#ifdef LB_SCALAR_BC_Z_M_NOFLUX
 	  fac = 0.0;
 #endif
 	  
@@ -1221,7 +1221,7 @@ void boundary_conditions_for_equilibrium(){
 	if(LNY_END == NY){
 	   j = LNY+BRD-1;
 
-#ifdef LB_FLUID_BC_YP_SLIP
+#ifdef LB_FLUID_BC_Y_P_SLIP
 	   /* free slip */
 	p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j+1,k)].p[pp] = p_eq[IDX(i,j,k)].p[pp];
@@ -1239,7 +1239,7 @@ void boundary_conditions_for_equilibrium(){
 	if(LNY_START == 0){
            j = BRD; 
 
-#ifdef LB_FLUID_BC_YM_SLIP
+#ifdef LB_FLUID_BC_Y_M_SLIP
 	   /* free slip */
 	p_eq[IDX(i,j-1,k)].p[pp] = p_eq[IDX(i,j,k)].p[inv[pp]];
 	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) p_eq[IDX(i,j-1,k)].p[pp] = p_eq[IDX(i,j,k)].p[pp];

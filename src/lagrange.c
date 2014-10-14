@@ -148,14 +148,14 @@ void boundary_conditions_hydro(){
 sendrecv_borders_vector(u);
 
 
-#ifdef LB_FLUID_BC_XP_SLIP
+#ifdef LB_FLUID_BC_X_P_SLIP
 cp.x = -1.0; 
 cp.y = cp.z = 1.0;
 #else
 cp.x = cp.y = cp.z = -1.0; 
 #endif
 
-#ifdef LB_FLUID_BC_XM_SLIP
+#ifdef LB_FLUID_BC_X_M_SLIP
 cm.x = -1.0; 
 cm.y = cm.z = 1.0;
 #else
@@ -181,14 +181,14 @@ cm.x = cm.y = cm.z = -1.0;
 #endif
 
 
-#ifdef LB_FLUID_BC_YP_SLIP
+#ifdef LB_FLUID_BC_Y_P_SLIP
 cp.y = -1.0; 
 cp.x = cp.z = 1.0;
 #else
 cp.x = cp.y = cp.z = -1.0; 
 #endif
 
-#ifdef LB_FLUID_BC_YM_SLIP
+#ifdef LB_FLUID_BC_Y_M_SLIP
 cm.y = -1.0; 
 cm.x = cm.z = 1.0;
 #else
