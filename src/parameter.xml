@@ -60,12 +60,70 @@
              add_definitions(-DMETHOD_FORCING_GUO)
      </cmake>
     </core>
+    <!-- (2) METHOD_FINITE_VOLUME this is a fragile-comment-->
+    <core name="FINITE_VOLUME" file="">
+      <cmake comment="">
+             SET(METHOD_STEPPING_EULER "YES")
+             add_definitions(-DMETHOD_STEPPING_EULER)
+             SET(METHOD_REDEFINED_POP "YES")
+             add_definitions(-DMETHOD_REDEFINED_POP)
+             SET(METHOD_HEUN "YES")
+             add_definitions(-DMETHOD_HEUN)
+             SET(METHOD_MYQUICK "YES")
+             add_definitions(-DMETHOD_MYQUICK)
+             SET(METHOD_MYQUICK_CARTESIAN "YES")
+             add_definitions(-DMETHOD_MYQUICK_CARTESIAN)
+     </cmake>
+    </core>
+    <!-- (2) METHOD_HEUN this is a fragile-comment-->
+    <core name="HEUN" file=""/>
     <!-- (2) METHOD_CENTERED this is a fragile-comment-->
     <core name="CENTERED" file=""/>
+    <!-- (2) METHOD_MIXED this is a fragile-comment-->
+    <core name="MIXED" file=""/>
     <!-- (2) METHOD_MYQUICK this is a fragile-comment-->
-    <core name="MYQUICK" file=""/>
+    <core name="MYQUICK" file="">
+      <!-- (3) METHOD_MYQUICK_CARTESIAN this is a fragile-comment-->
+      <core name="CARTESIAN" file=""/>
+      <!-- (3) METHOD_MYQUICK_LIMITER this is a fragile-comment-->
+      <core name="LIMITER" file=""/>
+    </core>
     <!-- (2) METHOD_UPWIND this is a fragile-comment-->
-    <core name="UPWIND" file=""/>
+    <core name="UPWIND" file="">
+      <!-- (3) METHOD_UPWIND_SKEW this is a fragile-comment-->
+      <core name="SKEW" file=""/>
+      <!-- (3) METHOD_UPWIND_LINEAR this is a fragile-comment-->
+      <core name="LINEAR" file="">
+        <!-- (4) METHOD_UPWIND_LINEAR_IMPROVED this is a fragile-comment-->
+        <core name="IMPROVED" file=""/>
+      </core>
+    </core>
+    <!-- (2) METHOD_REDEFINED_POP this is a fragile-comment-->
+    <core name="REDEFINED_POP" file="">
+      <!-- (3) METHOD_REDEFINED_POP_GUO this is a fragile-comment-->
+      <core name="GUO" file=""/>
+    </core>
+    <!-- (2) METHOD_LOG this is a fragile-comment-->
+    <core name="LOG" file=""/>
+    <!-- (2) METHOD_EXPONENTIAL this is a fragile-comment-->
+    <core name="EXPONENTIAL" file=""/>
+    <!-- (2) METHOD_STEPPING this is a fragile-comment-->
+    <core name="STEPPING" file="">
+      <!-- (3) METHOD_STEPPING_EULER this is a fragile-comment-->
+      <core name="EULER" file=""/>
+      <!-- (3) METHOD_STEPPING_AB2 this is a fragile-comment-->
+      <core name="AB2" file=""/>
+      <!-- (3) METHOD_STEPPING_AB3 this is a fragile-comment-->
+      <core name="AB3" file=""/>
+    </core>
+    <!-- (2) METHOD_COLLISION_IMPLICIT this is a fragile-comment-->
+    <core name="COLLISION_IMPLICIT" file=""/>
+    <!-- (2) METHOD_TRAPEZOID this is a fragile-comment-->
+    <core name="TRAPEZOID" file=""/>
+    <!-- (2) METHOD_EDGES_AND_CORNERS this is a fragile-comment-->
+    <core name="EDGES_AND_CORNERS" file=""/>
+    <!-- (2) METHOD_FORCING_GUO this is a fragile-comment-->
+    <core name="FORCING_GUO" file=""/>
   </core>
   <!-- (1) LB this is a fragile-comment-->
   <core name="LB" file="">
@@ -190,9 +248,44 @@
           </core>
         </core>
       </core>
+      <!-- (3) LB_FLUID_LES this is a fragile-comment-->
+      <core name="LES" file="">
+        <cmake>
+          SET(COMMON ${COMMON} les.c)
+          </cmake>
+      </core>
     </core>
     <!-- (2) LB_TEMPERATURE this is a fragile-comment-->
     <core name="TEMPERATURE" file="">
+      <!-- (3) LB_TEMPERATURE_INITIAL this is a fragile-comment-->
+      <core name="INITIAL" file="">
+        <!-- (4) LB_TEMPERATURE_INITIAL_LINEAR this is a fragile-comment-->
+        <core name="LINEAR" file=""/>
+        <!-- (4) LB_TEMPERATURE_INITIAL_ADD_PERTURBATION this is a fragile-comment-->
+        <core name="ADD_PERTURBATION" file=""/>
+        <!-- (4) LB_TEMPERATURE_INITIAL_CONSTANT this is a fragile-comment-->
+        <core name="CONSTANT" file="">
+          <!-- (5) LB_TEMPERATURE_INITIAL_CONSTANT_TOP this is a fragile-comment-->
+          <core name="TOP" file=""/>
+          <!-- (5) LB_TEMPERATURE_INITIAL_CONSTANT_BOT this is a fragile-comment-->
+          <core name="BOT" file=""/>
+          <!-- (5) LB_TEMPERATURE_INITIAL_CONSTANT_MEAN this is a fragile-comment-->
+          <core name="MEAN" file=""/>
+        </core>
+        <!-- (4) LB_TEMPERATURE_INITIAL_SPOT this is a fragile-comment-->
+        <core name="SPOT" file=""/>
+        <!-- (4) LB_TEMPERATURE_INITIAL_BL this is a fragile-comment-->
+        <core name="BL" file=""/>
+        <!-- (4) LB_TEMPERATURE_INITIAL_BULK this is a fragile-comment-->
+        <core name="BULK" file=""/>
+      </core>
+      <!-- (3) LB_TEMPERATURE_FLUCTUATION this is a fragile-comment-->
+      <core name="FLUCTUATION" file=""/>
+      <!-- (3) LB_TEMPERATURE_BUOYANCY this is a fragile-comment-->
+      <core name="BUOYANCY" file="">
+        <!-- (4) LB_TEMPERATURE_BUOYANCY_TREF this is a fragile-comment-->
+        <core name="TREF" file=""/>
+      </core>
       <!-- (3) LB_TEMPERATURE_FORCING this is a fragile-comment-->
       <core name="FORCING" file="">
         <!-- (4) LB_TEMPERATURE_FORCING_BULK this is a fragile-comment-->
@@ -277,9 +370,33 @@
           </core>
         </core>
       </core>
+      <!-- (3) LB_TEMPERATURE_LES this is a fragile-comment-->
+      <core name="LES" file=""/>
     </core>
     <!-- (2) LB_SCALAR this is a fragile-comment-->
     <core name="SCALAR" file="">
+      <!-- (3) LB_SCALAR_INITIAL this is a fragile-comment-->
+      <core name="INITIAL" file="">
+        <!-- (4) LB_SCALAR_INITIAL_LINEAR this is a fragile-comment-->
+        <core name="LINEAR" file=""/>
+        <!-- (4) LB_SCALAR_INITIAL_ADD_PERTURBATION this is a fragile-comment-->
+        <core name="ADD_PERTURBATION" file=""/>
+        <!-- (4) LB_SCALAR_INITIAL_CONSTANT this is a fragile-comment-->
+        <core name="CONSTANT" file="">
+          <!-- (5) LB_SCALAR_INITIAL_CONSTANT_TOP this is a fragile-comment-->
+          <core name="TOP" file=""/>
+          <!-- (5) LB_SCALAR_INITIAL_CONSTANT_BOT this is a fragile-comment-->
+          <core name="BOT" file=""/>
+          <!-- (5) LB_SCALAR_INITIAL_CONSTANT_MEAN this is a fragile-comment-->
+          <core name="MEAN" file=""/>
+        </core>
+        <!-- (4) LB_SCALAR_INITIAL_BULK this is a fragile-comment-->
+        <core name="BULK" file=""/>
+      </core>
+      <!-- (3) LB_SCALAR_FLUCTUATION this is a fragile-comment-->
+      <core name="FLUCTUATION" file=""/>
+      <!-- (3) LB_SCALAR_BUOYANCY this is a fragile-comment-->
+      <core name="BUOYANCY" file=""/>
       <!-- (3) LB_SCALAR_FORCING this is a fragile-comment-->
       <core name="FORCING" file="">
         <!-- (4) LB_SCALAR_FORCING_REACTION this is a fragile-comment-->
@@ -339,6 +456,8 @@
           </core>
         </core>
       </core>
+      <!-- (3) LB_SCALAR_LES this is a fragile-comment-->
+      <core name="LES" file=""/>
     </core>
   </core>
   <!-- (1) LAGRANGE this is a fragile-comment-->
@@ -347,5 +466,15 @@
     <cmake>
       SET(COMMON ${COMMON} lagrange.c)
      </cmake>
+    <!-- (2) LAGRANGE_WRAP this is a fragile-comment-->
+    <core name="WRAP" file=""/>
+    <!-- (2) LAGRANGE_GRADIENT this is a fragile-comment-->
+    <core name="GRADIENT" file=""/>
+    <!-- (2) LAGRANGE_ADDEDMASS this is a fragile-comment-->
+    <core name="ADDEDMASS" file=""/>
+    <!-- (2) LAGRANGE_GRAVITY this is a fragile-comment-->
+    <core name="GRAVITY" file=""/>
+    <!-- (2) LAGRANGE_OUTPUT_DEBUG this is a fragile-comment-->
+    <core name="OUTPUT_DEBUG" file=""/>
   </core>
 </ftmake>
