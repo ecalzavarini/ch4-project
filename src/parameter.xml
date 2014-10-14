@@ -145,55 +145,201 @@
             <!-- (6) LB_FLUID_BC_Y_P_OUTLET this is a fragile-comment-->
             <core name="OUTLET" file=""/>
           </core>
-          <!-- (5) LB_FLUID_BC_Y_X this is a fragile-comment-->
-          <core name="X" file="">
-            <!-- (6) LB_FLUID_BC_Y_X_M this is a fragile-comment-->
-            <core name="M" file="">
-              <!-- (7) LB_FLUID_BC_Y_X_M_SLIP this is a fragile-comment-->
-              <core name="SLIP" file=""/>
-              <!-- (7) LB_FLUID_BC_Y_X_M_OUTLET this is a fragile-comment-->
-              <core name="OUTLET" file=""/>
-              <!-- (7) LB_FLUID_BC_Y_X_M_INLET this is a fragile-comment-->
-              <core name="INLET" file="">
-                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_POISEUILLE this is a fragile-comment-->
-                <core name="POISEUILLE" file=""/>
-                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_CONSTANT this is a fragile-comment-->
-                <core name="CONSTANT" file=""/>
-                <!-- (8) LB_FLUID_BC_Y_X_M_INLET_POISEUILLE_HALF this is a fragile-comment-->
-                <core name="POISEUILLE_HALF" file=""/>
-              </core>
-            </core>
-            <!-- (6) LB_FLUID_BC_Y_X_P this is a fragile-comment-->
-            <core name="P" file="">
-              <!-- (7) LB_FLUID_BC_Y_X_P_SLIP this is a fragile-comment-->
-              <core name="SLIP" file=""/>
-              <!-- (7) LB_FLUID_BC_Y_X_P_OUTLET this is a fragile-comment-->
-              <core name="OUTLET" file=""/>
+        </core>
+        <!-- (4) LB_FLUID_BC_X this is a fragile-comment-->
+        <core name="X" file="">
+          <!-- (5) LB_FLUID_BC_X_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_FLUID_BC_X_M_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_X_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_FLUID_BC_X_M_INLET this is a fragile-comment-->
+            <core name="INLET" file="">
+              <!-- (7) LB_FLUID_BC_X_M_INLET_POISEUILLE this is a fragile-comment-->
+              <core name="POISEUILLE" file=""/>
+              <!-- (7) LB_FLUID_BC_X_M_INLET_CONSTANT this is a fragile-comment-->
+              <core name="CONSTANT" file=""/>
+              <!-- (7) LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF this is a fragile-comment-->
+              <core name="POISEUILLE_HALF" file=""/>
             </core>
           </core>
-          <!-- (5) LB_FLUID_BC_Y_Z this is a fragile-comment-->
-          <core name="Z" file="">
-            <!-- (6) LB_FLUID_BC_Y_Z_M this is a fragile-comment-->
-            <core name="M" file="">
-              <!-- (7) LB_FLUID_BC_Y_Z_M_SLIP this is a fragile-comment-->
-              <core name="SLIP" file=""/>
-              <!-- (7) LB_FLUID_BC_Y_Z_M_OUTLET this is a fragile-comment-->
-              <core name="OUTLET" file=""/>
-            </core>
-            <!-- (6) LB_FLUID_BC_Y_Z_P this is a fragile-comment-->
-            <core name="P" file=""/>
-            <!-- (6) LB_FLUID_BC_Y_Z_SLIP this is a fragile-comment-->
+          <!-- (5) LB_FLUID_BC_X_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_FLUID_BC_X_P_SLIP this is a fragile-comment-->
             <core name="SLIP" file=""/>
-            <!-- (6) LB_FLUID_BC_Y_Z_OUTLET this is a fragile-comment-->
+            <!-- (6) LB_FLUID_BC_X_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+          </core>
+        </core>
+        <!-- (4) LB_FLUID_BC_Z this is a fragile-comment-->
+        <core name="Z" file="">
+          <!-- (5) LB_FLUID_BC_Z_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_FLUID_BC_Z_M_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_Z_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+          </core>
+          <!-- (5) LB_FLUID_BC_Z_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_FLUID_BC_Z_P_SLIP this is a fragile-comment-->
+            <core name="SLIP" file=""/>
+            <!-- (6) LB_FLUID_BC_Z_P_OUTLET this is a fragile-comment-->
             <core name="OUTLET" file=""/>
           </core>
         </core>
       </core>
     </core>
     <!-- (2) LB_TEMPERATURE this is a fragile-comment-->
-    <core name="TEMPERATURE" file=""/>
+    <core name="TEMPERATURE" file="">
+      <!-- (3) LB_TEMPERATURE_FORCING this is a fragile-comment-->
+      <core name="FORCING" file="">
+        <!-- (4) LB_TEMPERATURE_FORCING_BULK this is a fragile-comment-->
+        <core name="BULK" file="">
+          <!-- (5) LB_TEMPERATURE_FORCING_BULK_VARIABLE this is a fragile-comment-->
+          <core name="VARIABLE" file=""/>
+        </core>
+        <!-- (4) LB_TEMPERATURE_FORCING_RADIATION this is a fragile-comment-->
+        <core name="RADIATION" file=""/>
+        <!-- (4) LB_TEMPERATURE_FORCING_SOURCE this is a fragile-comment-->
+        <core name="SOURCE" file=""/>
+        <!-- (4) LB_TEMPERATURE_FORCING_ABSORB this is a fragile-comment-->
+        <core name="ABSORB" file=""/>
+        <!-- (4) LB_TEMPERATURE_FORCING_PROFILE this is a fragile-comment-->
+        <core name="PROFILE" file=""/>
+        <!-- (4) LB_TEMPERATURE_FORCING_REACTION this is a fragile-comment-->
+        <core name="REACTION" file=""/>
+        <!-- (4) LB_TEMPERATURE_FORCING_MELTING this is a fragile-comment-->
+        <core name="MELTING" file="">
+          <cmake>
+          SET(COMMON ${COMMON} melting.c)
+          </cmake>
+        </core>
+        <!-- (4) LB_TEMPERATURE_FORCING_DIRECT this is a fragile-comment-->
+        <core name="DIRECT" file=""/>
+      </core>
+      <!-- (3) LB_TEMPERATURE_BC this is a fragile-comment-->
+      <core name="BC" file="">
+        <!-- (4) LB_TEMPERATURE_BC_X this is a fragile-comment-->
+        <core name="X" file="">
+          <!-- (5) LB_TEMPERATURE_BC_X_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_TEMPERATURE_BC_X_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_X_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+          <!-- (5) LB_TEMPERATURE_BC_X_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_TEMPERATURE_BC_X_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_X_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+        </core>
+        <!-- (4) LB_TEMPERATURE_BC_Y this is a fragile-comment-->
+        <core name="Y" file="">
+          <!-- (5) LB_TEMPERATURE_BC_Y_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_TEMPERATURE_BC_Y_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Y_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Y_P_VARIABLE this is a fragile-comment-->
+            <core name="VARIABLE" file=""/>
+          </core>
+          <!-- (5) LB_TEMPERATURE_BC_Y_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_TEMPERATURE_BC_Y_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Y_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Y_M_VARIABLE this is a fragile-comment-->
+            <core name="VARIABLE" file=""/>
+          </core>
+        </core>
+        <!-- (4) LB_TEMPERATURE_BC_Z this is a fragile-comment-->
+        <core name="Z" file="">
+          <!-- (5) LB_TEMPERATURE_BC_Z_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_TEMPERATURE_BC_Z_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Z_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+          <!-- (5) LB_TEMPERATURE_BC_Z_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_TEMPERATURE_BC_Z_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_TEMPERATURE_BC_Z_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+        </core>
+      </core>
+    </core>
     <!-- (2) LB_SCALAR this is a fragile-comment-->
-    <core name="SCALAR" file=""/>
+    <core name="SCALAR" file="">
+      <!-- (3) LB_SCALAR_FORCING this is a fragile-comment-->
+      <core name="FORCING" file="">
+        <!-- (4) LB_SCALAR_FORCING_REACTION this is a fragile-comment-->
+        <core name="REACTION" file=""/>
+      </core>
+      <!-- (3) LB_SCALAR_BC this is a fragile-comment-->
+      <core name="BC" file="">
+        <!-- (4) LB_SCALAR_BC_X this is a fragile-comment-->
+        <core name="X" file="">
+          <!-- (5) LB_SCALAR_BC_X_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_SCALAR_BC_X_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_X_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+          <!-- (5) LB_SCALAR_BC_X_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_SCALAR_BC_X_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_X_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+        </core>
+        <!-- (4) LB_SCALAR_BC_Y this is a fragile-comment-->
+        <core name="Y" file="">
+          <!-- (5) LB_SCALAR_BC_Y_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_SCALAR_BC_Y_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_Y_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+          <!-- (5) LB_SCALAR_BC_Y_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_SCALAR_BC_Y_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_Y_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+        </core>
+        <!-- (4) LB_SCALAR_BC_Z this is a fragile-comment-->
+        <core name="Z" file="">
+          <!-- (5) LB_SCALAR_BC_Z_P this is a fragile-comment-->
+          <core name="P" file="">
+            <!-- (6) LB_SCALAR_BC_Z_P_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_Z_P_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+          <!-- (5) LB_SCALAR_BC_Z_M this is a fragile-comment-->
+          <core name="M" file="">
+            <!-- (6) LB_SCALAR_BC_Z_M_OUTLET this is a fragile-comment-->
+            <core name="OUTLET" file=""/>
+            <!-- (6) LB_SCALAR_BC_Z_M_NOFLUX this is a fragile-comment-->
+            <core name="NOFLUX" file=""/>
+          </core>
+        </core>
+      </core>
+    </core>
   </core>
   <!-- (1) LAGRANGE this is a fragile-comment-->
   <core name="LAGRANGE" file="">
