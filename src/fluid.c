@@ -1431,6 +1431,7 @@ void add_forcing(){
 #ifdef LB_FLUID
 invtau = 1.0/property.tau_u;
 
+ fac = 1.0; /* this is for streaming if GUO is not defined */
 #ifdef METHOD_FORCING_GUO
   fac = (1.0-0.5*property.time_dt*invtau);
 #endif
@@ -1526,6 +1527,7 @@ invtau_s = 1.0/property.tau_s;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;   
+
 	  
 #ifdef METHOD_LOG
 	    fac = 3.0*wgt[pp]*property.tau_u*exp(-p[IDX(i,j,k)].p[pp]*invtau);
