@@ -608,7 +608,7 @@ if(LNY_START == 0){
 
 #ifdef LB_FLUID_BC_Y_M_JET
   /* inlet geometry - circle: POSITION OF CENTER COORDINATES OF THE CIRCLE SPECIFIED HERE ITSELF */
-  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0){    
+  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 7.0){    
 	  
     if(pp==0){         
           vel.x =  0.0;    //property.Amp_y;

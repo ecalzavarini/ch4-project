@@ -1,2 +1,2 @@
 ## Presently put everything under one link
-SET(COMMON parallel.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c output.c output_h5.c melting.c random.c)
+SET(COMMON parallel.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c output.c output_h5.c random.c)
