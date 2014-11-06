@@ -10,7 +10,7 @@ real_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[float,float,float
 complex_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[complex,complex,complex] })
 
 
-f = h5py.File('../RUN/field_1000.h5', 'r')
+f = h5py.File('../RUN/field_5000.h5', 'r')
 
 vx=np.array(f['euler']['velocity_x'])
 vy=np.array(f['euler']['velocity_y'])
