@@ -1234,7 +1234,7 @@ void build_forcing(){
 #endif
 
 #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
-    fac = 0.5;
+    fac = 0.8;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
     dist.z = (z/LZ - fac)/(1.0-fac);
@@ -1250,11 +1250,11 @@ void build_forcing(){
     //dist.y = 1.0;
     dist.z = 0.5 + pow(dist.z,2.0);  
 
-    fprintf(stderr,"%d %d %d %d %e\n",me, i,j,k, u[IDX(i,j,k)].y);
+    //fprintf(stderr,"%d %d %d %d %e\n",me, i,j,k, u[IDX(i,j,k)].y);
         
     //force[IDX(i,j,k)].x += -dist.y*(vel.x - u[IDX(i,j,k)].x);  
     //force[IDX(i,j,k)].y += -u[IDX(i,j,k)].y;  // dist.y*(vel.y  -u[IDX(i,j,k)].y);
-    //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);	
+    //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);
     
      }
 #endif
@@ -1383,6 +1383,13 @@ void build_forcing(){
   t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
 #endif
 
+#ifdef LB_TEMPERATURE_FORCING_MONOD
+  #ifdef LB_SCALAR
+  /* make the field react to the scalar concentration */
+  t_source[IDX(i,j,k)] = property.Amp_t * s[IDX(i,j,k)]/(0.5 + s[IDX(i,j,k)]) * t[IDX(i,j,k)];
+  #endif
+#endif
+
 #ifdef LB_TEMPERATURE_FORCING_BULK
   t_source[IDX(i,j,k)] = property.Amp_t;
 #ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
@@ -1407,6 +1414,13 @@ void build_forcing(){
   /* make the field reactive */
   s_source[IDX(i,j,k)] = property.Amp_s*s[IDX(i,j,k)]*(property.S_bot-s[IDX(i,j,k)]);
  #endif
+
+#ifdef LB_SCALAR_FORCING_MONOD
+  #ifdef LB_TEMPERATURE
+  /* make the field react to negatively to the t (phythoplancton) concentration */
+  t_source[IDX(i,j,k)] = -property.Amp_s * s[IDX(i,j,k)]/(0.5 + s[IDX(i,j,k)]) * t[IDX(i,j,k)];
+  #endif
+#endif
 
 #endif
 
@@ -1504,7 +1518,7 @@ invtau_s = 1.0/property.tau_s;
 
 #ifdef LB_FLUID_FORCING
 
-#ifndef METHOD_FORCING_GUO
+#ifndef METHOD_FORCING_GUO  /* not defined METHOD_FORCING_GUO */
 		  	  
 	  /* Old version , simple but probably incomplete 
 	    rho = dens[IDX(i,j,k)];	  
@@ -1537,6 +1551,7 @@ invtau_s = 1.0/property.tau_s;
 #endif
 	    
 #else   
+	    /* This is METHOD_FORCING_GUO */
 	rho = dens[IDX(i,j,k)];    
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;

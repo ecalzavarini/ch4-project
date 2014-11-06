@@ -29,7 +29,7 @@
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
-//#define GRID_POP_D3Q19
+#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -67,18 +67,18 @@
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
-//#define LB_FLUID_BC_Y_M_JET                       
-//#define LB_FLUID_BC_Y_P_OUTLET
+#define LB_FLUID_BC_Y_M_JET                       
+#define LB_FLUID_BC_Y_P_OUTLET
 
-//#define LB_FLUID_BC_X                                                     
+#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
 //#define LB_FLUID_BC_X_M_INLET_POISEUILLE
 //#define LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF
 //#define LB_FLUID_BC_X_M_INLET_CONSTANT
-//#define LB_FLUID_BC_X_M_OUTLET 
-//#define LB_FLUID_BC_X_P_OUTLET  
+#define LB_FLUID_BC_X_M_OUTLET 
+#define LB_FLUID_BC_X_P_OUTLET  
                                              
 //#define LB_FLUID_BC_Z
 //#define LB_FLUID_BC_Z_M_SLIP                                             
@@ -116,10 +116,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
@@ -127,10 +127,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
 //#define LB_TEMPERATURE_INITIAL_BULK
-#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BUOYANCY
 //#define LB_TEMPERATURE_BUOYANCY_TREF
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_VARIABLE
@@ -158,12 +158,13 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_ABSORB
 //#define LB_TEMPERATURE_FORCING_PROFILE
 //#define LB_TEMPERATURE_FORCING_REACTION
+//#define LB_TEMPERATURE_FORCING_MONOD 
 //#define LB_TEMPERATURE_MELTING
 //#define LB_TEMPERATURE_FORCING_DIRECT
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-#define LB_SCALAR
-#define LB_SCALAR_INITIAL_LINEAR
+//#define LB_SCALAR
+//#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
 //#define LB_SCALAR_INITIAL_BULK
 //#define LB_SCALAR_INITIAL_CONSTANT
@@ -171,8 +172,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_INITIAL_CONSTANT_BOT                                                                                                              
 //#define LB_SCALAR_INITIAL_CONSTANT_TOP
 //#define LB_SCALAR_BUOYANCY
-#define LB_SCALAR_BC
-#define LB_SCALAR_BC_Y
+//#define LB_SCALAR_BC
+//#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_BC_Y_P_OUTLET
 //#define LB_SCALAR_BC_Y_M_OUTLET
 //#define LB_SCALAR_BC_Y_P_NOFLUX
@@ -190,13 +191,13 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FLUCTUATION  
 //#define LB_SCALAR_FORCING
 //#define LB_SCALAR_FORCING_REACTION
-
+//#define LB_SCALAR_FORCING_MONOD
 
 /* Lagragian parts */
-#define LAGRANGE
+//#define LAGRANGE
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-#define LAGRANGE_GRADIENT 
+//#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY
 
@@ -210,8 +211,6 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 /* Define dependencies not to be modified          */
 
 #ifdef METHOD_FINITE_VOLUME                                            
-//#define GRID_POP_D2Q9
-#define GRID_POP_D3Q19
 #define METHOD_STEPPING_EULER
 #define METHOD_REDEFINED_POP
 //#define METHOD_REDEFINED_POP_GUO
@@ -222,8 +221,6 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #endif 
 
 #ifdef METHOD_STREAMING
-//#define GRID_POP_D2Q9
-#define GRID_POP_D3Q19                                                  
 #define METHOD_EDGES_AND_CORNERS                                        
 #define METHOD_FORCING_GUO                                              
 #endif
