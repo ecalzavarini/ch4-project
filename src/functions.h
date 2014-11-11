@@ -34,6 +34,7 @@ void copy_pop(pop *f, pop *f_copy);
 void boundary_conditions();
 void boundary_and_pbc_conditions_for_streaming();
 void boundary_conditions_for_equilibrium(char which_pop);
+void boundary_conditions_for_hydro(char which_pop);
 
 /* initial_conditions.c */
 void initial_conditions(int restart);

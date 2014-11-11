@@ -95,7 +95,8 @@ if(which_pop == 'p'){
    sendrecv_borders_vector(force);
  /* Here we shall take into accounts there bc if any */ 
  /* to be done ... */
-
+   boundary_conditions_for_hydro(which_pop);
+  
   fac = 0.5*property.time_dt;
 
  for(k=0;k<LNZ+TWO_BRD;k++)
