@@ -1419,3 +1419,321 @@ void boundary_conditions_for_hydro(char which_pop){
 }
 #endif
 
+
+/*******A BC for advection */
+#ifdef LB_FLUID_BC
+void boundary_conditions_for_advection(pop * f, char which_pop){
+
+  int i,j,k,pp;
+  vector vel;
+  my_double rho,fac;
+  pop p_eq;
+  pop p_neq;
+
+  if(which_pop == 'p'){
+
+	/* X direction */	
+#ifdef LB_FLUID_BC_X
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+if(LNX_END == NX){
+	i = LNX+BRD-1;
+	
+#ifdef LB_FLUID_BC_X_P_OUTLET
+	
+	if(pp==0){
+	  vel.x = u[IDX(i, j, k)].x;
+	  vel.y = u[IDX(i, j, k)].y;
+	  vel.z = u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  f[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+	  f[IDX(i+2,j,k)] = f[IDX(i+1,j,k)];
+#endif	  
+	}	  
+#else 
+#ifdef LB_FLUID_BC_X_P_SLIP
+
+	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) p[IDX(i+1,j,k)].p[pp] = p[IDX(i,j,k)].p[pp];
+#else
+	/* NOSLIP */
+	f[IDX(i+1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+        f[IDX(i+2,j,k)].p[pp] = f[IDX(i-1,j,k)].p[inv[pp]];
+#endif
+#endif
+#endif
+
+ }/* if */
+
+if(LNX_START == 0){
+  i = BRD; 
+
+#ifdef LB_FLUID_BC_X_M_INLET
+  /* the following if is to compute the equilibrium only one time */
+	if(pp==0){
+	  vel.x = property.Amp_x;
+	  vel.y = property.Amp_y;
+	  vel.z = property.Amp_z;
+	    rho = 1.0;
+	  f[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+	  f[IDX(i-2,j,k)] = f[IDX(i-1,j,k)];
+#endif
+	}
+	
+#else
+#ifdef LB_FLUID_BC_X_M_SLIP
+		
+	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].z != 0.0 ) f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+	f[IDX(i-1,j,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+        f[IDX(i-2,j,k)].p[pp] = f[IDX(i+1,j,k)].p[inv[pp]];
+#endif
+#endif
+#endif
+
+ }/* if */
+
+      }/* for pp */
+    }/* for j,k */
+#endif
+
+
+  /************************************/
+
+	/* Y direction */	
+#ifdef LB_FLUID_BC_Y
+ for (i = 0; i < LNX + TWO_BRD; i++) 			
+    for (k = 0; k < LNZ + TWO_BRD; k++){
+      for(pp=0;pp<NPOP;pp++){
+
+if(LNY_END == NY){
+	j = LNY+BRD-1; 
+
+#ifdef LB_FLUID_BC_Y_P_OUTLET
+	if(pp==0){
+	  vel.x =  u[IDX(i, j, k)].x;
+	  vel.y =  u[IDX(i, j, k)].y;
+	  vel.z =  u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  f[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+          f[IDX(i,j+2,k)] = f[IDX(i,j+1,k)];
+#endif
+	}
+#else
+
+#ifdef LB_FLUID_BC_Y_P_SLIP
+	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK
+       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[pp];
+#endif
+#else
+	f[IDX(i,j+1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+       	f[IDX(i,j+2,k)].p[pp] = f[IDX(i,j-1,k)].p[inv[pp]];
+#endif
+
+#endif
+#endif
+ }
+
+if(LNY_START == 0){
+  j = BRD; 
+#ifdef LB_FLUID_BC_Y_M_SLIP	
+	f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK
+       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];
+	if(c[pp].x != 0.0 || c[pp].z != 0.0 ) f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[pp];
+#endif
+#else
+	  f[IDX(i,j-1,k)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#ifdef METHOD_MYQUICK
+       	  f[IDX(i,j-2,k)].p[pp] = f[IDX(i,j+1,k)].p[inv[pp]];	
+#endif  
+#endif
+ }
+
+      }/* for pp */
+    }/* for i,k */
+#endif
+
+
+  /*****************************************************************************************/
+  /* Z direction */	
+
+#ifdef LB_FLUID_BC_Z
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (i = BRD; i < LNX + BRD; i++){
+      for(pp=0;pp<NPOP;pp++){
+
+	if(LNZ_END == NZ){
+	k = LNZ+BRD-1;
+
+#ifdef LB_FLUID_BC_Z_P_SLIP
+	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NOSLIP */
+	f[IDX(i,j,k+1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+ }/* if */
+
+	if(LNZ_START == 0){
+	  k = BRD; 
+
+#ifdef LB_FLUID_BC_Z_M_SLIP		
+	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+	if(c[pp].y != 0.0 || c[pp].x != 0.0 ) f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+	f[IDX(i,j,k-1)].p[pp] = f[IDX(i,j,k)].p[inv[pp]];
+#endif
+ }/* if */
+
+      }/* for pp */
+    }/* for j,i */
+#endif
+  }/* end of which_pop on p */
+
+
+  if(which_pop == 'g'){
+#ifdef LB_TEMPERATURE_BC_KEEP_WITHIN
+
+  my_double T_max, T_min;
+
+  /* Rather DIRTY TRICK , in order to keep the temperature inside the boundaries, in the whole bulk */
+  T_max = property.T_bot;
+  T_min = property.T_top;
+  if( property.T_top > property.T_bot){ T_max = property.T_top;  T_min = property.T_bot;}
+
+  for (i = BRD; i < LNX + BRD; i++) 
+    for (j = BRD; j < LNY + BRD; j++)
+      for (k = BRD; k < LNZ + BRD; k++){
+
+	if(m(f[IDX(i,j,k)]) < T_min) for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= T_min/m(f[IDX(i,j,k)]);
+	if(m(f[IDX(i,j,k)]) > T_max) for(pp=0;pp<NPOP;pp++) f[IDX(i,j,k)].p[pp] *= T_max/m(f[IDX(i,j,k)]); 
+      }
+#endif
+
+
+	/* Y direction */	
+#ifdef LB_TEMPERATURE
+#ifdef LB_TEMPERATURE_BC_Y
+
+  pop g_eq, g_eq_w;
+  my_double effDT, rho2;
+  my_double T_wall;
+  /************************/
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNY_END == NY){
+
+ 	  j = LNY+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+	  
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+   T_wall = property.T_top;
+#endif
+	  
+#else
+	  T_wall = 0.0;
+#endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j+1,k)].p[pp] =  fac*f[IDX(i,j,k)].p[pp];
+
+#ifdef METHOD_MYQUICK
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j-1,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j+2,k)].p[pp] =  fac*f[IDX(i,j-1,k)].p[pp];
+
+#endif
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
+  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
+#endif
+#else
+	  T_wall = 0.0;
+#endif
+
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j-1,k)].p[pp] =  fac*f[IDX(i,j,k)].p[pp];
+
+     
+#ifdef METHOD_MYQUICK 
+	  
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif   
+	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j-2,k)].p[pp] =  fac*f[IDX(i,j+1,k)].p[pp];
+
+#endif
+}
+
+      
+    }
+#endif
+ 
+#ifdef LB_TEMPERATURE_BC_X
+#ifdef LB_TEMPERATURE_BC_X_NOFLUX
+ /* now along X , the default is insultaing BC*/
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNX_END == NX){
+
+ 	  i = LNX+BRD-1; 
+
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i+1,j,k)].p[pp] =  f[IDX(i,j,k)].p[pp];
+#ifdef METHOD_MYQUICK	  
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i+2,j,k)].p[pp] =  f[IDX(i-1,j,k)].p[pp];
+#endif
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+	
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i-1,j,k)].p[pp] =  f[IDX(i,j,k)].p[pp];     
+#ifdef METHOD_MYQUICK 	  
+	  for(pp=0;pp<NPOP;pp++) f[IDX(i-2,j,k)].p[pp] =  f[IDX(i+1,j,k)].p[pp];
+#endif
+ }      
+    }
+#endif
+#endif
+
+#endif
+  }/* end of which_pop on g */
+
+
+} /* end of void boundary conditions */
+#endif

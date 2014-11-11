@@ -58,8 +58,10 @@ int main(int argc, char **argv){
 
 
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
-
-	  boundary_conditions();
+#ifndef METHOD_REDEFINED_POP
+       	  boundary_conditions();
+	  /* if REDEFINED_POP is defined the BC are computed for f_aux in advection */
+#endif
 #endif
 #endif
 	  

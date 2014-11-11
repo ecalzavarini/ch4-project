@@ -57,10 +57,10 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
       	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
       }
   /* send the borders, needed to compute the advection */ 
-     sendrecv_borders_pop(f_eq);
+ // OUT     sendrecv_borders_pop(f_eq);
 
 #ifdef LB_FLUID_BC
-     boundary_conditions_for_equilibrium(which_pop);
+ // OUT    boundary_conditions_for_equilibrium(which_pop);
 #endif
 
  /* The population to be advected is different (we call it here f_aux)*/
@@ -68,9 +68,12 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
  /* we prepare such a population here */
  fac = 0.5*(property.time_dt/tau); 
 
- for(k=0;k<LNZ+TWO_BRD;k++)
-   for(j=0;j<LNY+TWO_BRD;j++)
-     for(i=0;i<LNX+TWO_BRD;i++){  
+ //OUT for(k=0;k<LNZ+TWO_BRD;k++)
+ //OUT   for(j=0;j<LNY+TWO_BRD;j++)
+ //OUT    for(i=0;i<LNX+TWO_BRD;i++){  
+ for(k=BRD;k<LNZ+BRD;k++)
+   for(j=BRD;j<LNY+BRD;j++)
+    for(i=BRD;i<LNX+BRD;i++){ 
        for(pp=0;pp<NPOP;pp++)        
 	 f_aux[IDX(i,j,k)].p[pp]  = f[IDX(i,j,k)].p[pp] + fac*( f_eq[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[pp] );
     }
@@ -95,12 +98,12 @@ if(which_pop == 'p'){
    u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].z ;	
    }
  /* and communicate them */
-   sendrecv_borders_vector(u);
-   sendrecv_borders_scalar(dens);
-   sendrecv_borders_vector(force);
+ //OUT   sendrecv_borders_vector(u);
+ //OUT   sendrecv_borders_scalar(dens);
+ //OUT   sendrecv_borders_vector(force);
  /* Here we shall take into accounts there bc if any */ 
  /* to be done ... */
-   boundary_conditions_for_hydro(which_pop);
+ //OUT  boundary_conditions_for_hydro(which_pop);
   
   fac = 0.5*property.time_dt;
 
@@ -119,12 +122,18 @@ if(which_pop == 'p'){
        f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
        f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;  
-        }
+		}
        }
 }
 #endif /* end LB_FLUID_FORCING */
 #endif /* end LB_FLUID */
 #endif /* end METHOD_REDEFINED_POP_GUO */
+/* first PBC */
+ sendrecv_borders_pop(f_aux);
+ /* then real BC */
+#ifdef LB_FLUID_BC
+ boundary_conditions_for_advection(f_aux, which_pop);
+#endif
 #endif /* end METHOD_REDEFINED_POP */
 
 #ifdef METHOD_COLLISION_IMPLICIT  /* this is for Euler implicit time stepping */
