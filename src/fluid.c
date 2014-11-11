@@ -41,14 +41,15 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
 #endif
 
 #ifdef METHOD_REDEFINED_POP
-	/* set to zero f_aux */
+	/* set to zero f_aux , not necessary for the moment*/
+	/*
  for(k=0;k<LNZ+TWO_BRD;k++)
    for(j=0;j<LNY+TWO_BRD;j++)
      for(i=0;i<LNX+TWO_BRD;i++){  
        for(pp=0;pp<NPOP;pp++)        
 	 f_aux[IDX(i,j,k)].p[pp]  = 0.0;
     }
-
+	*/
       /* We store the equilibrium distribution in all points */
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
@@ -75,6 +76,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
     }
 #ifdef METHOD_REDEFINED_POP_GUO
 #ifdef LB_FLUID
+#ifdef LB_FLUID_FORCING
 if(which_pop == 'p'){
   /* this method is going to be very expensive */
 
@@ -114,6 +116,7 @@ if(which_pop == 'p'){
         }
        }
 }
+#endif /* end LB_FLUID_FORCING */
 #endif /* end LB_FLUID */
 #endif /* end METHOD_REDEFINED_POP_GUO */
 #endif /* end METHOD_REDEFINED_POP */
