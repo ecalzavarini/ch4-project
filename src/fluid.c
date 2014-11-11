@@ -85,9 +85,14 @@ if(which_pop == 'p'){
    for(j=BRD;j<LNY+BRD;j++)
     for(i=BRD;i<LNX+BRD;i++){ 
    dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
-   u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
-   u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
-   u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
+   /* TO BE USED if the force is a force */
+   //u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
+   //u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
+   //u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
+   /* TO BE USED if the force is a force per unit mass i.e. acceleration */
+   u[IDX(i, j, k)].x= mvx(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].x ;
+   u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].y ;
+   u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].z ;	
    }
  /* and communicate them */
    sendrecv_borders_vector(u);
