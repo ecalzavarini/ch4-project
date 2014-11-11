@@ -19,7 +19,15 @@ int main(int argc, char **argv){
 	read_landscape(); /* is there any topography ? */
 #endif
 	initial_conditions(resume); 
-	hydro_fields();
+#ifdef LB_FLUID
+	hydro_fields('p');
+#endif
+#ifdef LB_TEMPERATURE
+        hydro_fields('g');
+#endif
+#ifdef LB_SCALAR
+        hydro_fields('h');
+#endif
 	//	dump_averages();
 	//      exit(1);
 #ifdef LAGRANGE
@@ -100,7 +108,16 @@ int main(int argc, char **argv){
 #ifdef LB_SCALAR
 	 time_stepping(h,rhs_h,old_rhs_h,old_old_rhs_h,property.tau_s,h_eq,'h');
 #endif	
-	 hydro_fields();	
+
+#ifdef LB_FLUID
+	 hydro_fields('p');
+#endif
+#ifdef LB_TEMPERATURE
+	 hydro_fields('g');
+#endif
+#ifdef LB_SCALAR
+	 hydro_fields('h');
+#endif
 	 dump_averages();
 
 	 /* Now the lagrangian part */

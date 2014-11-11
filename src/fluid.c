@@ -41,6 +41,14 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
 #endif
 
 #ifdef METHOD_REDEFINED_POP
+	/* set to zero f_aux */
+ for(k=0;k<LNZ+TWO_BRD;k++)
+   for(j=0;j<LNY+TWO_BRD;j++)
+     for(i=0;i<LNX+TWO_BRD;i++){  
+       for(pp=0;pp<NPOP;pp++)        
+	 f_aux[IDX(i,j,k)].p[pp]  = 0.0;
+    }
+
       /* We store the equilibrium distribution in all points */
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
@@ -51,7 +59,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
      sendrecv_borders_pop(f_eq);
 
 #ifdef LB_FLUID_BC
-     boundary_conditions_for_equilibrium();
+     boundary_conditions_for_equilibrium(which_pop);
 #endif
 
  /* The population to be advected is different (we call it here f_aux)*/
@@ -69,9 +77,22 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
 #ifdef LB_FLUID
 if(which_pop == 'p'){
   /* this method is going to be very expensive */
-   sendrecv_borders_vector(force);
+
+  /* first we update density and velocity */
+ for(k=BRD;k<LNZ+BRD;k++)
+   for(j=BRD;j<LNY+BRD;j++)
+    for(i=BRD;i<LNX+BRD;i++){ 
+   dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
+   u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
+   u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
+   u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
+   }
+ /* and communicate them */
    sendrecv_borders_vector(u);
    sendrecv_borders_scalar(dens);
+   sendrecv_borders_vector(force);
+ /* Here we shall take into accounts there bc if any */ 
+ /* to be done ... */
 
   fac = 0.5*property.time_dt;
 
@@ -111,7 +132,7 @@ if(which_pop == 'p'){
 
 #ifdef LB_FLUID_BC
 	/* bc for equilibrium function */
-        boundary_conditions_for_equilibrium();
+        boundary_conditions_for_equilibrium(which_pop);
 #endif
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)

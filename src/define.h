@@ -44,7 +44,7 @@
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 #define LB_FLUID_FORCING  /* activate force on the fluid */
 //#define LB_FLUID_FORCING_CHANNEL
 //#define LB_FLUID_FORCING_POISEUILLE
@@ -67,18 +67,18 @@
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
-#define LB_FLUID_BC_Y_M_JET                       
-#define LB_FLUID_BC_Y_P_OUTLET
+//#define LB_FLUID_BC_Y_M_JET                       
+//#define LB_FLUID_BC_Y_P_OUTLET
 
-#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
 //#define LB_FLUID_BC_X_M_INLET_POISEUILLE
 //#define LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF
 //#define LB_FLUID_BC_X_M_INLET_CONSTANT
-#define LB_FLUID_BC_X_M_OUTLET 
-#define LB_FLUID_BC_X_P_OUTLET  
+//#define LB_FLUID_BC_X_M_OUTLET 
+//#define LB_FLUID_BC_X_P_OUTLET  
                                              
 //#define LB_FLUID_BC_Z
 //#define LB_FLUID_BC_Z_M_SLIP                                             
@@ -89,8 +89,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-//#define METHOD_FINITE_VOLUME
-#define METHOD_STREAMING
+#define METHOD_FINITE_VOLUME
+//#define METHOD_STREAMING
 
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
@@ -116,10 +116,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FORCING_GUO
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_FLUCTUATION
-//#define LB_TEMPERATURE_INITIAL_LINEAR
-//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+#define LB_TEMPERATURE_INITIAL_LINEAR
+#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
@@ -127,10 +127,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
 //#define LB_TEMPERATURE_INITIAL_BULK
-//#define LB_TEMPERATURE_BUOYANCY
+#define LB_TEMPERATURE_BUOYANCY
 //#define LB_TEMPERATURE_BUOYANCY_TREF
-//#define LB_TEMPERATURE_BC
-//#define LB_TEMPERATURE_BC_Y
+#define LB_TEMPERATURE_BC
+#define LB_TEMPERATURE_BC_Y
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_VARIABLE
@@ -213,8 +213,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #ifdef METHOD_FINITE_VOLUME                                            
 #define METHOD_STEPPING_EULER
 #define METHOD_REDEFINED_POP
-//#define METHOD_REDEFINED_POP_GUO
-//#define METHOD_FORCING_GUO
+#define METHOD_REDEFINED_POP_GUO
+#define METHOD_FORCING_GUO
 #define METHOD_HEUN
 #define METHOD_MYQUICK                                                       
 #define METHOD_MYQUICK_CARTESIAN

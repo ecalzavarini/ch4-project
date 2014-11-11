@@ -1185,13 +1185,14 @@ if(LNZ_START == 0){
 /***********************************************/
 
 #ifdef LB_FLUID_BC
-void boundary_conditions_for_equilibrium(){
+void boundary_conditions_for_equilibrium(char which_pop){
 
   int i,j,k,pp;
   vector vel;
   my_double rho;
   pop f_eq;
 
+  if(which_pop == 'p'){
   /* y direction  velocity */
 #ifdef LB_FLUID_BC_Y
  
@@ -1238,8 +1239,9 @@ void boundary_conditions_for_equilibrium(){
       }
     }
 #endif
+  }/* end of if which pop */
 
-
+  if(which_pop == 'g'){
   /* y direction temperature */	
 #ifdef LB_TEMPERATURE
 #ifdef LB_TEMPERATURE_BC_Y
@@ -1301,6 +1303,7 @@ if(LNY_START == 0){
     }
 #endif
 #endif
+  }/* end of if which pop g */
 /***************************************************************************************************/
 
 

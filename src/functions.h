@@ -33,7 +33,7 @@ void copy_pop(pop *f, pop *f_copy);
 /* boundary_conditions.c */
 void boundary_conditions();
 void boundary_and_pbc_conditions_for_streaming();
-void boundary_conditions_for_equilibrium();
+void boundary_conditions_for_equilibrium(char which_pop);
 
 /* initial_conditions.c */
 void initial_conditions(int restart);
@@ -41,7 +41,7 @@ void initial_conditions(int restart);
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq,char which_pop);
 void compute_advection(pop * f, pop *rhs_f, my_double tau, pop *f_eq,char which_pop);
-void hydro_fields();
+void hydro_fields(char which_pop);
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);
 tensor gradient_vector(vector *t, int i, int j, int k);

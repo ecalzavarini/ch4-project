@@ -405,7 +405,7 @@ pop equilibrium(pop * f, int i, int j, int k){
 
 
 /**************************************************/
-void hydro_fields(){
+void hydro_fields(char which_pop){
 	int i, j, k;
 #ifdef DEBUG
 	char            fnamein[256], fnameout[256];
@@ -419,6 +419,7 @@ void hydro_fields(){
 
 
 #ifdef LB_FLUID
+			  if(which_pop == 'p'){
 #ifdef METHOD_LOG
 			  dens[IDX(i, j, k)] = m(p[IDX(i, j, k)],1./property.tau_u);			       
 			  u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
@@ -438,9 +439,11 @@ void hydro_fields(){
 				u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];	
 				#endif
 #endif
+			  }
 #endif
 
 #ifdef LB_TEMPERATURE 
+			  if(which_pop == 'g'){
 				/* compute temperature field */
                                #ifndef METHOD_FORCING_GUO
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
@@ -452,9 +455,11 @@ void hydro_fields(){
 	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)]; 
                                 #endif
                                #endif
+			  }
 #endif
 
-#ifdef LB_SCALAR                  
+#ifdef LB_SCALAR
+                          if(which_pop == 'h'){                  
 				    /* compute scalar field */
                                #ifndef METHOD_FORCING_GUO	    
 				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]); 
@@ -466,7 +471,7 @@ void hydro_fields(){
 	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*s_source[IDX(i, j, k)]; 
                                 #endif
                                #endif
-                           
+			  }                           
 #endif
 
 			}/* for i,j,k */
@@ -646,8 +651,13 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
   boundary_conditions();
 #endif
   /* 1) we compute the advection with the new f field*/
+     /* 1a) first we need the new hydro fields */
+     //if(which_pop == 'p') hydro_fields('p');
+     /* 1b) then we need to build the forcing */ 	
+         //build_forcing();
+     /* 1c) finally the new the advection */ 	
   compute_advection(f,rhs_f,tau,f_eq,which_pop);
-  /* 3) perform the corrector step */
+  /* 2) perform the corrector step */
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++)
