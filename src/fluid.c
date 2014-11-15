@@ -273,6 +273,7 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
+	/* in case of normal streaming we just make a copy of the field */
 		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
    
       }/* i */

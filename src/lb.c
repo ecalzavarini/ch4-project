@@ -523,7 +523,7 @@ void streaming(pop *f, pop *rhs_f){
        /* Here we avoid streaming for solid regions, i.e., for landscape = 1 */
        if(landscape[IDX(i, j, k)] == 0.0) f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
 #else
-       /* the normal streaming case */
+       /* the normal streaming case : pull method */ 
        f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
 #endif
 
