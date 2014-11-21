@@ -504,14 +504,16 @@ void hydro_fields(char which_pop){
 
 
 #ifdef METHOD_STREAMING
-void streaming(pop *f, pop *rhs_f){
- int i, j, k, pp;
+void streaming(pop *f, pop *rhs_f,int i,int j,int k){
+//void streaming(pop *f, pop *rhs_f){
+// int i, j, k;
+ int pp;
  int ii, jj, kk;
 
  
- for(k=BRD;k<LNZ+BRD;k++){
-   for(j=BRD;j<LNY+BRD;j++){
-      for(i=BRD;i<LNX+BRD;i++){ 
+ //  for(k=BRD;k<LNZ+BRD;k++){
+ //    for(j=BRD;j<LNY+BRD;j++){
+ //       for(i=BRD;i<LNX+BRD;i++){ 
 
      for(pp=0;pp<NPOP;pp++){
        
@@ -532,10 +534,9 @@ void streaming(pop *f, pop *rhs_f){
 
      }/* pp */
 
-      }/* i */
-   }/* j */
- }/* k */
-
+     //           }/* i */
+     //        }/* j */
+     //      }/* k */
 }
 #endif
 
@@ -644,6 +645,10 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 #endif
 
 	}/* pp */
+
+#ifdef METHOD_STREAMING
+	streaming(f, rhs_f, i , j , k);
+#endif
       }/* for i,j,k */
 
 
@@ -672,12 +677,11 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 
 	}
 #endif
-
-
-#ifdef METHOD_STREAMING
-  //sendrecv_borders_pop(rhs_f); 
-    streaming(f, rhs_f);
-#endif
+  /*
+  #ifdef METHOD_STREAMING
+      streaming(f, rhs_f);
+  #endif
+  */
 }
 
 

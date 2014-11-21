@@ -29,6 +29,7 @@ pop equilibrium(pop * f, int i, int j, int k);
 pop equilibrium_given_velocity(vector v , my_double rho);
 void time_stepping(pop *f, pop *rhs_f,pop *old_rhs_f,pop *old_old_rhs_f,my_double tau,pop *f_eq,char which_pop);
 void copy_pop(pop *f, pop *f_copy);
+void streaming(pop *f, pop *rhs_f,int i,int j,int k);
 
 /* boundary_conditions.c */
 void boundary_conditions();
