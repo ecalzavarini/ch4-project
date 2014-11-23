@@ -33,7 +33,7 @@ void streaming(pop *f, pop *rhs_f,int i,int j,int k);
 
 /* boundary_conditions.c */
 void boundary_conditions();
-void boundary_and_pbc_conditions_for_streaming();
+void boundary_conditions_for_streaming();
 void boundary_conditions_for_equilibrium(char which_pop);
 void boundary_conditions_for_hydro(char which_pop);
 void boundary_conditions_for_advection(pop * f, char which_pop);

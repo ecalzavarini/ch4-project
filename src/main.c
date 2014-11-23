@@ -45,32 +45,71 @@ int main(int argc, char **argv){
 	  itime++;
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 
-#ifndef METHOD_STREAMING
+	  /* COMPUTE & ADD  COLLISION */
 #ifdef LB_FLUID
-	  sendrecv_borders_pop(p);	 
+          copy_pop(p,rhs_p);
+	  add_collision(p,rhs_p,property.tau_u,p_eq,'p');
 #endif
+
 #ifdef LB_TEMPERATURE
-	  sendrecv_borders_pop(g);
+          copy_pop(g,rhs_g);
+	  add_collision(g,rhs_g,property.tau_t,g_eq,'g');
 #endif
+
 #ifdef LB_SCALAR
+          copy_pop(h,rhs_h);
+	  add_collision(h,rhs_h,property.tau_s,h_eq,'h');
+#endif
+	  /* COMPUTE & ADD  FORCING */
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING )
+	  build_forcing();
+#ifdef LB_TEMPERATURE_MELTING
+	  melting();
+#endif
+	   add_forcing();
+#endif
+
+	  /* FIX PERIODICITY */
+#ifdef METHOD_STREAMING
+ #ifdef LB_FLUID
+ sendrecv_borders_pop(rhs_p);
+ #endif
+
+ #ifdef LB_TEMPERATURE
+ sendrecv_borders_pop(rhs_g);
+ #endif
+
+ #ifdef LB_SCALAR
+ sendrecv_borders_pop(rhs_h);
+ #endif
+#else /* if not streaming, than is finite volume */
+ #ifdef LB_FLUID
+	  sendrecv_borders_pop(p);	 
+ #endif
+ #ifdef LB_TEMPERATURE
+	  sendrecv_borders_pop(g);
+ #endif
+ #ifdef LB_SCALAR
 	  sendrecv_borders_pop(h);
+ #endif
 #endif
 
-
+	  /* IMPLEMENT BOUNDARY CONDITIONS */
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
-#ifndef METHOD_REDEFINED_POP
-       	  boundary_conditions();
-	  /* if REDEFINED_POP is defined the BC are computed for f_aux in advection */
-#endif
-#endif
-#endif
-	  
+ #ifdef METHOD_STREAMING
+         boundary_conditions_for_streaming();
+ #else
+      	 boundary_conditions();
+	  /* if REDEFINED_POP is defined the BC are computed on f_aux in advection */
+ #endif
+#endif 
+
+	 /* COMPUTE & ADD ADVECTION or PERFORM STREAMING */
 #ifdef LB_FLUID
 	  compute_advection(p,rhs_p,property.tau_u,p_eq,'p');
 #ifdef METHOD_HEUN
           copy_pop(rhs_p,old_rhs_p);
 #endif
-	  add_collision(p,rhs_p,property.tau_u,p_eq,'p');
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -78,7 +117,6 @@ int main(int argc, char **argv){
 #ifdef METHOD_HEUN
 	  copy_pop(rhs_g,old_rhs_g);
 #endif
-	  add_collision(g,rhs_g,property.tau_t,g_eq,'g');
 #endif
 
 #ifdef LB_SCALAR
@@ -86,21 +124,10 @@ int main(int argc, char **argv){
 #ifdef METHOD_HEUN
 	  copy_pop(rhs_h,old_rhs_h);
 #endif
-	  add_collision(h,rhs_h,property.tau_s,h_eq,'h');
 #endif 
 
-#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING )
-	  build_forcing();
-#ifdef LB_TEMPERATURE_MELTING
-	  melting();
-#endif
-	  add_forcing();
-#endif
-
-#ifdef METHOD_STREAMING
-         boundary_and_pbc_conditions_for_streaming();
-#endif
-
+	  /* TIME STEPPING FOR FINITE VOLUME */
+#ifndef METHOD_STREAMING
 #ifdef LB_FLUID	  
 	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u,p_eq,'p');
 #endif
@@ -110,7 +137,9 @@ int main(int argc, char **argv){
 #ifdef LB_SCALAR
 	 time_stepping(h,rhs_h,old_rhs_h,old_old_rhs_h,property.tau_s,h_eq,'h');
 #endif	
+#endif
 
+	 /* COMPUTE MACROSCOPIC FIELDS */
 #ifdef LB_FLUID
 	 hydro_fields('p');
 #endif

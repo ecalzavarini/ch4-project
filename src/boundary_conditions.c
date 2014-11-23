@@ -398,7 +398,7 @@ if(LNX_START == 0){
 /* When STREAMING is active bc shall be implemented in a different way*/
 //#ifdef LB_FLUID_BC
 #ifdef METHOD_STREAMING
-void boundary_and_pbc_conditions_for_streaming(){
+void boundary_conditions_for_streaming(){
 
   int i,j,k,pp;
   vector vel;
@@ -408,19 +408,6 @@ void boundary_and_pbc_conditions_for_streaming(){
   my_double fac;
 
   /* communications to be done in any case  (especially for pbc)*/
-
-#ifdef LB_FLUID
-sendrecv_borders_pop(rhs_p);
-#endif
-
-#ifdef LB_TEMPERATURE
-sendrecv_borders_pop(rhs_g);
-//sendrecv_borders_scalar(t);
-#endif
-
-#ifdef LB_SCALAR
-sendrecv_borders_pop(rhs_h);
-#endif
 
 /***************** Bounce-back BC for the complex boundaries  ********************/
   int iii, jjj, kkk;

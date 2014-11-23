@@ -645,10 +645,11 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 #endif
 
 	}/* pp */
-
+	/*
 #ifdef METHOD_STREAMING
 	streaming(f, rhs_f, i , j , k);
 #endif
+	*/
       }/* for i,j,k */
 
 

@@ -5,6 +5,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
 
   int i,j,k,pp;
   my_double adv,aux;
+#ifndef METHOD_STREAMING
 #ifdef DEBUG
 	char            fnamein[256], fnameout[256];
 	char            name[256] = "NULL";
@@ -258,7 +259,7 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
 #endif
 
 /* with minus sign because we add it to the right hand side */
- rhs_f[IDX(i,j,k)].p[pp] = -adv;
+rhs_f[IDX(i,j,k)].p[pp] = -adv;
 
  #ifdef DEBUG_HARD
  if(ROOT && itime ==1000) fprintf(stderr, " %d %d %d %d adv %e\n",i,j,k,pp,adv);
@@ -267,15 +268,17 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
 	}/* for pp */
       }/* for i, j , k */
 
+
+#endif /* end of ifndef METHOD_STREAMING */
 #ifdef METHOD_STREAMING
 #ifndef METHOD_STREAMING_INTERPOLATE
  for(k=BRD;k<LNZ+BRD;k++){
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
-
 	/* in case of normal streaming we just make a copy of the field */
-		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
-   
+	//		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
+	/* Here we perform a real pull in stream */
+		streaming(f, rhs_f, i , j , k);
       }/* i */
    }/* j */
  }/* k */
