@@ -3,12 +3,12 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 256
-NY 256
+NX 101
+NY 50
 NZ 1
 
-SX 256
-SY 256
+SX 101
+SY 50
 SZ 1
 
 time_dt 1.0
@@ -17,18 +17,18 @@ time_end 20000.
 time_dump_field 250.
 time_dump_diagn 10.
 
-tau_u 0.52
+tau_u 1.0
 
 Amp_x 0.1
 Amp_y 0.0000
 Amp_z 0.0000
 
-tau_t 0.52
-T_bot  0.0
-T_top  1.0
+tau_t 1.0
+T_bot  1.0
+T_top  -1.0
 T_ref  0.0
 
-beta_t  0.000004    0.001897778
+beta_t  0.001897778
 beta2_t 0.0
 
 gravity_x 0.0

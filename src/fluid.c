@@ -4,6 +4,7 @@
 void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_pop){
 
   int i,j,k,pp;
+#ifndef METHOD_STREAMING /* if streaming is not defined skip all this */
   my_double adv,aux;
 #ifdef DEBUG
 	char            fnamein[256], fnameout[256];
@@ -267,6 +268,7 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
 	}/* for pp */
       }/* for i, j , k */
 
+#endif /* end of  ifndef METHOD_STREAMING */
 #ifdef METHOD_STREAMING
 #ifndef METHOD_STREAMING_INTERPOLATE
  for(k=BRD;k<LNZ+BRD;k++){

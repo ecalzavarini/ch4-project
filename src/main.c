@@ -46,23 +46,22 @@ int main(int argc, char **argv){
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 
 #ifndef METHOD_STREAMING
-#ifdef LB_FLUID
+ #ifndef METHOD_REDEFINED_POP
+  #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);	 
-#endif
-#ifdef LB_TEMPERATURE
+  #endif
+  #ifdef LB_TEMPERATURE
 	  sendrecv_borders_pop(g);
-#endif
-#ifdef LB_SCALAR
+  #endif
+  #ifdef LB_SCALAR
 	  sendrecv_borders_pop(h);
-#endif
+  #endif
 
-
-#if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
-#ifndef METHOD_REDEFINED_POP
+  #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
        	  boundary_conditions();
 	  /* if REDEFINED_POP is defined the BC are computed for f_aux in advection */
-#endif
-#endif
+  #endif
+ #endif
 #endif
 	  
 #ifdef LB_FLUID
