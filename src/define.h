@@ -9,7 +9,7 @@
 #define NEW_SENDRECV  /* does not use itermediate transfer buffers */
 
 /* OUTPUT */
-//#define OUTPUT_ASCII
+#define OUTPUT_ASCII
 #define OUTPUT_H5
 #define TIMING 
 
@@ -89,8 +89,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
