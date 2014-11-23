@@ -66,7 +66,7 @@ int main(int argc, char **argv){
 #ifdef LB_TEMPERATURE_MELTING
 	  melting();
 #endif
-	   add_forcing();
+	  add_forcing();
 #endif
 
 	  /* FIX PERIODICITY */

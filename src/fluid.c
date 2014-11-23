@@ -4,8 +4,8 @@
 void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_pop){
 
   int i,j,k,pp;
-  my_double adv,aux;
 #ifndef METHOD_STREAMING
+  my_double adv,aux;
 #ifdef DEBUG
 	char            fnamein[256], fnameout[256];
 	char            name[256] = "NULL";
@@ -52,11 +52,13 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
     }
 	*/
       /* We store the equilibrium distribution in all points */
+	/*
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
     for(i=BRD;i<LNX+BRD;i++){ 
       	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
       }
+      */
   /* send the borders, needed to compute the advection */ 
  // OUT     sendrecv_borders_pop(f_eq);
 
@@ -168,7 +170,7 @@ if(which_pop == 'p'){
       for(i=BRD;i<LNX+BRD;i++){ 
 
 	/* population 0 does not advect anyhow*/
-	rhs_f[IDX(i,j,k)].p[0] = 0.0;
+	//rhs_f[IDX(i,j,k)].p[0] = 0.0;
 	/* now taking care of pop 1 to 18 */
  	for(pp=1;pp<NPOP;pp++){
 
@@ -259,11 +261,12 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
 #endif
 
 /* with minus sign because we add it to the right hand side */
-rhs_f[IDX(i,j,k)].p[pp] = -adv;
+rhs_f[IDX(i,j,k)].p[pp] += -adv;
 
- #ifdef DEBUG_HARD
+
+#ifdef DEBUG_HARD
  if(ROOT && itime ==1000) fprintf(stderr, " %d %d %d %d adv %e\n",i,j,k,pp,adv);
- #endif 
+#endif 
 
 	}/* for pp */
       }/* for i, j , k */
@@ -1072,8 +1075,9 @@ invtau = 1.0/tau;
 /* end of LES part */
 
 #ifdef METHOD_REDEFINED_POP
+        f_eq[IDX(i,j,k)] = equilibrium(f,i,j,k);
 	ff_eq = f_eq[IDX(i,j,k)];
-#else     
+#else     	
 	ff_eq=equilibrium(f,i,j,k);
 #endif
 

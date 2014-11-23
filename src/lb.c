@@ -580,7 +580,8 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
 	  /* IMEX’ (Implicit-Explicit) or semi-implicit  Ascher, Ruuth & Wetton (1995) */
 	  //f[IDX(i,j,k)].p[pp] =  fac2*(f[IDX(i,j,k)].p[pp] + property.time_dt*rhs_f[IDX(i,j,k)].p[pp]);
 #else
-          f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];	
+	     //f[IDX(i,j,k)].p[pp] += property.time_dt*rhs_f[IDX(i,j,k)].p[pp];
+          f[IDX(i,j,k)].p[pp] = property.time_dt*rhs_f[IDX(i,j,k)].p[pp];	
 #endif
 
 #ifdef DEBUG_HARD

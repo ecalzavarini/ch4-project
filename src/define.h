@@ -89,8 +89,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-//#define METHOD_FINITE_VOLUME
-#define METHOD_STREAMING
+#define METHOD_FINITE_VOLUME
+//#define METHOD_STREAMING
 
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
@@ -215,7 +215,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define METHOD_REDEFINED_POP
 #define METHOD_REDEFINED_POP_GUO
 #define METHOD_FORCING_GUO
-#define METHOD_HEUN
+//#define METHOD_HEUN
 #define METHOD_MYQUICK                                                       
 #define METHOD_MYQUICK_CARTESIAN
 #endif 
