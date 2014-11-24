@@ -62,9 +62,9 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
   /* send the borders, needed to compute the advection */ 
  // OUT     sendrecv_borders_pop(f_eq);
 
-#ifdef LB_FLUID_BC
+	//#ifdef LB_FLUID_BC
  // OUT    boundary_conditions_for_equilibrium(which_pop);
-#endif
+	//#endif
 
  /* The population to be advected is different (we call it here f_aux)*/
  /* it is:  f_aux = f + (dt/(2*tau))*(f_eq-f) */

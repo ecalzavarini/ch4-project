@@ -83,6 +83,7 @@ int main(int argc, char **argv){
  sendrecv_borders_pop(rhs_h);
  #endif
 #else /* if not streaming, than is finite volume */
+#ifndef METHOD_REDEFINED_POP
  #ifdef LB_FLUID
 	  sendrecv_borders_pop(p);	 
  #endif
@@ -93,14 +94,17 @@ int main(int argc, char **argv){
 	  sendrecv_borders_pop(h);
  #endif
 #endif
+#endif
 
 	  /* IMPLEMENT BOUNDARY CONDITIONS */
 #if (defined LB_FLUID_BC || defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC)
  #ifdef METHOD_STREAMING
          boundary_conditions_for_streaming();
  #else
+#ifndef METHOD_REDEFINED_POP
       	 boundary_conditions();
 	  /* if REDEFINED_POP is defined the BC are computed on f_aux in advection */
+#endif
  #endif
 #endif 
 
@@ -129,7 +133,7 @@ int main(int argc, char **argv){
 	  /* TIME STEPPING FOR FINITE VOLUME */
 #ifndef METHOD_STREAMING
 #ifdef LB_FLUID	  
-	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u,p_eq,'p');
+       	 time_stepping(p,rhs_p,old_rhs_p,old_old_rhs_p,property.tau_u,p_eq,'p');
 #endif
 #ifdef LB_TEMPERATURE
 	 time_stepping(g,rhs_g,old_rhs_g,old_old_rhs_g,property.tau_t,g_eq,'g');
