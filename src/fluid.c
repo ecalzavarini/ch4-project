@@ -60,9 +60,9 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
   /* send the borders, needed to compute the advection */ 
  // OUT     sendrecv_borders_pop(f_eq);
 
-#ifdef LB_FLUID_BC
+ //#ifdef LB_FLUID_BC
  // OUT    boundary_conditions_for_equilibrium(which_pop);
-#endif
+ //#endif
 
  /* The population to be advected is different (we call it here f_aux)*/
  /* it is:  f_aux = f + (dt/(2*tau))*(f_eq-f) */
@@ -84,6 +84,8 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
 if(which_pop == 'p'){
   /* this method is going to be very expensive */
 
+fac = 0.5*property.time_dt;
+
   /* first we update density and velocity */
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
@@ -94,9 +96,9 @@ if(which_pop == 'p'){
    //u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
    //u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
    /* TO BE USED if the force is a force per unit mass i.e. acceleration */
-   u[IDX(i, j, k)].x= mvx(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].x ;
-   u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].y ;
-   u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].z ;	
+   u[IDX(i, j, k)].x= mvx(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + fac*force[IDX(i, j, k)].x ;
+   u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + fac*force[IDX(i, j, k)].y ;
+   u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + fac*force[IDX(i, j, k)].z ;	
    }
  /* and communicate them */
  //OUT   sendrecv_borders_vector(u);
@@ -125,7 +127,7 @@ if(which_pop == 'p'){
        f_aux[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;  
 		}
        }
-}
+ }
 #endif /* end LB_FLUID_FORCING */
 #endif /* end LB_FLUID */
 #endif /* end METHOD_REDEFINED_POP_GUO */
