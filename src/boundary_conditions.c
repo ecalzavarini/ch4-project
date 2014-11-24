@@ -393,12 +393,878 @@ if(LNX_START == 0){
 } /* end of void boundary conditions */
 #endif
 
-
 /**********************************************************************************************************/
 /* When STREAMING is active bc shall be implemented in a different way*/
 //#ifdef LB_FLUID_BC
 #ifdef METHOD_STREAMING
 void boundary_and_pbc_conditions_for_streaming(){
+
+  int i,j,k,pp;
+  vector vel;
+  my_double rho;
+  pop p_eq,p_neq;
+  int ii,jj,kk;	
+  my_double fac;
+
+  /* communications to be done in any case  (especially for pbc)*/
+
+#ifdef LB_FLUID
+sendrecv_borders_pop(rhs_p);
+#endif
+
+#ifdef LB_TEMPERATURE
+sendrecv_borders_pop(rhs_g);
+//sendrecv_borders_scalar(t);
+#endif
+
+#ifdef LB_SCALAR
+sendrecv_borders_pop(rhs_h);
+#endif
+
+/***************** Bounce-back BC for the complex boundaries  ********************/
+  int iii, jjj, kkk;
+#ifdef LB_FLUID_FORCING_LANDSCAPE
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+     for(pp=0;pp<NPOP;pp++){
+          iii = i+(int)c[pp].x;
+	  jjj = j+(int)c[pp].y;
+	  kkk = k+(int)c[pp].z;
+
+	  if(landscape[IDX(i, j, k)] == 0.0 && landscape[IDX(iii, jjj, kkk)] == 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+     }/* pp */   
+      }/* i */
+   }/* j */
+ }/* k */
+#endif
+
+
+
+
+
+/************************************/
+	/* X direction */ 
+#ifdef LB_FLUID_BC_X
+
+   for (j = 0; j < LNY + TWO_BRD; j++) 			
+   for (k = 0; k < LNZ + TWO_BRD; k++){
+
+      for(pp=0;pp<NPOP;pp++){
+
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;	
+
+if(LNX_END == NX){
+
+  	i = LNX+BRD-1;
+
+#ifdef LB_FLUID_BC_XP_OUTLET
+	if(pp==0){
+	 /*borrowing the density value from the nearest fluid node*/
+	  if (j >= BRD && j< LNY+BRD && k >= BRD && k < LNZ+BRD) {rho = dens[IDX(i, j, k)];} else {rho = 1.0;}
+
+	 /*definition of all velocity components by Dirichlet boundary condition method */
+#ifdef GRID_POP_D2Q9	  
+	  vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+2*(rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[5]))/rho;
+	  vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[6]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[7]))/rho;
+#endif
+
+#ifdef GRID_POP_D3Q19
+	 vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+	 vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[7]))/rho;	 
+	 vel.z = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+2*(rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[11]))/rho;
+#endif
+	 /*non-reflecting pressure boundary condition Ref: Finck et al*/
+       	 rho = (rho+rho*sqrt(3.0)*(vel.x-u[IDX(i,j,k)].x)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	 rhs_p[IDX(i+1,j,k)] = equilibrium_given_velocity(vel,rho); 
+	} 
+#else
+
+#ifdef LB_FLUID_BC_XP_SLIP
+	  /* SLIP */
+          rhs_p[IDX(i+1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#else	 
+	  /* NO SLIP */
+	  if (jj>= 0 && jj< LNY+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(i+1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+  
+#endif
+#endif
+}
+// }
+
+if(LNX_START == 0){
+
+       i = BRD;
+
+#ifdef LB_FLUID_BC_XM_OUTLET
+	if(pp==0){
+
+	    if (j >= BRD && j< LNY+BRD && k >= BRD && k < LNZ+BRD) {rho = dens[IDX(i, j, k)];} else {rho = 1.0;}
+
+#ifdef GRID_POP_D2Q9
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]))/rho;
+	  vel.y = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[6]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]))/rho;
+#endif
+	  
+#ifdef GRID_POP_D3Q19 
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]))/rho; 
+	  vel.y = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[8]))/rho;
+	  vel.z = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+2*(rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+#endif
+
+      	  rho = (rho+rho*sqrt(3.0)*(vel.x-u[IDX(i,j,k)].x)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	  rhs_p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho); 
+	}
+#else
+ 
+#ifdef LB_FLUID_BC_XM_INLET
+	if(pp==0){
+
+#ifdef LB_FLUID_BC_XM_INLET_POISEUILLE
+	  /*Poiseuille flow velocity profile - inlet*/
+	     vel.x = -(4.0*(my_double)property.Amp_x*(pow(((my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-((my_double)property.SY));
+#endif
+
+#ifdef LB_FLUID_BC_XM_INLET_POISEUILLE_HALF
+	  /* Half Poiseuille flow velocity profile - inlet*/
+	  vel.x = -(4.0*(my_double)property.Amp_x*(pow((2.0*(my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-(2.0*(my_double)property.SY));
+#endif
+
+#ifdef LB_FLUID_BC_XM_INLET_CONSTANT
+	  /* Constant velocity = Amp_x*/        
+	  vel.x = property.Amp_x;
+	  vel.y = property.Amp_y;
+	  vel.z = property.Amp_z;
+#endif
+
+#ifdef LB_FLUID_BC_XM_INLET_JET
+	  /*Hyperbolic cosine - inlet*/
+	  vel.x = ((my_double)property.Amp_x)/(pow(cosh(0.02*((my_double)center_V[IDX(i,j,k)].y-((my_double)property.SY/2.0))),2.0));
+#endif
+
+	  /* If the inlet velocity profile contains only x-velocity component*/   
+#ifdef GRID_POP_D2Q9 
+	  rho = (1.0/(1.0-vel.x))*((rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8])+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]));
+#endif
+
+#ifdef GRID_POP_D3Q19
+	  rho = (1.0/(1.0-vel.x))*((rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18])+2*(rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]));
+#endif
+	  rhs_p[IDX(i-1,j,k)] = equilibrium_given_velocity(vel,rho); 
+	}
+		
+#else
+#ifdef LB_FLUID_BC_XM_SLIP
+
+	/* SLIP */
+          rhs_p[IDX(i-1,j,k)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
+	/* NO SLIP */
+         if (jj>= 0 && jj< LNY+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(i-1,jj,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
+#endif
+#endif 
+ }
+
+      }/* for pp */
+    }/* for j,k */
+#endif
+
+
+/************************************/
+	/* Y direction */ 
+#ifdef LB_FLUID_BC_Y
+
+   for (i = 0; i < LNX + TWO_BRD; i++) 			
+   for (k = 0; k < LNZ + TWO_BRD; k++){
+
+         for(pp=0;pp<NPOP;pp++){
+
+	 ii = i+(int)c[pp].x;
+	 kk = k+(int)c[pp].z;
+	
+if(LNY_END == NY){
+
+               j = LNY+BRD-1;	 
+
+#ifdef LB_FLUID_BC_YP_OUTLET
+	if(pp==0){
+
+      	  if (i >= BRD && i< LNX+BRD && k >= BRD && k < LNZ+BRD) {rho = dens[IDX(i, j, k)];} else {rho=1.0;}
+
+#ifdef GRID_POP_D2Q9
+	   vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+2*(rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[5]))/rho;
+	   vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[6]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[7]))/rho;
+#endif
+
+#ifdef GRID_POP_D3Q19
+	 vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+	 vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[7]))/rho;	 
+	 vel.z = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[11]))/rho;
+#endif
+
+          rho = (rho+rho*sqrt(3.0)*(vel.y-u[IDX(i,j,k)].y)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	  rhs_p[IDX(i,j+1,k)] = equilibrium_given_velocity(vel,rho); 
+}
+	   	   		   		   		   
+#else
+
+#ifdef LB_FLUID_BC_YP_SLIP
+	/* SLIP */
+          rhs_p[IDX(i,j+1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
+	  /* NO SLIP */
+	  if (ii>= 0 && ii< LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#endif
+#endif
+}
+
+if(LNY_START == 0){
+  j = BRD; 
+  
+#ifdef LB_FLUID_BC_YM_SLIP
+           // SLIP //
+          rhs_p[IDX(i,j-1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
+	  // NO SLIP //
+	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
+  
+
+#ifdef LB_FLUID_BC_YM_JET
+  // inlet geometry - circle: POSITION OF CENTER COORDINATES OF THE CIRCLE SPECIFIED HERE ITSELF //
+	  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/3.158), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0){    	  
+    if(pp==0){         
+
+      /*Poiseuille flow velocity profile - inlet*/
+      //   vel.y = -(4.0*(my_double)property.Amp_y*(pow(21.85,-2.0)))*((my_double)center_V[IDX(i,j,k)].x-(((property.SX/2.0)+1.0)-10.925))*(((my_double)center_V[IDX(i,j,k)].x-(((property.SX/2.0)+1.0)-10.925))-21.85);
+
+	  /*constant flow velocity profile - inlet*/
+	           vel.y =  0.1;
+
+	           vel.x =  0.0;    //property.Amp_y;
+	       	   vel.z =  0.0;    //property.Amp_z;
+
+#ifdef GRID_POP_D2Q9 
+	  rho = (1.0/(1.0-vel.y))*((rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[6])+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]));
+#endif
+#ifdef GRID_POP_D3Q19 
+	  rho = (1.0/(1.0-vel.y))*(rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[8])); 
+#endif
+	  vel.y *=  -1.0; /* we invert velocity and apply a bounce back */
+
+	  //	  rho = (rho + 50.0 * dens[IDX(i,j,k)])/(1.0+50.0);
+	  p_eq = equilibrium_given_velocity(vel,rho); 
+	}
+
+          rhs_p[IDX(ii,j-1,kk)].p[inv[pp]]   = p_eq.p[pp];
+
+      }
+#endif /* end of LB_FLUID_BC_YM_JET */
+
+#ifdef LB_FLUID_BC_YM_OUTLET
+	if(pp==0){
+
+      	  if (i >= BRD && i< LNX+BRD && k >= BRD && k < LNZ+BRD) {rho = dens[IDX(i, j, k)];} else {rho=1.0;}
+
+#ifdef GRID_POP_D2Q9
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[8]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]))/rho;
+	  vel.y = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[6]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]))/rho;
+#endif
+	  
+#ifdef GRID_POP_D3Q19 
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]))/rho; 
+	  vel.y = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[8]))/rho;
+	  vel.z = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+2*(rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+#endif
+
+      	  rho = (rho+rho*sqrt(3.0)*(vel.y-u[IDX(i,j,k)].y)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	  rhs_p[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho); 
+}
+#endif
+
+
+ }
+     }/* for pp */
+    }/* for i,k */
+#endif
+
+
+
+/************************************/
+	/* Z direction */ 
+#ifdef LB_FLUID_BC_Z
+
+   for (i = 0; i < LNX + TWO_BRD; i++) 			
+   for (j = 0; j < LNY + TWO_BRD; j++){
+
+      for(pp=0;pp<NPOP;pp++){
+
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;	
+
+if(LNZ_END == NZ){
+	k = LNZ+BRD-1;
+
+
+#ifdef LB_FLUID_BC_ZP_OUTLET
+
+	if(pp==0){
+      	  if (i >= BRD && i< LNX+BRD && j >= BRD && j < LNY+BRD) {rho = dens[IDX(i, j, k)];} else {rho=1.0;}
+
+#ifdef GRID_POP_D3Q19
+	 vel.x = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+	 vel.y = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[7]))/rho;	 
+	 vel.z = -1.0+ (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[11]))/rho;
+#endif
+
+      	  rho = (rho+rho*sqrt(3.0)*(vel.z-u[IDX(i,j,k)].z)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	  rhs_p[IDX(i,j,k+1)] = equilibrium_given_velocity(vel,rho);
+}
+
+#else
+#ifdef LB_FLUID_BC_ZP_SLIP
+	  /* SLIP */
+          rhs_p[IDX(i,j,k+1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else	 
+	  /* NO SLIP */
+	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k+1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
+#endif	
+}
+
+if(LNZ_START == 0){
+  k = BRD; 
+
+#ifdef LB_FLUID_BC_ZM_OUTLET
+
+	if(pp==0){
+      	  if (i >= BRD && i< LNX+BRD && j >= BRD && j < LNY+BRD) {rho = dens[IDX(i, j, k)];} else {rho=1.0;}
+
+#ifdef GRID_POP_D3Q19 
+	  vel.x = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[15]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[18]+2*(rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[14]))/rho; 
+	  vel.y = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[5]+rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[11]+rhs_p[IDX(i,j,k)].p[12]+rhs_p[IDX(i,j,k)].p[13]+rhs_p[IDX(i,j,k)].p[14]+2*(rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[17]+rhs_p[IDX(i,j,k)].p[10]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[8]))/rho;
+	  vel.z = 1.0- (rhs_p[IDX(i,j,k)].p[0]+rhs_p[IDX(i,j,k)].p[1]+rhs_p[IDX(i,j,k)].p[2]+rhs_p[IDX(i,j,k)].p[3]+rhs_p[IDX(i,j,k)].p[4]+rhs_p[IDX(i,j,k)].p[7]+rhs_p[IDX(i,j,k)].p[8]+rhs_p[IDX(i,j,k)].p[9]+rhs_p[IDX(i,j,k)].p[10]+2*(rhs_p[IDX(i,j,k)].p[6]+rhs_p[IDX(i,j,k)].p[16]+rhs_p[IDX(i,j,k)].p[14]+rhs_p[IDX(i,j,k)].p[18]+rhs_p[IDX(i,j,k)].p[13]))/rho;
+#endif
+
+      	  rho = (rho+rho*sqrt(3.0)*(vel.z-u[IDX(i,j,k)].z)+1.0*1.0*1.0)/(1.0+1.0*1.0);
+
+	  rhs_p[IDX(i,j,k-1)] = equilibrium_given_velocity(vel,rho);
+}
+
+#else 
+#ifdef LB_FLUID_BC_ZM_SLIP
+	  /* SLIP */
+          rhs_p[IDX(i,j,k-1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#else
+          /* NO SLIP */
+	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k-1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+#endif
+#endif
+ }
+
+      }/* for pp */
+    }/* for j,k */
+#endif
+
+/************************************/
+
+
+#ifdef LB_TEMPERATURE	
+  pop g_eq, g_eq_w;
+  my_double effDT, rho2;
+  my_double T_wall;
+  //  my_double fac;
+  
+
+  /************************/
+	/* Y direction */
+#ifdef LB_TEMPERATURE_BC_Y
+
+
+  for (i = BRD; i < LNX + BRD; i++)                     
+  for (k = BRD; k < LNZ + BRD; k++){
+
+if(LNY_END == NY){
+
+          j = LNY+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#ifdef LB_TEMPERATURE_BC_YP_VARIABLE
+	  //	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+	  T_wall = property.T_top;
+#endif
+#else
+	  T_wall = 0.0;
+#endif
+
+#ifdef LB_TEMPERATURE_BC_YP_OUTLET
+	  /* this is the wall temperature in case of outlet */
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j-1,k)]);
+#endif
+	  /* this is a linear interpolation */
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_YP_NOFLUX
+	  fac = 0.0;
+#endif
+
+	      for(pp=0;pp<NPOP;pp++){ 
+      	         if(c[pp].y>0){
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;
+	              #ifdef LB_TEMPERATURE_BC_YP_OUTLET
+	     	         if (ii==LNX+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || ii==0 || kk==0) fac=0.0;
+	     	      #endif
+	      rhs_g[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }	   
+	  }
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+
+#ifdef LB_TEMPERATURE_BC_YM_VARIABLE
+	  //  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
+
+ 	  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/3.158), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0) T_wall = property.T_bot; else T_wall = property.T_top; 
+  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+#endif
+
+#else
+	  T_wall = 0.0;
+#endif
+
+#ifdef LB_TEMPERATURE_BC_YM_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j+1,k)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_YM_NOFLUX
+	  fac = 0.0;
+#endif
+
+	      for(pp=0;pp<NPOP;pp++){
+	        if(c[pp].y<0){
+	      ii = i+(int)c[pp].x;
+	      kk = k+(int)c[pp].z;
+                   #ifdef LB_TEMPERATURE_BC_YM_OUTLET
+	              if (ii==LNX+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || ii==0 || kk==0) fac=0.0;
+                   #endif
+	      rhs_g[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;	
+	  }
+	  }
+ }
+      
+ }
+#endif
+
+
+ /************************/
+	/* X direction */
+#ifdef LB_TEMPERATURE_BC_X
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+if(LNX_END == NX){
+
+          i = LNX+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+#ifdef LB_TEMPERATURE_BC_XP_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i-1,j,k)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_XP_NOFLUX
+	  fac = 0.0;
+#endif	  
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].x>0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;
+	          #ifdef LB_TEMPERATURE_BC_XP_OUTLET
+		    if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
+	 	  #endif
+	  rhs_g[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+
+#ifdef LB_TEMPERATURE_BC_XM_OUTLET
+	  /* this is outlet */
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i+1,j,k)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_XM_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].x<0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;
+	          #ifdef LB_TEMPERATURE_BC_XM_OUTLET	
+	 	    if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
+	          #endif
+	  rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+ /************************/
+	/* Z direction */
+#ifdef LB_TEMPERATURE_BC_Z
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (j = BRD; j < LNY + BRD; j++){
+
+
+if(LNZ_END == NZ){
+
+          k = LNZ+BRD-1; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_top;
+#else
+	  T_wall = 0.0;
+#endif
+
+
+#ifdef LB_TEMPERATURE_BC_ZP_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k-1)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_ZP_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].z>0){
+	  ii = i+(int)c[pp].x;	
+	  jj = j+(int)c[pp].y;
+               #ifdef LB_TEMPERATURE_BC_ZP_OUTLET
+         	    if (ii==LNX+TWO_BRD-1 || jj==LNY+TWO_BRD-1 || ii==0 || jj==0) fac=0.0;
+               #endif
+	  rhs_g[IDX(ii,jj,k+1)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+
+if(LNZ_START == 0){
+
+	  k = BRD; 
+
+#ifndef LB_TEMPERATURE_FLUCTUATION 
+	  T_wall = property.T_bot;
+#else
+	  T_wall = 0.0;
+#endif
+
+#ifdef LB_TEMPERATURE_BC_ZM_OUTLET
+	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j,k+1)]);
+#endif
+	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
+
+#ifdef LB_TEMPERATURE_BC_ZM_NOFLUX
+	  fac = 0.0;
+#endif
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].z<0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;
+               #ifdef LB_TEMPERATURE_BC_ZM_OUTLET
+	          if (ii==LNX+TWO_BRD-1 || jj==LNY+TWO_BRD-1 || ii==0 || jj==0) fac=0.0;
+               #endif
+	  rhs_g[IDX(ii,jj,k-1)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+#endif
+
+  /************************************************************************************/
+  /* from here the scalar part */
+
+#ifdef LB_SCALAR	
+  pop h_eq, h_eq_w;
+  my_double effDS;
+  my_double S_wall;
+
+  
+  /************************/
+	/* Y direction */
+#ifdef LB_SCALAR_BC_Y
+
+  for (i = BRD; i < LNX + BRD; i++)                     
+  for (k = BRD; k < LNZ + BRD; k++){
+
+if(LNY_END == NY){
+
+          j = LNY+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+#ifdef LB_SCALAR_BC_YP_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j-1,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+#ifdef LB_SCALAR_BC_YP_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){ 
+      	    if(c[pp].y>0){
+	  ii = i+(int)c[pp].x;
+	  kk = k+(int)c[pp].z;
+               #ifdef LB_SCALAR_BC_YP_OUTLET	
+         	    if (ii==LNX+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || ii==0 || jj==0) fac=0.0;
+               #endif	  
+	  rhs_h[IDX(ii,j+1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }	   
+	  }
+ }
+
+if(LNY_START == 0){
+
+	  j = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+
+#ifdef LB_SCALAR_BC_YM_VARIABLE
+  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  S_wall = property.S_bot; else S_wall = property.S_top;
+#endif
+
+#else
+	  S_wall = 0.0;
+#endif
+
+#ifdef LB_SCALAR_BC_YM_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j+1,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
+
+#ifdef LB_SCALAR_BC_YM_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].y<0){
+	  ii = i+(int)c[pp].x;
+	  kk = k+(int)c[pp].z;
+               #ifdef LB_SCALAR_BC_YM_OUTLET
+	          if (ii==LNX+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || ii==0 || kk==0) fac=0.0;
+               #endif
+	  rhs_h[IDX(ii,j-1,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;	
+	  }
+	  }
+ }
+      
+ }
+#endif
+
+ /************************/
+	/* X direction */
+#ifdef LB_SCALAR_BC_X
+
+  for (j = BRD; j < LNY + BRD; j++) 			
+    for (k = BRD; k < LNZ + BRD; k++){
+
+
+if(LNX_END == NX){
+
+          i = LNX+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+
+#ifdef LB_SCALAR_BC_XP_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i-1,j,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+#ifdef LB_SCALAR_BC_XP_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].x>0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;
+               #ifdef LB_SCALAR_BC_XP_OUTLET
+         	    if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
+               #endif	
+	  rhs_h[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+
+if(LNX_START == 0){
+
+	  i = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+#else
+	  S_wall = 0.0;
+#endif
+
+#ifdef LB_SCALAR_BC_XM_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i+1,j,k)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+#ifdef LB_SCALAR_BC_XM_NOFLUX
+	  fac = 0.0;
+#endif
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].x<0){
+	  jj = j+(int)c[pp].y;
+	  kk = k+(int)c[pp].z;
+               #ifdef LB_SCALAR_BC_XM_OUTLET
+	          if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
+               #endif
+	  rhs_h[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+ /************************/
+	/* Z direction */
+#ifdef LB_SCALAR_BC_Z
+
+  for (i = BRD; i < LNX + BRD; i++) 			
+    for (j = BRD; j < LNY + BRD; j++){
+
+
+if(LNZ_END == NZ){
+
+          k = LNZ+BRD-1; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_top;
+#else
+	  S_wall = 0.0;
+#endif
+
+#ifdef LB_SCALAR_BC_ZP_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k-1)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+#ifdef LB_SCALAR_BC_ZP_NOFLUX
+	  fac = 0.0;
+#endif
+
+	  for(pp=0;pp<NPOP;pp++){ 
+	    if(c[pp].z>0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;
+               #ifdef LB_SCALAR_BC_ZP_OUTLET
+	          if (ii==LNX+TWO_BRD-1 || jj==LNY+TWO_BRD-1 || ii==0 || jj==0) fac=0.0;
+               #endif	
+	  rhs_h[IDX(ii,jj,k+1)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+
+if(LNZ_START == 0){
+
+	  k = BRD; 
+
+#ifndef LB_SCALAR_FLUCTUATION 
+	  S_wall = property.S_bot;
+#else
+	  S_wall = 0.0;
+#endif
+
+#ifdef LB_SCALAR_BC_ZM_OUTLET
+	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j,k+1)]);
+#endif
+	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
+
+#ifdef LB_SCALAR_BC_ZM_NOFLUX
+	  fac = 0.0;
+#endif
+	  
+	  for(pp=0;pp<NPOP;pp++){
+	    if(c[pp].z<0){
+	  ii = i+(int)c[pp].x;
+	  jj = j+(int)c[pp].y;
+               #ifdef LB_SCALAR_BC_ZM_OUTLET
+        	    if (ii==LNX+TWO_BRD-1 || jj==LNY+TWO_BRD-1 || ii==0 || jj==0) fac=0.0;
+               #endif
+	  rhs_h[IDX(ii,jj,k-1)].p[inv[pp]] =  rhs_h[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	    }
+	  }
+ }
+      
+}
+#endif
+
+#endif /* end of scalar part */
+
+}/* end of bc for streaming */
+#endif
+/**********************************************************************************************************/
+/* When STREAMING is active bc shall be implemented in a different way*/
+//#ifdef LB_FLUID_BC
+#ifdef METHOD_STREAMING
+void boundary_and_pbc_conditions_for_streaming_old(){
 
   int i,j,k,pp;
   vector vel;
