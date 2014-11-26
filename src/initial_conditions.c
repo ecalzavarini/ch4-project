@@ -86,7 +86,7 @@ void initial_conditions(int restart)
     y = (my_double)center_V[IDX(i,j,k)].y;
     Amp_x = (my_double)property.Amp_x;
     //fn=-3.0*Amp_x*(4.0*nu)*pow(L,-2.0);
-    fn=-Amp_x*4.0*pow(L/2.0,-2.0);
+    fn=-Amp_x*4.0*pow(L,-2.0);
   
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  

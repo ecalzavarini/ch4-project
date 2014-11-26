@@ -1306,7 +1306,7 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
 #ifdef LB_TEMPERATURE_BUOYANCY_TREF
-  temp = (t[IDX(i,j,k)] - property.T_ref);
+  temp = (t[IDX(i,j,k)] - property.T_top);
 #else
   /* the good one for RB */  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
@@ -1326,7 +1326,11 @@ void build_forcing(){
 
 #ifdef LB_SCALAR_BUOYANCY
       //my_double temp, fac;
+#ifdef LB_SCALAR_BUOYANCY_SREF
+      temp = (s[IDX(i,j,k)] - property.S_top);
+#else
       temp =  s[IDX(i,j,k)] - 0.5*(property.S_bot + property.S_top);
+#endif
 
       fac = property.beta_s*temp;
 
