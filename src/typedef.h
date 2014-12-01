@@ -98,6 +98,7 @@ typedef struct {
   my_double ux,uy,uz;
   my_double ux2,uy2,uz2;
   my_double rho,ene,eps;
+  my_double rho2;
 #endif
 #ifdef LB_TEMPERATURE
   my_double t,t2,epst;

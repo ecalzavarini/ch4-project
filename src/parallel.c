@@ -21,6 +21,7 @@ for (i = 0; i < *length; i++) {
   (b+i)->rho += (a+i)->rho;
   (b+i)->ene += (a+i)->ene;
   (b+i)->eps += (a+i)->eps;
+  (b+i)->rho2 += (a+i)->rho2;
 #endif
 #ifdef LB_TEMPERATURE
   (b+i)->dxt  += (a+i)->dxt;

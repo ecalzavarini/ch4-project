@@ -361,6 +361,7 @@ void set_to_zero_output(output  *f,int size){
      f[i].ux = f[i].uy = f[i].uz = 0.0; 
      f[i].ux2 = f[i].uy2 = f[i].uz2 = 0.0; 
      f[i].rho = f[i].ene = f[i].eps = 0.0;
+     f[i].rho2 = 0.0;
 #endif
 #ifdef LB_TEMPERATURE
     f[i].dxt = f[i].dyt = f[i].dzt = 0.0; 
