@@ -68,6 +68,9 @@ void dump_averages(){
   tensor grad_u;
   int irun;
   my_double vol,lx,ly,lz,inv_lx,inv_ly,inv_lz;
+#ifdef LB_FLUID_FORCING_HIT
+  my_double lambda, u_prime,Re_lambda;
+#endif
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
   vector grad_t;
@@ -768,8 +771,18 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].ene/(double)irun, (double)ruler_z_running[k].rho/(double)irun, (double)ruler_z_running[k].ux/(double)irun, (double)ruler_z_running[k].uy/(double)irun, (double)ruler_z_running[k].uz/(double)irun, (double)ruler_z_running[k].ux2/(double)irun , (double)ruler_z_running[k].uy2/(double)irun, (double)ruler_z_running[k].uz2/(double)irun, (double)ruler_z_running[k].eps/(double)irun,(double)ruler_z_running[k].rho2/(double)irun);
     fclose(fout);
 
+#ifdef LB_FLUID_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
+    /* lambda =  sqrt( (\ene *2 /3) / (\eps/(15 \nu))  ) =  sqrt( 10 * \ene \nu / \eps   )*/
+    lambda =  sqrt(10.0 * property.nu*out_all.ene/out_all.eps);  
+    u_prime = sqrt( (out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz) ) / 3.0;
+    Re_lambda = lambda * u_prime / property.nu;
 
-  }
+    sprintf(fname,"turbulence.dat");
+    fout = fopen(fname,"a");    
+    fprintf(fout,"%e %e\n",time_now, (double)Re_lambda);
+    fclose(fout);
+#endif
+  }/* if ROOT */
 #endif
   
 #ifdef LB_TEMPERATURE
