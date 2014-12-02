@@ -774,7 +774,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
 #ifdef LB_FLUID_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
     /* Single component turbulence velocity , see Tennekes & Lumley page 66-67 */
-    u_prime = sqrt( (out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz) ) / 3.0;
+    u_prime = sqrt( ((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz))/3.0 );
 
     /* Taylor scale lambda = sqrt(15 \nu u_prime / \eps )  */
     lambda =  sqrt(15.0 * property.nu * u_prime*u_prime /out_all.eps);  
