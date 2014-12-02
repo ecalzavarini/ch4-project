@@ -70,6 +70,7 @@ void dump_averages(){
   my_double vol,lx,ly,lz,inv_lx,inv_ly,inv_lz;
 #ifdef LB_FLUID_FORCING_HIT
   my_double lambda, u_prime,Re_lambda;
+  my_double lk,tk,vk;
 #endif
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
@@ -772,14 +773,21 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fclose(fout);
 
 #ifdef LB_FLUID_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
-    /* lambda =  sqrt( (\ene *2 /3) / (\eps/(15 \nu))  ) =  sqrt( 10 * \ene \nu / \eps   )*/
+
+    /* Taylor scale lambda =  sqrt( (\ene *2 /3) / (\eps/(15 \nu))  ) =  sqrt( 10 * \ene \nu / \eps   )*/
     lambda =  sqrt(10.0 * property.nu*out_all.ene/out_all.eps);  
     u_prime = sqrt( (out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz) ) / 3.0;
+
     Re_lambda = lambda * u_prime / property.nu;
+    
+    /* Kolmogorov scales */
+    lk = pow( pow(property.nu,3.0)/out_all.eps, 0.25);
+    tk = pow( property.nu/out_all.eps,0.5);
+    vk = pow( property.nu*out_all.eps,0.25);
 
     sprintf(fname,"turbulence.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e\n",time_now, (double)Re_lambda);
+    fprintf(fout,"%e %e %e %e %e %e\n",time_now, (double)Re_lambda, lambda, lk,tk,vk);
     fclose(fout);
 #endif
   }/* if ROOT */
