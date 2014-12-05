@@ -1155,8 +1155,8 @@ void build_forcing(){
   my_double LX,LY,LZ,nu;
   my_double temp, fac; 
   int nk = 5; 
-  vector vk[nk], phi[nk];
-  my_double k2;
+  vector vk[nk], phi[nk],phi_t[nk],phi_s[nk];
+  my_double vk2[nk];
   int randomization_itime;
   vector dist,vel;
 
@@ -1170,23 +1170,23 @@ void build_forcing(){
 
 #ifdef LB_FLUID_FORCING_HIT  /* useful for HOMOGENEOUS ISOTROPIC TURBULENCE */
 
-  /* initialize phases */
-   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
-
-    randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
-    /*
-      fprintf(stderr,"random %d\n",randomization_itime);
-    */
-
-    /* 
-       k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 
-    */
+    /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
     vk[0].x=1; vk[0].y=0; vk[0].z=0; 
     vk[1].x=0; vk[1].y=1; vk[1].z=0; 
     vk[2].x=0; vk[2].y=0; vk[2].z=1; 
     vk[3].x=1; vk[3].y=1; vk[3].z=0; 
     vk[4].x=0; vk[4].y=1; vk[4].z=1; 
     vk[5].x=1; vk[5].y=0; vk[5].z=1;
+
+    /* compute the square */
+    for (ii=0; ii<nk; ii++) vk2[ii] = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
+
+
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
+
+    randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
+  /*  fprintf(stderr,"random %d\n",randomization_itime); */
 
     if(itime%randomization_itime == 0){ 
       if(ROOT){ 
@@ -1197,6 +1197,40 @@ void build_forcing(){
 	}
       }
     MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
+#endif
+#ifdef LB_TEMPERATURE_FORCING_HIT
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi_t[ii].x = phi_t[ii].y = phi_t[ii].z = 0.0;
+
+   //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
+
+    if(itime%randomization_itime == 0){ 
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi_t[ii].x = myrand();
+	  phi_t[ii].y = myrand();
+	  phi_t[ii].z = myrand();
+	}
+      }
+    MPI_Bcast(phi_t, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
+#endif
+#ifdef LB_SCALAR_FORCING_HIT
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi_s[ii].x = phi_s[ii].y = phi_s[ii].z = 0.0;
+
+   //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
+
+    if(itime%randomization_itime == 0){ 
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi_s[ii].x = myrand();
+	  phi_s[ii].y = myrand();
+	  phi_s[ii].z = myrand();
+	}
+      }
+    MPI_Bcast(phi_s, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
     }
 #endif
 
@@ -1272,8 +1306,7 @@ void build_forcing(){
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
 
     for(ii=0; ii<nk; ii++){
-      k2 = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
-      fac = pow(k2,-5./6.);
+      fac = pow(vk2[ii],-5./6.);
       force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  );
@@ -1451,7 +1484,14 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_RADIATION 
   //my_double coeff_exct = 0.5/property.SY;
   t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
-#endif  
+#endif 
+
+#ifdef LB_TEMPERATURE_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on TEMPERATURE */     
+    for(ii=0; ii<nk; ii++){
+      fac = pow(vk2[ii],-5./6.);
+      t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_t[ii].z)) );
+    }
+#endif
 
 #endif
 
@@ -1471,6 +1511,14 @@ void build_forcing(){
   /* make the field react to negatively to the t (phythoplancton) concentration */
   t_source[IDX(i,j,k)] = -property.Amp_s * s[IDX(i,j,k)]/(0.5 + s[IDX(i,j,k)]) * t[IDX(i,j,k)];
   #endif
+#endif
+
+
+#ifdef LB_SCALAR_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on SCALAR */     
+    for(ii=0; ii<nk; ii++){
+      fac = pow(vk2[ii],-5./6.);
+      s_source[IDX(i,j,k)] += fac*property.Amp_s*( sin(two_pi*(vk[ii].x*x/LX + phi_s[ii].x)) + sin(two_pi*(vk[ii].y*y/LY + phi_s[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_s[ii].z)) );
+    }
 #endif
 
 #endif
