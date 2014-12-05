@@ -1493,6 +1493,10 @@ void build_forcing(){
     }
 #endif
 
+#ifdef LB_TEMPERATURE_FORCING_GRAD /* force temperature with constant gradient (along y) */
+    t_source[IDX(i,j,k)] += -property.Amp_t*u[IDX(i,j,k)].y;
+#endif
+
 #endif
 
 
@@ -1519,6 +1523,10 @@ void build_forcing(){
       fac = pow(vk2[ii],-5./6.);
       s_source[IDX(i,j,k)] += fac*property.Amp_s*( sin(two_pi*(vk[ii].x*x/LX + phi_s[ii].x)) + sin(two_pi*(vk[ii].y*y/LY + phi_s[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_s[ii].z)) );
     }
+#endif
+
+#ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */
+    s_source[IDX(i,j,k)] += -property.Amp_s*u[IDX(i,j,k)].y;
 #endif
 
 #endif
