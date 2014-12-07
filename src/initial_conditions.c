@@ -473,6 +473,11 @@ void initialization_forcing(){
     /* compute the square */
     for (ii=0; ii<nk; ii++) vk2[ii] = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
 
+    if(ROOT){
+      fprintf(stderr,"Forced modes\n"); 
+      for (ii=0; ii<nk; ii++) fprintf(stderr,"%d : %e %e %e squared norm %e\n",ii+1, vk[ii].x,vk[ii].y,vk[ii].z,vk2[ii]); 
+    }
+
   /* initialize phases */
    for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
 
