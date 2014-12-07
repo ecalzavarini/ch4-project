@@ -492,8 +492,8 @@ void initialization_forcing(){
   vk_t  = (vector*) malloc(sizeof(vector)*nk_t);
   phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
   vk2_t  = (my_double*) malloc(sizeof(my_double)*nk_t);
-  randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
-  /*  fprintf(stderr,"random %d\n",randomization_itime); */
+  randomization_itime_t = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
+  /*  fprintf(stderr,"random %d\n",randomization_itime_t); */
 
     /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
     vk_t[0].x=1; vk_t[0].y=0; vk_t[0].z=0; 
