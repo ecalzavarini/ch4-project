@@ -441,3 +441,116 @@ for (iy = 0; iy < 65; iy++)
 #endif
 
 }
+
+
+
+void initialization_forcing(){
+  int ii;
+  my_double LX,LY,LZ, U;
+
+  LX = (my_double)(property.SX);
+  LY = (my_double)(property.SY);
+  LZ = (my_double)(property.SZ);
+  U = 0.1;
+
+#ifdef LB_FLUID_FORCING_HIT  /* initialize HOMOGENEOUS ISOTROPIC TURBULENCE */
+  if(ROOT) fprintf(stderr,"initialization of LB_FLUID_FORCING_HIT\n");
+
+  nk = 6;
+  vk  = (vector*) malloc(sizeof(vector)*nk);
+  phi  = (vector*) malloc(sizeof(vector)*nk);
+  vk2  = (my_double*) malloc(sizeof(my_double)*nk);
+  randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
+  /*  fprintf(stderr,"random %d\n",randomization_itime); */
+
+    /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
+    vk[0].x=1; vk[0].y=0; vk[0].z=0; 
+    vk[1].x=0; vk[1].y=1; vk[1].z=0; 
+    vk[2].x=0; vk[2].y=0; vk[2].z=1; 
+    vk[3].x=1; vk[3].y=1; vk[3].z=0; 
+    vk[4].x=0; vk[4].y=1; vk[4].z=1; 
+    vk[5].x=1; vk[5].y=0; vk[5].z=1;
+    /* compute the square */
+    for (ii=0; ii<nk; ii++) vk2[ii] = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
+
+  /* initialize phases */
+   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
+
+      if(ROOT){ 
+        for (ii=0; ii<nk; ii++){
+          phi[ii].x = myrand();
+          phi[ii].y = myrand();
+          phi[ii].z = myrand();
+        }
+      }
+      MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+#endif
+
+#ifdef LB_TEMPERATURE_FORCING_HIT
+  if(ROOT) fprintf(stderr,"initialization of LB_TEMPERATURE_FORCING_HIT\n");
+  nk_t = 6;
+  vk_t  = (vector*) malloc(sizeof(vector)*nk_t);
+  phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
+  vk2_t  = (my_double*) malloc(sizeof(my_double)*nk_t);
+  randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
+  /*  fprintf(stderr,"random %d\n",randomization_itime); */
+
+    /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
+    vk_t[0].x=1; vk_t[0].y=0; vk_t[0].z=0; 
+    vk_t[1].x=0; vk_t[1].y=1; vk_t[1].z=0; 
+    vk_t[2].x=0; vk_t[2].y=0; vk_t[2].z=1; 
+    vk_t[3].x=1; vk_t[3].y=1; vk_t[3].z=0; 
+    vk_t[4].x=0; vk_t[4].y=1; vk_t[4].z=1; 
+    vk_t[5].x=1; vk_t[5].y=0; vk_t[5].z=1;
+    /* compute the square */
+    for (ii=0; ii<nk_t; ii++) vk2_t[ii] = vk_t[ii].x*vk_t[ii].x + vk_t[ii].y*vk_t[ii].y + vk_t[ii].z*vk_t[ii].z;
+
+
+  /* initialize phases */
+   for (ii=0; ii<nk_t; ii++) phi_t[ii].x = phi_t[ii].y = phi_t[ii].z = 0.0;
+
+      if(ROOT){ 
+        for (ii=0; ii<nk_t; ii++){
+          phi_t[ii].x = myrand();
+          phi_t[ii].y = myrand();
+          phi_t[ii].z = myrand();
+        }
+     }
+    MPI_Bcast(phi_t, nk_t, MPI_vector_type, 0, MPI_COMM_WORLD);
+#endif
+
+#ifdef LB_SCALAR_FORCING_HIT
+  if(ROOT) fprintf(stderr,"initialization of LB_SCALAR_FORCING_HIT\n");
+  nk_s = 6;
+  vk_s  = (vector*) malloc(sizeof(vector)*nk_s);
+  phi_s  = (vector*) malloc(sizeof(vector)*nk_s);
+  vk2_s  = (my_double*) malloc(sizeof(my_double)*nk_s);
+  randomization_itime_s = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
+  /*  fprintf(stderr,"random %d\n",randomization_itime); */
+
+    /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
+    vk_s[0].x=1; vk_s[0].y=0; vk_s[0].z=0; 
+    vk_s[1].x=0; vk_s[1].y=1; vk_s[1].z=0; 
+    vk_s[2].x=0; vk_s[2].y=0; vk_s[2].z=1; 
+    vk_s[3].x=1; vk_s[3].y=1; vk_s[3].z=0; 
+    vk_s[4].x=0; vk_s[4].y=1; vk_s[4].z=1; 
+    vk_s[5].x=1; vk_s[5].y=0; vk_s[5].z=1;
+    /* compute the square */
+    for (ii=0; ii<nk_s; ii++) vk2_s[ii] = vk_s[ii].x*vk_s[ii].x + vk_s[ii].y*vk_s[ii].y + vk_s[ii].z*vk_s[ii].z;
+
+
+  /* initialize phases */
+   for (ii=0; ii<nk_s; ii++) phi_s[ii].x = phi_s[ii].y = phi_s[ii].z = 0.0;
+
+   randomization_itime_s = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
+
+      if(ROOT){ 
+        for (ii=0; ii<nk_s; ii++){
+          phi_s[ii].x = myrand();
+          phi_s[ii].y = myrand();
+          phi_s[ii].z = myrand();
+        }
+      }
+    MPI_Bcast(phi_s, nk_s, MPI_vector_type, 0, MPI_COMM_WORLD);
+#endif
+} 

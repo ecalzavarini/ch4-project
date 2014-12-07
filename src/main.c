@@ -19,6 +19,8 @@ int main(int argc, char **argv){
 	read_landscape(); /* is there any topography ? */
 #endif
 	initial_conditions(resume); 
+	initialization_forcing();
+
 #ifdef LB_FLUID
 	hydro_fields('p');
 #endif

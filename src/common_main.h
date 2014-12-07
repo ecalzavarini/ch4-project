@@ -208,38 +208,56 @@ my_double invcs, invcs2, invcs4;
 
 
 #ifdef LB_FLUID
-pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
-my_double *dens;
-vector *u;
-#ifdef METHOD_REDEFINED_POP
-pop *f_aux;
-#endif
-#ifdef LB_FLUID_FORCING
-vector *force;
-#ifdef LB_FLUID_FORCING_LANDSCAPE
-my_double *landscape;
-#endif
-#endif
+ pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
+ my_double *dens;
+ vector *u;
+ #ifdef METHOD_REDEFINED_POP
+ pop *f_aux;
+ #endif
+ #ifdef LB_FLUID_FORCING
+ vector *force;
+  #ifdef LB_FLUID_FORCING_LANDSCAPE
+  my_double *landscape;
+  #endif
+  #ifdef LB_FLUID_FORCING_HIT
+  int nk;
+  vector *vk, *phi;
+  my_double *vk2;
+  int randomization_itime;
+  #endif
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
-pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g, *g_eq;
-my_double *t;
-#ifdef LB_TEMPERATURE_FORCING
-my_double *t_source;
-#endif
-#ifdef LB_TEMPERATURE_MELTING
-my_double *liquid_frac, *liquid_frac_old;
-//my_double *enthalpy;
-#endif
+ pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g, *g_eq;
+ my_double *t;
+ #ifdef LB_TEMPERATURE_FORCING
+ my_double *t_source;
+  #ifdef LB_TEMPERATURE_FORCING_HIT
+  int nk_t;
+  vector *vk_t, *phi_t;
+  my_double *vk2_t;
+  int randomization_itime_t;
+  #endif
+ #endif
+ #ifdef LB_TEMPERATURE_MELTING
+ my_double *liquid_frac, *liquid_frac_old;
+ //my_double *enthalpy;
+ #endif
 #endif
 
 #ifdef LB_SCALAR
-pop *h, *rhs_h, *old_rhs_h, *old_old_rhs_h, *h_eq;
-my_double *s;
-#ifdef LB_SCALAR_FORCING
-my_double *s_source;
-#endif
+ pop *h, *rhs_h, *old_rhs_h, *old_old_rhs_h, *h_eq;
+ my_double *s;
+ #ifdef LB_SCALAR_FORCING
+ my_double *s_source;
+  #ifdef LB_SCALAR_FORCING_HIT
+  int nk_s;
+  vector *vk_s, *phi_s;
+  my_double *vk2_s;
+  int randomization_itime_s;
+  #endif
+ #endif
 #endif
 
 

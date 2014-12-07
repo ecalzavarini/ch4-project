@@ -210,35 +210,53 @@ extern my_double invcs, invcs2, invcs4;
 extern pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
 extern my_double *dens;
 extern vector *u;
-#ifdef METHOD_REDEFINED_POP
-extern pop *f_aux;
-#endif
-#ifdef LB_FLUID_FORCING
-extern vector *force;
-#ifdef LB_FLUID_FORCING_LANDSCAPE
-extern my_double *landscape;
-#endif
-#endif
+ #ifdef METHOD_REDEFINED_POP
+ extern pop *f_aux;
+ #endif
+ #ifdef LB_FLUID_FORCING
+ extern vector *force;
+  #ifdef LB_FLUID_FORCING_LANDSCAPE
+  extern my_double *landscape;
+  #endif
+  #ifdef LB_FLUID_FORCING_HIT
+  extern int nk; 
+  extern vector *vk, *phi;
+  extern my_double *vk2;
+  extern int randomization_itime;
+  #endif
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
 extern pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g , *g_eq;
 extern my_double *t;
-#ifdef LB_TEMPERATURE_FORCING
-extern my_double *t_source;
-#ifdef LB_TEMPERATURE_MELTING
-extern my_double *liquid_frac, *liquid_frac_old;
-//extern my_double *enthalpy;
-#endif
-#endif
+ #ifdef LB_TEMPERATURE_FORCING
+ extern my_double *t_source;
+  #ifdef LB_TEMPERATURE_FORCING_HIT
+  extern int nk_t;
+  extern vector *vk_t, *phi_t;
+  extern my_double *vk2_t;
+  extern int randomization_itime_t;
+  #endif
+  #ifdef LB_TEMPERATURE_MELTING
+  extern my_double *liquid_frac, *liquid_frac_old;
+  //extern my_double *enthalpy;
+  #endif
+ #endif
 #endif
 
 #ifdef LB_SCALAR
 extern pop *h, *rhs_h, *old_rhs_h, *old_old_rhs_h, *h_eq;
 extern my_double *s;
-#ifdef LB_SCALAR_FORCING
-extern my_double *s_source;
-#endif
+ #ifdef LB_SCALAR_FORCING
+ extern my_double *s_source;
+  #ifdef LB_SCALAR_FORCING_HIT
+  extern int nk_s;
+  extern vector *vk_s, *phi_s;
+  extern my_double *vk2_s;
+  extern int randomization_itime_s;
+  #endif
+ #endif
 #endif
 
 

@@ -40,6 +40,7 @@ void boundary_conditions_for_advection(pop * f, char which_pop);
 
 /* initial_conditions.c */
 void initial_conditions(int restart);
+void initialization_forcing();
 
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq,char which_pop);
