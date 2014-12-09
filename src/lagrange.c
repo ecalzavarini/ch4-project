@@ -1133,7 +1133,7 @@ void output_particles(){
 /* advance in time particles and assign them to the right processors */
 void move_particles(){
 
-  int ipart,i;
+  int ipart,i,j;
   int npart_here,npart_there,all_npart_there,all_npart;  
   point_particle part;
   int *displs,*rcounts;
@@ -1141,8 +1141,8 @@ void move_particles(){
   vector Dt_u;
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
-  my_double scalOSO, f_alpha, alpha;
-  my_double vecF[3],vecFold[3],vecP[3];
+  my_double scalOSO, f_alpha, alpha,norm;
+  my_double vecF[3],vecFold[3],vecP[3],vecTMP[3];
 #endif
 
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
@@ -1273,7 +1273,7 @@ void move_particles(){
 
 
               /* aspect ratio factor */
-              alpha = (tracer+ipart)->aspect_ratio
+   alpha = (tracer+ipart)->aspect_ratio;
               f_alpha = (alpha*alpha-1.0)/(1.0+alpha*alpha);
 
 	      /* velocity gradient matrix */
