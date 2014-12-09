@@ -1161,6 +1161,7 @@ void build_forcing(){
   vector dist,vel;
 
 
+
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
    LZ = (my_double)(property.SZ);
@@ -1188,16 +1189,17 @@ void build_forcing(){
   //  randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
   /*  fprintf(stderr,"random %d\n",randomization_itime); */
 
-    if(itime%randomization_itime == 0){ 
+   // if(itime%randomization_itime == 0){ 
+      fac = sqrt(1.0/(my_double)randomization_itime);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
-	  phi[ii].x = myrand();
-	  phi[ii].y = myrand();
-	  phi[ii].z = myrand();
+	  phi[ii].x += 2.0*(myrand()-0.5)*fac;
+	  phi[ii].y += 2.0*(myrand()-0.5)*fac;
+	  phi[ii].z += 2.0*(myrand()-0.5)*fac;
 	}
       }
     MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
-    }
+    // }
 #endif
 #ifdef LB_TEMPERATURE_FORCING_HIT
   /* initialize phases */
@@ -1205,16 +1207,17 @@ void build_forcing(){
 
    //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
 
-    if(itime%randomization_itime_t == 0){ 
+    //   if(itime%randomization_itime_t == 0){ 
+      fac = sqrt(1.0/(my_double)randomization_itime_t);
       if(ROOT){ 
 	for (ii=0; ii<nk_t; ii++){
-	  phi_t[ii].x = myrand();
-	  phi_t[ii].y = myrand();
-	  phi_t[ii].z = myrand();
+	  phi_t[ii].x += 2.0*(myrand()-0.5)*fac;
+	  phi_t[ii].y += 2.0*(myrand()-0.5)*fac;
+	  phi_t[ii].z += 2.0*(myrand()-0.5)*fac;
 	}
       }
     MPI_Bcast(phi_t, nk_t, MPI_vector_type, 0, MPI_COMM_WORLD);
-    }
+    // }
 #endif
 #ifdef LB_SCALAR_FORCING_HIT
   /* initialize phases */
@@ -1222,16 +1225,17 @@ void build_forcing(){
 
    //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
 
-    if(itime%randomization_itime_s == 0){ 
+    //    if(itime%randomization_itime_s == 0){
+      fac = sqrt(1.0/(my_double)randomization_itime_s); 
       if(ROOT){ 
 	for (ii=0; ii<nk_s; ii++){
-	  phi_s[ii].x = myrand();
-	  phi_s[ii].y = myrand();
-	  phi_s[ii].z = myrand();
+	  phi_s[ii].x += 2.0*(myrand()-0.5)*fac;
+	  phi_s[ii].y += 2.0*(myrand()-0.5)*fac;
+	  phi_s[ii].z += 2.0*(myrand()-0.5)*fac;
 	}
       }
     MPI_Bcast(phi_s, nk_s, MPI_vector_type, 0, MPI_COMM_WORLD);
-    }
+    //    }
 #endif
 
 
