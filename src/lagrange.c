@@ -1701,6 +1701,22 @@ void write_point_particle_h5(){
      sprintf(label,"beta_coeff");
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
  #endif
+ #ifdef LAGRANGE_ORIENTATION
+    sprintf(label,"aspect_ratio");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+    sprintf(label,"px");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
+    sprintf(label,"py");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_DOUBLE);
+    sprintf(label,"pz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_px");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_py");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_pz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -1907,6 +1923,22 @@ void read_point_particle_h5(){
  #ifdef LAGRANGE_ADDEDMASS
      sprintf(label,"beta_coeff");
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
+ #endif
+ #ifdef LAGRANGE_ORIENTATION
+    sprintf(label,"aspect_ratio");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+    sprintf(label,"px");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
+    sprintf(label,"py");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_DOUBLE);
+    sprintf(label,"pz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_px");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_py");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_pz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
  #endif
 #endif
 
