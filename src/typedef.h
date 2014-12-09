@@ -249,6 +249,11 @@ typedef struct {
   #ifdef LAGRANGE_ADDEDMASS
    my_double beta_coeff; 
   #endif
+  #ifdef LAGRANGE_ORIENTATION
+  my_double aspect_ratio;
+  my_double px,py,pz;
+  my_double dt_px,dt_py,dt_pz;
+  #endif
  #endif
 #endif
 #ifdef LB_TEMPERATURE
