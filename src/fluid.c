@@ -1154,10 +1154,6 @@ void build_forcing(){
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
   my_double temp, fac; 
-  //int nk = 5; 
-  //vector vk[nk], phi[nk],phi_t[nk],phi_s[nk];
-  //my_double vk2[nk];
-  //int randomization_itime;
   vector dist,vel;
 
 
@@ -1170,24 +1166,6 @@ void build_forcing(){
 
 
 #ifdef LB_FLUID_FORCING_HIT  /* useful for HOMOGENEOUS ISOTROPIC TURBULENCE */
-
-    /*  k vectors such as k^2 = kx^2 + ky^2 +kz^2 <= 2 */
-   /*    vk[0].x=1; vk[0].y=0; vk[0].z=0; 
-    vk[1].x=0; vk[1].y=1; vk[1].z=0; 
-    vk[2].x=0; vk[2].y=0; vk[2].z=1; 
-    vk[3].x=1; vk[3].y=1; vk[3].z=0; 
-    vk[4].x=0; vk[4].y=1; vk[4].z=1; 
-    vk[5].x=1; vk[5].y=0; vk[5].z=1;
-   */
-    /* compute the square */
-   //  for (ii=0; ii<nk; ii++) vk2[ii] = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
-
-
-  /* initialize phases */
-  // for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
-
-  //  randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
-  /*  fprintf(stderr,"random %d\n",randomization_itime); */
 
    // if(itime%randomization_itime == 0){ 
       fac = sqrt(1.0/(my_double)randomization_itime);
@@ -1202,10 +1180,6 @@ void build_forcing(){
     // }
 #endif
 #ifdef LB_TEMPERATURE_FORCING_HIT
-  /* initialize phases */
-    //   for (ii=0; ii<nk; ii++) phi_t[ii].x = phi_t[ii].y = phi_t[ii].z = 0.0;
-
-   //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
 
     //   if(itime%randomization_itime_t == 0){ 
       fac = sqrt(1.0/(my_double)randomization_itime_t);
@@ -1221,9 +1195,6 @@ void build_forcing(){
 #endif
 #ifdef LB_SCALAR_FORCING_HIT
   /* initialize phases */
-    //  for (ii=0; ii<nk; ii++) phi_s[ii].x = phi_s[ii].y = phi_s[ii].z = 0.0;
-
-   //randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / 0.1 ) / property.time_dt );  
 
     //    if(itime%randomization_itime_s == 0){
       fac = sqrt(1.0/(my_double)randomization_itime_s); 
@@ -1308,13 +1279,20 @@ void build_forcing(){
 #endif  
 
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
-
+ #ifdef LB_FLUID_FORCING_HIT_LINEAR
+   /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
+      if(out_all.ene != 0.0) fac = 1.0/out_all.ene; else fac = 1.0;
+      force[IDX(i,j,k)].x += fac*property.Amp_x*u[IDX(i,j,k)].x;
+      force[IDX(i,j,k)].y += fac*property.Amp_y*u[IDX(i,j,k)].y;
+      force[IDX(i,j,k)].z += fac*property.Amp_z*u[IDX(i,j,k)].z;
+ #else
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
       force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  );
     }
+ #endif  
 #endif
 
 #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
@@ -1491,10 +1469,16 @@ void build_forcing(){
 #endif 
 
 #ifdef LB_TEMPERATURE_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on TEMPERATURE */     
+ #ifdef LB_TEMPERATURE_FORCING_HIT_LINEAR
+   /* Inspired by Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
+      if(out_all.t2 != 0.0) fac = 1.0/out_all.t2; else fac = 1.0;
+      t_source[IDX(i,j,k)].x += fac*property.Amp_t*t[IDX(i,j,k)];
+ #else
     for(ii=0; ii<nk_t; ii++){
       fac = pow(vk2_t[ii],-5./6.);
       t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk_t[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk_t[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk_t[ii].z*z/LZ + phi_t[ii].z)) );
     }
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_GRAD /* force temperature with constant gradient (along y) */
