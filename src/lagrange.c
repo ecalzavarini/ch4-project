@@ -99,6 +99,9 @@ for (i=0;i<npart;i++) {
  (tracer+i)->gyrotaxis_velocity = 1.0;
  #endif
 #endif
+#ifdef LAGRANGE_ACTIVE 
+ (tracer+i)->swim_velocity = 0.01;
+#endif
 
 /* position: randomly distributed particles */
 (tracer+i)->x = LNX_START + myrand()*LNX;
@@ -1163,6 +1166,15 @@ void move_particles(){
    (tracer+ipart)->vy = (tracer+ipart)->uy;
    (tracer+ipart)->vz = (tracer+ipart)->uz;
 
+#ifdef LAGRANGE_ACTIVE 
+   /* if the particle is alive there is an extra velocity to add */
+  #ifdef LAGRANGE_ORIENTATION
+   (tracer+ipart)->vx += (tracer+ipart)->swim_velocity*(tracer+ipart)->px;
+   (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
+   (tracer+ipart)->vz += (tracer+ipart)->swim_velocity*(tracer+ipart)->pz;
+  #endif
+#endif
+
   if(itime==0 && resume==0){ 
     (tracer+ipart)->vx_old = (tracer+ipart)->vx;
     (tracer+ipart)->vy_old = (tracer+ipart)->vy;
@@ -1717,9 +1729,9 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
     sprintf(label,"uz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
-#endif
+    //#endif
 
-#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_GRADIENT
     sprintf(label,"dx_ux");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
     sprintf(label,"dy_ux");
@@ -1738,11 +1750,11 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
     sprintf(label,"dz_uz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
- #ifdef LAGRANGE_ADDEDMASS
+  #ifdef LAGRANGE_ADDEDMASS
      sprintf(label,"beta_coeff");
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
- #endif
- #ifdef LAGRANGE_ORIENTATION
+  #endif
+  #ifdef LAGRANGE_ORIENTATION
     sprintf(label,"aspect_ratio");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
     sprintf(label,"px");
@@ -1757,7 +1769,16 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+    sprintf(label,"gyrotaxis_velocity");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
+   #endif  
+  #endif
  #endif
+ #ifdef LAGRANGE_ACTIVE
+    sprintf(label,"swim_velocity");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+ #endif 
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -1940,9 +1961,9 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
     sprintf(label,"uz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
-#endif
+    //#endif
 
-#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_GRADIENT
     sprintf(label,"dx_ux");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
     sprintf(label,"dy_ux");
@@ -1961,11 +1982,11 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
     sprintf(label,"dz_uz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
- #ifdef LAGRANGE_ADDEDMASS
+  #ifdef LAGRANGE_ADDEDMASS
      sprintf(label,"beta_coeff");
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
- #endif
- #ifdef LAGRANGE_ORIENTATION
+  #endif
+  #ifdef LAGRANGE_ORIENTATION
     sprintf(label,"aspect_ratio");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
     sprintf(label,"px");
@@ -1980,6 +2001,15 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+    sprintf(label,"gyrotaxis_velocity");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE); 
+   #endif
+  #endif
+ #endif
+ #ifdef LAGRANGE_ACTIVE
+    sprintf(label,"swim_velocity");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
  #endif
 #endif
 

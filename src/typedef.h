@@ -258,6 +258,9 @@ typedef struct {
    #endif
   #endif
  #endif
+ #ifdef LAGRANGE_ACTIVE 
+ my_double swim_velocity;
+ #endif 
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
