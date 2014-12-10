@@ -1280,8 +1280,9 @@ void build_forcing(){
 
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
  #ifdef LB_FLUID_FORCING_HIT_LINEAR
-   /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
-      if(out_all.ene != 0.0) fac = 1.0/out_all.ene; else fac = 1.0;
+   /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */
+       fac = 0.5*((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz));	
+       if(fac != 0.0) fac = 1.0/fac; else fac = 1.0;
       force[IDX(i,j,k)].x += fac*property.Amp_x*u[IDX(i,j,k)].x;
       force[IDX(i,j,k)].y += fac*property.Amp_y*u[IDX(i,j,k)].y;
       force[IDX(i,j,k)].z += fac*property.Amp_z*u[IDX(i,j,k)].z;
