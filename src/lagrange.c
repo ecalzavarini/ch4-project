@@ -92,7 +92,12 @@ for (i=0;i<npart;i++) {
 (tracer+i)->beta_coeff = 1.0;
 #endif
 #ifdef LAGRANGE_ORIENTATION
-(tracer+i)->aspect_ratio = 10.0;
+/* particle aspect ratio (assuming axi-symmetry) */
+(tracer+i)->aspect_ratio = 100.0;
+ #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+/* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
+ (tracer+i)->gyrotaxis_velocity = 1.0;
+ #endif
 #endif
 
 /* position: randomly distributed particles */
@@ -1141,8 +1146,8 @@ void move_particles(){
   vector Dt_u;
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
-  my_double scalOSO, f_alpha, alpha,norm;
-  my_double vecF[3],vecFold[3],vecP[3],vecTMP[3];
+  my_double scalOSO, f_alpha, alpha,norm , gyro;
+  my_double vecF[3],vecFold[3],vecP[3],vecTMP[3],vecA[3];
 #endif
 
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
@@ -1150,12 +1155,24 @@ void move_particles(){
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
+   /* if we just have tracers */
    if((tracer+ipart)->tau_drag == 0.0){
 
    /* copy fluid velocity into particle velocity NOTE that this is true only for tracers */
    (tracer+ipart)->vx = (tracer+ipart)->ux;
    (tracer+ipart)->vy = (tracer+ipart)->uy;
    (tracer+ipart)->vz = (tracer+ipart)->uz;
+
+  if(itime==0 && resume==0){ 
+    (tracer+ipart)->vx_old = (tracer+ipart)->vx;
+    (tracer+ipart)->vy_old = (tracer+ipart)->vy;
+    (tracer+ipart)->vz_old = (tracer+ipart)->vz;
+  }
+  /* Compute tracer acceleration : if v=u as here, then a = D_t u */
+  (tracer+ipart)->ax = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
+  (tracer+ipart)->ay = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
+  (tracer+ipart)->az = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
+
 
    if(itime==0 && resume==0){
    /* Explicit Euler 1st order */
@@ -1188,12 +1205,11 @@ void move_particles(){
    (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
 
-#ifdef LAGRANGE_GRAVITY
-   if((tracer+ipart)->beta_coeff == 0.0){
+
+#ifdef LAGRANGE_GRAVITY 
      (tracer+ipart)->ax -= property.gravity_x;
      (tracer+ipart)->ay -= property.gravity_y;
      (tracer+ipart)->az -= property.gravity_z; 
-   }
 #endif
 
 #ifdef LAGRANGE_ADDEDMASS
@@ -1213,7 +1229,7 @@ void move_particles(){
   }
 
    /* Here I will write the computation of the fluid material derivative */
-  Dt_u.x = ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt
+  Dt_u.x =  ((tracer+ipart)->ux - (tracer+ipart)->ux_old )/property.time_dt
           + ((tracer+ipart)->ux - (tracer+ipart)->vx)*(tracer+ipart)->dx_ux 
           + ((tracer+ipart)->uy - (tracer+ipart)->vy)*(tracer+ipart)->dy_ux 
           + ((tracer+ipart)->uz - (tracer+ipart)->vz)*(tracer+ipart)->dz_ux;
@@ -1274,7 +1290,16 @@ void move_particles(){
 
               /* aspect ratio factor */
    alpha = (tracer+ipart)->aspect_ratio;
-              f_alpha = (alpha*alpha-1.0)/(1.0+alpha*alpha);
+   f_alpha = (alpha*alpha-1.0)/(1.0+alpha*alpha);
+
+	      /* assign P vector */
+     vecP[0] = (tracer+ipart)->px;
+     vecP[1] = (tracer+ipart)->py;
+     vecP[2] = (tracer+ipart)->pz;
+              /* assign the last dP /dt  vector */
+     vecFold[0] = (tracer+ipart)->dt_px;
+     vecFold[1] = (tracer+ipart)->dt_py;
+     vecFold[2] = (tracer+ipart)->dt_pz;
 
 	      /* velocity gradient matrix */
 	      matA[0][0]=(tracer+ipart)->dx_ux ; matA[0][1]=(tracer+ipart)->dy_ux; matA[0][2]=(tracer+ipart)->dz_ux;
@@ -1295,14 +1320,30 @@ void move_particles(){
                   matW[i][j] = 0.5*(matA[i][j]-matA[j][i]);
 		}
 
-	      /* assign P vector */
-     vecP[0] = (tracer+ipart)->px;
-     vecP[1] = (tracer+ipart)->py;
-     vecP[2] = (tracer+ipart)->pz;
-              /* assign the last dP /dt  vector */
-     vecFold[0] = (tracer+ipart)->dt_px;
-     vecFold[1] = (tracer+ipart)->dt_py;
-     vecFold[2] = (tracer+ipart)->dt_pz;
+	      /* multiply S by the aspect ratio stretching factor */
+	      for (i=0; i<3; i++)
+                for (j=0; j<3; j++){
+                  matS[i][j] *= f_alpha;
+		}
+
+ #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+	      /* gravitational gyrotaxis : the stretched S matrix has an extra term - (1/v0 ) * g_i p_j ) */	      
+	      gyro = - 0.5 / (tracer+ipart)->gyrotaxis_velocity;
+  #ifdef LAGRANGE_GRAVITY	      
+	      vecA[0] = gyro * (- property.gravity_x  + (tracer+ipart)->ax);
+              vecA[1] = gyro * (- property.gravity_y  + (tracer+ipart)->ay);
+              vecA[2] = gyro * (- property.gravity_z  + (tracer+ipart)->az);
+  #else
+	      vecA[0] = gyro * (tracer+ipart)->ax;
+              vecA[1] = gyro * (tracer+ipart)->ay;
+              vecA[2] = gyro * (tracer+ipart)->az;
+  #endif	      
+	      matS[0][0]+= vecA[0]*vecP[0]; matA[0][1] += vecA[0]*vecP[1]; matA[0][2] += vecA[0]*vecP[2];
+	      matS[1][0]+= vecA[1]*vecP[0]; matA[1][1] += vecA[1]*vecP[1]; matA[1][2] += vecA[1]*vecP[2];
+	      matS[2][0]+= vecA[2]*vecP[0]; matA[2][1] += vecA[2]*vecP[1]; matA[2][2] += vecA[2]*vecP[2];	      
+ #endif
+
+	      /* Now we compute RHS of the Jeffrey equation */
 
 	      /* first product TMP[i] = S[i][j]*P[j] */
 	      vecTMP[0]=vecTMP[1]=vecTMP[2]=0;
@@ -1320,9 +1361,9 @@ void move_particles(){
 	      for (i=0; i<3; i++){
 		  vecF[i] = 0.0; 
 		for (j=0; j<3; j++){	
-		  vecF[i] += matW[i][j]*vecP[j] + f_alpha*( matS[i][j]*vecP[j]);
+		  vecF[i] += matW[i][j]*vecP[j] + ( matS[i][j]*vecP[j]);
 		}
-		  vecF[i] -=  f_alpha*vecP[i]*scalOSO;
+		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
 
 

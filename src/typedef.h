@@ -253,6 +253,9 @@ typedef struct {
   my_double aspect_ratio;
   my_double px,py,pz;
   my_double dt_px,dt_py,dt_pz;
+   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   my_double gyrotaxis_velocity;
+   #endif
   #endif
  #endif
 #endif
