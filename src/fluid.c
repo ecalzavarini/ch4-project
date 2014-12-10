@@ -1153,7 +1153,7 @@ void build_forcing(){
   my_double fnx,fny,fnz,kn;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
-  my_double temp, fac; 
+  my_double temp, fac, val; 
   vector dist,vel;
 
 
@@ -1171,9 +1171,12 @@ void build_forcing(){
       fac = sqrt(1.0/(my_double)randomization_itime);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
-	  phi[ii].x += 2.0*(myrand()-0.5)*fac;
-	  phi[ii].y += 2.0*(myrand()-0.5)*fac;
-	  phi[ii].z += 2.0*(myrand()-0.5)*fac;
+	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+	  phi[ii].x += val*fac;
+	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+	  phi[ii].y += val*fac;
+	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+	  phi[ii].z += val*fac;
 	}
       }
     MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
