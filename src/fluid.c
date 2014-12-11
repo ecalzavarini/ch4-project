@@ -1292,9 +1292,9 @@ void build_forcing(){
  #else
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
-      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
-      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  );
-      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  );
+      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  - out_all.ux);
+      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  - out_all.uy);
+      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  - out_all.uz);
     }
  #endif  
 #endif
