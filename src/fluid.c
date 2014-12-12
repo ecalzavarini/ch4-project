@@ -1157,7 +1157,7 @@ void build_forcing(){
   vector dist,vel;
   vector u0, u0_all;
   my_double norm;
-
+  my_double t0,t0_all;
 
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
@@ -1165,10 +1165,18 @@ void build_forcing(){
 
    nu = property.nu;
 
-
 #ifdef LB_FLUID_FORCING_HIT  /* useful for HOMOGENEOUS ISOTROPIC TURBULENCE */
-
-   // if(itime%randomization_itime == 0){ 
+ #ifdef LB_FLUID_FORCING_HIT_RANDOM
+   /* the phases are random */
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi[ii].x = myrand();
+	  phi[ii].y = myrand();
+	  phi[ii].z = myrand();
+	}
+      }
+ #else
+   /* the phases make a random walk */
       fac = sqrt(1.0/(my_double)randomization_itime);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
@@ -1180,9 +1188,11 @@ void build_forcing(){
 	  phi[ii].z += val*fac;
 	}
       }
-    MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
-    // }
+ #endif
+    /* the phases are broadcasted */
+   MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
 
+ #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
     /* compute the zero mode intensity (the mean velocity) */
     u0.x = u0_all.x = 0.0;
     u0.y = u0_all.y = 0.0;
@@ -1204,11 +1214,21 @@ void build_forcing(){
       u0_all.y /= norm;
       u0_all.z /= norm;
     }
-
+ #endif
 #endif
-#ifdef LB_TEMPERATURE_FORCING_HIT
 
-    //   if(itime%randomization_itime_t == 0){ 
+#ifdef LB_TEMPERATURE_FORCING_HIT
+ #ifdef LB_TEMPERATURE_FORCING_HIT_RANDOM
+   /* the phases are random */
+      if(ROOT){ 
+	for (ii=0; ii<nk; ii++){
+	  phi_t[ii].x = myrand();
+	  phi_t[ii].y = myrand();
+	  phi_t[ii].z = myrand();
+	}
+      }
+ #else
+      /* the phases do random walk */
       fac = sqrt(1.0/(my_double)randomization_itime_t);
       if(ROOT){ 
 	for (ii=0; ii<nk_t; ii++){
@@ -1217,8 +1237,24 @@ void build_forcing(){
 	  phi_t[ii].z += 2.0*(myrand()-0.5)*fac;
 	}
       }
+#endif
+      /* phases are boradcasted */
     MPI_Bcast(phi_t, nk_t, MPI_vector_type, 0, MPI_COMM_WORLD);
-    // }
+
+ #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
+    /* compute the zero mode intensity (the mean temperature) */
+    t0 = t0_all = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){ 
+	    t0 += t[IDX(i,j,k)];
+	  }
+
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+    // t0_all -= property.T_ref;
+ #endif
 #endif
 #ifdef LB_SCALAR_FORCING_HIT
   /* initialize phases */
@@ -1314,12 +1350,14 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.Amp_y*u[IDX(i,j,k)].y;
       force[IDX(i,j,k)].z += fac*property.Amp_z*u[IDX(i,j,k)].z;
  #else
+ #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
       /* the zero mode */
-      fac = sqrt(out_all.ux*out_all.ux + out_all.uy*out_all.uy + out_all.uz*out_all.uz);
-      if(fac != 0.0) fac = 1./fac; else fac = 1.0;
-      force[IDX(i,j,k)].x += fac*property.Amp_x*(- out_all.ux);
-      force[IDX(i,j,k)].y += fac*property.Amp_y*(- out_all.uy);
-      force[IDX(i,j,k)].z += fac*property.Amp_z*(- out_all.uz);
+      //fac = sqrt(out_all.ux*out_all.ux + out_all.uy*out_all.uy + out_all.uz*out_all.uz);
+      //if(fac != 0.0) fac = 1./fac; else fac = 1.0;
+      force[IDX(i,j,k)].x += property.Amp_x*(- u0_all.x);
+      force[IDX(i,j,k)].y += property.Amp_y*(- u0_all.y);
+      force[IDX(i,j,k)].z += property.Amp_z*(- u0_all.z);
+ #endif
       /* the other modes */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
@@ -1360,6 +1398,7 @@ void build_forcing(){
 	//my_double temp, fac;
 #ifdef LB_TEMPERATURE_BUOYANCY_TREF
   temp = (t[IDX(i,j,k)] - property.T_top);
+  //temp = (t[IDX(i,j,k)] - property.T_ref);
 #else
   /* the good one for RB */  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
@@ -1509,6 +1548,11 @@ void build_forcing(){
       if(out_all.t2 != 0.0) fac = 1.0/out_all.t2; else fac = 1.0;
       t_source[IDX(i,j,k)].x += fac*property.Amp_t*t[IDX(i,j,k)];
  #else
+ #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
+      /* the zero mode */
+      t_source[IDX(i,j,k)] += property.Amp_t*(- t0_all);
+ #endif
+      /*the other modes */
     for(ii=0; ii<nk_t; ii++){
       fac = pow(vk2_t[ii],-5./6.);
       t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk_t[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk_t[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk_t[ii].z*z/LZ + phi_t[ii].z)) );
