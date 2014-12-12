@@ -5,6 +5,8 @@
 /* parallel.c */
 void initialization_MPI();
 void measure_time();
+void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
+void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
 
 /* parameters.c */
 my_double read_parameter();

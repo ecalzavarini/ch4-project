@@ -1,9 +1,8 @@
 #include "common_object.h"
 
 
-void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
-
-void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
+//void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
+//void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
 
  
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype){
