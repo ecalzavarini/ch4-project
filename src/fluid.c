@@ -1155,7 +1155,8 @@ void build_forcing(){
   my_double LX,LY,LZ,nu;
   my_double temp, fac, val; 
   vector dist,vel;
-
+  vector u0, u0_all;
+  my_double norm;
 
 
    LX = (my_double)(property.SX);
@@ -1181,6 +1182,29 @@ void build_forcing(){
       }
     MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
     // }
+
+    /* compute the zero mode intensity (the mean velocity) */
+    u0.x = u0_all.x = 0.0;
+    u0.y = u0_all.y = 0.0;
+    u0.z = u0_all.z = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){ 
+	    u0.x += u[IDX(i,j,k)].x;
+            u0.y += u[IDX(i,j,k)].y;
+            u0.z += u[IDX(i,j,k)].z;
+	  }
+
+    MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
+    norm = sqrt(u0_all.x*u0_all.x + u0_all.y*u0_all.y + u0_all.z*u0_all.z);
+    if(norm !=0.0){
+      u0_all.x /= norm;
+      u0_all.y /= norm;
+      u0_all.z /= norm;
+    }
+
 #endif
 #ifdef LB_TEMPERATURE_FORCING_HIT
 
@@ -1290,11 +1314,18 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.Amp_y*u[IDX(i,j,k)].y;
       force[IDX(i,j,k)].z += fac*property.Amp_z*u[IDX(i,j,k)].z;
  #else
+      /* the zero mode */
+      fac = sqrt(out_all.ux*out_all.ux + out_all.uy*out_all.uy + out_all.uz*out_all.uz);
+      if(fac != 0.0) fac = 1./fac; else fac = 1.0;
+      force[IDX(i,j,k)].x += fac*property.Amp_x*(- out_all.ux);
+      force[IDX(i,j,k)].y += fac*property.Amp_y*(- out_all.uy);
+      force[IDX(i,j,k)].z += fac*property.Amp_z*(- out_all.uz);
+      /* the other modes */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
-      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  - out_all.ux);
-      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z))  - out_all.uy);
-      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x))  - out_all.uz);
+      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
+      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
+      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) );
     }
  #endif  
 #endif

@@ -2,6 +2,9 @@
 
 
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
+
+void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
+
  
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype){
   int i;
@@ -56,6 +59,19 @@ for (i = 0; i < *length; i++) {
 
 }
 
+
+void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype){
+  int i;
+
+  for (i = 0; i < *length; i++) {
+
+    (b+i)->x   += (a+i)->x;
+    (b+i)->y   += (a+i)->y;
+    (b+i)->z   += (a+i)->z;
+  }
+}
+
+
 void initialization_MPI(int argc, char **argv){
 	/* Initialize MPI */
 	MPI_Init(&argc, &argv);
@@ -77,7 +93,7 @@ void initialization_MPI(int argc, char **argv){
 
  MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
-
+ MPI_Op_create( (MPI_User_function *)sum_vector, 1, &MPI_SUM_vector );
 
  MPI_Type_contiguous(1, MPI_DOUBLE, &MPI_my_double_type);
  MPI_Type_commit(&MPI_my_double_type);

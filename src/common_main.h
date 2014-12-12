@@ -25,6 +25,7 @@ int nprocs;
 int nxprocs, nyprocs, nzprocs;
 MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type, MPI_my_double_type;
 MPI_Op MPI_SUM_output;
+MPI_Op MPI_SUM_vector;
 
 MPI_Datatype MPI_pop_plane_x,MPI_pop_plane_y,MPI_pop_plane_z;
 MPI_Datatype MPI_my_double_plane_x,MPI_my_double_plane_y,MPI_my_double_plane_z;
