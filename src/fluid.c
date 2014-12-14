@@ -1232,9 +1232,12 @@ void build_forcing(){
       fac = sqrt(1.0/(my_double)randomization_itime_t);
       if(ROOT){ 
 	for (ii=0; ii<nk_t; ii++){
-	  phi_t[ii].x += 2.0*(myrand()-0.5)*fac;
-	  phi_t[ii].y += 2.0*(myrand()-0.5)*fac;
-	  phi_t[ii].z += 2.0*(myrand()-0.5)*fac;
+	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_t[ii].x += val*fac;
+          val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_t[ii].y += val*fac;
+          val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_t[ii].z += val*fac;
 	}
       }
 #endif
@@ -1255,8 +1258,10 @@ void build_forcing(){
 
    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
-      t0_all /= norm;
+     t0_all *= norm;
     }
+     t0_all=(t0_all > 0.0)?1.0:-1.0;
+    //    if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
  #endif
 #endif
 
@@ -1554,7 +1559,7 @@ void build_forcing(){
  #else
  #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
       /* the zero mode */
-      t_source[IDX(i,j,k)] += property.Amp_t*(- t0_all);
+      t_source[IDX(i,j,k)] += property.Amp_t*(-t0_all);
  #endif
       /*the other modes */
     for(ii=0; ii<nk_t; ii++){
