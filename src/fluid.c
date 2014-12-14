@@ -1253,9 +1253,13 @@ void build_forcing(){
 
     MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
-    // t0_all -= property.T_ref;
+   norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+      t0_all /= norm;
+    }
  #endif
 #endif
+
 #ifdef LB_SCALAR_FORCING_HIT
   /* initialize phases */
 
