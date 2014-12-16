@@ -434,8 +434,37 @@ void build_forcing(){
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_RADIATION 
-  //my_double coeff_exct = 0.5/property.SY;
+ #ifdef LB_TEMPERATURE_FORCING_RADIATION_SOLAR
+ /*
+   Electromagnetic spectrum (see wikipedia):
+   lambda: UV<400nm; VIS: 400nm<lambda<800nm; IR(near+far): lambda>800nm 
+   
+   Typical values of solar flux (Skyllingstad and Paulson (2007))
+   lambda:   (350-700)nm  (700-900)nm   (900-1100)nm   >1100nm
+   band index:         m=1          m=2           m=3          m=4
+   Pm:                 0.481        0.194         0.123        0.202
+   Km:                 0.180        3.250        27.500      300.000
+
+   Where: 
+   Pm is the fraction of solar intensity in the given band (The sum of all Pm is therefore =1)
+   The actual intensity is I0=Frn*Pm with Frn=160 W/m^2 (order 100 W/m^2)
+   Km = alpha , the attenuation coefficient. 
+  */
+  /*
+  t_source[IDX(i,j,k)]  = 0.481 * property.Amp_t* 0.180 *exp(-0.180  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += 0.194 * property.Amp_t* 3.250 *exp(-3.250  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += 0.123 * property.Amp_t* 27.50 *exp(-27.50  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += 0.202 * property.Amp_t* 300.0 *exp(-300.0  * center_V[IDX(i,j,k)].y); 
+  */
+  t_source[IDX(i,j,k)]  =                 property.Amp_t*property.attenuation*                exp(-property.attenuation * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += (0.194/0.481) * property.Amp_t*property.attenuation* (3.250/0.180) *exp(-(3.250/0.180)  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += (0.123/0.481) * property.Amp_t*property.attenuation* (27.50/0.180) *exp(-(27.50/0.180)  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += (0.202/0.481) * property.Amp_t*property.attenuation* (300.0/0.180) *exp(-(300.0/0.180)  * center_V[IDX(i,j,k)].y); 
+
+ #else
+  /* just a monocromatic light source */
   t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+ #endif
 #endif 
 
 #ifdef LB_TEMPERATURE_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on TEMPERATURE */     
