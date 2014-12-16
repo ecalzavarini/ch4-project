@@ -12,6 +12,7 @@ void build_forcing(){
   vector u0, u0_all;
   my_double norm;
   my_double t0,t0_all;
+  my_double s0,s0_all;
 
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
@@ -120,19 +121,51 @@ void build_forcing(){
 #endif
 
 #ifdef LB_SCALAR_FORCING_HIT
-  /* initialize phases */
-
-    //    if(itime%randomization_itime_s == 0){
-      fac = sqrt(1.0/(my_double)randomization_itime_s); 
+  #ifdef LB_SCALAR_FORCING_HIT_RANDOM
+   /* the phases are random */
       if(ROOT){ 
-	for (ii=0; ii<nk_s; ii++){
-	  phi_s[ii].x += 2.0*(myrand()-0.5)*fac;
-	  phi_s[ii].y += 2.0*(myrand()-0.5)*fac;
-	  phi_s[ii].z += 2.0*(myrand()-0.5)*fac;
+	for (ii=0; ii<nk; ii++){
+	  phi_s[ii].x = myrand();
+	  phi_s[ii].y = myrand();
+	  phi_s[ii].z = myrand();
 	}
       }
+ #else
+      /* the phases do random walk */
+      fac = sqrt(1.0/(my_double)randomization_itime_s);
+      if(ROOT){ 
+	for (ii=0; ii<nk_s; ii++){
+	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_s[ii].x += val*fac;
+          val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_s[ii].y += val*fac;
+          val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+          phi_s[ii].z += val*fac;
+	}
+      }
+#endif
+      /* phases are boradcasted */
     MPI_Bcast(phi_s, nk_s, MPI_vector_type, 0, MPI_COMM_WORLD);
-    //    }
+
+ #ifdef LB_SCALAR_FORCING_HIT_ZEROMODE 
+    /* compute the zero mode intensity (the mean temperature) */
+    s0 = s0_all = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){ 
+	    s0 += s[IDX(i,j,k)];
+	  }
+
+    MPI_Allreduce(&s0, &s0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+   norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+     s0_all *= norm;
+    }
+     s0_all=(s0_all > 0.0)?1.0:-1.0;
+    //    if(ROOT)fprintf(stderr,"s0_all = %e\n",s0_all);
+ #endif
 #endif
 
 
@@ -409,7 +442,7 @@ void build_forcing(){
  #ifdef LB_TEMPERATURE_FORCING_HIT_LINEAR
    /* Inspired by Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
       if(out_all.t2 != 0.0) fac = 1.0/out_all.t2; else fac = 1.0;
-      t_source[IDX(i,j,k)].x += fac*property.Amp_t*t[IDX(i,j,k)];
+      t_source[IDX(i,j,k)] += fac*property.Amp_t*t[IDX(i,j,k)];
  #else
  #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
       /* the zero mode */
@@ -449,10 +482,21 @@ void build_forcing(){
 
 
 #ifdef LB_SCALAR_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on SCALAR */     
+ #ifdef LB_SCALAR_FORCING_HIT_LINEAR
+   /* Inspired by Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
+      if(out_all.s2 != 0.0) fac = 1.0/out_all.s2; else fac = 1.0;
+      s_source[IDX(i,j,k)] += fac*property.Amp_s*s[IDX(i,j,k)];
+ #else
+ #ifdef LB_SCALAR_FORCING_HIT_ZEROMODE 
+      /* the zero mode */
+      s_source[IDX(i,j,k)] += property.Amp_s*(-s0_all);
+ #endif
+      /*the other modes */
     for(ii=0; ii<nk_s; ii++){
       fac = pow(vk2_s[ii],-5./6.);
       s_source[IDX(i,j,k)] += fac*property.Amp_s*( sin(two_pi*(vk_s[ii].x*x/LX + phi_s[ii].x)) + sin(two_pi*(vk_s[ii].y*y/LY + phi_s[ii].y)) + sin(two_pi*(vk_s[ii].z*z/LZ + phi_s[ii].z)) );
     }
+ #endif
 #endif
 
 #ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */

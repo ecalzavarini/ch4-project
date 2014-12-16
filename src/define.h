@@ -201,6 +201,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_REACTION
 //#define LB_SCALAR_FORCING_MONOD
 //#define LB_SCALAR_FORCING_HIT   
+//#define LB_SCALAR_FORCING_HIT_RANDOM                                                                                                                                           
+//#define LB_SCALAR_FORCING_HIT_ZEROMODE                                                                                                        
+//#define LB_SCALAR_FORCING_HIT_LINEAR  
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
