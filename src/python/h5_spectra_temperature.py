@@ -10,7 +10,7 @@ from math import *
 #complex_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[complex,complex,complex] })
 
 
-f = h5py.File('../RUN/field_5000.h5', 'r')
+f = h5py.File('/home/enrico/HIT/RUN/field_30000.h5', 'r')
 
 t=np.array(f['euler']['temperature'])
 
@@ -26,7 +26,7 @@ tr = t
 ###################################################
 # Fourier  transform
 def ffts(tr):
-    tc = np.zeros((NX,NY,NZ/2+1),complex_dtype) #this is internal variable
+    tc = np.zeros((NX,NY,NZ/2+1),complex) #this is internal variable
     norm=1.#/ur['x'].size
     tc = np.fft.rfftn(tr)*norm
     return tc;
@@ -52,7 +52,7 @@ def compute_spectra_s(tc):
                     fac=0.5
                 else:
                     fac=1.0                    
-                ene = abs(tc[i,j,k]))**2. 
+                ene = abs(tc[i,j,k])**2. 
                 if ik < NZ/2+1:
                     spect[ik] += fac*ene;
     with open('spectra_temperature.dat', 'w') as f:
