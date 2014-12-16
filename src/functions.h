@@ -51,8 +51,8 @@ void hydro_fields(char which_pop);
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);
 tensor gradient_vector(vector *t, int i, int j, int k);
-void add_forcing();
-void build_forcing();
+//void add_forcing();
+//void build_forcing();
 #ifdef METHOD_CENTERED
 my_double compute_flux_with_central_difference(pop * f,int i, int j, int k, int pp);
 #endif
@@ -69,6 +69,12 @@ my_double compute_flux_with_limiters(pop * f, int i, int j, int k, int pp);
 my_double limiter(my_double r);
 my_double gradient_ratio(pop * f, int i, int j, int k, int pp,int dir);
 #endif
+#endif
+
+/* forcing.c */
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
+void add_forcing();
+void build_forcing();
 #endif
 
 /* output.c */
