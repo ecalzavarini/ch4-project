@@ -22,6 +22,14 @@ my_double tau_u_les(int i , int j , int k){
 		        (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
 		        (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
 		        (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) );
+  /*
+#ifdef LB_FLUID_LES_SISM
+ #ifdef LB_FLUID_LES_SISM_Y
+  irun = (int)( itime/ (int)(property.time_dump_diagn/property.time_dt) );
+  s_norm = -= (ruler_y_running[j].eps/property.nu);
+ #endif
+#endif
+  */
 
 #ifdef METHOD_STREAMING
 		          vol = 1.0;
