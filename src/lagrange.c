@@ -1378,6 +1378,23 @@ void move_particles(){
 		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
 
+	      /*
+ #ifdef LAGRANGE_ORIENTATION_RANDOM
+	     vec_xi[0] =  random_gauss();
+	     vec_xi[1] =  random_gauss();
+	     vec_xi[2] =  random_gauss(); 
+
+	      for (i=0; i<3; i++)
+		for (j=0; j<3; j++){
+		  vecTMP[i] = ( matI[i][j]- vecP[i]*vecP[j] )*vec_xi[j];
+		}
+
+	      two_d_r = 2.0*(tracer+ipart)->rotary_diffusion;
+	      for (i=0; i<3; i++)
+ 	      vecF[i] +=  sqrt(two_d_r)*vecTMP[i];
+
+ #endif
+	      */
 
    /* if restart Euler 1st order G = G0 + (DT)*F  */
  if(itime==0 && resume==0){
