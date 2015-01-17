@@ -256,6 +256,9 @@ typedef struct {
    #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
    my_double gyrotaxis_velocity;
    #endif
+   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+   my_double rotational_diffusion;
+   #endif
   #endif
  #endif
  #ifdef LAGRANGE_ACTIVE 

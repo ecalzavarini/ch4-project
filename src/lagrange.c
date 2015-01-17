@@ -98,6 +98,10 @@ for (i=0;i<npart;i++) {
 /* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
  (tracer+i)->gyrotaxis_velocity = 1.0;
  #endif
+ #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+ /* rotational diffusion , units ? [rad^2 /time] */
+ (tracer+i)->rotational_diffusion = 0.1;
+ #endif 
 #endif
 #ifdef LAGRANGE_ACTIVE 
  (tracer+i)->swim_velocity = 0.01;
@@ -1151,6 +1155,20 @@ void move_particles(){
   my_double matA[3][3],matS[3][3],matW[3][3];
   my_double scalOSO, f_alpha, alpha,norm , gyro;
   my_double vecF[3],vecFold[3],vecP[3],vecTMP[3],vecA[3];
+ #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  my_double vec_xi[3];
+  my_double two_d_r;
+  my_double matI[3][3];
+ #endif 
+#endif
+
+#ifdef LAGRANGE_ORIENTATION
+ #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  /* Define the identity matrix */
+	     matI[0][0] = matI[1][1] = matI[2][2] = 1.0;
+	     matI[0][1] = matI[0][2] = matI[1][2] = 0.0;
+	     matI[1][0] = matI[2][0] = matI[2][1] = 0.0;
+ #endif 
 #endif
 
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
@@ -1378,23 +1396,23 @@ void move_particles(){
 		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
 
-	      /*
- #ifdef LAGRANGE_ORIENTATION_RANDOM
-	     vec_xi[0] =  random_gauss();
-	     vec_xi[1] =  random_gauss();
-	     vec_xi[2] =  random_gauss(); 
+	      
+ #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+	     vec_xi[0] =  random_gauss(0.0,1.0);
+	     vec_xi[1] =  random_gauss(0.0,1.0);
+	     vec_xi[2] =  random_gauss(0.0,1.0); 	     
 
+	     vecTMP[0]=vecTMP[1]=vecTMP[2]=0;
 	      for (i=0; i<3; i++)
 		for (j=0; j<3; j++){
-		  vecTMP[i] = ( matI[i][j]- vecP[i]*vecP[j] )*vec_xi[j];
+		  vecTMP[i] += ( matI[i][j]- vecP[i]*vecP[j] )*vec_xi[j];
 		}
 
-	      two_d_r = 2.0*(tracer+ipart)->rotary_diffusion;
+	      two_d_r = 2.0*(tracer+ipart)->rotational_diffusion;
 	      for (i=0; i<3; i++)
  	      vecF[i] +=  sqrt(two_d_r)*vecTMP[i];
-
  #endif
-	      */
+	      
 
    /* if restart Euler 1st order G = G0 + (DT)*F  */
  if(itime==0 && resume==0){
@@ -1790,6 +1808,10 @@ void write_point_particle_h5(){
     sprintf(label,"gyrotaxis_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
    #endif  
+   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+    sprintf(label,"rotational_diffusion");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE);
+   #endif 
   #endif
  #endif
  #ifdef LAGRANGE_ACTIVE
@@ -2021,6 +2043,10 @@ void read_point_particle_h5(){
    #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
     sprintf(label,"gyrotaxis_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE); 
+   #endif
+   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+    sprintf(label,"rotational_diffusion");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE); 
    #endif
   #endif
  #endif

@@ -104,6 +104,7 @@ double myrand();
 #ifndef RANDOM48
 double ran1();
 #endif
+double random_gauss(double mu, double sigma);
 
 /* LES */
 #ifdef LB_FLUID_LES
