@@ -1,6 +1,6 @@
-resume 0
-resume_u 0
-resume_t 0
+resume 1
+resume_u 1
+resume_t 1
 resume_s 0
 
 NX 101
@@ -13,7 +13,7 @@ SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 20000.
+time_end 1000.
 time_dump_field 250.
 time_dump_diagn 10.
 
@@ -36,6 +36,7 @@ gravity_y 1.0
 gravity_z 0.0
 
 Amp_t 0.01
+attenuation 1.0
 
 T_solid 1.001
 latent_heat 1
