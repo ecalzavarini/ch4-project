@@ -570,7 +570,7 @@ invtau = 1.0/property.tau_u;
 #ifdef LB_TEMPERATURE
 invtau_t = 1.0/property.tau_t;
 
-#ifdef METHOD_FORCING_GUO
+#ifdef METHOD_FORCING_MALASPINAS
   fac_t = (1.0-0.5*property.time_dt*invtau_t);
 #endif
 #ifdef METHOD_REDEFINED_POP
@@ -585,7 +585,7 @@ invtau_t = 1.0/property.tau_t;
 #ifdef LB_SCALAR
 invtau_s = 1.0/property.tau_s;
 
-#ifdef METHOD_FORCING_GUO
+#ifdef METHOD_FORCING_MALASPINAS
   fac_s = (1.0-0.5*property.time_dt*invtau_s);
 #endif
 #ifdef METHOD_REDEFINED_POP
@@ -691,7 +691,7 @@ invtau_s = 1.0/property.tau_s;
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING
-#ifndef METHOD_FORCING_GUO
+#ifndef METHOD_FORCING_MALASPINAS
        /* Not Guo here */
 	rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
 #else
@@ -715,7 +715,7 @@ invtau_s = 1.0/property.tau_s;
 #endif
 
 #ifdef LB_SCALAR_FORCING
-#ifndef METHOD_FORCING_GUO
+#ifndef METHOD_FORCING_MALASPINAS
        /* not Guo here  */
 	    rhs_h[IDX(i,j,k)].p[pp] += wgt[pp]*s_source[IDX(i,j,k)];
 #else

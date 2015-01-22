@@ -433,6 +433,7 @@ void hydro_fields(char which_pop){
 				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				#else
+				 #ifdef LB_FLUID_FORCING
 				/* to be used only with METHOD_STREAMING */
 				/* TO BE USED if the force is a force */
 				//u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
@@ -442,6 +443,11 @@ void hydro_fields(char which_pop){
 				u[IDX(i, j, k)].x= mvx(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].x ;
    				u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].y ;
 				u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].z ;	
+				 #else
+				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+				 #endif
 				#endif
 #endif
 			  }
@@ -450,14 +456,14 @@ void hydro_fields(char which_pop){
 #ifdef LB_TEMPERATURE 
 			  if(which_pop == 'g'){
 				/* compute temperature field */
-                               #ifndef METHOD_FORCING_GUO
+                               #ifndef METHOD_FORCING_MALASPINAS
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
                                #else
                        	/* to be used only with METHOD_STREAMING */
                                 #ifndef LB_TEMPERATURE_FORCING
 	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
                                 #else
-	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)]; 
+	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)];
                                 #endif
                                #endif
 			  }
@@ -466,7 +472,7 @@ void hydro_fields(char which_pop){
 #ifdef LB_SCALAR
                           if(which_pop == 'h'){                  
 				    /* compute scalar field */
-                               #ifndef METHOD_FORCING_GUO	    
+                               #ifndef METHOD_FORCING_MALASPINAS	    
 				s[IDX(i, j, k)] = m(h[IDX(i, j, k)]); 
                                #else
                        	/* to be used only with METHOD_STREAMING */
