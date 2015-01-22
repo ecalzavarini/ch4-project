@@ -130,7 +130,6 @@ void initial_conditions(int restart)
         /* random component of amplitude 0.1 U_max in each direction */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] += 3.0*fn*wgt[pp]*( (2.0*myrand()-1.0)*c[pp].x + (2.0*myrand()-1.0)*c[pp].y + (2.0*myrand()-1.0)*c[pp].z );  
-
 #endif 
 
    
@@ -188,33 +187,43 @@ void initial_conditions(int restart)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
-#ifdef LB_TEMPERATURE_INITIAL_LINEAR
+	/* first the temperature is put to zero */
+	t[IDX(i,j,k)] = 0.0;
+
+ #ifdef LB_TEMPERATURE_INITIAL_LINEAR
 	/* linear temperature gradient */
 	L=(my_double)property.SY; //LY;
 	y = (my_double)center_V[IDX(i,j,k)].y;
 	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y );
-#endif 
+ #endif 
 
-#ifdef LB_TEMPERATURE_INITIAL_CONSTANT
-#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
+ #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
+  #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
         /* constant mean temperature */
 	  t[IDX(i,j,k)] = 0.5*(property.T_top + property.T_bot);
-#endif
-#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_BOT
+  #endif
+  #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_BOT
         /* constant bottom temperature */
           t[IDX(i,j,k)] = property.T_bot;
-#endif
-#ifdef LB_TEMPERATURE_INITIAL_CONSTANT_TOP
+  #endif
+  #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_TOP
         /* constant top temperature */
          t[IDX(i,j,k)] = property.T_top;
-#endif
-#endif
+  #endif
+ #endif
 
-#ifdef LB_TEMPERATURE_INITIAL_BULK
-	  if( abs(center_V[IDX(i,j,k)].y - property.SY/2.0)<=1   ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
-#endif
+ #ifdef LB_TEMPERATURE_FORCING
+  #ifdef LB_TEMPERATURE_INITIAL_BULK
+	 //if( abs(center_V[IDX(i,j,k)].y - property.SY/2.0)<=1   ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+	/* Quadratic temperature gradient due to temperature and bulk forcing */
+	L=(my_double)property.SY; 
+	y = (my_double)center_V[IDX(i,j,k)].y;
+        val = (my_double)property.Amp_t*0.5/property.kappa;
+	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) + (val*L -  property.deltaT/L)*y - val*y*y);
+  #endif
+ #endif
 
-#ifdef LB_TEMPERATURE_INITIAL_BL
+ #ifdef LB_TEMPERATURE_INITIAL_BL
 	/* BOUNDARY LAYER INITIALIZATION */
 	L=(my_double)property.SY; //LY;
 	y = (my_double)center_V[IDX(i,j,k)].y;
@@ -223,23 +232,23 @@ void initial_conditions(int restart)
 	if(y<=L/fn)  t[IDX(i,j,k)] =  (property.T_bot) - (0.5*fn*property.deltaT/L)*y ;
 	if(y>=L*(1.-1./fn))  t[IDX(i,j,k)] =  (property.deltaT*0.5*(1.-1./fn)*fn) - (0.5*fn*property.deltaT/L)*y ;
 	  
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE_INITIAL_SPOT
+ #ifdef LB_TEMPERATURE_INITIAL_SPOT
   /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
       my_double spot;
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( spot < 10.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
+ #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
       if(NZ==1){
         if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
       }else{
 	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ t[IDX(i,j,k)] += 1.e-1; }else{ t[IDX(i,j,k)] -= 0.25e-1; }
 	//t[IDX(i,j,k)] += 1.e-1*sin(10.0*two_pi*center_V[IDX(i, j, k)].x/property.SX)*sin(10.0*two_pi*center_V[IDX(i, j, k)].z/property.SZ);
       }
-#endif
+ #endif
 
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
@@ -251,20 +260,20 @@ void initial_conditions(int restart)
    sendrecv_borders_pop(g);
 
    /* Melting fields */
-#ifdef LB_TEMPERATURE_MELTING
+ #ifdef LB_TEMPERATURE_MELTING
   /* 1 is fluid , 0 is solid */
    for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
-#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
+  #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=1.0;
-#else
+  #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
-#endif
+  #endif
       }  
-#endif
+ #endif
 
-#endif
+#endif /* end of LB_TEMPERATURE */
 
 
 #ifdef LB_SCALAR
