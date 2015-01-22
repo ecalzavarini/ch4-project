@@ -2220,17 +2220,21 @@ void boundary_conditions_for_hydro(char which_pop){
 	   u[IDX(i,j+1,k)].x = -u[IDX(i,j,k)].x;
 	   u[IDX(i,j+1,k)].y = -u[IDX(i,j,k)].y;
 	   u[IDX(i,j+1,k)].z = -u[IDX(i,j,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j+1,k)].x = -force[IDX(i,j,k)].x;
        force[IDX(i,j+1,k)].y = -force[IDX(i,j,k)].y;
        force[IDX(i,j+1,k)].z = -force[IDX(i,j,k)].z;
+ #endif
 
 	dens[IDX(i,j+2,k)]   =  dens[IDX(i,j-1,k)];
 	   u[IDX(i,j+2,k)].x = -u[IDX(i,j-1,k)].x;
 	   u[IDX(i,j+2,k)].y = -u[IDX(i,j-1,k)].y;
 	   u[IDX(i,j+2,k)].z = -u[IDX(i,j-1,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j+2,k)].x = -force[IDX(i,j-1,k)].x;
        force[IDX(i,j+2,k)].y = -force[IDX(i,j-1,k)].y;
        force[IDX(i,j+2,k)].z = -force[IDX(i,j-1,k)].z;
+ #endif
 #endif
 
 	}/* end of top */
@@ -2245,35 +2249,41 @@ void boundary_conditions_for_hydro(char which_pop){
 	   u[IDX(i,j-1,k)].x = -u[IDX(i,j,k)].x;
 	   u[IDX(i,j-1,k)].y =  u[IDX(i,j,k)].y;
 	   u[IDX(i,j-1,k)].z = -u[IDX(i,j,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j-1,k)].x = -force[IDX(i,j,k)].x;
        force[IDX(i,j-1,k)].y =  force[IDX(i,j,k)].y;
        force[IDX(i,j-1,k)].z = -force[IDX(i,j,k)].z;
-
+ #endif
 	dens[IDX(i,j-2,k)]   =  dens[IDX(i,j+1,k)];
 	   u[IDX(i,j-2,k)].x = -u[IDX(i,j+1,k)].x;
 	   u[IDX(i,j-2,k)].y =  u[IDX(i,j+1,k)].y;
 	   u[IDX(i,j-2,k)].z = -u[IDX(i,j+1,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j-2,k)].x = -force[IDX(i,j+1,k)].x;
        force[IDX(i,j-2,k)].y =  force[IDX(i,j+1,k)].y;
        force[IDX(i,j-2,k)].z = -force[IDX(i,j+1,k)].z;
+ #endif
 #else
 	/* no slip is the default */
 	dens[IDX(i,j-1,k)]   =  dens[IDX(i,j,k)];
 	   u[IDX(i,j-1,k)].x = -u[IDX(i,j,k)].x;
 	   u[IDX(i,j-1,k)].y = -u[IDX(i,j,k)].y;
 	   u[IDX(i,j-1,k)].z = -u[IDX(i,j,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j-1,k)].x = -force[IDX(i,j,k)].x;
        force[IDX(i,j-1,k)].y = -force[IDX(i,j,k)].y;
        force[IDX(i,j-1,k)].z = -force[IDX(i,j,k)].z;
-
+ #endif
 
 	dens[IDX(i,j-2,k)]   =  dens[IDX(i,j+1,k)];
 	   u[IDX(i,j-2,k)].x = -u[IDX(i,j+1,k)].x;
 	   u[IDX(i,j-2,k)].y = -u[IDX(i,j+1,k)].y;
 	   u[IDX(i,j-2,k)].z = -u[IDX(i,j+1,k)].z;
+ #ifdef LB_FLUID_FORCING
        force[IDX(i,j-2,k)].x = -force[IDX(i,j+1,k)].x;
        force[IDX(i,j-2,k)].y = -force[IDX(i,j+1,k)].y;
        force[IDX(i,j-2,k)].z = -force[IDX(i,j+1,k)].z;
+ #endif
 #endif	                 
 	}/* end of bottom */
 
