@@ -217,10 +217,12 @@ void assign_parameters(){
   sprintf(name,"Amp_t");
   property.Amp_t = read_parameter(name);
 #ifdef LB_TEMPERATURE_FORCING_BULK
+ #ifdef LB_TEMPERATURE_BUOYANCY
   fprintf(stderr,"Internal Rayleigh Number is -> Ra_{Int} = %e\n", property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) ); 
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Internal Rayleigh %e\n",property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );
   fclose(fout);
+ #endif
 #endif
 #ifdef LB_TEMPERATURE_FORCING_RADIATION
   sprintf(name,"attenuation");
