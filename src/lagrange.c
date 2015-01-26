@@ -1396,24 +1396,7 @@ void move_particles(){
 		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
 
-	      
- #ifdef LAGRANGE_ORIENTATION_DIFFUSION
-	     vec_xi[0] =  random_gauss(0.0,1.0);
-	     vec_xi[1] =  random_gauss(0.0,1.0);
-	     vec_xi[2] =  random_gauss(0.0,1.0); 	     
-
-	     vecTMP[0]=vecTMP[1]=vecTMP[2]=0;
-	      for (i=0; i<3; i++)
-		for (j=0; j<3; j++){
-		  vecTMP[i] += ( matI[i][j]- vecP[i]*vecP[j] )*vec_xi[j];
-		}
-
-	      two_d_r = 2.0*(tracer+ipart)->rotational_diffusion;
-	      for (i=0; i<3; i++)
- 	      vecF[i] +=  sqrt(two_d_r)*vecTMP[i];
- #endif
-	      
-
+	     	      
    /* if restart Euler 1st order G = G0 + (DT)*F  */
  if(itime==0 && resume==0){
 		  for (i=0; i<3; i++){	
@@ -1429,6 +1412,24 @@ void move_particles(){
 		  vecFold[i]  = vecF[i];
 		}
  }
+
+
+ #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+	     vec_xi[0] =  random_gauss(0.0,1.0);
+	     vec_xi[1] =  random_gauss(0.0,1.0);
+	     vec_xi[2] =  random_gauss(0.0,1.0); 	     
+
+	     vecTMP[0]=vecTMP[1]=vecTMP[2]=0;
+	      for (i=0; i<3; i++)
+		for (j=0; j<3; j++){
+		  vecTMP[i] += ( matI[i][j]- vecP[i]*vecP[j] )*vec_xi[j];
+		}
+
+	      two_d_r = 2.0*(tracer+ipart)->rotational_diffusion;
+	      /* stochastic part of the rotation equation */
+	      for (i=0; i<3; i++)
+ 	      vecP[i] +=  sqrt(two_d_r*property.time_dt)*vecTMP[i];
+ #endif
 
 	      /* normalize P vector */
 	      norm=0.0;
