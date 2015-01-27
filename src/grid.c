@@ -159,7 +159,7 @@ void read_mesh(){
 				  mesh[IDXG(i, j, k)].x = 0.0;
 				  mesh[IDXG(i, j, k)].y = 0.0;
 				  mesh[IDXG(i, j, k)].z = 0.0;			 
-				  mesh_flag[IDXG(i, j, k)] = 0;
+				  //mesh_flag[IDXG(i, j, k)] = 0;
 				}
 
 
@@ -178,7 +178,7 @@ void read_mesh(){
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient
 					 */
-					mesh_flag[IDXG(i, j, k)] = 1;
+					//mesh_flag[IDXG(i, j, k)] = 1;
 								
 #ifdef GRID_RANDOM
 					  if(i<LNXG+BRD-1) mesh[IDXG(i, j, k)].x += 0.25*(my_double)(2.0*myrand()-1.0);
@@ -221,7 +221,8 @@ void read_mesh(){
 	  for (j = 0; j < LNYG + TWO_BRD; j++)
 	    for (i = 0; i < LNXG + TWO_BRD; i++)
 				  */
-       fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+     //fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+       fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z );
 	    }
 	    fprintf(fout,"\n");
 	  }
@@ -242,7 +243,8 @@ void read_mesh(){
 	  for (j = 0; j < LNYG + TWO_BRD; j++)
 	    for (i = 0; i < LNXG + TWO_BRD; i++)
 				  */
-       fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+      //fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+	fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
 	    }
 	    fprintf(fout,"\n");
 	  }

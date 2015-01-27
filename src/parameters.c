@@ -389,9 +389,11 @@ void allocate_fields(){
  if(mesh == NULL){ fprintf(stderr,"Not enough memory to allocate mesh\n"); exit(-1);}
  set_to_zero_vector( mesh,(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
 
+ /*
  mesh_flag  = (int*) malloc(sizeof(int)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(mesh_flag == NULL){ fprintf(stderr,"Not enough memory to allocate mesh_flag\n"); exit(-1);}
  set_to_zero_int( mesh_flag,(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
+ */
 
  center_V = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate center_V\n"); exit(-1);}
@@ -842,7 +844,9 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
 void free_fields(){
 
   free(mesh);
+  /*
   free(mesh_flag);
+  */
   free(center_V);
 
 #ifdef GRID_REFINED
