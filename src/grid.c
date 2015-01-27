@@ -2140,6 +2140,32 @@ void read_landscape(){
 				}
 
 #endif
+
+#ifdef LB_FLUID_FORCING_LANDSCAPE_BUILDINGS2
+                            for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  center.x = property.SX/2.034 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 50.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+			    for (i = 0; i < LNX+TWO_BRD; i++) 
+			      for (k =0; k < LNZ+TWO_BRD; k++)
+			        for (j =0; j < LNY+TWO_BRD; j++){
+				  center.x = property.SX/1.558 ;
+    				  center.z = property.SZ/2.0 ;
+				  size.x = 10.0;        //80.0;
+				  size.y = 70.0;           //200.0;
+				  size.z =  10.0;
+				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
+				}
+
+#endif
+
 			    /*
 
 	               //  for setting the walls to zero 

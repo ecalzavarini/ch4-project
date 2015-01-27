@@ -528,11 +528,15 @@ if(LNX_START == 0){
 #ifdef LB_FLUID_BC_X_M_INLET_POISEUILLE
 	  /*Poiseuille flow velocity profile - inlet*/
 	     vel.x = -(4.0*(my_double)property.Amp_x*(pow(((my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-((my_double)property.SY));
+	  vel.y = 0.0;
+          vel.z = 0.0;
 #endif
 
 #ifdef LB_FLUID_BC_X_M_INLET_POISEUILLE_HALF
 	  /* Half Poiseuille flow velocity profile - inlet*/
 	  vel.x = -(4.0*(my_double)property.Amp_x*(pow((2.0*(my_double)property.SY),-2.0)))*((my_double)center_V[IDX(i,j,k)].y)*(((my_double)center_V[IDX(i,j,k)].y)-(2.0*(my_double)property.SY));
+	  vel.y = 0.0;
+          vel.z = 0.0;
 #endif
 
 #ifdef LB_FLUID_BC_X_M_INLET_CONSTANT
@@ -734,7 +738,7 @@ if(LNZ_END == NZ){
 #else
 #ifdef LB_FLUID_BC_Z_P_SLIP
 	  /* SLIP */
-          rhs_p[IDX(i,j,k+1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+          rhs_p[IDX(i,j,k+1)].p[inv_z[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else	 
 	  /* NO SLIP */
 	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k+1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
@@ -764,7 +768,7 @@ if(LNZ_START == 0){
 #else 
 #ifdef LB_FLUID_BC_Z_M_SLIP
 	  /* SLIP */
-          rhs_p[IDX(i,j,k-1)].p[inv_x[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+          rhs_p[IDX(i,j,k-1)].p[inv_z[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #else
           /* NO SLIP */
 	  if (ii>= 0 && ii< LNX+TWO_BRD && jj >= 0 && jj < LNY+TWO_BRD) rhs_p[IDX(ii,jj,k-1)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
