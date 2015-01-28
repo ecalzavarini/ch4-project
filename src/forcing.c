@@ -662,7 +662,7 @@ invtau_s = 1.0/property.tau_s;
 	    
 #else   
 	    /* This is METHOD_FORCING_GUO */
-	rho = dens[IDX(i,j,k)];    
+	rho = dens[IDX(i,j,k)];  
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
 	uz=u[IDX(i,j,k)].z;
@@ -670,10 +670,10 @@ invtau_s = 1.0/property.tau_s;
         d.x = (c[pp].x-ux)*invcs2 + c[pp].x*cu*invcs4;
         d.y = (c[pp].y-uy)*invcs2 + c[pp].y*cu*invcs4;
         d.z = (c[pp].z-uz)*invcs2 + c[pp].z*cu*invcs4;
-
+		
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
-       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;       
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;  		
 #endif
 
 #ifdef  LB_FLUID_FORCING_DIRECT
@@ -693,7 +693,8 @@ invtau_s = 1.0/property.tau_s;
 #ifdef LB_TEMPERATURE_FORCING
 #ifndef METHOD_FORCING_MALASPINAS
        /* Not Guo here */
-	rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+        rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+
 #else
       /* The forcing is as in Malaspinas PhD pag. 93 (bottom)*/	    
         ux = u[IDX(i, j, k)].x;
@@ -702,7 +703,10 @@ invtau_s = 1.0/property.tau_s;
         u2 = (ux * ux + uy * uy + uz * uz);
         cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+	//rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+	rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+	//wgt2=(1.0 + invcs2 * cu *((property.tau_t-0.5)/property.tau_t)  );
+	//rhs_g[IDX(i,j,k)].p[pp] += wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 #endif
 
 
@@ -725,7 +729,8 @@ invtau_s = 1.0/property.tau_s;
         u2 = (ux * ux + uy * uy + uz * uz);
         cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+	//rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+	rhs_h[IDX(i,j,k)].p[pp] += 2.0*fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
 #endif
 #endif
 
