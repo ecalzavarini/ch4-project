@@ -420,6 +420,13 @@ void hydro_fields(char which_pop){
 
 #ifdef LB_FLUID
 			  if(which_pop == 'p'){
+ #ifdef LB_FLUID_PAST
+			    /* NOTE: copy element by element is expensive, should be optimized in the future */
+			   old_u[IDX(i, j, k)].x = u[IDX(i, j, k)].x;
+			   old_u[IDX(i, j, k)].y = u[IDX(i, j, k)].y;
+			   old_u[IDX(i, j, k)].z = u[IDX(i, j, k)].z;
+			   old_dens[IDX(i, j, k)] = dens[IDX(i, j, k)];
+ #endif
 #ifdef METHOD_LOG
 			  dens[IDX(i, j, k)] = m(p[IDX(i, j, k)],1./property.tau_u);			       
 			  u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
@@ -455,6 +462,10 @@ void hydro_fields(char which_pop){
 
 #ifdef LB_TEMPERATURE 
 			  if(which_pop == 'g'){
+ #ifdef LB_TEMPERATURE_PAST
+			    /* NOTE: copy element by element is expensive, should be optimized in the future */
+			   old_t[IDX(i, j, k)] = t[IDX(i, j, k)];
+ #endif
 				/* compute temperature field */
                                #ifndef METHOD_FORCING_MALASPINAS
 				t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
