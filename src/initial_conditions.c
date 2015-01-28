@@ -10,6 +10,7 @@ void initial_conditions(int restart)
   my_double LY_half;
   my_double val;
   int iy,iyp,iym;
+  my_double norm, norm_all;
 
 
 #ifdef LB_FLUID
@@ -30,16 +31,29 @@ void initial_conditions(int restart)
 	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] = wgt[pp];
 
 
-#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
-   L=(my_double)property.SY; //NY;
+//#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
+#ifdef LB_TEMPERATURE_BUOYANCY
+ #ifdef LB_INITIAL_BAROMETRIC
+  /* hydrostatic density profile  (kind of barometric formula) :  
+     if velocity is u = 0  ==>  0 = -\grad P + \rho \beta g T \hat{y}
+     Since P=\rho cs^2  and  T is a function of height T=T(y)
+     we get \rho = \rho_0 exp( \beta g cs^{-2} \Int_0^y T(y) dy )
+     rho_0 is here assumed to be = 1 for T=T_mean
+  */
+   L=(my_double)property.SY; 
    y = (my_double)center_V[IDX(i,j,k)].y;
-  /* hydrostatic density profile -  barometric formula dP/P = -\rho g dy , P=\rho cs^2 , \rho = \beta g T_{Lin}*/
+     /* the good one for linear temperature profile*/
    for (pp = 0; pp < NPOP; pp++) 
-     // p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( (property.T_bot-property.T_ref) - 0.5*(property.deltaT/L)*y )/cs2 ));
-     /* the good one */
      p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( 0.5*property.deltaT - 0.5*(property.deltaT/L)*y )/cs2 ));
-     //p[IDX(i,j,k)].p[pp] = wgt[pp];
-     //p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp(property.beta_t*y/cs2));
+ #endif
+ #ifdef LB_INITIAL_BULK
+   /*for quadratic profile */
+	L=(my_double)property.SY; 
+	y = (my_double)center_V[IDX(i,j,k)].y;
+        val = (my_double)property.Amp_t*0.5/property.kappa;
+   for (pp = 0; pp < NPOP; pp++) 
+     p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp( property.beta_t*property.gravity_y*((property.T_bot-property.T_ref)*y + (val*L -  property.deltaT/L)*y*y/2. - val*y*y*y/3.)/cs2 ));
+ #endif
 #endif
 
   
@@ -144,8 +158,9 @@ void initial_conditions(int restart)
 }/* for i,j,k */
 
 
+ #ifdef LB_FLUID_INITIAL_UNIT_DENSITY
    /* We set the global density to be =1 , this is an optional step */
-   my_double norm, norm_all;
+   /* ATTENTION: in the present formulation it just works for NX=SX, etc. */
    norm = norm_all = 0.0;
 
   for(k=BRD;k<LNZ+BRD;k++)
@@ -156,17 +171,17 @@ void initial_conditions(int restart)
       }
 
   MPI_Allreduce(&norm, &norm_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-
   norm_all /= property.NX* property.NY* property.NZ;
-  /*
+
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++)
 	for (pp = 0; pp < NPOP; pp++){ 
 	  p[IDX(i,j,k)].p[pp] /= norm_all;
       }
-  */
+
   /* end of density normalization*/
+ #endif
 
 #ifdef METHOD_LOG
   for(k=BRD;k<LNZ+BRD;k++)
@@ -242,10 +257,12 @@ void initial_conditions(int restart)
  #endif
 
  #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-      if(NZ==1){
-        if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += 1.e-2; }else{ t[IDX(i,j,k)] -= 1.e-2; }
+      val = 1.e-3;
+      if(NZ==1){ 
+        if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += val; }else{ t[IDX(i,j,k)] -= val; }
       }else{
-	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ t[IDX(i,j,k)] += 1.e-1; }else{ t[IDX(i,j,k)] -= 0.25e-1; }
+        //if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += val; }else{ t[IDX(i,j,k)] -= val; }
+	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ t[IDX(i,j,k)] += val; }else{ t[IDX(i,j,k)] -= val/4.0; }
 	//t[IDX(i,j,k)] += 1.e-1*sin(10.0*two_pi*center_V[IDX(i, j, k)].x/property.SX)*sin(10.0*two_pi*center_V[IDX(i, j, k)].z/property.SZ);
       }
  #endif
