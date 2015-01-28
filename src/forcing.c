@@ -32,14 +32,22 @@ void build_forcing(){
       }
  #else
    /* the phases make a random walk */
-      fac = sqrt(1.0/(my_double)randomization_itime);
+      fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
+	  /*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
 	  phi[ii].x += val*fac;
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
 	  phi[ii].y += val*fac;
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
+	  phi[ii].z += val*fac;
+	  */
+	  val=random_gauss(0.0,1.0);
+	  phi[ii].x += val*fac;
+	  val=random_gauss(0.0,1.0);
+	  phi[ii].y += val*fac;
+	  val=random_gauss(0.0,1.0);
 	  phi[ii].z += val*fac;
 	}
       }
@@ -84,15 +92,24 @@ void build_forcing(){
       }
  #else
       /* the phases do random walk */
-      fac = sqrt(1.0/(my_double)randomization_itime_t);
-      if(ROOT){ 
+      //fac = sqrt(1.0/(my_double)randomization_itime_t);
+      fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
+      if(ROOT){ 	
 	for (ii=0; ii<nk_t; ii++){
+	/*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_t[ii].x += val*fac;
           val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_t[ii].y += val*fac;
           val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_t[ii].z += val*fac;
+	*/
+	  val=random_gauss(0.0,1.0);
+	  phi_t[ii].x += val*fac;
+	  val=random_gauss(0.0,1.0);
+	  phi_t[ii].y += val*fac;
+	  val=random_gauss(0.0,1.0);
+	  phi_t[ii].z += val*fac;
 	}
       }
 #endif
@@ -132,15 +149,24 @@ void build_forcing(){
       }
  #else
       /* the phases do random walk */
-      fac = sqrt(1.0/(my_double)randomization_itime_s);
+      //fac = sqrt(1.0/(my_double)randomization_itime_s);
+      fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
       if(ROOT){ 
 	for (ii=0; ii<nk_s; ii++){
+	  /*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_s[ii].x += val*fac;
           val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_s[ii].y += val*fac;
           val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_s[ii].z += val*fac;
+	  */
+	  val=random_gauss(0.0,1.0);
+	  phi_s[ii].x += val*fac;
+	  val=random_gauss(0.0,1.0);
+	  phi_s[ii].y += val*fac;
+	  val=random_gauss(0.0,1.0);
+	  phi_s[ii].z += val*fac;
 	}
       }
 #endif
@@ -692,11 +718,31 @@ invtau_s = 1.0/property.tau_s;
 
 #ifdef LB_TEMPERATURE_FORCING
 #ifndef METHOD_FORCING_MALASPINAS
+
+ #ifdef LB_TEMPERATURE_FORCING_PAST
+	/* a new version */
+        ux = u[IDX(i, j, k)].x;
+        uy = u[IDX(i, j, k)].y;
+        uz = u[IDX(i, j, k)].z;                         
+        u2 = (ux * ux + uy * uy + uz * uz);
+	wgt2 = (1.0 + invcs2 * cu *((property.tau_t-0.5)/property.tau_t)  );
+	rhs_g[IDX(i,j,k)].p[pp] += 1.5 * wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+        ux = old_u[IDX(i, j, k)].x;
+        uy = old_u[IDX(i, j, k)].y;
+        uz = old_u[IDX(i, j, k)].z;                         
+        cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);	
+	wgt2 = (1.0 + invcs2 * cu *((property.tau_t-0.5)/property.tau_t)  );
+	rhs_g[IDX(i,j,k)].p[pp] -= 0.5 * wgt2*wgt[pp]*old_t_source[IDX(i,j,k)];
+
+	old_t_source[IDX(i,j,k)] = t_source[IDX(i,j,k)];
+ #else
        /* Not Guo here */
-        rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+       /* This is the simplest method and the one that should normally be used */
+      rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+ #endif
 
 #else
-      /* The forcing is as in Malaspinas PhD pag. 93 (bottom)*/	    
+      /* The forcing is as in Malaspinas PhD pag. 93 (bottom) , with a correction factor 2 (found empirically)*/	    
         ux = u[IDX(i, j, k)].x;
         uy = u[IDX(i, j, k)].y;
         uz = u[IDX(i, j, k)].z;                         
@@ -705,8 +751,6 @@ invtau_s = 1.0/property.tau_s;
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
 	//rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 	rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
-	//wgt2=(1.0 + invcs2 * cu *((property.tau_t-0.5)/property.tau_t)  );
-	//rhs_g[IDX(i,j,k)].p[pp] += wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 #endif
 
 
