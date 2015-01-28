@@ -211,6 +211,10 @@ extern my_double invcs, invcs2, invcs4;
 extern pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
 extern my_double *dens;
 extern vector *u;
+ #ifdef LB_FLUID_PAST
+ extern my_double *old_dens;
+ extern vector *old_u;
+ #endif
  #ifdef METHOD_REDEFINED_POP
  extern pop *f_aux;
  #endif
@@ -231,8 +235,14 @@ extern vector *u;
 #ifdef LB_TEMPERATURE
 extern pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g , *g_eq;
 extern my_double *t;
+ #ifdef LB_TEMPERATURE_PAST
+ extern my_double *old_t;
+ #endif
  #ifdef LB_TEMPERATURE_FORCING
  extern my_double *t_source;
+   #ifdef LB_TEMPERATURE_FORCING_PAST
+ extern my_double *old_t_source;
+   #endif
   #ifdef LB_TEMPERATURE_FORCING_HIT
   extern int nk_t;
   extern vector *vk_t, *phi_t;

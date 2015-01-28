@@ -128,17 +128,17 @@ void assign_parameters(){
   sprintf(name,"tau_u");
   property.tau_u = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
-#ifdef METHOD_STREAMING
+ #ifdef METHOD_STREAMING
   property.nu = (property.tau_u-0.5)/3.0;
-#else
-#ifdef METHOD_REDEFINED_POP
+ #else
+  #ifdef METHOD_REDEFINED_POP
   property.nu = (property.tau_u-0.5*property.time_dt)/3.0;
-#else
+  #else
   property.nu = property.tau_u/3.0;
-#endif
-#endif
+  #endif
+ #endif
   fprintf(stderr,"viscosity %g\n",(double)property.nu);
-#ifdef LB_FLUID_FORCING
+ #ifdef LB_FLUID_FORCING
   /* forcing Amplitude */
   fprintf(stderr,"YES <- LB_FLUID_FORCING\n");
   sprintf(name,"Amp_x");
@@ -150,19 +150,19 @@ void assign_parameters(){
   fprintf(stderr,"Properties: Amp_x %g\n",(double)property.Amp_x);
   fprintf(stderr,"Properties: Amp_y %g\n",(double)property.Amp_y);
   fprintf(stderr,"Properties: Amp_z %g\n",(double)property.Amp_z);
-#ifdef LB_FLUID_FORCING_POISEUILLE
+  #ifdef LB_FLUID_FORCING_POISEUILLE
   fprintf(stderr,"Reynolds (Poiseuille) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Reynolds (Poiseuille) %e\n", property.Amp_x * property.SY /property.nu);
   fclose(fout); 
-#endif
-#ifdef LB_FLUID_FORCING_CHANNEL
+  #endif
+  #ifdef LB_FLUID_FORCING_CHANNEL
   fprintf(stderr,"Reynolds (turbulent shear) Number is -> Re= %e\n", property.Amp_x * (property.SY/2.) /property.nu);
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Reynolds (turbulent shear) %e\n", property.Amp_x * (property.SY/2.) /property.nu);
   fclose(fout); 
-#endif
-#endif
+  #endif
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -171,15 +171,15 @@ void assign_parameters(){
   sprintf(name,"tau_t");
   property.tau_t = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
-#ifdef METHOD_STREAMING
+ #ifdef METHOD_STREAMING
   property.kappa = (property.tau_t-0.5)/3.0;
-#else
-#ifdef METHOD_REDEFINED_POP
+ #else
+  #ifdef METHOD_REDEFINED_POP
   property.kappa = (property.tau_t-0.5*property.time_dt)/3.0;
-#else
+  #else
   property.kappa = property.tau_t/3.0;
-#endif
-#endif
+  #endif
+ #endif
   fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
   sprintf(name,"T_bot");
   property.T_bot = read_parameter(name);
@@ -189,7 +189,7 @@ void assign_parameters(){
   property.T_ref = read_parameter(name);
   property.deltaT = property.T_bot-property.T_top;
   fprintf(stderr,"T_bot %g , T_top %g , deltaT %g\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
-#ifdef LB_TEMPERATURE_BUOYANCY
+ #ifdef LB_TEMPERATURE_BUOYANCY
   fprintf(stderr,"YES <- LB_TEMPERATURE_BUOYANCY\n");
   sprintf(name,"beta_t");
   property.beta_t = read_parameter(name);
@@ -211,20 +211,19 @@ void assign_parameters(){
   fprintf(fout,"Rayleigh %e\n",property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   fprintf(fout,"Prandtl %e\n", property.nu/property.kappa);   
   fclose(fout);
-
-#endif 
-#ifdef LB_TEMPERATURE_FORCING
+ #endif 
+ #ifdef LB_TEMPERATURE_FORCING
   sprintf(name,"Amp_t");
   property.Amp_t = read_parameter(name);
-#ifdef LB_TEMPERATURE_FORCING_BULK
- #ifdef LB_TEMPERATURE_BUOYANCY
+  #ifdef LB_TEMPERATURE_FORCING_BULK
+   #ifdef LB_TEMPERATURE_BUOYANCY
   fprintf(stderr,"Internal Rayleigh Number is -> Ra_{Int} = %e\n", property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) ); 
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Internal Rayleigh %e\n",property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );
   fclose(fout);
- #endif
-#endif
-#ifdef LB_TEMPERATURE_FORCING_RADIATION
+   #endif
+  #endif
+  #ifdef LB_TEMPERATURE_FORCING_RADIATION
   sprintf(name,"attenuation");
   property.attenuation = read_parameter(name);
   fprintf(stderr,"Bo Number is -> Bo = %e\n", property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
@@ -235,9 +234,9 @@ void assign_parameters(){
   fprintf(fout,"Er Number is -> Er = %e\n", property.attenuation*property.SY ); 
   fprintf(fout,"Radiation Rayleigh Number is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fclose(fout);
-#endif
-#endif
-#ifdef LB_TEMPERATURE_MELTING
+  #endif
+ #endif
+ #ifdef LB_TEMPERATURE_MELTING
   sprintf(name,"T_solid");
   property.T_solid = read_parameter(name);
   sprintf(name,"specific_heat");
@@ -245,8 +244,8 @@ void assign_parameters(){
   sprintf(name,"latent_heat");
   property.latent_heat = read_parameter(name);
   fprintf(stderr,"Stefan Number is -> Ste = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
-#endif
-#endif
+ #endif
+#endif /* end of ifdef LB_TEMPERATURE */
 
 #ifdef LB_SCALAR
     /* relaxation time and viscosity for temperature */
@@ -254,11 +253,11 @@ void assign_parameters(){
   sprintf(name,"tau_s");
   property.tau_s = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_s %g\n",(double)property.tau_s);
-#ifdef METHOD_STREAMING
+ #ifdef METHOD_STREAMING
   property.chi = (property.tau_s-0.5)/3.0;
-#else
+ #else
   property.chi = property.tau_s/3.0;
-#endif
+ #endif
   fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
 
   sprintf(name,"S_bot");
@@ -280,7 +279,7 @@ void assign_parameters(){
   property.Amp_s = read_parameter(name);
   fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.Amp_s ); 
  #endif
-#endif
+#endif /* end of ifded LB_SCALAR */
 
 
 #ifdef LAGRANGE
@@ -615,6 +614,15 @@ interp6_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(
  if(dens == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
  set_to_zero_my_double( dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
+ #ifdef LB_FLUID_PAST
+ old_u = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_u == NULL){ fprintf(stderr,"Not enough memory to allocate old_u\n"); exit(-1);}
+ set_to_zero_vector( old_u,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+ old_dens  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_dens == NULL){ fprintf(stderr,"Not enough memory to allocate old_dens\n"); exit(-1);}
+ set_to_zero_my_double( old_dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ #endif
 
 #ifdef LB_FLUID_FORCING
  force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
@@ -778,23 +786,34 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
  if(t == NULL){ fprintf(stderr,"Not enough memory to allocate t\n"); exit(-1);}
  set_to_zero_my_double( t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-#ifdef LB_TEMPERATURE_FORCING
+#ifdef LB_TEMPERATURE_PAST
+ old_t  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(old_t == NULL){ fprintf(stderr,"Not enough memory to allocate old_t\n"); exit(-1);}
+ set_to_zero_my_double( old_t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+#endif
+
+ #ifdef LB_TEMPERATURE_FORCING
  t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(t_source == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
  set_to_zero_scalar( t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-#ifdef LB_TEMPERATURE_MELTING
- liquid_frac  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
- set_to_zero_scalar( liquid_frac,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
- set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- //enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
- //set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-#endif
-#endif
+  #ifdef LB_TEMPERATURE_FORCING_PAST
+  old_t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  if(old_t_source == NULL){ fprintf(stderr,"Not enough memory to allocate old_source_t\n"); exit(-1);}
+  set_to_zero_scalar( old_t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  #endif 
+  #ifdef LB_TEMPERATURE_MELTING
+  liquid_frac  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  set_to_zero_scalar( liquid_frac,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  //enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  //set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  #endif
+ #endif
 #endif
 
 #ifdef LB_SCALAR
@@ -921,8 +940,11 @@ void free_fields(){
  free(old_rhs_p); 
  free(old_old_rhs_p); 
  free(u); 
- free(dens);  
-
+ free(dens); 
+ #ifdef LB_FLUID_PAST 
+ free(old_u); 
+ free(old_dens); 
+ #endif
 #ifdef LB_FLUID_FORCING
  free(force); 
 #ifdef LB_FLUID_FORCING_LANDSCAPE
@@ -988,14 +1010,20 @@ free(ym_zm_edge_pop);
  free(old_rhs_g);
  free(old_old_rhs_g);
  free(t);
+ #ifdef LB_TEMPERATURE_PAST
+  free(old_t);
+ #endif
 
-#ifdef LB_TEMPERATURE_FORCING
+ #ifdef LB_TEMPERATURE_FORCING
  free(t_source);
-#ifdef LB_TEMPERATURE_MELTING
- free(liquid_frac);  
- free(liquid_frac_old);  
-#endif
-#endif
+  #ifdef LB_TEMPERATURE_FORCING_PAST
+   free(old_t_source);
+  #endif
+  #ifdef LB_TEMPERATURE_MELTING
+  free(liquid_frac);  
+  free(liquid_frac_old);  
+  #endif
+ #endif
 #endif
 
 #ifdef LB_SCALAR

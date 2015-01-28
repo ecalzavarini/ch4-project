@@ -212,6 +212,10 @@ my_double invcs, invcs2, invcs4;
  pop *p, *rhs_p, *old_rhs_p, *old_old_rhs_p, *p_eq;
  my_double *dens;
  vector *u;
+ #ifdef LB_FLUID_PAST
+  my_double *old_dens;
+  vector *old_u;
+ #endif
  #ifdef METHOD_REDEFINED_POP
  pop *f_aux;
  #endif
@@ -232,8 +236,14 @@ my_double invcs, invcs2, invcs4;
 #ifdef LB_TEMPERATURE
  pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g, *g_eq;
  my_double *t;
+ #ifdef LB_TEMPERATURE_PAST
+  my_double *old_t;
+ #endif
  #ifdef LB_TEMPERATURE_FORCING
- my_double *t_source;
+  my_double *t_source;
+   #ifdef LB_TEMPERATURE_FORCING_PAST
+    my_double *old_t_source;
+   #endif
   #ifdef LB_TEMPERATURE_FORCING_HIT
   int nk_t;
   vector *vk_t, *phi_t;
