@@ -577,6 +577,7 @@ void add_forcing(){
   my_double rho ,temp , wgt2;
   pop p_eq , g_eq , h_eq;
   my_double mask;
+  vector rho_dt_u , u_dt_rho;
 
 #ifdef LB_FLUID
 invtau = 1.0/property.tau_u;
@@ -739,6 +740,23 @@ invtau_s = 1.0/property.tau_s;
        /* Not Guo here */
        /* This is the simplest method and the one that should normally be used */
       rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
+      
+  #ifdef LB_FLUID_PAST      
+   #ifdef METHOD_CORRECTION_LATT
+      // Jonas LATT correction (see his PhD thesis)
+      if(pp==0){
+      rho_dt_u.x = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].x  - old_u[IDX(i, j, k)].x)*invtau_t;
+      rho_dt_u.y = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].y  - old_u[IDX(i, j, k)].y)*invtau_t;
+      rho_dt_u.z = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].z  - old_u[IDX(i, j, k)].z)*invtau_t;
+      u_dt_rho.x = u[IDX(i, j, k)].x*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau_t;
+      u_dt_rho.y = u[IDX(i, j, k)].y*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau_t;
+      u_dt_rho.z = u[IDX(i, j, k)].z*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau_t;
+      }
+      wgt2=c[pp].x*(rho_dt_u.x-u_dt_rho.x) + c[pp].y*(rho_dt_u.y-u_dt_rho.y) + c[pp].z*(rho_dt_u.z-u_dt_rho.z);
+      rhs_g[IDX(i,j,k)].p[pp] += wgt[pp] *(1.0-0.5*property.time_dt*invtau_t)*invcs2*wgt2;
+   #endif
+  #endif
+
  #endif
 
 #else
