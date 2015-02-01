@@ -1039,6 +1039,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
   pop fcoll, fcoll_xp,fcoll_xm,fcoll_yp,fcoll_ym,fcoll_zp,fcoll_zm;
   my_double fac;
   my_double tau_les;
+  vector rho_dt_u , u_dt_rho;
+  my_double wgt2;
  
  
 invtau = 1.0/tau;
@@ -1143,6 +1145,32 @@ invtau = 1.0/tau;
 	}/* pp */
       }/* i,j,k */
 #endif
+
+ #ifdef METHOD_CORRECTION_LATT
+     // Jonas LATT correction in advection-diffusion equation (see his PhD thesis)
+  #ifdef LB_FLUID_PAST      
+  if( which_pop == 'g' ||  which_pop == 'h'){
+    //fprintf(stderr,"AAA\n");
+  for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){
+      rho_dt_u.x = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].x  - old_u[IDX(i, j, k)].x)*invtau;
+      rho_dt_u.y = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].y  - old_u[IDX(i, j, k)].y)*invtau;
+      rho_dt_u.z = dens[IDX(i, j, k)]*(u[IDX(i, j, k)].z  - old_u[IDX(i, j, k)].z)*invtau;
+      u_dt_rho.x = u[IDX(i, j, k)].x*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau;
+      u_dt_rho.y = u[IDX(i, j, k)].y*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau;
+      u_dt_rho.z = u[IDX(i, j, k)].z*(dens[IDX(i, j, k)] - old_dens[IDX(i, j, k)])*invtau;
+
+  for (pp=0; pp<NPOP; pp++){
+      wgt2=c[pp].x*(rho_dt_u.x-u_dt_rho.x) + c[pp].y*(rho_dt_u.y-u_dt_rho.y) + c[pp].z*(rho_dt_u.z-u_dt_rho.z);
+       if( which_pop == 'g' ) rhs_f[IDX(i,j,k)].p[pp] += wgt[pp]*(1.0-0.5*property.time_dt*invtau)*invcs2*wgt2;
+       if( which_pop == 'h' ) rhs_f[IDX(i,j,k)].p[pp] += wgt[pp]*(1.0-0.5*property.time_dt*invtau)*invcs2*wgt2;
+	}/* pp */
+      }/* i,j,k */
+}/* end of if on g or h */
+  #endif
+ #endif
+
 
 }/* end of add_collision */
 
