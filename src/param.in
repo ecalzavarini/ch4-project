@@ -1,6 +1,6 @@
-resume 1
-resume_u 1
-resume_t 1
+resume 0
+resume_u 0
+resume_t 0
 resume_s 0
 
 NX 101
@@ -11,19 +11,19 @@ SX 101
 SY 50
 SZ 1
 
-time_dt 1.0
+time_dt 0.8
 time_start 0.0
-time_end 1000.
-time_dump_field 250.
+time_end 20000.
+time_dump_field 1000.
 time_dump_diagn 10.
 
-tau_u 1.0
+tau_u 0.9
 
-Amp_x 0.1
+Amp_x 0.01
 Amp_y 0.0000
 Amp_z 0.0000
 
-tau_t 1.0
+tau_t 0.9
 T_bot  1.0
 T_top  -1.0
 T_ref  0.0
@@ -35,7 +35,7 @@ gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.01
+Amp_t 0.0004
 attenuation 1.0
 
 T_solid 1.001
@@ -52,3 +52,7 @@ beta_s 0.001897778
 Amp_s 0.01
 
 particle_number 2000
+
+tau_drag_types 4
+tau_drag_min 0
+tau_drag_max 2

@@ -287,7 +287,52 @@ void assign_parameters(){
   fprintf(stderr,"YES <- LAGRANGE\n");
   sprintf(name,"particle_number");
   property.particle_number = read_parameter(name);
-  fprintf(stderr,"Properties:\n particle_number %g\n",(double)property.particle_number);
+  fprintf(stderr,"Properties: particle_number %g\n",(double)property.particle_number);
+
+  /* drag response time tau_drag */  
+  sprintf(name,"tau_drag_types");
+  property.tau_drag_types = read_parameter(name);
+  if(property.tau_drag_types <= 0.0){
+    fprintf(stderr,"PROBLEM! Properties: tau_drag_types %g <= 0 !!!\n",(double)property.tau_drag_types);
+  }else{
+    fprintf(stderr,"Properties: tau_drag_types %g\n",(double)property.tau_drag_types);
+  }
+  sprintf(name,"tau_drag_min");
+  property.tau_drag_min = read_parameter(name);
+  fprintf(stderr,"Properties: tau_drag_min %g\n",(double)property.tau_drag_min);
+  if(property.tau_drag_types > 1.0){
+    sprintf(name,"tau_drag_max");
+    property.tau_drag_max = read_parameter(name);
+    fprintf(stderr,"Properties: tau_drag_max %g\n",(double)property.tau_drag_max);
+  }
+
+  /* total number of particles types up to now */
+  property.particle_types = property.tau_drag_types;
+
+ #ifdef LAGRANGE_ADDEDMASS
+  /* added mass  */  
+  sprintf(name,"beta_coeff_types");
+  property.beta_coeff_types = read_parameter(name);
+  if(property.beta_coeff_types <= 0.0){
+    fprintf(stderr,"PROBLEM! Properties: beta_coeff_types %g <= 0 !!!\n",(double)property.beta_coeff_types);
+  }else{
+    fprintf(stderr,"Properties: beta_coeff_types %g\n",(double)property.beta_coeff_types);
+  }
+  sprintf(name,"beta_coeff_min");
+  property.beta_coeff_min = read_parameter(name);
+  fprintf(stderr,"Properties: beta_coeff_min %g\n",(double)property.beta_coeff_min);
+  if(property.beta_coeff_types > 1.0){
+    sprintf(name,"beta_coeff_max");
+    property.beta_coeff_max = read_parameter(name);
+    fprintf(stderr,"Properties: beta_coeff_max %g\n",(double)property.beta_coeff_max);
+  }
+
+  /* total number of particles types up to now */
+  property.particle_types *= property.beta_coeff_types;
+ #endif
+
+  /* total number of particles types */
+   fprintf(stderr,"Properties: particle_types %g\n",(double)property.particle_types);   
 #endif
 
   /* size of types, just for a check */

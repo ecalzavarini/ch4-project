@@ -82,6 +82,23 @@ typedef struct {
 
 #ifdef LAGRANGE
   my_double particle_number;
+  my_double particle_types; 
+  my_double tau_drag_types, tau_drag_min , tau_drag_max;
+ #ifdef LAGRANGE_ADDEDMASS
+  my_double beta_coeff_types, beta_coeff_min , beta_coeff_max;
+ #endif
+ #ifdef LAGRANGE_ORIENTATION
+  my_double aspect_ratio_types, aspect_ratio_min , aspect_ratio_max;
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  my_double gyrotaxis_velocity_types, gyrotaxis_velocity_min, gyrotaxis_velocity_max;
+  #endif
+  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  my_double rotational_diffusion_types, rotational_diffusion_min, rotational_diffusion_max;
+  #endif
+ #endif
+ #ifdef LAGRANGE_ACTIVE 
+  my_double swim_velocity_types, swim_velocity_min, swim_velocity_max;
+ #endif
 #endif
 } prop;
 
