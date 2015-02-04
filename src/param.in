@@ -53,6 +53,14 @@ Amp_s 0.01
 
 particle_number 2000
 
-tau_drag_types 4
+tau_drag_types 1
 tau_drag_min 0
-tau_drag_max 2
+tau_drag_max 0
+
+beta_coeff_types 1
+beta_coeff_min 1
+beta_coeff_max 1
+
+aspect_ratio_types 10
+aspect_ratio_min 0.1
+aspect_ratio_max 10

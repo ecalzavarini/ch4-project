@@ -304,12 +304,16 @@ void assign_parameters(){
     sprintf(name,"tau_drag_max");
     property.tau_drag_max = read_parameter(name);
     fprintf(stderr,"Properties: tau_drag_max %g\n",(double)property.tau_drag_max);
+    if(property.tau_drag_max < property.tau_drag_min){
+      fprintf(stderr,"BE CAREFULL! Properties: tau_drag_max %g < tau_drag_min %g !!!\n",(double)property.tau_drag_max, (double)property.tau_drag_min);      
+    }
   }
 
   /* total number of particles types up to now */
   property.particle_types = property.tau_drag_types;
 
- #ifdef LAGRANGE_ADDEDMASS
+ #ifdef LAGRANGE_GRADIENT
+  #ifdef LAGRANGE_ADDEDMASS
   /* added mass  */  
   sprintf(name,"beta_coeff_types");
   property.beta_coeff_types = read_parameter(name);
@@ -325,10 +329,39 @@ void assign_parameters(){
     sprintf(name,"beta_coeff_max");
     property.beta_coeff_max = read_parameter(name);
     fprintf(stderr,"Properties: beta_coeff_max %g\n",(double)property.beta_coeff_max);
+    if(property.beta_coeff_max < property.beta_coeff_min){
+      fprintf(stderr,"BE CAREFULL! Properties: beta_coeff_max %g < beta_coeff_min %g !!!\n",(double)property.beta_coeff_max, (double)property.beta_coeff_min);      
+    }
   }
 
   /* total number of particles types up to now */
   property.particle_types *= property.beta_coeff_types;
+  #endif
+
+  #ifdef LAGRANGE_ORIENTATION
+  /* aspect ratio for rotation  */  
+  sprintf(name,"aspect_ratio_types");
+  property.aspect_ratio_types = read_parameter(name);
+  if(property.aspect_ratio_types <= 0.0){
+    fprintf(stderr,"PROBLEM! Properties: aspect_ratio_types %g <= 0 !!!\n",(double)property.aspect_ratio_types);
+  }else{
+    fprintf(stderr,"Properties: aspect_ratio_types %g\n",(double)property.aspect_ratio_types);
+  }
+  sprintf(name,"aspect_ratio_min");
+  property.aspect_ratio_min = read_parameter(name);
+  fprintf(stderr,"Properties: aspect_ratio_min %g\n",(double)property.aspect_ratio_min);
+  if(property.aspect_ratio_types > 1.0){
+    sprintf(name,"aspect_ratio_max");
+    property.aspect_ratio_max = read_parameter(name);
+    fprintf(stderr,"Properties: aspect_ratio_max %g\n",(double)property.aspect_ratio_max);
+    if(property.aspect_ratio_max < property.aspect_ratio_min){
+      fprintf(stderr,"BE CAREFULL! Properties: aspect_ratio_max %g < aspect_ratio_min %g !!!\n",(double)property.aspect_ratio_max, (double)property.aspect_ratio_min);      
+    }
+  }
+
+  /* total number of particles types up to now */
+  property.particle_types *= property.aspect_ratio_types;
+  #endif
  #endif
 
   /* total number of particles types */

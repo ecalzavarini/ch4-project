@@ -54,6 +54,10 @@ void initial_conditions_particles(int restart){
   char fnamein[128];
   FILE *fin;
 
+  int type;
+  my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
+  
+
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
     MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
@@ -82,26 +86,76 @@ void initial_conditions_particles(int restart){
 
 /* restart from memory */
 
+/* build particle property types arrays */
+ tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.tau_drag_types;
+ if(property.tau_drag_types > 1 )  step = (property.tau_drag_max - property.tau_drag_min)/(property.tau_drag_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.tau_drag_types; i++){
+  tau_drag[ i+j*(int)property.tau_drag_types ] = property.tau_drag_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d tau_drag %g\n",i,tau_drag[i]);
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_ADDEDMASS
+ beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.beta_coeff_types;
+ if(property.beta_coeff_types > 1 )  step = (property.beta_coeff_max - property.beta_coeff_min)/(property.beta_coeff_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.beta_coeff_types; i++){
+  beta_coeff[ i+j*(int)property.beta_coeff_types ] = property.beta_coeff_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
+ #endif
+ #ifdef LAGRANGE_ORIENTATION
+ aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.aspect_ratio_types;
+ /* linear increment */
+ //if(property.aspect_ratio_types > 1 )  step = (property.aspect_ratio_max - property.aspect_ratio_min)/(property.aspect_ratio_types-1.0); else step = 0;
+ /* geometric increment */
+ if(property.aspect_ratio_types > 1 )  step = pow(property.aspect_ratio_max/property.aspect_ratio_min, 1.0/(property.aspect_ratio_types-1.0)); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.aspect_ratio_types; i++){
+ /* linear increment */
+  //aspect_ratio[ i+j*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
+ /* geometric increment */
+   aspect_ratio[ i+j*(int)property.aspect_ratio_types ] = property.aspect_ratio_min * pow(step,(double)i);
+   }
+ }
+ for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
+ #endif
+#endif
+/* assign param values to particles */
 for (i=0;i<npart;i++) {
 
 /* name */
 (tracer+i)->name = i+name_offset;
 
-(tracer+i)->tau_drag = 0.0;
-#ifdef LAGRANGE_ADDEDMASS
-(tracer+i)->beta_coeff = 1.0;
-#endif
-#ifdef LAGRANGE_ORIENTATION
-/* particle aspect ratio (assuming axi-symmetry) */
-(tracer+i)->aspect_ratio = 100.0;
- #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
-/* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
- (tracer+i)->gyrotaxis_velocity = 1.0;
+type = ((int)(tracer+i)->name)%(int)property.particle_types;
+
+/* viscous drag */
+(tracer+i)->tau_drag = tau_drag[type];
+//(tracer+i)->tau_drag = 0.0;
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_ADDEDMASS
+ /* added mass */
+ (tracer+i)->beta_coeff = beta_coeff[type];
+ //(tracer+i)->beta_coeff = 1.0;
  #endif
- #ifdef LAGRANGE_ORIENTATION_DIFFUSION
- /* rotational diffusion , units ? [rad^2 /time] */
- (tracer+i)->rotational_diffusion = 0.1;
- #endif 
+ #ifdef LAGRANGE_ORIENTATION
+ /* particle aspect ratio (assuming axi-symmetry) */
+ (tracer+i)->aspect_ratio = aspect_ratio[type];
+ //(tracer+i)->aspect_ratio = 100.0;
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  /* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
+  (tracer+i)->gyrotaxis_velocity = 1.0;
+  #endif
+  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  /* rotational diffusion , units ? [rad^2 /time] */
+  (tracer+i)->rotational_diffusion = 0.1;
+  #endif 
+ #endif
 #endif
 #ifdef LAGRANGE_ACTIVE 
  (tracer+i)->swim_velocity = 0.01;
