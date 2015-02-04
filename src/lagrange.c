@@ -128,10 +128,16 @@ void initial_conditions_particles(int restart){
   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
   gyrotaxis_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.gyrotaxis_velocity_types;
-  if(property.gyrotaxis_velocity_types > 1 )  step = (property.gyrotaxis_velocity_max - property.gyrotaxis_velocity_min)/(property.gyrotaxis_velocity_types-1.0); else step = 0;
+ /* linear increment */
+  //  if(property.gyrotaxis_velocity_types > 1 )  step = (property.gyrotaxis_velocity_max - property.gyrotaxis_velocity_min)/(property.gyrotaxis_velocity_types-1.0); else step = 0;
+ /* geometric increment */
+ if(property.gyrotaxis_velocity_types > 1 )  step = pow(property.gyrotaxis_velocity_max/property.gyrotaxis_velocity_min, 1.0/(property.gyrotaxis_velocity_types-1.0)); else step = 0;
   for (j=0; j<(int)cycles; j++){
   for (i=0; i<(int)property.gyrotaxis_velocity_types; i++){
-  gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
+ /* linear increment */
+    //  gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
+ /* geometric increment */
+   gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min * pow(step,(double)i);
    }
   }
   for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
@@ -244,7 +250,16 @@ kp =  km + 1;
 (tracer+i)->dt_py = 0.0;
 (tracer+i)->dt_pz = 0.0;
 #endif
- }
+ }/* end of  loop on particles */
+
+/*
+ free(tau_drag);
+ free(beta_coeff);
+ free(aspect_ratio);
+ free(gyrotaxis_velocity);
+ free(rotational_diffusion);
+ free(swim_velocity);
+*/
 
     }/* end of if /else on restart */
 
@@ -1282,6 +1297,11 @@ void move_particles(){
 #ifdef LAGRANGE_ACTIVE 
    /* if the particle is alive there is an extra velocity to add */
   #ifdef LAGRANGE_ORIENTATION   
+   /*
+   (tracer+ipart)->vx += (tracer+ipart)->swim_velocity;
+   (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
+   (tracer+ipart)->vz += (tracer+ipart)->swim_velocity;
+   */
    (tracer+ipart)->vx += (tracer+ipart)->swim_velocity*(tracer+ipart)->px;
    (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
    (tracer+ipart)->vz += (tracer+ipart)->swim_velocity*(tracer+ipart)->pz;
