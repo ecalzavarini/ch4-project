@@ -291,23 +291,13 @@ void assign_parameters(){
 
   /* drag response time tau_drag */  
   sprintf(name,"tau_drag_types");
-  property.tau_drag_types = read_parameter(name);
-  if(property.tau_drag_types <= 0.0){
-    fprintf(stderr,"PROBLEM! Properties: tau_drag_types %g <= 0 !!!\n",(double)property.tau_drag_types);
-  }else{
-    fprintf(stderr,"Properties: tau_drag_types %g\n",(double)property.tau_drag_types);
-  }
+  property.tau_drag_types = read_parameter(name); 
   sprintf(name,"tau_drag_min");
   property.tau_drag_min = read_parameter(name);
-  fprintf(stderr,"Properties: tau_drag_min %g\n",(double)property.tau_drag_min);
-  if(property.tau_drag_types > 1.0){
-    sprintf(name,"tau_drag_max");
-    property.tau_drag_max = read_parameter(name);
-    fprintf(stderr,"Properties: tau_drag_max %g\n",(double)property.tau_drag_max);
-    if(property.tau_drag_max < property.tau_drag_min){
-      fprintf(stderr,"BE CAREFULL! Properties: tau_drag_max %g < tau_drag_min %g !!!\n",(double)property.tau_drag_max, (double)property.tau_drag_min);      
-    }
-  }
+  sprintf(name,"tau_drag_max");
+  property.tau_drag_max = read_parameter(name);
+  fprintf(stderr,"tau_drag_types %g , tau_drag_max %g , tau_drag_min %g\n",(double)property.tau_drag_types, (double)property.tau_drag_min, (double)property.tau_drag_max);
+  if( property.tau_drag_types <1 || property.tau_drag_max < property.tau_drag_min ){ fprintf(stderr,"Error in tau_drag parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
   property.particle_types = property.tau_drag_types;
@@ -316,52 +306,77 @@ void assign_parameters(){
   #ifdef LAGRANGE_ADDEDMASS
   /* added mass  */  
   sprintf(name,"beta_coeff_types");
-  property.beta_coeff_types = read_parameter(name);
-  if(property.beta_coeff_types <= 0.0){
-    fprintf(stderr,"PROBLEM! Properties: beta_coeff_types %g <= 0 !!!\n",(double)property.beta_coeff_types);
-  }else{
-    fprintf(stderr,"Properties: beta_coeff_types %g\n",(double)property.beta_coeff_types);
-  }
+  property.beta_coeff_types = read_parameter(name); 
   sprintf(name,"beta_coeff_min");
   property.beta_coeff_min = read_parameter(name);
-  fprintf(stderr,"Properties: beta_coeff_min %g\n",(double)property.beta_coeff_min);
-  if(property.beta_coeff_types > 1.0){
-    sprintf(name,"beta_coeff_max");
-    property.beta_coeff_max = read_parameter(name);
-    fprintf(stderr,"Properties: beta_coeff_max %g\n",(double)property.beta_coeff_max);
-    if(property.beta_coeff_max < property.beta_coeff_min){
-      fprintf(stderr,"BE CAREFULL! Properties: beta_coeff_max %g < beta_coeff_min %g !!!\n",(double)property.beta_coeff_max, (double)property.beta_coeff_min);      
-    }
-  }
+  sprintf(name,"beta_coeff_max");
+  property.beta_coeff_max = read_parameter(name);
+  fprintf(stderr,"beta_coeff_types %g , beta_coeff_max %g , beta_coeff_min %g\n",(double)property.beta_coeff_types, (double)property.beta_coeff_min, (double)property.beta_coeff_max);
+  if( property.beta_coeff_types <1 || property.beta_coeff_max < property.beta_coeff_min ){ fprintf(stderr,"Error in beta_coeff parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
   property.particle_types *= property.beta_coeff_types;
   #endif
 
   #ifdef LAGRANGE_ORIENTATION
-  /* aspect ratio for rotation  */  
+  /* aspect ratio for rotation  */ 
   sprintf(name,"aspect_ratio_types");
-  property.aspect_ratio_types = read_parameter(name);
-  if(property.aspect_ratio_types <= 0.0){
-    fprintf(stderr,"PROBLEM! Properties: aspect_ratio_types %g <= 0 !!!\n",(double)property.aspect_ratio_types);
-  }else{
-    fprintf(stderr,"Properties: aspect_ratio_types %g\n",(double)property.aspect_ratio_types);
-  }
+  property.aspect_ratio_types = read_parameter(name); 
   sprintf(name,"aspect_ratio_min");
   property.aspect_ratio_min = read_parameter(name);
-  fprintf(stderr,"Properties: aspect_ratio_min %g\n",(double)property.aspect_ratio_min);
-  if(property.aspect_ratio_types > 1.0){
-    sprintf(name,"aspect_ratio_max");
-    property.aspect_ratio_max = read_parameter(name);
-    fprintf(stderr,"Properties: aspect_ratio_max %g\n",(double)property.aspect_ratio_max);
-    if(property.aspect_ratio_max < property.aspect_ratio_min){
-      fprintf(stderr,"BE CAREFULL! Properties: aspect_ratio_max %g < aspect_ratio_min %g !!!\n",(double)property.aspect_ratio_max, (double)property.aspect_ratio_min);      
-    }
-  }
-
+  sprintf(name,"aspect_ratio_max");
+  property.aspect_ratio_max = read_parameter(name);
+  fprintf(stderr,"aspect_ratio_types %g , aspect_ratio_max %g , aspect_ratio_min %g\n",(double)property.aspect_ratio_types, (double)property.aspect_ratio_min, (double)property.aspect_ratio_max);
+  if( property.aspect_ratio_types <1 || property.aspect_ratio_max < property.aspect_ratio_min ){ fprintf(stderr,"Error in aspect_ratio parameters\n Exit.\n"); exit(0);}   
+  
   /* total number of particles types up to now */
   property.particle_types *= property.aspect_ratio_types;
+ 
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  /* gyrotaxis_velocity for rotation  */ 
+  sprintf(name,"gyrotaxis_velocity_types");
+  property.gyrotaxis_velocity_types = read_parameter(name); 
+  sprintf(name,"gyrotaxis_velocity_min");
+  property.gyrotaxis_velocity_min = read_parameter(name);
+  sprintf(name,"gyrotaxis_velocity_max");
+  property.gyrotaxis_velocity_max = read_parameter(name);
+  fprintf(stderr,"gyrotaxis_velocity_types %g , gyrotaxis_velocity_max %g , gyrotaxis_velocity_min %g\n",(double)property.gyrotaxis_velocity_types, (double)property.gyrotaxis_velocity_min, (double)property.gyrotaxis_velocity_max);
+  if( property.gyrotaxis_velocity_types <1 || property.gyrotaxis_velocity_max < property.gyrotaxis_velocity_min ){ fprintf(stderr,"Error in gyrotaxis_velocity parameters\n Exit.\n"); exit(0);}   
+  
+  /* total number of particles types up to now */
+  property.particle_types *= property.gyrotaxis_velocity_types;
+   #endif
+
+  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  /* rotational_diffusion for rotation  */ 
+  sprintf(name,"rotational_diffusion_types");
+  property.rotational_diffusion_types = read_parameter(name); 
+  sprintf(name,"rotational_diffusion_min");
+  property.rotational_diffusion_min = read_parameter(name);
+  sprintf(name,"rotational_diffusion_max");
+  property.rotational_diffusion_max = read_parameter(name);
+  fprintf(stderr,"rotational_diffusion_types %g , rotational_diffusion_max %g , rotational_diffusion_min %g\n",(double)property.rotational_diffusion_types, (double)property.rotational_diffusion_min, (double)property.rotational_diffusion_max);
+  if( property.rotational_diffusion_types <1 || property.rotational_diffusion_max < property.rotational_diffusion_min ){ fprintf(stderr,"Error in rotational_diffusion parameters\n Exit.\n"); exit(0);}   
+  
+  /* total number of particles types up to now */
+  property.particle_types *= property.rotational_diffusion_types;
+   #endif
   #endif
+ #endif
+
+ #ifdef LAGRANGE_ACTIVE
+  /* swim_velocity for rotation  */ 
+  sprintf(name,"swim_velocity_types");
+  property.swim_velocity_types = read_parameter(name); 
+  sprintf(name,"swim_velocity_min");
+  property.swim_velocity_min = read_parameter(name);
+  sprintf(name,"swim_velocity_max");
+  property.swim_velocity_max = read_parameter(name);
+  fprintf(stderr,"swim_velocity_types %g , swim_velocity_max %g , swim_velocity_min %g\n",(double)property.swim_velocity_types, (double)property.swim_velocity_min, (double)property.swim_velocity_max);
+  if( property.swim_velocity_types <1 || property.swim_velocity_max < property.swim_velocity_min ){ fprintf(stderr,"Error in swim_velocity parameters\n Exit.\n"); exit(0);}   
+  
+  /* total number of particles types up to now */
+  property.particle_types *= property.swim_velocity_types;
  #endif
 
   /* total number of particles types */
@@ -374,7 +389,7 @@ void assign_parameters(){
     fprintf(stderr,"Size of long double %d\n",sizeof(long double));
     fprintf(stderr,"Size of my_double %d\n",sizeof(my_double));
     fprintf(stderr,"\n");
-  }/* if ROOT*/
+  }/* end of if ROOT*/
 
  /* Now broadcast all properties */
  MPI_Bcast(&resume, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -402,7 +417,7 @@ void assign_parameters(){
  }
 #endif
 
-}
+}/* end of assign_parameters */
 
 
 void set_to_zero_vector( vector *f,int size){
@@ -1117,3 +1132,6 @@ free(ym_zm_edge_pop);
 #endif
 
 }
+
+
+

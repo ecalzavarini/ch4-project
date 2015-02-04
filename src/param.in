@@ -59,8 +59,20 @@ tau_drag_max 0
 
 beta_coeff_types 1
 beta_coeff_min 1
-beta_coeff_max 1
+beta_coeff_max 2
 
 aspect_ratio_types 10
-aspect_ratio_min 0.1
-aspect_ratio_max 10
+aspect_ratio_min 0.01
+aspect_ratio_max 100
+
+gyrotaxis_velocity_types 1
+gyrotaxis_velocity_min 0.001
+gyrotaxis_velocity_max 0.002
+
+rotational_diffusion_types 1
+rotational_diffusion_min 0.001
+rotational_diffusion_max 0.001
+
+swim_velocity_types 1
+swim_velocity_min 0
+swim_velocity_max 0.02

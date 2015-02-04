@@ -124,8 +124,46 @@ void initial_conditions_particles(int restart){
    }
  }
  for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
+
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  gyrotaxis_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+  cycles = property.particle_types/property.gyrotaxis_velocity_types;
+  if(property.gyrotaxis_velocity_types > 1 )  step = (property.gyrotaxis_velocity_max - property.gyrotaxis_velocity_min)/(property.gyrotaxis_velocity_types-1.0); else step = 0;
+  for (j=0; j<(int)cycles; j++){
+  for (i=0; i<(int)property.gyrotaxis_velocity_types; i++){
+  gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
+   }
+  }
+  for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
+  #endif
+
+  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+  rotational_diffusion = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+  cycles = property.particle_types/property.rotational_diffusion_types;
+  if(property.rotational_diffusion_types > 1 )  step = (property.rotational_diffusion_max - property.rotational_diffusion_min)/(property.rotational_diffusion_types-1.0); else step = 0;
+  for (j=0; j<(int)cycles; j++){
+  for (i=0; i<(int)property.rotational_diffusion_types; i++){
+  rotational_diffusion[ i+j*(int)property.rotational_diffusion_types ] = property.rotational_diffusion_min + i*step;
+   }
+  }
+  for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d rotational_diffusion %g\n",i,rotational_diffusion[i]);
+  #endif
+
  #endif
 #endif
+#ifdef LAGRANGE_ACTIVE
+ swim_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.swim_velocity_types;
+ if(property.swim_velocity_types > 1 )  step = (property.swim_velocity_max - property.swim_velocity_min)/(property.swim_velocity_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.swim_velocity_types; i++){
+  swim_velocity[ i+j*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
+#endif
+
+
 /* assign param values to particles */
 for (i=0;i<npart;i++) {
 
@@ -149,16 +187,19 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
  //(tracer+i)->aspect_ratio = 100.0;
   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
   /* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
-  (tracer+i)->gyrotaxis_velocity = 1.0;
+  //(tracer+i)->gyrotaxis_velocity = 1.0;
+  (tracer+i)->gyrotaxis_velocity = gyrotaxis_velocity[type];
   #endif
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   /* rotational diffusion , units ? [rad^2 /time] */
-  (tracer+i)->rotational_diffusion = 0.1;
+  //(tracer+i)->rotational_diffusion = 0.1;
+  (tracer+i)->rotational_diffusion = rotational_diffusion[type];
   #endif 
  #endif
 #endif
 #ifdef LAGRANGE_ACTIVE 
- (tracer+i)->swim_velocity = 0.01;
+  // (tracer+i)->swim_velocity = 0.01;
+  (tracer+i)->swim_velocity = swim_velocity[type];
 #endif
 
 /* position: randomly distributed particles */
@@ -1240,7 +1281,7 @@ void move_particles(){
 
 #ifdef LAGRANGE_ACTIVE 
    /* if the particle is alive there is an extra velocity to add */
-  #ifdef LAGRANGE_ORIENTATION
+  #ifdef LAGRANGE_ORIENTATION   
    (tracer+ipart)->vx += (tracer+ipart)->swim_velocity*(tracer+ipart)->px;
    (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
    (tracer+ipart)->vz += (tracer+ipart)->swim_velocity*(tracer+ipart)->pz;
