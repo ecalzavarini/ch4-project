@@ -49,7 +49,12 @@ void assign_parameters(){
 
     remove("param.dat");
     remove("numbers.dat");
-    /* read parameters from file */
+
+    /* write the active define flags  */
+    /* Note works only if the executable is where the code is */
+    system("cat define.h | grep '#def' | grep -v '//#def' > define.dat");
+
+    /* From here on we read parameters from file */
 
     /* resume flags */
     sprintf(name,"resume");
@@ -233,7 +238,7 @@ void assign_parameters(){
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Bo Number is -> Bo = %e\n", property.Amp_t/(property.kappa*property.deltaT/property.SY) ); 
   fprintf(fout,"Er Number is -> Er = %e\n", property.attenuation*property.SY ); 
-  fprintf(fout,"Radiation Rayleigh Number is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
+  fprintf(fout,"Radiation Rayleigh Number (new definition) is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fclose(fout);
   #endif
  #endif
