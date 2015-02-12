@@ -95,7 +95,7 @@ void initial_conditions_particles(int restart){
   tau_drag[ i+j*(int)property.tau_drag_types ] = property.tau_drag_min + i*step;
    }
  }
- for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d tau_drag %g\n",i,tau_drag[i]);
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d tau_drag %g\n",i,tau_drag[i]);
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
  beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
@@ -106,7 +106,7 @@ void initial_conditions_particles(int restart){
   beta_coeff[ i+j*(int)property.beta_coeff_types ] = property.beta_coeff_min + i*step;
    }
  }
- for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
  #endif
  #ifdef LAGRANGE_ORIENTATION
  aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
@@ -123,7 +123,7 @@ void initial_conditions_particles(int restart){
    aspect_ratio[ i+j*(int)property.aspect_ratio_types ] = property.aspect_ratio_min * pow(step,(double)i);
    }
  }
- for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
 
   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
   gyrotaxis_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
@@ -140,7 +140,7 @@ void initial_conditions_particles(int restart){
    gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min * pow(step,(double)i);
    }
   }
-  for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
+  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
   #endif
 
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -152,9 +152,8 @@ void initial_conditions_particles(int restart){
   rotational_diffusion[ i+j*(int)property.rotational_diffusion_types ] = property.rotational_diffusion_min + i*step;
    }
   }
-  for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d rotational_diffusion %g\n",i,rotational_diffusion[i]);
+  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d rotational_diffusion %g\n",i,rotational_diffusion[i]);
   #endif
-
  #endif
 #endif
 #ifdef LAGRANGE_ACTIVE
@@ -166,8 +165,38 @@ void initial_conditions_particles(int restart){
   swim_velocity[ i+j*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
    }
  }
- for(i=0;i<property.particle_types;i++) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
 #endif
+
+
+/* write on file particle properties by family */
+if(ROOT){
+
+  fin = fopen("particle_properties.dat","w");
+  for(i=0;i<property.particle_types;i++){
+
+fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_ADDEDMASS
+  fprintf(fin,"beta_coeff %e ",i,beta_coeff[i]);
+ #endif
+ #ifdef LAGRANGE_ORIENTATION
+ fprintf(fin,"aspect_ratio %e ",i,aspect_ratio[i]);
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   fprintf(fin,"gyrotaxis_velocity %e ",i,gyrotaxis_velocity[i]);
+  #endif
+  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+   fprintf(fin,"rotational_diffusion %e ",i,rotational_diffusion[i]);
+  #endif
+ #endif
+#endif
+#ifdef LAGRANGE_ACTIVE
+fprintf(fin,"swim_velocity %e ",i,swim_velocity[i]);
+#endif
+ fprintf(fin,"\n");
+ } 
+  fclose(fin);
+ }/* end if ROOT */
 
 
 /* assign param values to particles */
@@ -179,13 +208,13 @@ for (i=0;i<npart;i++) {
 type = ((int)(tracer+i)->name)%(int)property.particle_types;
 
 /* viscous drag */
-(tracer+i)->tau_drag = tau_drag[type];
-//(tracer+i)->tau_drag = 0.0;
+//(tracer+i)->tau_drag = tau_drag[type];
+(tracer+i)->tau_drag = 0.0;
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
  /* added mass */
  (tracer+i)->beta_coeff = beta_coeff[type];
- //(tracer+i)->beta_coeff = 1.0;
+//(tracer+i)->beta_coeff = 1.0;
  #endif
  #ifdef LAGRANGE_ORIENTATION
  /* particle aspect ratio (assuming axi-symmetry) */
@@ -204,7 +233,7 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
  #endif
 #endif
 #ifdef LAGRANGE_ACTIVE 
-  // (tracer+i)->swim_velocity = 0.01;
+  //(tracer+i)->swim_velocity = 0.01;
   (tracer+i)->swim_velocity = swim_velocity[type];
 #endif
 
@@ -1297,14 +1326,11 @@ void move_particles(){
 #ifdef LAGRANGE_ACTIVE 
    /* if the particle is alive there is an extra velocity to add */
   #ifdef LAGRANGE_ORIENTATION   
-   /*
-   (tracer+ipart)->vx += (tracer+ipart)->swim_velocity;
-   (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
-   (tracer+ipart)->vz += (tracer+ipart)->swim_velocity;
-   */
-   (tracer+ipart)->vx += (tracer+ipart)->swim_velocity*(tracer+ipart)->px;
-   (tracer+ipart)->vy += (tracer+ipart)->swim_velocity*(tracer+ipart)->py;
-   (tracer+ipart)->vz += (tracer+ipart)->swim_velocity*(tracer+ipart)->pz;
+   (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
+   (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
+   (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
+   // fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vx , (tracer+ipart)->swim_velocity , (tracer+ipart)->px );
+  //  fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vy , (tracer+ipart)->swim_velocity , (tracer+ipart)->py );
   #endif
 #endif
 
@@ -1510,7 +1536,6 @@ void move_particles(){
 		}
 		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
-
 	     	      
    /* if restart Euler 1st order G = G0 + (DT)*F  */
  if(itime==0 && resume==0){
@@ -1766,7 +1791,7 @@ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD,
        if(itime%10==0 && ROOT)fprintf(stderr,"------------------ Check npart = %d\n",all_npart);
 #endif
        if(all_npart != (int)property.particle_number){
-         if(ROOT) fprintf(stderr,"Total number of bubbles has changed during run!!!!\n Was %d now is %d\n Exit.\n",(int)property.particle_number, all_npart);
+         if(ROOT) fprintf(stderr,"Total number of particles has changed during run!!!!\n Was %d now is %d\n Exit.\n",(int)property.particle_number, all_npart);
          MPI_Finalize();
          exit(0);
        }
