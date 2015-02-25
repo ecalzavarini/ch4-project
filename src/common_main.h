@@ -231,7 +231,22 @@ my_double invcs, invcs2, invcs4;
   int randomization_itime;
   #endif
  #endif
+
+ #ifdef LB_FLUID_LES
+  #ifdef LB_FLUID_LES_SISM
+  vector *u_mean;
+   #ifdef LB_FLUID_LES_SISM_KALMAN
+   vector *u_mean_kalman_pre;
+   vector *sqr_var;
+   vector *sqr_var_kalman;
+   vector *K_kalman;
+   vector *P_kalman;
+   vector *P_kalman_pre;
+   #endif
+  #endif
+ #endif
 #endif
+
 
 #ifdef LB_TEMPERATURE
  pop *g, *rhs_g, *old_rhs_g, *old_old_rhs_g, *g_eq;

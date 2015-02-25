@@ -723,15 +723,48 @@ interp6_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(
  set_to_zero_my_double( old_dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
 
+ #ifdef LB_FLUID_LES
+  #ifdef LB_FLUID_LES_SISM 
+  u_mean = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  if(u_mean == NULL){ fprintf(stderr,"Not enough memory to allocate u_mean\n"); exit(-1);}
+  set_to_zero_vector( u_mean,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   #ifdef LB_FLUID_LES_SISM_KALMAN
+   u_mean_kalman_pre = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(u_mean_kalman_pre == NULL){ fprintf(stderr,"Not enough memory to allocate  u_mean_kalman_pre\n"); exit(-1);}
+   set_to_zero_vector( u_mean_kalman_pre,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+   sqr_var = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(sqr_var == NULL){ fprintf(stderr,"Not enough memory to allocate  sqr_var\n"); exit(-1);}
+   set_to_zero_vector( sqr_var,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+   sqr_var_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(sqr_var_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate sqr_var_kalman\n"); exit(-1);}
+   set_to_zero_vector( sqr_var_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+   K_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(K_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate  K_kalman\n"); exit(-1);}
+   set_to_zero_vector( K_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+   P_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(P_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate  P_kalman\n"); exit(-1);}
+   set_to_zero_vector(P_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+   P_kalman_pre = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   if(P_kalman_pre == NULL){ fprintf(stderr,"Not enough memory to allocate P_kalman_pre\n"); exit(-1);}
+   set_to_zero_vector( P_kalman_pre,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   #endif
+  #endif
+ #endif
+
 #ifdef LB_FLUID_FORCING
  force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(force == NULL){ fprintf(stderr,"Not enough memory to allocate force\n"); exit(-1);}
  set_to_zero_vector( force,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-#ifdef LB_FLUID_FORCING_LANDSCAPE
+ #ifdef LB_FLUID_FORCING_LANDSCAPE
  landscape  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(landscape == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
  set_to_zero_my_double( landscape,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-#endif
+ #endif
 #endif
 
  /* borders pop */
@@ -1043,6 +1076,18 @@ void free_fields(){
  #ifdef LB_FLUID_PAST 
  free(old_u); 
  free(old_dens); 
+ #endif
+ #ifdef LB_FLUID_LES_SISM 
+ free(u_mean);
+ #endif
+ #ifdef LB_FLUID_LES_SISM_KALMAN
+ free(u_mean);
+ free(u_mean_kalman_pre);
+ free(sqr_var);
+ free(sqr_var_kalman);
+ free(K_kalman);
+ free(P_kalman);
+ free(P_kalman_pre);
  #endif
 #ifdef LB_FLUID_FORCING
  free(force); 

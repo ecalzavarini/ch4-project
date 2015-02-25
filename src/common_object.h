@@ -230,6 +230,20 @@ extern vector *u;
   extern int randomization_itime;
   #endif
  #endif
+
+ #ifdef LB_FLUID_LES
+  #ifdef LB_FLUID_LES_SISM
+  extern vector *u_mean;
+   #ifdef LB_FLUID_LES_SISM_KALMAN
+   extern vector *u_mean_kalman_pre;
+   extern vector *sqr_var;
+   extern vector *sqr_var_kalman;
+   extern vector *K_kalman;
+   extern vector *P_kalman;
+   extern vector *P_kalman_pre;
+   #endif
+  #endif
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
