@@ -1079,15 +1079,14 @@ void free_fields(){
  #endif
  #ifdef LB_FLUID_LES_SISM 
  free(u_mean);
- #endif
  #ifdef LB_FLUID_LES_SISM_KALMAN
- free(u_mean);
- free(u_mean_kalman_pre);
- free(sqr_var);
- free(sqr_var_kalman);
- free(K_kalman);
- free(P_kalman);
- free(P_kalman_pre);
+  free(u_mean_kalman_pre);
+  free(sqr_var);
+  free(sqr_var_kalman);
+  free(K_kalman);
+  free(P_kalman);
+  free(P_kalman_pre);
+  #endif
  #endif
 #ifdef LB_FLUID_FORCING
  free(force); 
