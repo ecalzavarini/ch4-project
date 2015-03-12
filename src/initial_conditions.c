@@ -54,6 +54,9 @@ void initial_conditions(int restart)
    for (pp = 0; pp < NPOP; pp++) 
      p[IDX(i,j,k)].p[pp] = wgt[pp]*(exp( property.beta_t*property.gravity_y*((property.T_bot-property.T_ref)*y + (val*L -  property.deltaT/L)*y*y/2. - val*y*y*y/3.)/cs2 ));
  #endif
+ #ifdef LB_INITIAL_CONSTANT_T_TOP
+     p[IDX(i,j,k)].p[pp] = wgt[pp]* (exp(property.beta_t*property.gravity_y*y*( -property.T_top )/cs2 ));
+ #endif
 #endif
 
   
@@ -265,6 +268,10 @@ void initial_conditions(int restart)
 	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ t[IDX(i,j,k)] += val; }else{ t[IDX(i,j,k)] -= val/4.0; }
 	//t[IDX(i,j,k)] += 1.e-1*sin(10.0*two_pi*center_V[IDX(i, j, k)].x/property.SX)*sin(10.0*two_pi*center_V[IDX(i, j, k)].z/property.SZ);
       }
+ #endif
+ #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
+      val = 1.e-3;
+      t[IDX(i,j,k)] += val*2.0*(myrand()-1.0);
  #endif
 
 	/* on the populations */
