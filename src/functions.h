@@ -77,6 +77,12 @@ void add_forcing();
 void build_forcing();
 #endif
 
+#ifdef LB_TEMPERATURE_FORCING
+ #ifdef LB_TEMPERATURE_MELTING
+ void melting();
+ #endif
+#endif
+
 /* output.c */
 void dump_averages();
 
