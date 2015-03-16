@@ -241,8 +241,7 @@ void assign_parameters(){
   fprintf(fout,"Radiation Rayleigh Number (new definition) is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fclose(fout);
   #endif
- #endif
- #ifdef LB_TEMPERATURE_MELTING
+  #ifdef LB_TEMPERATURE_MELTING
   sprintf(name,"T_solid");
   property.T_solid = read_parameter(name);
   sprintf(name,"specific_heat");
@@ -250,7 +249,11 @@ void assign_parameters(){
   sprintf(name,"latent_heat");
   property.latent_heat = read_parameter(name);
   fprintf(stderr,"Stefan Number is -> Ste = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
- #endif
+  fout = fopen("numbers.dat","a");
+  fprintf(fout,"Stefan = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
+  fclose(fout);
+  #endif
+ #endif /* end of ifdef LB_TEMPERATURE_FORCING */
 #endif /* end of ifdef LB_TEMPERATURE */
 
 #ifdef LB_SCALAR
