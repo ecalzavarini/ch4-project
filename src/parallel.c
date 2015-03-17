@@ -39,6 +39,11 @@ for (i = 0; i < *length; i++) {
   (b+i)->t2   += (a+i)->t2;
   (b+i)->epst += (a+i)->epst;
   //  (b+i)->lb += (a+i)->lb;
+ #ifdef LB_TEMPERATURE_MELTING
+  (b+i)->lf   += (a+i)->lf;
+  (b+i)->dtlf += (a+i)->dtlf;
+  (b+i)->enth += (a+i)->enth;
+ #endif
 #endif
 #ifdef LB_SCALAR
   (b+i)->dxs  += (a+i)->dxs;

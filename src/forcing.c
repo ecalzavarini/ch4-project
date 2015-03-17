@@ -318,11 +318,14 @@ void build_forcing(){
 
 #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
-#ifdef LB_TEMPERATURE_BUOYANCY_TREF
+#ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
+  temp = (t[IDX(i,j,k)] - property.T_ref);
+#elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
   temp = (t[IDX(i,j,k)] - property.T_top);
-  //temp = (t[IDX(i,j,k)] - property.T_ref);
+#elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
+  temp = (t[IDX(i,j,k)] - property.T_bot);
 #else
-  /* the good one for RB */  
+  /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
 #endif
 
@@ -419,7 +422,7 @@ void build_forcing(){
 
 
 #ifdef LB_TEMPERATURE_FORCING_ABSORB  /* attempt to implement an absorbing layer for temperature */
-    fac = 0.5;
+    fac = 0.9;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
     dist.z = (z/LZ - fac)/(1.0-fac);

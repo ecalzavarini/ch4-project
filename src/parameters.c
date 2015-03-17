@@ -939,13 +939,13 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
   #endif 
   #ifdef LB_TEMPERATURE_MELTING
   liquid_frac  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
-  if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate liquid_frac\n"); exit(-1);}
   set_to_zero_scalar( liquid_frac,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
-  if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate liquid_frac_old\n"); exit(-1);}
   set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   //enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
-  //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
+  //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate enthalpy\n"); exit(-1);}
   //set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   #endif
  #endif
