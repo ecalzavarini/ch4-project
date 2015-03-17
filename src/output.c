@@ -839,39 +839,39 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     /* global */
     sprintf(fname,"melting_averages.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e %e %e %e\n",time_now, (double)out_all.lf,(double)out_all.dtlf, (double)out_all.enth);
+    fprintf(fout,"%e %e %e %e\n",time_now, (double)out_all.lf,(double)out_all.dtlf, (double)out_all.enth);
     fclose(fout);
 
     /* instantaneous */
     sprintf(fname,"melting_averages_x.dat");
     fout = fopen(fname,"w");
-    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].lf, (double)ruler_x[i].dtlf, (double)ruler_x[i].enth);
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e\n",(double)ruler_x[i].x, (double)ruler_x[i].lf, (double)ruler_x[i].dtlf, (double)ruler_x[i].enth);
     fclose(fout);
 
     sprintf(fname,"melting_averages_y.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].lf, (double)ruler_y[j].dtlf, (double)ruler_y[j].enth);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].lf, (double)ruler_y[j].dtlf, (double)ruler_y[j].enth);
     fclose(fout);
 
     sprintf(fname,"melting_averages_z.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].lf, (double)ruler_z[k].dtlf, (double)ruler_z[k].enth);
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].lf, (double)ruler_z[k].dtlf, (double)ruler_z[k].enth);
     fclose(fout);
 
     /* running  averages */
     sprintf(fname,"melting_averages_x_run.dat");
     fout = fopen(fname,"w");
-    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].lf/(double)irun, (double)ruler_x_running[i].dtlf/(double)irun, (double)ruler_x_running[i].enth/(double)irun);
+    for (i = 0; i < NX; i++) fprintf(fout,"%e %e %e %e\n",(double)ruler_x_running[i].x/(double)irun, (double)ruler_x_running[i].lf/(double)irun, (double)ruler_x_running[i].dtlf/(double)irun, (double)ruler_x_running[i].enth/(double)irun);
     fclose(fout);
 
     sprintf(fname,"melting_averages_y_run.dat");
     fout = fopen(fname,"w");
-    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].lf/(double)irun, (double)ruler_y_running[j].dtlf/(double)irun, (double)ruler_y_running[j].enth/(double)irun);
+    for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e\n",(double)ruler_y_running[j].y/(double)irun, (double)ruler_y_running[j].lf/(double)irun, (double)ruler_y_running[j].dtlf/(double)irun, (double)ruler_y_running[j].enth/(double)irun);
     fclose(fout);
 
     sprintf(fname,"melting_averages_z_run.dat");
     fout = fopen(fname,"w");
-    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].lf/(double)irun, (double)ruler_z_running[k].dtlf/(double)irun, (double)ruler_z_running[k].enth/(double)irun);
+    for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].lf/(double)irun, (double)ruler_z_running[k].dtlf/(double)irun, (double)ruler_z_running[k].enth/(double)irun);
     fclose(fout);
   }
 #endif
@@ -985,9 +985,13 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
 
-        fprintf(fout,"%e %e %e %e\n", 
+	lf = liquid_frac[IDX(i, j, k)];
+        dtlf = ( liquid_frac[IDX(i, j, k)]-liquid_frac_old[IDX(i, j, k)] )/property.time_dt;
+        enth = ( property.specific_heat*t[IDX(i,j,k)] + property.latent_heat*liquid_frac[IDX(i,j,k)]);
+ 
+       fprintf(fout,"%e %e %e %e %e %e\n", 
 		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
-		(double)liquid_frac[IDX(i, j, k)] );  
+	       (double)lf,(double)dtlf,(double)enth);  
       } 
       fprintf(fout,"\n");
     }
