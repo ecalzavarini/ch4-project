@@ -974,6 +974,28 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   }
     fclose(fout);
   }
+
+ #ifdef LB_TEMPERATURE_MELTING
+  if(ROOT  && itime%((int)(property.time_dump_field/property.time_dt))==0){
+  /* Here dumps the liquid fraction field */
+    sprintf(fname,"%s/melt.%d",OutDir,itime);
+  fout = fopen(fname,"w");
+
+  for(k=BRD;k<LNZ+BRD;k++){
+    for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+
+        fprintf(fout,"%e %e %e %e\n", 
+		(double)center_V[IDX(i, j, k)].x, (double)center_V[IDX(i, j, k)].y, (double)center_V[IDX(i, j, k)].z, 
+		(double)liquid_frac[IDX(i, j, k)] );  
+      } 
+      fprintf(fout,"\n");
+    }
+    fprintf(fout,"\n");
+  }
+    fclose(fout);
+  }
+ #endif
 #endif
 
 #ifdef LB_SCALAR
