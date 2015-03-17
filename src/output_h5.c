@@ -119,6 +119,11 @@ void output_h5(){
  edataset = H5Dcreate(group, "temperature", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, t);
  H5Dclose(edataset);
+ #ifdef LB_TEMPERATURE_MELTING
+  edataset = H5Dcreate(group, "liquid_fraction", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, liquid_frac);
+  H5Dclose(edataset);
+ #endif
 #endif
 
 #ifdef LB_SCALAR
@@ -225,6 +230,13 @@ void output_h5(){
   fprintf(fout,"%s:/euler/temperature\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
+ #ifdef LB_TEMPERATURE_MELTING
+  fprintf(fout,"<Attribute Name=\"liquid_fraction\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/liquid_fraction\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+ #endif
 #endif
 
 #ifdef LB_SCALAR
