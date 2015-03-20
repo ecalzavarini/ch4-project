@@ -356,7 +356,13 @@ void initial_conditions(int restart)
 
 
 #ifdef OUTPUT_H5
+   /*  if requested in param.in , read the populations from file pop.h5*/
    if(restart) read_pop_h5();
+
+ #ifdef LB_TEMPERATURE_MELTING
+   /*  if requested melting is active, and resume is asked for, read it from file liquid_frac.h5 */
+	if(restart && resume_t)  read_scalar_h5(liquid_frac,"liquid_frac");
+ #endif
 
    //#define PERTURBATE
 #ifdef PERTURBATE

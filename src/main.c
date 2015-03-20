@@ -145,6 +145,9 @@ int main(int argc, char **argv){
 
 #ifdef OUTPUT_H5
        	write_pop_h5();
+ #ifdef LB_TEMPERATURE_MELTING
+	write_scalar_h5(liquid_frac,"liquid_frac");
+ #endif
 #ifdef LAGRANGE
 	write_point_particle_h5();
 #endif

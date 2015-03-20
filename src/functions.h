@@ -90,6 +90,8 @@ void dump_averages();
 void write_pop_h5();
 void read_pop_h5();
 void output_h5();
+void write_scalar_h5(my_double *field, char which_field[128]);
+void read_scalar_h5(my_double *field, char which_field[128]);
 
 /* lagrange */
 #ifdef LAGRANGE 
