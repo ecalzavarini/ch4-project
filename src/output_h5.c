@@ -589,10 +589,20 @@ void read_scalar_h5(my_double *field, char which_field[128]){
   hid_t hdf5_type;
   hsize_t array[ ] = {3}; 
   int i;
+  FILE *fin;
 
   sprintf(SCALAR_H5FILE_NAME,"%s.h5", which_field);
 
-  if(ROOT) fprintf(stderr,"INITIAL CONDITION : reading file  %s\n",SCALAR_H5FILE_NAME);
+  if(ROOT){
+    fin = fopen(SCALAR_H5FILE_NAME,"r");
+    if(fin == NULL){
+	 fprintf(stderr,"Error message -> %s file is missing! Exit.\n",SCALAR_H5FILE_NAME);
+	 fclose(fin);
+	 exit(0);
+    }
+    fclose(fin);
+    fprintf(stderr,"INITIAL CONDITION : reading file  %s\n",SCALAR_H5FILE_NAME);
+  }
 
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
