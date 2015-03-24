@@ -1036,8 +1036,22 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_pz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+		/* GYROTACTIC PARAMETER */
+		dataset_id = H5Dcreate(group, "gyrotaxis_velocity", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->gyrotaxis_velocity;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);	
+  #endif	
  #endif
 #endif
+#ifdef LAGRANGE_ACTIVE
+		dataset_id = H5Dcreate(group, "swim_velocity", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->swim_velocity;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+#endif
+
 
 #ifdef LB_TEMPERATURE
 		/* WRITE PARTICLE TEMPERATURE */		
@@ -1188,6 +1202,12 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");  
  #ifdef LAGRANGE_ORIENTATION
+		/* aspect ratio */
+                fprintf(fout,"<Attribute Name=\"aspect_ratio\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/aspect_ratio\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");   
 		/* orientation vector */
                 fprintf(fout,"<Attribute Name=\"orientation\" AttributeType=\"Vector\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
@@ -1216,17 +1236,35 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");
+  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+		/* gyrotaxis velocity parameter */
+                fprintf(fout,"<Attribute Name=\"gyrotaxis_velocity\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/gyrotaxis_velocity\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+  #endif		
  #endif       
 #endif
+#ifdef LAGRANGE_ACTIVE
+		/* swim velocity */
+                fprintf(fout,"<Attribute Name=\"swim_velocity\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/swim_velocity\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");   
+#endif
+
 
 #ifdef LB_TEMPERATURE
+		/* temperature at particle position */
                 fprintf(fout,"<Attribute Name=\"temperature\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/temperature\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");   
  #ifdef LAGRANGE_GRADIENT
-		/* temperature gradient */
+		/* temperature gradient at particle position */
                 fprintf(fout,"<Attribute Name=\"temperature gradient\" AttributeType=\"Vector\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
                 fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
@@ -1244,13 +1282,14 @@ void output_particles(){
 #endif
 
 #ifdef LB_SCALAR
+		/* scalar at particle position */
                 fprintf(fout,"<Attribute Name=\"scalar\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/scalar\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n"); 
  #ifdef LAGRANGE_GRADIENT
-		/* scalar gradient */
+		/* scalar gradient at particle position */
                 fprintf(fout,"<Attribute Name=\"scalar gradient\" AttributeType=\"Vector\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
                 fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
@@ -1498,12 +1537,19 @@ void move_particles(){
 		}
 
  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
-	      /* gravitational gyrotaxis : the stretched S matrix has an extra term - (1/v0 ) * g_i p_j ) */	      
+	      /* gravitational gyrotaxis : the stretched S matrix has an extra term -1/(2*v0) * g_i p_j      */	      
 	      gyro = - 0.5 / (tracer+ipart)->gyrotaxis_velocity;
   #ifdef LAGRANGE_GRAVITY	      
+	      /* only gravity */
+	      vecA[0] = gyro * (- property.gravity_x);  
+              vecA[1] = gyro * (- property.gravity_y); 
+              vecA[2] = gyro * (- property.gravity_z);  
+	      /* the full term */
+	      /*
 	      vecA[0] = gyro * (- property.gravity_x  + (tracer+ipart)->ax);
               vecA[1] = gyro * (- property.gravity_y  + (tracer+ipart)->ay);
               vecA[2] = gyro * (- property.gravity_z  + (tracer+ipart)->az);
+	      */
   #else
 	      vecA[0] = gyro * (tracer+ipart)->ax;
               vecA[1] = gyro * (tracer+ipart)->ay;
