@@ -45,7 +45,7 @@
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 #define LB_FLUID_INITIAL_UNIT_DENSITY
@@ -77,7 +77,7 @@
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
 
-//#define LB_FLUID_BC_X                                                     
+#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -130,7 +130,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
-#define LB_TEMPERATURE_INITIAL_ADD_NOISE
+//#define LB_TEMPERATURE_INITIAL_ADD_NOISE
 #define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
@@ -150,6 +150,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Y_M_VARIABLE 
 //#define LB_TEMPERATURE_BC_Y_M_OUTLET
 //#define LB_TEMPERATURE_BC_Y_M_NOFLUX
+
 //#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_P_OUTLET
 //#define LB_TEMPERATURE_BC_X_M_OUTLET
@@ -219,17 +220,17 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-//#define LAGRANGE
+#define LAGRANGE
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LAGRANGE_GRADIENT 
+#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY
-//#define LAGRANGE_ORIENTATION
-//#define LAGRANGE_ORIENTATION_GYROTAXIS
+#define LAGRANGE_ORIENTATION
+#define LAGRANGE_ORIENTATION_GYROTAXIS
 //#define LAGRANGE_ORIENTATION_DIFFUSION
-//#define LAGRANGE_ACTIVE
+#define LAGRANGE_ACTIVE
 
 /* LES */
 //#define LB_FLUID_LES

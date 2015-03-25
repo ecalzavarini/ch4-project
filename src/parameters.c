@@ -123,9 +123,15 @@ void assign_parameters(){
 
     sprintf(name,"time_dump_diagn");
     property.time_dump_diagn = (double)read_parameter(name);
-    fprintf(stderr,"Time dump fields: %g\n",property.time_dump_diagn);
+    fprintf(stderr,"Time dump diagnostic: %g\n",property.time_dump_diagn);
     if(property.time_dump_diagn < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_diagn < property.time_dt , please change it.\n"); exit(-1);}
 
+#ifdef LAGRANGE
+    sprintf(name,"time_dump_lagr");
+    property.time_dump_lagr = (double)read_parameter(name);
+    fprintf(stderr,"Time dump lagrange: %g\n",property.time_dump_lagr);
+    if(property.time_dump_lagr < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_lagr < property.time_dt , please change it.\n"); exit(-1);}
+#endif
 
 #ifdef LB_FLUID
     /* relaxation time and viscosity for fluid */

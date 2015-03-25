@@ -823,29 +823,8 @@ void output_particles(){
   int np = (int)property.particle_number;
   FILE *fout;
 
-#ifdef LAGRANGE_OUTPUT_DEBUG
-    if(ROOT){
-     for (i=0;i<npart;i++) {
-      fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
-     }
-    }
-#endif
-
-#ifdef OUTPUT_H5
-
     int *rcounts;
     int name_offset = 0;
-
-    /* First check how many particles in each processor and compute offset */
-    rcounts = (int *)malloc(nprocs*sizeof(int)); 
-
-    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
-
-    for (i=0;i<me;i++) name_offset += rcounts[i];
-
-    free(rcounts);
-
-
 
     hid_t       file_id, dataset_id, dataspace_id , group ;  /* identifiers */
     hid_t	plist_id;                 /* property list identifier */
@@ -862,6 +841,29 @@ void output_particles(){
 
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
+
+#ifdef LAGRANGE_OUTPUT_DEBUG
+    if(ROOT){
+     for (i=0;i<npart;i++) {
+      fprintf(stdout,"%g %e %e %e %e %e %e\n",time_now, (tracer+i)->x,(tracer+i)->y,(tracer+i)->z,(tracer+i)->vx,(tracer+i)->vy,(tracer+i)->vz);
+     }
+    }
+#endif
+
+    /* check if we have to dump */
+    if(itime%((int)(property.time_dump_lagr/property.time_dt))==0){
+
+#ifdef OUTPUT_H5
+    /* First check how many particles in each processor and compute offset */
+    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+
+    MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
+
+    for (i=0;i<me;i++) name_offset += rcounts[i];
+
+    free(rcounts);
+
+
 
     /* then alloc space */
     aux  = (my_double*) malloc(sizeof(my_double)*npart); 
@@ -1313,10 +1315,11 @@ void output_particles(){
                 fclose(fout);
   }/* end of if root */
 
-#endif
+#endif /* end of OUTPUT_H5 */
 
+    }/* en of if on itime , check if we have to dump particle */
 
-}
+}/* end of function output_particles */
 
 
 

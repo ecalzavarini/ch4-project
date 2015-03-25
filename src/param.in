@@ -3,43 +3,44 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 400
+NX 50
 NY 100
 NZ 1
 
-SX 400
+SX 50
 SY 100
 SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 40000.
-time_dump_field 400.
-time_dump_diagn 200.
+time_end 10000.
+time_dump_field 100.
+time_dump_diagn 10.
 
-tau_u 0.52
+tau_u 1.0
 
-Amp_x 0.01
+Amp_x 0.0000
 Amp_y 0.0000
 Amp_z 0.0000
 
-tau_t 0.52
+tau_t 1.0
+
 T_bot  1.0
-T_top -1.0
+T_top  0.0
 T_ref  0.0
 
-beta_t  0.0001897778   2.06960572125e-05   0.001897778
-beta2_t 0.0
+beta_t   0.002   0.001897778   
+beta2_t  0.0
 
 gravity_x 0.0
-gravity_y 1.0
+gravity_y 0.0
 gravity_z 0.0
 
 Amp_t 0.00130208333333333 0.1
 attenuation 0.0390625  0.1
 
-T_solid 1.001
-latent_heat 1
+T_solid 0.0
+latent_heat 20
 specific_heat 1
 
 tau_s 0.6
@@ -51,6 +52,7 @@ beta_s 0.001897778
 
 Amp_s 0.01
 
+time_dump_lagr 10.
 particle_number 2000
 
 tau_drag_types 1

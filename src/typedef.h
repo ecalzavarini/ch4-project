@@ -81,6 +81,7 @@ typedef struct {
 #endif
 
 #ifdef LAGRANGE
+  my_double time_dump_lagr;
   my_double particle_number;
   my_double particle_types; 
   my_double tau_drag_types, tau_drag_min , tau_drag_max;
