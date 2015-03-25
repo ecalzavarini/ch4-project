@@ -1419,7 +1419,7 @@ void move_particles(){
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
 
 
-#ifdef LAGRANGE_GRAVITY 
+#ifdef LAGRANGE_GRAVITY /* note that works only if LB_TEMPERATURE_BUOYANCY is defined */
      (tracer+ipart)->ax -= property.gravity_x;
      (tracer+ipart)->ay -= property.gravity_y;
      (tracer+ipart)->az -= property.gravity_z; 
@@ -1543,20 +1543,22 @@ void move_particles(){
 	      /* gravitational gyrotaxis : the stretched S matrix has an extra term -1/(2*v0) * g_i p_j      */	      
 	      gyro = - 0.5 / (tracer+ipart)->gyrotaxis_velocity;
   #ifdef LAGRANGE_GRAVITY	      
-	      /* only gravity */
-	      vecA[0] = gyro * (- property.gravity_x);  
-              vecA[1] = gyro * (- property.gravity_y); 
-              vecA[2] = gyro * (- property.gravity_z);  
-	      /* the full term */
-	      /*
+	      /* the full term */	      
 	      vecA[0] = gyro * (- property.gravity_x  + (tracer+ipart)->ax);
               vecA[1] = gyro * (- property.gravity_y  + (tracer+ipart)->ay);
               vecA[2] = gyro * (- property.gravity_z  + (tracer+ipart)->az);
-	      */
+	      
   #else
+	      /* just for a test: fixed vector along z. Like g_x=0, g_y=0, g_z=-1.0 */
+	      vecA[0] = gyro * 0.0;  
+              vecA[1] = gyro * 0.0;
+	      vecA[2] = gyro * 1.0;
+	      /* only acceleration */
+	      /*
 	      vecA[0] = gyro * (tracer+ipart)->ax;
               vecA[1] = gyro * (tracer+ipart)->ay;
               vecA[2] = gyro * (tracer+ipart)->az;
+	      */
   #endif	      
 	      matS[0][0]+= vecA[0]*vecP[0]; matA[0][1] += vecA[0]*vecP[1]; matA[0][2] += vecA[0]*vecP[2];
 	      matS[1][0]+= vecA[1]*vecP[0]; matA[1][1] += vecA[1]*vecP[1]; matA[1][2] += vecA[1]*vecP[2];
