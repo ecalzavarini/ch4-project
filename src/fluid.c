@@ -278,8 +278,14 @@ if((LNY_END == NY && j==LNY+BRD-1) || (LNY_START == 0 && j==BRD)){
       for(i=BRD;i<LNX+BRD;i++){ 
 
 	/* in case of normal streaming we just make a copy of the field */
-		rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
-   
+       if(property.time_dt == 1.0){ 
+	 /* when the time step is = 1 */
+	   rhs_f[IDX(i,j,k)]  = f[IDX(i,j,k)];
+       }else{	 
+	 /* when the time step is not 1 */  
+	   for(pp=0;pp<NPOP;pp++) rhs_f[IDX(i,j,k)].p[pp]  = f[IDX(i,j,k)].p[pp]/property.time_dt;
+       }
+
       }/* i */
    }/* j */
  }/* k */

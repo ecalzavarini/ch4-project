@@ -543,7 +543,13 @@ void streaming(pop *f, pop *rhs_f,int i,int j,int k){
        if(landscape[IDX(i, j, k)] == 0.0) f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
 #else
        /* the normal streaming case : pull method */ 
+       if(property.time_dt == 1.0){ 
+	 /* when the time step is = 1 */
        f[IDX(i,j,k)].p[pp]  = rhs_f[IDX(ii,jj,kk)].p[pp];
+       }else{       
+	 /* when the time step is not 1 */
+       f[IDX(i,j,k)].p[pp]  = property.time_dt*rhs_f[IDX(ii,jj,kk)].p[pp];
+       }
 #endif
 
 // if(j==50) fprintf(stderr,"%d %d %d pp %d %e %e\n", ii , jj , kk, pp, f[IDX(i,j,k)].p[pp], m(f[IDX(i,j,k)]) );

@@ -95,18 +95,25 @@ void assign_parameters(){
     fprintf(stderr,"System Size:\nSX %d \nSY %d \nSZ %d\n", (int)property.SX , (int)property.SY, (int)property.SZ);
 #ifdef METHOD_STREAMING
     /* check if \Delta x = 1 */
-    if(property.SX != property.NX ){ fprintf(stderr," WARNING!  property.SX != property.NX with STREAMING ON, please change it.\n"); exit(-1);}
-    if(property.SY != property.NY ){ fprintf(stderr," WARNING!  property.SY != property.NY with STREAMING ON, please change it.\n"); exit(-1);}
-    if(property.SZ != property.NZ ){ fprintf(stderr," WARNING!  property.SZ != property.NZ with STREAMING ON, please change it.\n"); exit(-1);}
+    //if(property.SX != property.NX ){ fprintf(stderr," WARNING!  property.SX != property.NX with STREAMING ON, please change it.\n"); exit(-1);}
+    //if(property.SY != property.NY ){ fprintf(stderr," WARNING!  property.SY != property.NY with STREAMING ON, please change it.\n"); exit(-1);}
+    //if(property.SZ != property.NZ ){ fprintf(stderr," WARNING!  property.SZ != property.NZ with STREAMING ON, please change it.\n"); exit(-1);}
+    fprintf(stderr," Delta X = %e \n",property.SX/property.NX);
+    fprintf(stderr," Delta Y = %e \n",property.SY/property.NY);
+    fprintf(stderr," Delta Z = %e \n",property.SZ/property.NZ);
+    if(property.SX/property.NX != property.SY/property.NY || property.SX/property.NX != property.SZ/property.NZ || property.SY/property.NY != property.SZ/property.NZ )
+    { fprintf(stderr," WARNING!  DX != DY != DZ with STREAMING ON, please change it.\n"); exit(-1);}
 #endif
 
     /* time stepping parameters */
     sprintf(name,"time_dt");
     property.time_dt = (double)read_parameter(name); 
-    fprintf(stderr,"time step: %g\n",property.time_dt);
+    fprintf(stderr," Time step: %g\n",property.time_dt);
 #ifdef METHOD_STREAMING
     /* check if \Delta t = 1 */
-    if(property.time_dt != 1.0 ){ fprintf(stderr," WARNING! property.time_dt != 1 with STREAMING ON, please change it.\n"); exit(-1);}
+    //if(property.time_dt != 1.0 ){ fprintf(stderr," WARNING! property.time_dt != 1 with STREAMING ON, please change it.\n"); exit(-1);}
+   if(property.time_dt != property.SX/property.NX ){ fprintf(stderr," WARNING! property.time_dt != Delta X or Y or Z, with STREAMING ON, please change it.\n"); exit(-1);}
+
 #endif
     sprintf(name,"time_start");
     property.time_start = (double)read_parameter(name); 
@@ -140,7 +147,8 @@ void assign_parameters(){
   property.tau_u = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
  #ifdef METHOD_STREAMING
-  property.nu = (property.tau_u-0.5)/3.0;
+  //property.nu = (property.tau_u-0.5)/3.0;
+  property.nu = (property.tau_u-0.5*property.time_dt)/3.0;
  #else
   #ifdef METHOD_REDEFINED_POP
   property.nu = (property.tau_u-0.5*property.time_dt)/3.0;
