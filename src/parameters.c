@@ -191,7 +191,8 @@ void assign_parameters(){
   property.tau_t = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
  #ifdef METHOD_STREAMING
-  property.kappa = (property.tau_t-0.5)/3.0;
+  //property.kappa = (property.tau_t-0.5)/3.0;
+  property.kappa = (property.tau_t-0.5*property.time_dt)/3.0;
  #else
   #ifdef METHOD_REDEFINED_POP
   property.kappa = (property.tau_t-0.5*property.time_dt)/3.0;
@@ -277,9 +278,14 @@ void assign_parameters(){
   property.tau_s = read_parameter(name);
   fprintf(stderr,"Properties:\ntau_s %g\n",(double)property.tau_s);
  #ifdef METHOD_STREAMING
-  property.chi = (property.tau_s-0.5)/3.0;
+  //property.chi = (property.tau_s-0.5)/3.0;
+  property.chi = (property.tau_s-0.5*property.time_dt)/3.0;
  #else
+  #ifdef METHOD_REDEFINED_POP
+  property.chi = (property.tau_s-0.5*property.time_dt)/3.0;
+  #else
   property.chi = property.tau_s/3.0;
+  #endif
  #endif
   fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
 
