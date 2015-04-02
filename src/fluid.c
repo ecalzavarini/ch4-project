@@ -1350,40 +1350,44 @@ if(LNZ_START == 0 && k == BRD){
 #endif
 
 
-
-
 #ifdef LAGRANGE_INTERPOLATION_FIX
    /* at the x boundaries , one sided 1st order difference*/
-if(i == 0){
+ //if(i == 0){
+if(i == BRD-1){
    tens.xx = ( t[IDX(i+2, j, k)].x - t[IDX(i+1, j, k)].x )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
    tens.yx = ( t[IDX(i+2, j, k)].y - t[IDX(i+1, j, k)].y )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
    tens.zx = ( t[IDX(i+2, j, k)].z - t[IDX(i+1, j, k)].z )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
  }
- if(i == LNX+TWO_BRD-1){ 
+// if(i == LNX+TWO_BRD-1){ 
+if(i == LNX+BRD){ 
    tens.xx = ( t[IDX(i-1, j, k)].x - t[IDX(i-2, j, k)].x )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
    tens.yx = ( t[IDX(i-1, j, k)].y - t[IDX(i-2, j, k)].y )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
    tens.zx = ( t[IDX(i-1, j, k)].z - t[IDX(i-2, j, k)].z )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
  }
 
    /* at the y boundaries */
-if(j == 0){
+//if(j == 0){
+if(j == BRD-1){
    tens.xy = ( t[IDX(i, j+2, k)].x - t[IDX(i, j+1, k)].x )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
    tens.yy = ( t[IDX(i, j+2, k)].y - t[IDX(i, j+1, k)].y )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
    tens.zy = ( t[IDX(i, j+2, k)].z - t[IDX(i, j+1, k)].z )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y ); 
  }
- if(j == LNY+TWO_BRD-1){ 
+//if(j == LNY+TWO_BRD-1){
+if(j == LNY+BRD){ 
    tens.xy = ( t[IDX(i, j-1, k)].x - t[IDX(i, j-2, k)].x )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
    tens.yy = ( t[IDX(i, j-1, k)].y - t[IDX(i, j-2, k)].y )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
    tens.zy = ( t[IDX(i, j-1, k)].z - t[IDX(i, j-2, k)].z )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
  }
 
    /* at the z boundaries */
-if(k == 0){
+//if(k == 0){
+if(k == BRD-1){
    tens.xz = ( t[IDX(i, j, k+2)].x - t[IDX(i, j, k+1)].x )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
    tens.yz = ( t[IDX(i, j, k+2)].y - t[IDX(i, j, k+1)].y )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
    tens.zz = ( t[IDX(i, j, k+2)].z - t[IDX(i, j, k+1)].z )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
  }
- if(k == LNZ+TWO_BRD-1){ 
+// if(k == LNZ+TWO_BRD-1){ 
+if(k == LNZ+BRD){ 
    tens.xz = ( t[IDX(i, j, k-1)].x - t[IDX(i, j, k-2)].x )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
    tens.yz = ( t[IDX(i, j, k-1)].y - t[IDX(i, j, k-2)].y )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
    tens.zz = ( t[IDX(i, j, k-1)].z - t[IDX(i, j, k-2)].z )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
@@ -1497,26 +1501,32 @@ if(LNZ_START == 0 && k == BRD){
 
 #ifdef LAGRANGE_INTERPOLATION_FIX
    /* at the x boundaries , one sided 1st order difference*/
-if(i == 0){
+ //if(i == 0){
+if(i == BRD-1){
    grad.x = ( t[IDX(i+2, j, k)] - t[IDX(i+1, j, k)] )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
  }
- if(i == LNX+TWO_BRD-1){ 
+// if(i == LNX+TWO_BRD-1){ 
+ if(i == LNX+BRD){ 
    grad.x = ( t[IDX(i-1, j, k)] - t[IDX(i-2, j, k)] )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
  }
 
    /* at the y boundaries */
-if(j == 0){
+ //if(j == 0){
+if(j == BRD-1){
    grad.y = ( t[IDX(i, j+2, k)] - t[IDX(i, j+1, k)] )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
  }
- if(j == LNY+TWO_BRD-1){ 
+// if(j == LNY+TWO_BRD-1){ 
+ if(j == LNY+BRD){ 
    grad.y = ( t[IDX(i, j-1, k)] - t[IDX(i, j-2, k)] )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
  }
 
    /* at the z boundaries */
-if(k == 0){
+ //if(k == 0){
+if(k == BRD-1){
    grad.z = ( t[IDX(i, j, k+2)] - t[IDX(i, j, k+1)] )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z ); 
  }
- if(k == LNZ+TWO_BRD-1){ 
+//if(k == LNZ+TWO_BRD-1){ 
+ if(k == LNZ+BRD){ 
    grad.z = ( t[IDX(i, j, k-1)] - t[IDX(i, j, k-2)] )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
  }
 #endif
