@@ -1276,83 +1276,6 @@ if(LNZ_START == 0 && k == BRD){
  }
 #endif
 
-
-#ifdef LAGRANGE_INTERPOLATION_FIX
-   /* at the x boundaries , one sided 1st order difference*/
-if(i == 0){
-   tens.xx = ( t[IDX(i+2, j, k)].x - t[IDX(i+1, j, k)].x )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
-   tens.yx = ( t[IDX(i+2, j, k)].y - t[IDX(i+1, j, k)].y )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
-   tens.zx = ( t[IDX(i+2, j, k)].z - t[IDX(i+1, j, k)].z )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
- }
- if(i == LNX+TWO_BRD-1){ 
-   tens.xx = ( t[IDX(i-1, j, k)].x - t[IDX(i-2, j, k)].x )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
-   tens.yx = ( t[IDX(i-1, j, k)].y - t[IDX(i-2, j, k)].y )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
-   tens.zx = ( t[IDX(i-1, j, k)].z - t[IDX(i-2, j, k)].z )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
- }
-
-   /* at the y boundaries */
-if(j == 0){
-   tens.xy = ( t[IDX(i, j+2, k)].x - t[IDX(i, j+1, k)].x )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
-   tens.yy = ( t[IDX(i, j+2, k)].y - t[IDX(i, j+1, k)].y )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
-   tens.zy = ( t[IDX(i, j+2, k)].z - t[IDX(i, j+1, k)].z )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y ); 
- }
- if(j == LNY+TWO_BRD-1){ 
-   tens.xy = ( t[IDX(i, j-1, k)].x - t[IDX(i, j-2, k)].x )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
-   tens.yy = ( t[IDX(i, j-1, k)].y - t[IDX(i, j-2, k)].y )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
-   tens.zy = ( t[IDX(i, j-1, k)].z - t[IDX(i, j-2, k)].z )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
- }
-
-   /* at the z boundaries */
-if(k == 0){
-   tens.xz = ( t[IDX(i, j, k+2)].x - t[IDX(i, j, k+1)].x )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
-   tens.yz = ( t[IDX(i, j, k+2)].y - t[IDX(i, j, k+1)].y )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
-   tens.zz = ( t[IDX(i, j, k+2)].z - t[IDX(i, j, k+1)].z )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
- }
- if(k == LNZ+TWO_BRD-1){ 
-   tens.xz = ( t[IDX(i, j, k-1)].x - t[IDX(i, j, k-2)].x )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
-   tens.yz = ( t[IDX(i, j, k-1)].y - t[IDX(i, j, k-2)].y )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
-   tens.zz = ( t[IDX(i, j, k-1)].z - t[IDX(i, j, k-2)].z )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
- }
-#endif
-
-#ifdef LAGRANGE_INTERPOLATION_FIX_OLD
-   /* at the x boundaries , one sided 1st order difference*/
-if(i == 0){
-   tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
-   tens.yx = ( t[IDX(i+1, j, k)].y - t[IDX(i, j, k)].y )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
-   tens.zx = ( t[IDX(i+1, j, k)].z - t[IDX(i, j, k)].z )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
- }
- if(i == LNX+TWO_BRD-1){ 
-   tens.xx = ( t[IDX(i, j, k)].x - t[IDX(i-1, j, k)].x )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
-   tens.yx = ( t[IDX(i, j, k)].y - t[IDX(i-1, j, k)].y )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
-   tens.zx = ( t[IDX(i, j, k)].z - t[IDX(i-1, j, k)].z )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
- }
-
-   /* at the y boundaries */
-if(j == 0){
-   tens.xy = ( t[IDX(i, j+1, k)].x - t[IDX(i, j, k)].x )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y );
-   tens.yy = ( t[IDX(i, j+1, k)].y - t[IDX(i, j, k)].y )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y );
-   tens.zy = ( t[IDX(i, j+1, k)].z - t[IDX(i, j, k)].z )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y ); 
- }
- if(j == LNY+TWO_BRD-1){ 
-   tens.xy = ( t[IDX(i, j, k)].x - t[IDX(i, j-1, k)].x )/( center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y );
-   tens.yy = ( t[IDX(i, j, k)].y - t[IDX(i, j-1, k)].y )/( center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y );
-   tens.zy = ( t[IDX(i, j, k)].z - t[IDX(i, j-1, k)].z )/( center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y );
- }
-
-   /* at the z boundaries */
-if(k == 0){
-   tens.xz = ( t[IDX(i, j, k+1)].x - t[IDX(i, j, k)].x )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z );
-   tens.yz = ( t[IDX(i, j, k+1)].y - t[IDX(i, j, k)].y )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z );
-   tens.zz = ( t[IDX(i, j, k+1)].z - t[IDX(i, j, k)].z )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z );
- }
- if(k == LNZ+TWO_BRD-1){ 
-   tens.xz = ( t[IDX(i, j, k)].x - t[IDX(i, j, k-1)].x )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
-   tens.yz = ( t[IDX(i, j, k)].y - t[IDX(i, j, k-1)].y )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
-   tens.zz = ( t[IDX(i, j, k)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
- }
-#endif
-
 #ifdef SECOND_ORDER_GRAD
    /* at the x boundaries , one sided 2nd order difference*/
    /* but it seems to be less precise than the first order */
@@ -1426,6 +1349,47 @@ if(LNZ_START == 0 && k == BRD){
  }
 #endif
 
+
+
+
+#ifdef LAGRANGE_INTERPOLATION_FIX
+   /* at the x boundaries , one sided 1st order difference*/
+if(i == 0){
+   tens.xx = ( t[IDX(i+2, j, k)].x - t[IDX(i+1, j, k)].x )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
+   tens.yx = ( t[IDX(i+2, j, k)].y - t[IDX(i+1, j, k)].y )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
+   tens.zx = ( t[IDX(i+2, j, k)].z - t[IDX(i+1, j, k)].z )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
+ }
+ if(i == LNX+TWO_BRD-1){ 
+   tens.xx = ( t[IDX(i-1, j, k)].x - t[IDX(i-2, j, k)].x )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
+   tens.yx = ( t[IDX(i-1, j, k)].y - t[IDX(i-2, j, k)].y )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
+   tens.zx = ( t[IDX(i-1, j, k)].z - t[IDX(i-2, j, k)].z )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
+ }
+
+   /* at the y boundaries */
+if(j == 0){
+   tens.xy = ( t[IDX(i, j+2, k)].x - t[IDX(i, j+1, k)].x )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
+   tens.yy = ( t[IDX(i, j+2, k)].y - t[IDX(i, j+1, k)].y )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
+   tens.zy = ( t[IDX(i, j+2, k)].z - t[IDX(i, j+1, k)].z )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y ); 
+ }
+ if(j == LNY+TWO_BRD-1){ 
+   tens.xy = ( t[IDX(i, j-1, k)].x - t[IDX(i, j-2, k)].x )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
+   tens.yy = ( t[IDX(i, j-1, k)].y - t[IDX(i, j-2, k)].y )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
+   tens.zy = ( t[IDX(i, j-1, k)].z - t[IDX(i, j-2, k)].z )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
+ }
+
+   /* at the z boundaries */
+if(k == 0){
+   tens.xz = ( t[IDX(i, j, k+2)].x - t[IDX(i, j, k+1)].x )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
+   tens.yz = ( t[IDX(i, j, k+2)].y - t[IDX(i, j, k+1)].y )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
+   tens.zz = ( t[IDX(i, j, k+2)].z - t[IDX(i, j, k+1)].z )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z );
+ }
+ if(k == LNZ+TWO_BRD-1){ 
+   tens.xz = ( t[IDX(i, j, k-1)].x - t[IDX(i, j, k-2)].x )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
+   tens.yz = ( t[IDX(i, j, k-1)].y - t[IDX(i, j, k-2)].y )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
+   tens.zz = ( t[IDX(i, j, k-1)].z - t[IDX(i, j, k-2)].z )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
+ }
+#endif
+
       return tens;
 }
 #endif
@@ -1465,33 +1429,6 @@ if(LNZ_START == 0 && k == BRD){
    grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z ); 
  }
  if(LNZ_END == NZ && k == LNZ+BRD-1){ 
-   grad.z = ( t[IDX(i, j, k)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
- }
-#endif
-
-
-#ifdef LAGRANGE_INTERPOLATION_FIX
-   /* at the x boundaries , one sided 1st order difference*/
-if(i == 0){
-   grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
- }
- if(i == LNX+TWO_BRD-1){ 
-   grad.x = ( t[IDX(i, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x );
- }
-
-   /* at the y boundaries */
-if(j == 0){
-   grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y );
- }
- if(j == LNY+TWO_BRD-1){ 
-   grad.y = ( t[IDX(i, j, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y );
- }
-
-   /* at the z boundaries */
-if(k == 0){
-   grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z ); 
- }
- if(k == LNZ+TWO_BRD-1){ 
    grad.z = ( t[IDX(i, j, k)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
  }
 #endif
@@ -1555,6 +1492,32 @@ if(LNZ_START == 0 && k == BRD){
     a1 = -( h1+h2 )/( h1*h2 );
     a2 =  ( h1 )/( h2*(h1+h2) ); 
     grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k-1)] + a2*t[IDX(i, j, k-2)]; 
+ }
+#endif
+
+#ifdef LAGRANGE_INTERPOLATION_FIX
+   /* at the x boundaries , one sided 1st order difference*/
+if(i == 0){
+   grad.x = ( t[IDX(i+2, j, k)] - t[IDX(i+1, j, k)] )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
+ }
+ if(i == LNX+TWO_BRD-1){ 
+   grad.x = ( t[IDX(i-1, j, k)] - t[IDX(i-2, j, k)] )/( center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x );
+ }
+
+   /* at the y boundaries */
+if(j == 0){
+   grad.y = ( t[IDX(i, j+2, k)] - t[IDX(i, j+1, k)] )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
+ }
+ if(j == LNY+TWO_BRD-1){ 
+   grad.y = ( t[IDX(i, j-1, k)] - t[IDX(i, j-2, k)] )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
+ }
+
+   /* at the z boundaries */
+if(k == 0){
+   grad.z = ( t[IDX(i, j, k+2)] - t[IDX(i, j, k+1)] )/( center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z ); 
+ }
+ if(k == LNZ+TWO_BRD-1){ 
+   grad.z = ( t[IDX(i, j, k-1)] - t[IDX(i, j, k-2)] )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
  }
 #endif
 
