@@ -208,8 +208,8 @@ for (i=0;i<npart;i++) {
 type = ((int)(tracer+i)->name)%(int)property.particle_types;
 
 /* viscous drag */
-//(tracer+i)->tau_drag = tau_drag[type];
-(tracer+i)->tau_drag = 0.0;
+(tracer+i)->tau_drag = tau_drag[type];
+//(tracer+i)->tau_drag = 0.0;
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
  /* added mass */
