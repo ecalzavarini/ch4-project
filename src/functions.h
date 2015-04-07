@@ -37,8 +37,8 @@ void streaming(pop *f, pop *rhs_f,int i,int j,int k);
 void boundary_conditions();
 void boundary_and_pbc_conditions_for_streaming();
 void boundary_conditions_for_equilibrium(char which_pop);
-void boundary_conditions_for_hydro(char which_pop);
 void boundary_conditions_for_advection(pop * f, char which_pop);
+void boundary_conditions_hydro();
 
 /* initial_conditions.c */
 void initial_conditions(int restart);
@@ -102,7 +102,6 @@ void interpolate_scalar_at_particles(my_double *f, char which_scalar);
 void output_particles();
 void move_particles();
 void sendrecv_particles();
-void boundary_conditions_hydro();
 void write_point_particle_h5();
 void read_point_particle_h5();
 #endif
