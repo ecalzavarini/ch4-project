@@ -13,7 +13,7 @@ my_double tau_u_les(int i , int j , int k){
   grad_u = gradient_vector(u,i,j,k);
 
   /* Norm of S */
-  s_norm = sqrt( 0.25*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+  s_norm = sqrt( 0.5*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
 		        (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
 		        (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
 		        (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
