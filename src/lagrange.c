@@ -50,7 +50,7 @@ void initial_conditions_particles(int restart){
   int *rcounts;
   int name_offset = 0;
   int ip,im,jp,jm,kp,km;
-  my_double solid;
+  my_double solid,theta,phi;
   char fnamein[128];
   FILE *fin;
 
@@ -271,9 +271,16 @@ kp =  km + 1;
 (tracer+i)->vz = 0.0;
 
 #ifdef LAGRANGE_ORIENTATION
+/*
 (tracer+i)->px = 0.0;
 (tracer+i)->py = 1.0;
 (tracer+i)->pz = 0.0;
+*/
+theta = one_pi*myrand();
+phi = two_pi*myrand();
+(tracer+i)->px = sin(theta)*cos(phi);
+(tracer+i)->py = sin(theta)*sin(phi);
+(tracer+i)->pz = cos(theta);
 
 (tracer+i)->dt_px = 0.0;
 (tracer+i)->dt_py = 0.0;
