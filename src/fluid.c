@@ -86,7 +86,7 @@ if(which_pop == 'p'){
 
 fac = 0.5*property.time_dt;
 
-  /* first we update density and velocity */
+  /* we update density and velocity (in the bulk) */
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
     for(i=BRD;i<LNX+BRD;i++){ 
@@ -100,13 +100,6 @@ fac = 0.5*property.time_dt;
    u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + fac*force[IDX(i, j, k)].y ;
    u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + fac*force[IDX(i, j, k)].z ;	
    }
- /* and communicate them */
- //OUT   sendrecv_borders_vector(u);
- //OUT   sendrecv_borders_scalar(dens);
- //OUT   sendrecv_borders_vector(force);
- /* Here we shall take into accounts there bc if any */ 
- /* to be done ... */
- //OUT  boundary_conditions_for_hydro(which_pop);
   
   fac = 0.5*property.time_dt;
 
