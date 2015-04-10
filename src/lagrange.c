@@ -1532,6 +1532,23 @@ void move_particles(){
    }
  #endif
 
+ #ifdef LB_FLUID_BC_Z
+
+   if( (tracer+ipart)->z < 0.0 ){
+     (tracer+ipart)->z *= -1.0; 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+
+   if( (tracer+ipart)->z >= property.SZ ){
+     (tracer+ipart)->z = property.SZ- ( (tracer+ipart)->z-property.SZ ); 
+     (tracer+ipart)->vx *= -1.0;
+     (tracer+ipart)->vy *= -1.0;
+     (tracer+ipart)->vz *= -1.0;
+   }
+ #endif
+
 #endif
    
 
