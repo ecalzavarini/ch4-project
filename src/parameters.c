@@ -101,8 +101,8 @@ void assign_parameters(){
     fprintf(stderr," Delta X = %e \n",property.SX/property.NX);
     fprintf(stderr," Delta Y = %e \n",property.SY/property.NY);
     fprintf(stderr," Delta Z = %e \n",property.SZ/property.NZ);
-    if(property.SX/property.NX != property.SY/property.NY || property.SX/property.NX != property.SZ/property.NZ || property.SY/property.NY != property.SZ/property.NZ )
-    { fprintf(stderr," WARNING!  DX != DY != DZ with STREAMING ON, please change it.\n"); exit(-1);}
+    //if(property.SX/property.NX != property.SY/property.NY || property.SX/property.NX != property.SZ/property.NZ || property.SY/property.NY != property.SZ/property.NZ )
+    //{ fprintf(stderr," WARNING!  DX != DY != DZ with STREAMING ON, please change it.\n"); exit(-1);}
 #endif
 
     /* time stepping parameters */

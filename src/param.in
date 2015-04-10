@@ -4,22 +4,22 @@ resume_t 0
 resume_s 0
 
 NX 1
-NY 64
+NY 1024
 NZ 1
 
 SX 1
-SY 64
+SY 1024
 SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 10000.
-time_dump_field 100.
+time_end 40000.
+time_dump_field 2000.
 time_dump_diagn 10.
 
 tau_u 1.0
 
-Amp_x 0.0260416666666667
+Amp_x 0.01     0.260416666666667
 Amp_y 0.0000
 Amp_z 0.0000
 
