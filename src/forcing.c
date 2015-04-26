@@ -3,7 +3,7 @@
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
 void build_forcing(){
-  int i, j, k , ii;
+  int i, j, k , ii,jj;
   my_double fnx,fny,fnz,kn;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
@@ -13,7 +13,7 @@ void build_forcing(){
   my_double norm;
   my_double t0,t0_all;
   my_double s0,s0_all;
-  my_double local_depth, radiation_at_bottom, reflection_ceff;
+  my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
 
 
    LX = (my_double)(property.SX);
@@ -501,21 +501,24 @@ void build_forcing(){
    /* In general the depth of the fluid layer is < property.SY 
      therefore a fraction of the radiation is reflected and a part is transmitted through the solid medium */
    /* The "local_depth" is computed from the melt fraction */
-   my_double lf = 0.0;
-   int jj;
-   for (jj = BRD; jj < LNY+BRD; j++){
-     lf += liquid_frac[IDX(i, jj, k)]*(mesh[IDXG(i, jj+1, k)].y - mesh[IDXG(i, j, k)].y);
-   }			
+   lf = 0.0;
+   for (jj = BRD; jj < LNY+BRD; jj++) lf += liquid_frac[IDX(i, jj, k)]*(mesh[IDXG(i, jj+1, k)].y - mesh[IDXG(i, jj, k)].y);
    MPI_Allreduce(&lf, &local_depth, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-   if(ROOT) fprintf(stderr,"i %d k %d local_depth %e\n",i,k,local_depth); 
+
+   //if(ROOT) fprintf(stderr,"i %d k %d local_depth %e\n",i,k,local_depth); 
 
    radiation_at_bottom = property.Amp_t*property.attenuation*exp(-property.attenuation*local_depth); /* the radiation intensity at the bottom of the fluid layer */
 
    reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
 
-   t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y));
-   t_source[IDX(i,j,k)] -= reflection_ceff*radiation_at_bottom*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
-   t_source[IDX(i,j,k)] += (1.0-reflection_ceff)*radiation_at_bottom*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+   if(center_V[IDX(i,j,k)].y > local_depth){
+     /* remove the radiation going through the bottom wall */
+     t_source[IDX(i,j,k)] -= property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+     /* add the radiation reflected from bottom */
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
+     /* add the radiation the transmitted through the bottom */    
+     t_source[IDX(i,j,k)] += (1.0-reflection_ceff)*radiation_at_bottom*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+   }
 
    #else
    /* NO MELTING : in this case the depth of the fluid layer is = property.SY */
@@ -524,7 +527,7 @@ void build_forcing(){
 
    radiation_at_bottom = property.Amp_t*property.attenuation*exp(-property.attenuation*local_depth); /* the radiation intensity at the bottom of the fluid layer */
 
-   reflection_ceff = 0.8; /* determines the albedo , it shall be given as an external parameter */
+   reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
 
    t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
    #endif
