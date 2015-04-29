@@ -1,5 +1,5 @@
 =================
-ch4 - project
+General purpose Lattice-Boltzmann code
 =================
 
 Introduction
@@ -15,9 +15,13 @@ A general purpose Lattice-Boltzmann code for fluid-dynamics simulations. It incl
 - volume forces
 - phase change (enthalpy formulation)
 
+History
+=======
 
 This project is a continuation and extension of_ https://github.com/ecalzavarini/ice-project
 
+Contact
+=======
 This project is based at Mechanics Laboratory of Lille (LML) France. 
 
 Info: 
