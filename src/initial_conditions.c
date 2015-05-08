@@ -293,6 +293,9 @@ void initial_conditions(int restart)
       for(i=BRD;i<LNX+BRD;i++){ 
    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=1.0;
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_HALF
+      if(center_V[IDX(i, j, k)].y > property.SY/2.0) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
+    #endif  
    #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
    #endif
