@@ -18,7 +18,7 @@ A general purpose Lattice-Boltzmann code for fluid-dynamics simulations. It incl
 History
 =======
 
-This project is a continuation and extension of_ https://github.com/ecalzavarini/ice-project
+This project is a continuation and extension https://github.com/ecalzavarini/ice-project
 
 Contact
 =======
