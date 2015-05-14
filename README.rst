@@ -15,7 +15,10 @@ A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It in
 - **large eddy simulation** (Smagorinsky, Shear Improved Samgorinsky with Kalman Filter)
 
 Requirements:
-- MPI , HDF5 , CMake (optional)
+
+- MPI 
+- HDF5 
+- CMake (optional)
 
 History
 =======
@@ -27,8 +30,10 @@ Contact
 This project is based at Mechanics Laboratory of Lille (LML) France. 
 
 Info: 
+
 For more information please contact
-:Author: Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr>
+
+*Author* Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
 
 How to: 
