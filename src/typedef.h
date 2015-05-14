@@ -54,6 +54,7 @@ typedef struct {
  #ifdef LB_TEMPERATURE
   my_double tau_t, kappa;
   my_double T_bot,T_top,T_ref,deltaT;
+  my_double grad_T_bot,grad_T_top;
   #ifdef LB_TEMPERATURE_BUOYANCY
   my_double beta_t,beta2_t;
   my_double gravity_x,gravity_y,gravity_z;

@@ -201,6 +201,7 @@ void assign_parameters(){
   #endif
  #endif
   fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
+  /* wall temperature values */
   sprintf(name,"T_bot");
   property.T_bot = read_parameter(name);
   sprintf(name,"T_top");
@@ -209,6 +210,12 @@ void assign_parameters(){
   property.T_ref = read_parameter(name);
   property.deltaT = property.T_bot-property.T_top;
   fprintf(stderr,"T_bot %g , T_top %g , deltaT %g\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
+  /* wall temperature gradients */
+  sprintf(name,"grad_T_bot");
+  property.grad_T_bot = read_parameter(name);
+  sprintf(name,"grad_T_top");
+  property.grad_T_top = read_parameter(name);
+  fprintf(stderr,"grad_T_bot %g , grad_T_top %g\n",(double)property.grad_T_bot, (double)property.grad_T_top);
  #ifdef LB_TEMPERATURE_BUOYANCY
   fprintf(stderr,"YES <- LB_TEMPERATURE_BUOYANCY\n");
   sprintf(name,"beta_t");

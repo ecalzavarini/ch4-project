@@ -816,6 +816,14 @@ if(LNY_END == NY){
 	  /* this is the wall temperature in case of outlet */
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j-1,k)]);
 #endif
+
+
+#ifdef LB_TEMPERATURE_BC_Y_P_FLUX
+	  /* we fix the temperature gradient at the wall */
+	  //my_double gradT_top = - property.deltaT/property.SY;
+	  T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
+#endif
+
 	  /* this is a linear interpolation */
 	  fac = 2.0*((T_wall-property.T_ref)- t[IDX(i,j,k)]);
 
@@ -855,6 +863,12 @@ if(LNY_START == 0){
 
 #ifdef LB_TEMPERATURE_BC_Y_M_OUTLET
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i,j+1,k)]);
+#endif
+
+#ifdef LB_TEMPERATURE_BC_Y_M_FLUX
+	  /* we fix the temperature gradient at the wall */
+	  //my_double gradT_bot = - property.deltaT/property.SY;
+	  T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
 #endif
 	  fac = 2.0*((T_wall-property.T_ref)-t[IDX(i,j,k)]);
 
