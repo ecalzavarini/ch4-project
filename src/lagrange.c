@@ -276,10 +276,11 @@ kp =  km + 1;
 (tracer+i)->py = 1.0;
 (tracer+i)->pz = 0.0;
 */
-theta = one_pi*myrand();
+/* uniform random oriented vector */
+theta = acos(2.0*myrand()-1.0);
 phi = two_pi*myrand();
-(tracer+i)->px = sin(theta)*cos(phi);
-(tracer+i)->py = sin(theta)*sin(phi);
+(tracer+i)->px = sin(theta)*sin(phi);
+(tracer+i)->py = sin(theta)*cos(phi);
 (tracer+i)->pz = cos(theta);
 
 (tracer+i)->dt_px = 0.0;
