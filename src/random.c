@@ -134,3 +134,18 @@ double random_gauss_fast(double mu, double sigma)
   return (mu + sigma * (double) X1);
 }
 
+
+/* generate unit random vector */
+vector random_vector(){
+  vector vec;
+  double theta, phi;
+
+  theta = acos(2.0*myrand()-1.0);
+  phi = two_pi*myrand();
+  vec.x = sin(theta)*sin(phi);
+  vec.y = sin(theta)*cos(phi);
+  vec.z = cos(theta);
+
+  return vec;
+}
+
