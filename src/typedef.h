@@ -102,6 +102,10 @@ typedef struct {
    #endif
    #ifdef LAGRANGE_ORIENTATION_ACTIVE
    my_double swim_velocity_types, swim_velocity_min, swim_velocity_max;
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+    my_double jump_time_types, jump_time_min, jump_time_max;
+    my_double critical_shear_rate_types, critical_shear_rate_min, critical_shear_rate_max;
+    #endif
    #endif
   #endif
  #endif
@@ -287,7 +291,7 @@ typedef struct {
    #ifdef LAGRANGE_ORIENTATION_ACTIVE
    my_double swim_velocity;
     #ifdef LAGRANGE_ORIENTATION_ACTIVE
-    my_double shear_rate,shear_rate_max;
+    my_double shear_rate,critical_shear_rate;
     my_double time_from_jump,jump_time;
     #endif
    #endif

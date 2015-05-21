@@ -56,6 +56,7 @@ void initial_conditions_particles(int restart){
 
   int type;
   my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
+  my_double *critical_shear_rate, *jump_time;
   vector vec;
 
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
@@ -167,6 +168,30 @@ void initial_conditions_particles(int restart){
     }
   }
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
+
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+  /* critical shear rate */
+  critical_shear_rate = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+  cycles = property.particle_types/property.critical_shear_rate_types;
+  if(property.critical_shear_rate_types > 1 )  step = (property.critical_shear_rate_max - property.critical_shear_rate_min)/(property.critical_shear_rate_types-1.0); else step = 0;
+  for (j=0; j<(int)cycles; j++){
+  for (i=0; i<(int)property.critical_shear_rate_types; i++){
+   critical_shear_rate[ i+j*(int)property.critical_shear_rate_types ] = property.critical_shear_rate_min + i*step;
+    }
+  }
+  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d critical_shear_rate %g\n",i,critical_shear_rate[i]);
+
+  /* jump_time */
+  jump_time = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+  cycles = property.particle_types/property.jump_time_types;
+  if(property.jump_time_types > 1 )  step = (property.jump_time_max - property.jump_time_min)/(property.jump_time_types-1.0); else step = 0;
+  for (j=0; j<(int)cycles; j++){
+  for (i=0; i<(int)property.jump_time_types; i++){
+  jump_time[ i+j*(int)property.jump_time_types ] = property.jump_time_min + i*step;
+    }
+  }
+  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d jump_time %g\n",i,jump_time[i]);
+   #endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP */
   #endif /* LAGRANGE_ORIENTATION_ACTIVE */
  #endif /* LAGRANGE_ORIENTATION */
 #endif /* LAGRANGE_GRADIENT */
@@ -194,6 +219,10 @@ fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
   #endif
   #ifdef LAGRANGE_ORIENTATION_ACTIVE
    fprintf(fin,"swim_velocity %e ",i,swim_velocity[i]);
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+    fprintf(fin,"jump_time %e ",i,jump_time[i]);
+    fprintf(fin,"critical_shear_rate %e ",i,critical_shear_rate[i]);
+   #endif
   #endif
  #endif /* LAGRANGE_ORIENTATION */
 #endif /* LAGRANGE_GRADIENT */
@@ -239,6 +268,12 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
   #ifdef LAGRANGE_ORIENTATION_ACTIVE 
    //(tracer+i)->swim_velocity = 0.01;
    (tracer+i)->swim_velocity = swim_velocity[type];
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+   //(tracer+i)->jump_time = 0.01;
+   (tracer+i)->jump_time = jump_time[type];
+   //(tracer+i)->critical_shear_rate = 0.01;
+   (tracer+i)->critical_shear_rate = critical_shear_rate[type];
+   #endif  
   #endif
  #endif
 #endif
@@ -298,6 +333,11 @@ phi = two_pi*myrand();
 (tracer+i)->dt_px = 0.0;
 (tracer+i)->dt_py = 0.0;
 (tracer+i)->dt_pz = 0.0;
+ #ifdef LAGRANGE_ORIENTATION_ACTIVE
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+    (tracer+i)->time_from_jump = myrand()*(tracer+i)->jump_time;
+  #endif
+ #endif
 #endif
  }/* end of  loop on particles */
 
@@ -897,7 +937,23 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->swim_velocity;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
-  #endif
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+		dataset_id = H5Dcreate(group, "critical_shear_rate", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->critical_shear_rate;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "shear_rate", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->shear_rate;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "jump_time", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->jump_time;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+   #endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP */
+  #endif /* LAGRANGE_ORIENTATION_ACTIVE */
  #endif
 #endif
 
@@ -1122,7 +1178,27 @@ void output_particles(){
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/swim_velocity\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"</Attribute>\n");   
+                fprintf(fout,"</Attribute>\n");  
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+		/* critical_shear_rate */
+                fprintf(fout,"<Attribute Name=\"critical_shear_rate\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/critical_shear_rate\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+		/* shear_rate */
+                fprintf(fout,"<Attribute Name=\"shear_rate\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/shear_rate\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+		/* jump_time */
+                fprintf(fout,"<Attribute Name=\"jump_time\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/jump_time\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+   #endif
   #endif
  #endif       
 #endif
@@ -1212,7 +1288,7 @@ void move_particles(){
   my_double matI[3][3];
  #endif 
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
-  my_double shear_rate,jump_time_max ,velocity_amplitude;
+  my_double shear_rate,jump_time_duration ,velocity_amplitude;
   #endif
 #endif
 
@@ -1254,14 +1330,14 @@ void move_particles(){
  0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
 
 
- jump_time_max = - ((tracer+ipart)->jump_time)*log(0.01);
+ jump_time_duration = - ((tracer+ipart)->jump_time)*log(0.01);
 
-    if((tracer+ipart)->time_from_jump > jump_time_max){
+    if((tracer+ipart)->time_from_jump > jump_time_duration){
       /* set to zero the velocity amplitude */
       velocity_amplitude = 0.0;
       /* but we are in the condition to jump */
 
-      if( shear_rate  > (tracer+ipart)->shear_rate_max ){
+      if( shear_rate  > (tracer+ipart)->critical_shear_rate ){
 	/* reset the time from jump */ 	
 	(tracer+ipart)->time_from_jump = 0.0;
         /* set initial velocity amplitude */
@@ -1280,7 +1356,7 @@ void move_particles(){
       } /* end if on shear rate */
 
     }else{
-      /* hence (tracer+ipart)->time_from_jump < jump_time_max  : we are already jumping */
+      /* hence (tracer+ipart)->time_from_jump < jump_time_duration  : we are already jumping */
       velocity_amplitude = (tracer+ipart)->swim_velocity * exp( -((tracer+ipart)->time_from_jump) / ((tracer+ipart)->jump_time) ); 
     }
 
@@ -1963,6 +2039,14 @@ void write_point_particle_h5(){
    #ifdef LAGRANGE_ORIENTATION_ACTIVE
     sprintf(label,"swim_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+    sprintf(label,"critical_shear_rate");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_DOUBLE);
+    sprintf(label,"shear_rate");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
+    sprintf(label,"jump_time");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+    #endif
    #endif 
   #endif /* LAGRANGE_ORIENTATION */
  #endif /* LAGRANGE_GRADIENT */
@@ -2201,6 +2285,14 @@ void read_point_particle_h5(){
    #ifdef LAGRANGE_ORIENTATION_ACTIVE
     sprintf(label,"swim_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+    sprintf(label,"critical_shear_rate");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_DOUBLE);
+    sprintf(label,"shear_rate");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
+    sprintf(label,"jump_time");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+    #endif
    #endif
   #endif
  #endif

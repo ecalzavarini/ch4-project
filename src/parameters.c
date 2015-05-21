@@ -413,7 +413,36 @@ void assign_parameters(){
   
   /* total number of particles types up to now */
   property.particle_types *= property.swim_velocity_types;
-   #endif
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+
+  /* critical_shear_rate */ 
+  sprintf(name,"critical_shear_rate_types");
+  property.critical_shear_rate_types = read_parameter(name); 
+  sprintf(name,"critical_shear_rate_min");
+  property.critical_shear_rate_min = read_parameter(name);
+  sprintf(name,"critical_shear_rate_max");
+  property.critical_shear_rate_max = read_parameter(name);
+  fprintf(stderr,"critical_shear_rate_types %g , critical_shear_rate_max %g , critical_shear_rate_min %g\n",(double)property.critical_shear_rate_types, (double)property.critical_shear_rate_min, (double)property.critical_shear_rate_max);
+  if( property.critical_shear_rate_types <1 || property.critical_shear_rate_max < property.critical_shear_rate_min ){ fprintf(stderr,"Error in critical_shear_rate parameters\n Exit.\n"); exit(0);}   
+  
+  /* total number of particles types up to now */
+  property.particle_types *= property.critical_shear_rate_types;
+
+  /* jump_time */ 
+  sprintf(name,"jump_time_types");
+  property.jump_time_types = read_parameter(name); 
+  sprintf(name,"jump_time_min");
+  property.jump_time_min = read_parameter(name);
+  sprintf(name,"jump_time_max");
+  property.jump_time_max = read_parameter(name);
+  fprintf(stderr,"jump_time_types %g , jump_time_max %g , jump_time_min %g\n",(double)property.jump_time_types, (double)property.jump_time_min, (double)property.jump_time_max);
+  if( property.jump_time_types <1 || property.jump_time_max < property.jump_time_min ){ fprintf(stderr,"Error in jump_time parameters\n Exit.\n"); exit(0);}   
+  
+  /* total number of particles types up to now */
+  property.particle_types *= property.jump_time_types;
+
+    #endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP  */
+   #endif /* LAGRANGE_ORIENTATION_ACTIVE */
   #endif /* LAGRANGE_ORIENTATION */
  #endif /* LAGRANGE_GRADIENT */
 
