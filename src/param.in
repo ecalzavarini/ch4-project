@@ -3,12 +3,12 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 128
-NY 128
+NX 100
+NY 100
 NZ 1
 
-SX 128
-SY 128
+SX 100
+SY 100
 SZ 1
 
 time_dt 1.0
@@ -17,33 +17,33 @@ time_end 20000.
 time_dump_field 100.
 time_dump_diagn 10.
 
-tau_u 1.0
+tau_u 0.8
 
-Amp_x 0.01     0.260416666666667
+Amp_x 0.01     
 Amp_y 0.0000
 Amp_z 0.0000
 
-tau_t 1.0
+tau_t 0.8
 
 T_bot  1.0
 T_top  0.0
 T_ref  0.0
-grad_T_bot 0.0078125
+grad_T_bot -0.0078125
 grad_T_top -0.0078125
 
-beta_t   0.002   0.001897778   
+beta_t   0.0001 
 beta2_t  0.0
 
 gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.00130208333333333 0.1
-attenuation 0.0390625  0.1
+Amp_t 0.00130208333333333 
+attenuation 0.0390625  
 
 T_solid 0.0
-latent_heat 20
-specific_heat 1
+latent_heat 1
+specific_heat 10
 
 tau_s 0.6
 S_bot 1.
@@ -80,3 +80,11 @@ rotational_diffusion_max 0.001
 swim_velocity_types 1
 swim_velocity_min 0.02
 swim_velocity_max 0.02
+
+jump_time_types 1
+jump_time_min 0.02
+jump_time_max 0.02
+
+critical_shear_rate_types 10
+critical_shear_rate_min 0.1
+critical_shear_rate_max 100.
