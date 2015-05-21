@@ -91,17 +91,19 @@ typedef struct {
   my_double beta_coeff_types, beta_coeff_min , beta_coeff_max;
   #endif
   #ifdef LAGRANGE_ORIENTATION
-  my_double aspect_ratio_types, aspect_ratio_min , aspect_ratio_max;
-   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
-  my_double gyrotaxis_velocity_types, gyrotaxis_velocity_min, gyrotaxis_velocity_max;
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY
+   my_double aspect_ratio_types, aspect_ratio_min , aspect_ratio_max;
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
+    my_double gyrotaxis_velocity_types, gyrotaxis_velocity_min, gyrotaxis_velocity_max;
+    #endif
    #endif
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
-  my_double rotational_diffusion_types, rotational_diffusion_min, rotational_diffusion_max;
+   my_double rotational_diffusion_types, rotational_diffusion_min, rotational_diffusion_max;
+   #endif
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE
+   my_double swim_velocity_types, swim_velocity_min, swim_velocity_max;
    #endif
   #endif
- #endif
- #ifdef LAGRANGE_ACTIVE 
-  my_double swim_velocity_types, swim_velocity_min, swim_velocity_max;
  #endif
 #endif
 } prop;
@@ -271,20 +273,26 @@ typedef struct {
    my_double beta_coeff; 
   #endif
   #ifdef LAGRANGE_ORIENTATION
-  my_double aspect_ratio;
   my_double px,py,pz;
   my_double dt_px,dt_py,dt_pz;
-   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
-   my_double gyrotaxis_velocity;
-   #endif
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY
+   my_double aspect_ratio;
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
+    my_double gyrotaxis_velocity;
+    #endif
+   #endif 
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
    my_double rotational_diffusion;
    #endif
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE
+   my_double swim_velocity;
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE
+    my_double shear_rate,shear_rate_max;
+    my_double time_from_jump,jump_time;
+    #endif
+   #endif
   #endif
  #endif
- #ifdef LAGRANGE_ACTIVE 
- my_double swim_velocity;
- #endif 
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */

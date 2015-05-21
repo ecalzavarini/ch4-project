@@ -56,7 +56,7 @@ void initial_conditions_particles(int restart){
 
   int type;
   my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
-  
+  vector vec;
 
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
@@ -109,6 +109,7 @@ void initial_conditions_particles(int restart){
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
  #endif
  #ifdef LAGRANGE_ORIENTATION
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY
  aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.aspect_ratio_types;
  /* linear increment */
@@ -125,7 +126,7 @@ void initial_conditions_particles(int restart){
  }
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
 
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   gyrotaxis_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.gyrotaxis_velocity_types;
  /* linear increment */
@@ -141,7 +142,8 @@ void initial_conditions_particles(int restart){
    }
   }
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
-  #endif
+   #endif
+  #endif /* LAGRANGE_ORIENTATION_JEFFREY */
 
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   rotational_diffusion = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
@@ -153,21 +155,21 @@ void initial_conditions_particles(int restart){
    }
   }
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d rotational_diffusion %g\n",i,rotational_diffusion[i]);
-  #endif
- #endif
-#endif
-#ifdef LAGRANGE_ACTIVE
- swim_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
- cycles = property.particle_types/property.swim_velocity_types;
- if(property.swim_velocity_types > 1 )  step = (property.swim_velocity_max - property.swim_velocity_min)/(property.swim_velocity_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.swim_velocity_types; i++){
-  swim_velocity[ i+j*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
-   }
- }
- for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
-#endif
+  #endif /* LAGRANGE_ORIENTATION_DIFFUSION */
 
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE
+  swim_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+  cycles = property.particle_types/property.swim_velocity_types;
+  if(property.swim_velocity_types > 1 )  step = (property.swim_velocity_max - property.swim_velocity_min)/(property.swim_velocity_types-1.0); else step = 0;
+  for (j=0; j<(int)cycles; j++){
+  for (i=0; i<(int)property.swim_velocity_types; i++){
+   swim_velocity[ i+j*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
+    }
+  }
+  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
+  #endif /* LAGRANGE_ORIENTATION_ACTIVE */
+ #endif /* LAGRANGE_ORIENTATION */
+#endif /* LAGRANGE_GRADIENT */
 
 /* write on file particle properties by family */
 if(ROOT){
@@ -179,20 +181,22 @@ fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
   fprintf(fin,"beta_coeff %e ",i,beta_coeff[i]);
- #endif
+ #endif /* LAGRANGE_ADDEDMASS */
  #ifdef LAGRANGE_ORIENTATION
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY
  fprintf(fin,"aspect_ratio %e ",i,aspect_ratio[i]);
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
    fprintf(fin,"gyrotaxis_velocity %e ",i,gyrotaxis_velocity[i]);
+   #endif
   #endif
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
    fprintf(fin,"rotational_diffusion %e ",i,rotational_diffusion[i]);
   #endif
- #endif
-#endif
-#ifdef LAGRANGE_ACTIVE
-fprintf(fin,"swim_velocity %e ",i,swim_velocity[i]);
-#endif
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE
+   fprintf(fin,"swim_velocity %e ",i,swim_velocity[i]);
+  #endif
+ #endif /* LAGRANGE_ORIENTATION */
+#endif /* LAGRANGE_GRADIENT */
  fprintf(fin,"\n");
  } 
   fclose(fin);
@@ -217,24 +221,26 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
 //(tracer+i)->beta_coeff = 1.0;
  #endif
  #ifdef LAGRANGE_ORIENTATION
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY
  /* particle aspect ratio (assuming axi-symmetry) */
  (tracer+i)->aspect_ratio = aspect_ratio[type];
  //(tracer+i)->aspect_ratio = 100.0;
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   /* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
   //(tracer+i)->gyrotaxis_velocity = 1.0;
   (tracer+i)->gyrotaxis_velocity = gyrotaxis_velocity[type];
+   #endif
   #endif
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   /* rotational diffusion , units ? [rad^2 /time] */
   //(tracer+i)->rotational_diffusion = 0.1;
   (tracer+i)->rotational_diffusion = rotational_diffusion[type];
   #endif 
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE 
+   //(tracer+i)->swim_velocity = 0.01;
+   (tracer+i)->swim_velocity = swim_velocity[type];
+  #endif
  #endif
-#endif
-#ifdef LAGRANGE_ACTIVE 
-  //(tracer+i)->swim_velocity = 0.01;
-  (tracer+i)->swim_velocity = swim_velocity[type];
 #endif
 
 /* position: randomly distributed particles */
@@ -277,11 +283,17 @@ kp =  km + 1;
 (tracer+i)->pz = 0.0;
 */
 /* uniform random oriented vector */
+/*
 theta = acos(2.0*myrand()-1.0);
 phi = two_pi*myrand();
 (tracer+i)->px = sin(theta)*sin(phi);
 (tracer+i)->py = sin(theta)*cos(phi);
 (tracer+i)->pz = cos(theta);
+*/
+ vec = random_vector();
+ (tracer+i)->px = vec.x;
+ (tracer+i)->py = vec.y;
+ (tracer+i)->pz = vec.z;
 
 (tracer+i)->dt_px = 0.0;
 (tracer+i)->dt_py = 0.0;
@@ -836,11 +848,6 @@ void output_particles(){
                 status = H5Dclose(dataset_id);
  #endif
  #ifdef LAGRANGE_ORIENTATION
-		/* PARTICLE ASPECT RATIO */
-		dataset_id = H5Dcreate(group, "aspect_ratio", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
-		for(i=0;i<npart;i++) aux[i]=(tracer + i)->aspect_ratio;
-                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
-                status = H5Dclose(dataset_id);
 		/* ORIENTATION VECTOR */
 		dataset_id = H5Dcreate(group, "px", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->px;
@@ -871,22 +878,28 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_pz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY
+		/* PARTICLE ASPECT RATIO */
+		dataset_id = H5Dcreate(group, "aspect_ratio", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->aspect_ratio;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
 		/* GYROTACTIC PARAMETER */
 		dataset_id = H5Dcreate(group, "gyrotaxis_velocity", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->gyrotaxis_velocity;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);	
-  #endif	
- #endif
-#endif
-#ifdef LAGRANGE_ACTIVE
+   #endif
+  #endif		
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE
 		dataset_id = H5Dcreate(group, "swim_velocity", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->swim_velocity;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+  #endif
+ #endif
 #endif
-
 
 #ifdef LB_TEMPERATURE
 		/* WRITE PARTICLE TEMPERATURE */		
@@ -1058,13 +1071,7 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n"); 
  #endif
- #ifdef LAGRANGE_ORIENTATION
-		/* aspect ratio */
-                fprintf(fout,"<Attribute Name=\"aspect_ratio\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
-                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
-                fprintf(fout,"%s:/lagrange/aspect_ratio\n",NEW_H5FILE_NAME);
-                fprintf(fout,"</DataItem>\n");
-                fprintf(fout,"</Attribute>\n");   
+ #ifdef LAGRANGE_ORIENTATION 
 		/* orientation vector */
                 fprintf(fout,"<Attribute Name=\"orientation\" AttributeType=\"Vector\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
@@ -1093,25 +1100,32 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY
+		/* aspect ratio */
+                fprintf(fout,"<Attribute Name=\"aspect_ratio\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/aspect_ratio\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");  
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
 		/* gyrotaxis velocity parameter */
                 fprintf(fout,"<Attribute Name=\"gyrotaxis_velocity\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/gyrotaxis_velocity\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");  
+   #endif
   #endif		
- #endif       
-#endif
-#ifdef LAGRANGE_ACTIVE
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE
 		/* swim velocity */
                 fprintf(fout,"<Attribute Name=\"swim_velocity\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
                 fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
                 fprintf(fout,"%s:/lagrange/swim_velocity\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");   
+  #endif
+ #endif       
 #endif
-
 
 #ifdef LB_TEMPERATURE
 		/* temperature at particle position */
@@ -1187,6 +1201,7 @@ void move_particles(){
   int *displs,*rcounts;
   my_double invtau;
   vector Dt_u;
+  vector vec, v_old;
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
   my_double scalOSO, f_alpha, alpha,norm , gyro;
@@ -1196,6 +1211,9 @@ void move_particles(){
   my_double two_d_r;
   my_double matI[3][3];
  #endif 
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+  my_double shear_rate,jump_time_max ,velocity_amplitude;
+  #endif
 #endif
 
 #ifdef LAGRANGE_ORIENTATION
@@ -1220,16 +1238,71 @@ void move_particles(){
    (tracer+ipart)->vy = (tracer+ipart)->uy;
    (tracer+ipart)->vz = (tracer+ipart)->uz;
 
-#ifdef LAGRANGE_ACTIVE 
+#ifdef LAGRANGE_ORIENTATION 
+ #ifdef LAGRANGE_ORIENTATION_ACTIVE 
    /* if the particle is alive there is an extra velocity to add */
-  #ifdef LAGRANGE_ORIENTATION   
+
+  #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+ /* the particle can react to flow gradients and decide if to jump */
+ /* compute |s| */
+ (tracer+ipart)->shear_rate =  shear_rate = sqrt(
+ ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
+ ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
+ ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
+ 0.5*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) )*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) ) +  
+ 0.5*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) )*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) ) +  
+ 0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
+
+
+ jump_time_max = - ((tracer+ipart)->jump_time)*log(0.01);
+
+    if((tracer+ipart)->time_from_jump > jump_time_max){
+      /* set to zero the velocity amplitude */
+      velocity_amplitude = 0.0;
+      /* but we are in the condition to jump */
+
+      if( shear_rate  > (tracer+ipart)->shear_rate_max ){
+	/* reset the time from jump */ 	
+	(tracer+ipart)->time_from_jump = 0.0;
+        /* set initial velocity amplitude */
+        velocity_amplitude = (tracer+ipart)->swim_velocity; 
+        /* generarate a new random vector  */  
+        vec = random_vector();
+        /* retrive last particle velocity*/
+        v_old.x = (tracer+ipart)->vx_old;
+        v_old.y = (tracer+ipart)->vy_old;
+        v_old.z = (tracer+ipart)->vz_old;
+        /* choose vec direction in the same emisphere of the particle velocity */
+        if( scalar_product(vec,v_old) < 0.0 ) vec = vector_scale( -1.0 , vec);
+        (tracer+ipart)->px = vec.x;
+        (tracer+ipart)->py = vec.y;
+        (tracer+ipart)->pz = vec.z;	
+      } /* end if on shear rate */
+
+    }else{
+      /* hence (tracer+ipart)->time_from_jump < jump_time_max  : we are already jumping */
+      velocity_amplitude = (tracer+ipart)->swim_velocity * exp( -((tracer+ipart)->time_from_jump) / ((tracer+ipart)->jump_time) ); 
+    }
+
+      /* add jump part to the particle velocity */
+      (tracer+ipart)->vx += velocity_amplitude*((tracer+ipart)->px);
+      (tracer+ipart)->vy += velocity_amplitude*((tracer+ipart)->py);
+      (tracer+ipart)->vz += velocity_amplitude*((tracer+ipart)->pz);
+ 
+      /* increase time from jump */
+      (tracer+ipart)->time_from_jump += property.time_dt;
+
+   #else /* NOT LAGRANGE_ORIENTATION_ACTIVE_JUMP */
+  
+      /* it just swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
    (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
    (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
    // fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vx , (tracer+ipart)->swim_velocity , (tracer+ipart)->px );
   //  fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vy , (tracer+ipart)->swim_velocity , (tracer+ipart)->py );
-  #endif
-#endif
+  #endif /* NOT LAGRANGE_ORIENTATION_ACTIVE_JUMP */
+ #endif /* LAGRANGE_ORIENTATION_ACTIVE */
+#endif /* LAGRANGE_ORIENTATION */
 
   if(itime==0 && resume==0){ 
     (tracer+ipart)->vx_old = (tracer+ipart)->vx;
@@ -1353,7 +1426,8 @@ void move_particles(){
    }/* end of if on tau_drag different from zero */
 
 #ifdef LAGRANGE_ORIENTATION
-/* Here we implement Jeffrey equation */
+ #ifdef LAGRANGE_ORIENTATION_JEFFREY
+ /* Here we implement Jeffrey equation */
 
 
               /* aspect ratio factor */
@@ -1394,17 +1468,17 @@ void move_particles(){
                   matS[i][j] *= f_alpha;
 		}
 
- #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
 	       /* gravitational gyrotaxis : the stretched S matrix has an extra term -1/(2*v0) * g_i p_j      */	      
 	      if((tracer+ipart)->gyrotaxis_velocity !=0){
 		gyro = - 0.5 / (tracer+ipart)->gyrotaxis_velocity;
-  #ifdef LAGRANGE_GRAVITY	      
+   #ifdef LAGRANGE_GRAVITY	      
 		/* the full term */	      
 		vecA[0] = gyro * (- property.gravity_x  + (tracer+ipart)->ax);
 		vecA[1] = gyro * (- property.gravity_y  + (tracer+ipart)->ay);
 		vecA[2] = gyro * (- property.gravity_z  + (tracer+ipart)->az);
 	      
-  #else
+   #else
 		/* just for a test: fixed vector along z. Like g_x=0, g_y=0, g_z=-1.0 */
 		vecA[0] = gyro * 0.0;  
 		vecA[1] = gyro * 0.0;
@@ -1415,12 +1489,12 @@ void move_particles(){
 		  vecA[1] = gyro * (tracer+ipart)->ay;
 		  vecA[2] = gyro * (tracer+ipart)->az;
 		*/
-  #endif	      
+   #endif	      
 		matS[0][0]+= vecA[0]*vecP[0]; matA[0][1] += vecA[0]*vecP[1]; matA[0][2] += vecA[0]*vecP[2];
 		matS[1][0]+= vecA[1]*vecP[0]; matA[1][1] += vecA[1]*vecP[1]; matA[1][2] += vecA[1]*vecP[2];
 		matS[2][0]+= vecA[2]*vecP[0]; matA[2][1] += vecA[2]*vecP[1]; matA[2][2] += vecA[2]*vecP[2];	      
 	      }/* end if on gyrotaxis_velocity !=0 , to avoid nan */
- #endif
+  #endif
 
 	      /* Now we compute RHS of the Jeffrey equation */
 
@@ -1461,7 +1535,7 @@ void move_particles(){
 		}
  }
 
-
+ #endif
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
 	     vec_xi[0] =  random_gauss(0.0,1.0);
 	     vec_xi[1] =  random_gauss(0.0,1.0);
@@ -1478,7 +1552,13 @@ void move_particles(){
 	      for (i=0; i<3; i++)
  	      vecP[i] +=  sqrt(two_d_r*property.time_dt)*vecTMP[i];
  #endif
-
+ #ifdef LAGRANGE_ORIENTATION_RANDOM
+ /* randomly oriented vector */
+ vec = random_vector();
+ vecP[0] = vec.x;
+ vecP[1] = vec.y;
+ vecP[2] = vec.z;
+ #endif
 	      /* normalize P vector */
 	      norm=0.0;
 	      for (i=0; i<3; i++) norm += vecP[i]*vecP[i];
@@ -1856,8 +1936,6 @@ void write_point_particle_h5(){
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
   #endif
   #ifdef LAGRANGE_ORIENTATION
-    sprintf(label,"aspect_ratio");
-    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
     sprintf(label,"px");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
     sprintf(label,"py");
@@ -1870,21 +1948,25 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
-   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY
+    sprintf(label,"aspect_ratio");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     sprintf(label,"gyrotaxis_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
+    #endif
    #endif  
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
     sprintf(label,"rotational_diffusion");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE);
    #endif 
-  #endif
- #endif
- #ifdef LAGRANGE_ACTIVE
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE
     sprintf(label,"swim_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
- #endif 
-#endif
+   #endif 
+  #endif /* LAGRANGE_ORIENTATION */
+ #endif /* LAGRANGE_GRADIENT */
+#endif /* LB_FLUID */
 
 #ifdef LB_TEMPERATURE
     sprintf(label,"t");
@@ -2092,8 +2174,6 @@ void read_point_particle_h5(){
      H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
   #endif
   #ifdef LAGRANGE_ORIENTATION
-    sprintf(label,"aspect_ratio");
-    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
     sprintf(label,"px");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
     sprintf(label,"py");
@@ -2106,19 +2186,23 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
-   #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY
+    sprintf(label,"aspect_ratio");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     sprintf(label,"gyrotaxis_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE); 
+    #endif
    #endif
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
     sprintf(label,"rotational_diffusion");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE); 
    #endif
-  #endif
- #endif
- #ifdef LAGRANGE_ACTIVE
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE
     sprintf(label,"swim_velocity");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+   #endif
+  #endif
  #endif
 #endif
 

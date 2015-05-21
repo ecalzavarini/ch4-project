@@ -355,52 +355,52 @@ void assign_parameters(){
   #endif
 
   #ifdef LAGRANGE_ORIENTATION
-  /* aspect ratio for rotation  */ 
-  sprintf(name,"aspect_ratio_types");
-  property.aspect_ratio_types = read_parameter(name); 
-  sprintf(name,"aspect_ratio_min");
-  property.aspect_ratio_min = read_parameter(name);
-  sprintf(name,"aspect_ratio_max");
-  property.aspect_ratio_max = read_parameter(name);
-  fprintf(stderr,"aspect_ratio_types %g , aspect_ratio_max %g , aspect_ratio_min %g\n",(double)property.aspect_ratio_types, (double)property.aspect_ratio_min, (double)property.aspect_ratio_max);
-  if( property.aspect_ratio_types <1 || property.aspect_ratio_max < property.aspect_ratio_min ){ fprintf(stderr,"Error in aspect_ratio parameters\n Exit.\n"); exit(0);}   
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY
+   /* aspect ratio for rotation  */ 
+   sprintf(name,"aspect_ratio_types");
+   property.aspect_ratio_types = read_parameter(name); 
+   sprintf(name,"aspect_ratio_min");
+   property.aspect_ratio_min = read_parameter(name);
+   sprintf(name,"aspect_ratio_max");
+   property.aspect_ratio_max = read_parameter(name);
+   fprintf(stderr,"aspect_ratio_types %g , aspect_ratio_max %g , aspect_ratio_min %g\n",(double)property.aspect_ratio_types, (double)property.aspect_ratio_min, (double)property.aspect_ratio_max);
+   if( property.aspect_ratio_types <1 || property.aspect_ratio_max < property.aspect_ratio_min ){ fprintf(stderr,"Error in aspect_ratio parameters\n Exit.\n"); exit(0);}   
   
-  /* total number of particles types up to now */
-  property.particle_types *= property.aspect_ratio_types;
+   /* total number of particles types up to now */
+   property.particle_types *= property.aspect_ratio_types;
  
-  #ifdef LAGRANGE_ORIENTATION_GYROTAXIS
-  /* gyrotaxis_velocity for rotation  */ 
-  sprintf(name,"gyrotaxis_velocity_types");
-  property.gyrotaxis_velocity_types = read_parameter(name); 
-  sprintf(name,"gyrotaxis_velocity_min");
-  property.gyrotaxis_velocity_min = read_parameter(name);
-  sprintf(name,"gyrotaxis_velocity_max");
-  property.gyrotaxis_velocity_max = read_parameter(name);
-  fprintf(stderr,"gyrotaxis_velocity_types %g , gyrotaxis_velocity_max %g , gyrotaxis_velocity_min %g\n",(double)property.gyrotaxis_velocity_types, (double)property.gyrotaxis_velocity_min, (double)property.gyrotaxis_velocity_max);
-  if( property.gyrotaxis_velocity_types <1 || property.gyrotaxis_velocity_max < property.gyrotaxis_velocity_min ){ fprintf(stderr,"Error in gyrotaxis_velocity parameters\n Exit.\n"); exit(0);}   
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
+    /* gyrotaxis_velocity for rotation  */ 
+    sprintf(name,"gyrotaxis_velocity_types");
+    property.gyrotaxis_velocity_types = read_parameter(name); 
+    sprintf(name,"gyrotaxis_velocity_min");
+    property.gyrotaxis_velocity_min = read_parameter(name);
+    sprintf(name,"gyrotaxis_velocity_max");
+    property.gyrotaxis_velocity_max = read_parameter(name);
+    fprintf(stderr,"gyrotaxis_velocity_types %g , gyrotaxis_velocity_max %g , gyrotaxis_velocity_min %g\n",(double)property.gyrotaxis_velocity_types, (double)property.gyrotaxis_velocity_min, (double)property.gyrotaxis_velocity_max);
+    if( property.gyrotaxis_velocity_types <1 || property.gyrotaxis_velocity_max < property.gyrotaxis_velocity_min ){ fprintf(stderr,"Error in gyrotaxis_velocity parameters\n Exit.\n"); exit(0);}   
+  
+    /* total number of particles types up to now */
+    property.particle_types *= property.gyrotaxis_velocity_types;
+    #endif
+   #endif 
+
+   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
+   /* rotational_diffusion for rotation  */ 
+   sprintf(name,"rotational_diffusion_types");
+   property.rotational_diffusion_types = read_parameter(name); 
+   sprintf(name,"rotational_diffusion_min");
+   property.rotational_diffusion_min = read_parameter(name);
+   sprintf(name,"rotational_diffusion_max");
+   property.rotational_diffusion_max = read_parameter(name);
+   fprintf(stderr,"rotational_diffusion_types %g , rotational_diffusion_max %g , rotational_diffusion_min %g\n",(double)property.rotational_diffusion_types, (double)property.rotational_diffusion_min, (double)property.rotational_diffusion_max);
+   if( property.rotational_diffusion_types <1 || property.rotational_diffusion_max < property.rotational_diffusion_min ){ fprintf(stderr,"Error in rotational_diffusion parameters\n Exit.\n"); exit(0);}   
   
   /* total number of particles types up to now */
-  property.particle_types *= property.gyrotaxis_velocity_types;
+   property.particle_types *= property.rotational_diffusion_types;
    #endif
 
-  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
-  /* rotational_diffusion for rotation  */ 
-  sprintf(name,"rotational_diffusion_types");
-  property.rotational_diffusion_types = read_parameter(name); 
-  sprintf(name,"rotational_diffusion_min");
-  property.rotational_diffusion_min = read_parameter(name);
-  sprintf(name,"rotational_diffusion_max");
-  property.rotational_diffusion_max = read_parameter(name);
-  fprintf(stderr,"rotational_diffusion_types %g , rotational_diffusion_max %g , rotational_diffusion_min %g\n",(double)property.rotational_diffusion_types, (double)property.rotational_diffusion_min, (double)property.rotational_diffusion_max);
-  if( property.rotational_diffusion_types <1 || property.rotational_diffusion_max < property.rotational_diffusion_min ){ fprintf(stderr,"Error in rotational_diffusion parameters\n Exit.\n"); exit(0);}   
-  
-  /* total number of particles types up to now */
-  property.particle_types *= property.rotational_diffusion_types;
-   #endif
-  #endif
- #endif
-
- #ifdef LAGRANGE_ACTIVE
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE
   /* swim_velocity for rotation  */ 
   sprintf(name,"swim_velocity_types");
   property.swim_velocity_types = read_parameter(name); 
@@ -413,11 +413,13 @@ void assign_parameters(){
   
   /* total number of particles types up to now */
   property.particle_types *= property.swim_velocity_types;
- #endif
+   #endif
+  #endif /* LAGRANGE_ORIENTATION */
+ #endif /* LAGRANGE_GRADIENT */
 
   /* total number of particles types */
    fprintf(stderr,"Properties: particle_types %g\n",(double)property.particle_types);   
-#endif
+#endif /* LAGRANGE */
 
   /* size of types, just for a check */
     fprintf(stderr,"Size of float %d\n",sizeof(float));

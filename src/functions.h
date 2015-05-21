@@ -23,6 +23,8 @@ void compute_interpolation_coefficients();
 void read_landscape();
 void sendrecv_borders_vector(vector *f);
 void sendrecv_borders_scalar(my_double *f);
+vector vector_scale(my_double a , vector b);
+my_double scalar_product(vector a , vector b);
 
 /* lb.c */
 void design_lb();
