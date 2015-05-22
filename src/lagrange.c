@@ -335,7 +335,8 @@ phi = two_pi*myrand();
 (tracer+i)->dt_pz = 0.0;
  #ifdef LAGRANGE_ORIENTATION_ACTIVE
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
-    (tracer+i)->time_from_jump = myrand()*(tracer+i)->jump_time;
+/* time from jump is initialized in a arbitrary range between 0 and 10 jump_times */
+    (tracer+i)->time_from_jump = 10.*myrand()*(tracer+i)->jump_time;
   #endif
  #endif
 #endif
@@ -1570,7 +1571,7 @@ void move_particles(){
 		matS[1][0]+= vecA[1]*vecP[0]; matA[1][1] += vecA[1]*vecP[1]; matA[1][2] += vecA[1]*vecP[2];
 		matS[2][0]+= vecA[2]*vecP[0]; matA[2][1] += vecA[2]*vecP[1]; matA[2][2] += vecA[2]*vecP[2];	      
 	      }/* end if on gyrotaxis_velocity !=0 , to avoid nan */
-  #endif
+  #endif /* LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS */
 
 	      /* Now we compute RHS of the Jeffrey equation */
 
@@ -1611,7 +1612,7 @@ void move_particles(){
 		}
  }
 
- #endif
+ #endif /*LAGRANGE_ORIENTATION_JEFFREY */
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
 	     vec_xi[0] =  random_gauss(0.0,1.0);
 	     vec_xi[1] =  random_gauss(0.0,1.0);
@@ -1627,14 +1628,21 @@ void move_particles(){
 	      /* stochastic part of the rotation equation */
 	      for (i=0; i<3; i++)
  	      vecP[i] +=  sqrt(two_d_r*property.time_dt)*vecTMP[i];
- #endif
+ #endif /* LAGRANGE_ORIENTATION_DIFFUSION */
+
  #ifdef LAGRANGE_ORIENTATION_RANDOM
  /* randomly oriented vector */
  vec = random_vector();
  vecP[0] = vec.x;
  vecP[1] = vec.y;
  vecP[2] = vec.z;
- #endif
+
+ /* compute acceleration */
+ vecFold[0] = (vec.x - (tracer+ipart)->px)/property.time_dt;
+ vecFold[1] = (vec.y - (tracer+ipart)->py)/property.time_dt;
+ vecFold[2] = (vec.z - (tracer+ipart)->pz)/property.time_dt;
+ #endif /* LAGRANGE_ORIENTATION_RANDOM */
+
 	      /* normalize P vector */
 	      norm=0.0;
 	      for (i=0; i<3; i++) norm += vecP[i]*vecP[i];
