@@ -5,8 +5,8 @@ void initial_conditions(int restart)
   int i,j,k, pp;
   my_double nu,Amp_x;
   my_double fn,kn;
-  my_double y,x;
-  my_double L,LX,LY;
+  my_double y,x,z;
+  my_double L,LX,LY,LZ;
   my_double LY_half;
   my_double val;
   int iy,iyp,iym;
@@ -295,6 +295,13 @@ void initial_conditions(int restart)
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=1.0;
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_HALF
       if(center_V[IDX(i, j, k)].y > property.SY/2.0) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
+    #endif  
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE      
+      x = center_V[IDX(i, j, k)].x - property.SX/2.0;
+      y = center_V[IDX(i, j, k)].y; 
+      z = center_V[IDX(i, j, k)].z - property.SZ/2.0;
+      val = sqrt(x*x + y*y + z*z);
+      if( val > 20 ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
     #endif  
    #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
