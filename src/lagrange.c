@@ -1503,13 +1503,6 @@ void move_particles(){
    }/* end of if on tau_drag different from zero */
 
 #ifdef LAGRANGE_ORIENTATION
- #ifdef LAGRANGE_ORIENTATION_JEFFREY
- /* Here we implement Jeffrey equation */
-
-
-              /* aspect ratio factor */
-   alpha = (tracer+ipart)->aspect_ratio;
-   f_alpha = (alpha*alpha-1.0)/(1.0+alpha*alpha);
 
 	      /* assign P vector */
      vecP[0] = (tracer+ipart)->px;
@@ -1519,6 +1512,14 @@ void move_particles(){
      vecFold[0] = (tracer+ipart)->dt_px;
      vecFold[1] = (tracer+ipart)->dt_py;
      vecFold[2] = (tracer+ipart)->dt_pz;
+
+ #ifdef LAGRANGE_ORIENTATION_JEFFREY
+ /* Here we implement Jeffrey equation */
+
+              /* aspect ratio factor */
+   alpha = (tracer+ipart)->aspect_ratio;
+   f_alpha = (alpha*alpha-1.0)/(1.0+alpha*alpha);
+
 
 	      /* velocity gradient matrix */
 	      matA[0][0]=(tracer+ipart)->dx_ux ; matA[0][1]=(tracer+ipart)->dy_ux; matA[0][2]=(tracer+ipart)->dz_ux;
