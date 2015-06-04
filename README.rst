@@ -35,7 +35,7 @@ For more information please contact
 
 *Author* Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
-*Credits* : Kalyan Shrestha (Lille University)
+*Contributors*: Kalyan Shrestha (Lille University)
 
 
 How to: 
