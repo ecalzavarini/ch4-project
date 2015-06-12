@@ -83,9 +83,6 @@ void build_forcing(){
  #endif
  #ifdef LB_FLUID_FORCING_HIT_LINEAR 
     /* compute the total turbulent kinetic energy */
-    u2.x = u2_all.x = 0.0;
-    u2.y = u2_all.y = 0.0;
-    u2.z = u2_all.z = 0.0;
 
     u0.x = u0_all.x = 0.0;
     u0.y = u0_all.y = 0.0;
@@ -97,13 +94,8 @@ void build_forcing(){
 	    u0.x += u[IDX(i,j,k)].x;
             u0.y += u[IDX(i,j,k)].y;
             u0.z += u[IDX(i,j,k)].z;
-
-	    u2.x += u[IDX(i,j,k)].x*u[IDX(i,j,k)].x;
-            u2.y += u[IDX(i,j,k)].y*u[IDX(i,j,k)].y;
-            u2.z += u[IDX(i,j,k)].z*u[IDX(i,j,k)].z;
 	  }
 
-    MPI_Allreduce(&u2, &u2_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
     MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
 
     norm = 1.0/(property.NX*property.NY*property.NZ);
@@ -112,11 +104,26 @@ void build_forcing(){
       u0_all.y *= norm;
       u0_all.z *= norm;
 
+    u2.x = u2_all.x = 0.0;
+    u2.y = u2_all.y = 0.0;
+    u2.z = u2_all.z = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){ 
+
+	  u2.x += (u[IDX(i,j,k)].x - u0_all.x)*(u[IDX(i,j,k)].x - u0_all.x);
+          u2.y += (u[IDX(i,j,k)].y - u0_all.y)*(u[IDX(i,j,k)].y - u0_all.y);
+          u2.z += (u[IDX(i,j,k)].z - u0_all.z)*(u[IDX(i,j,k)].z - u0_all.z);
+	  }
+
+   MPI_Allreduce(&u2, &u2_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
       u2_all.x *= norm;
       u2_all.y *= norm;
       u2_all.z *= norm;
 
-    k_turb = 0.5*( (u2_all.x - u0_all.x*u0_all.x) +  (u2_all.y - u0_all.y*u0_all.y) +  (u2_all.z - u0_all.z*u0_all.z) );
+    k_turb =  0.5*( u2_all.x + u2_all.y + u2_all.z );
     k0_turb = 0.5*0.01;  /* assuming a velocity of 0.1 per grid point */
     if(k_turb != 0.0) k_ratio = k0_turb/k_turb; else k_ratio = 1.0;
  #endif
