@@ -10,7 +10,8 @@ void build_forcing(){
   my_double temp, fac, val; 
   vector dist,vel;
   vector u0, u0_all;
-  my_double norm;
+  vector u2,u2_all;
+  my_double norm, k_turb, k0_turb , k_ratio;
   my_double t0,t0_all;
   my_double s0,s0_all;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
@@ -80,6 +81,47 @@ void build_forcing(){
       u0_all.z /= norm;
     }
  #endif
+ #ifdef LB_FLUID_FORCING_HIT_LINEAR 
+    /* compute the total turbulent kinetic energy */
+    u2.x = u2_all.x = 0.0;
+    u2.y = u2_all.y = 0.0;
+    u2.z = u2_all.z = 0.0;
+
+    u0.x = u0_all.x = 0.0;
+    u0.y = u0_all.y = 0.0;
+    u0.z = u0_all.z = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){ 
+	    u0.x += u[IDX(i,j,k)].x;
+            u0.y += u[IDX(i,j,k)].y;
+            u0.z += u[IDX(i,j,k)].z;
+
+	    u2.x += u[IDX(i,j,k)].x*u[IDX(i,j,k)].x;
+            u2.y += u[IDX(i,j,k)].y*u[IDX(i,j,k)].y;
+            u2.z += u[IDX(i,j,k)].z*u[IDX(i,j,k)].z;
+	  }
+
+    MPI_Allreduce(&u2, &u2_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+    MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+      u0_all.x *= norm;
+      u0_all.y *= norm;
+      u0_all.z *= norm;
+
+      u2_all.x *= norm;
+      u2_all.y *= norm;
+      u2_all.z *= norm;
+
+    k_turb = 0.5*( (u2_all.x - u0_all.x*u0_all.x) +  (u2_all.y - u0_all.y*u0_all.y) +  (u2_all.z - u0_all.z*u0_all.z) );
+    k0_turb = 0.5*0.01;  /* assuming a velocity of 0.1 per grid point */
+    if(k_turb != 0.0) k_ratio = k0_turb/k_turb; else k_ratio = 1.0;
+ #endif
+
+
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_HIT
@@ -268,11 +310,12 @@ void build_forcing(){
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
  #ifdef LB_FLUID_FORCING_HIT_LINEAR
    /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */
-       fac = 0.5*((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz));	
-       if(fac != 0.0) fac = 1.0/fac; else fac = 1.0;
-      force[IDX(i,j,k)].x += fac*property.Amp_x*u[IDX(i,j,k)].x;
-      force[IDX(i,j,k)].y += fac*property.Amp_y*u[IDX(i,j,k)].y;
-      force[IDX(i,j,k)].z += fac*property.Amp_z*u[IDX(i,j,k)].z;
+	//fac = 0.5*((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz));	
+	//if(fac != 0.0) fac = 1.0/fac; else fac = 1.0;	
+	fac = k_ratio;
+	force[IDX(i,j,k)].x += fac*property.Amp_x*(u[IDX(i,j,k)].x - u0_all.x);
+	force[IDX(i,j,k)].y += fac*property.Amp_y*(u[IDX(i,j,k)].y - u0_all.y);
+	force[IDX(i,j,k)].z += fac*property.Amp_z*(u[IDX(i,j,k)].z - u0_all.z);
  #else
  #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
       /* the zero mode */
