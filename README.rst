@@ -31,9 +31,11 @@ This project is based at Mechanics Laboratory of Lille (LML) France.
 
 Info: 
 
-For more information please contact
+For more information please contact:
 
-*Author* Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
+Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
+
+*Contributors*: Kalyan Shrestha (Lille University)
 
 
 How to: 
