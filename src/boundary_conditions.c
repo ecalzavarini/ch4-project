@@ -806,7 +806,9 @@ if(LNY_END == NY){
 	  T_wall = property.T_top;
 #ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE
 	  //	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
-	  T_wall = property.T_top;
+	  //T_wall = property.T_top;
+	  /* half fixed temperature, half  fixed-flux */
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
 #endif
 #else
 	  T_wall = 0.0;
@@ -852,9 +854,10 @@ if(LNY_START == 0){
 
 #ifdef LB_TEMPERATURE_BC_Y_M_VARIABLE
 	  //  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
-
- 	  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/3.158), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0) T_wall = property.T_bot; else T_wall = property.T_top; 
-  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+	  //if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/3.158), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0) T_wall = property.T_bot; else T_wall = property.T_top; 
+	  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+	  /* half fixed temperature, half  fixed-flux */
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
 #endif
 
 #else
