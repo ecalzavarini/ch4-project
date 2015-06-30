@@ -127,8 +127,6 @@ void build_forcing(){
     k0_turb = 0.5*0.01;  /* assuming a velocity of 0.1 per grid point */
     if(k_turb != 0.0) k_ratio = k0_turb/k_turb; else k_ratio = 1.0;
  #endif
-
-
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_HIT
@@ -338,6 +336,13 @@ void build_forcing(){
       force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) );
+
+      /* unnecessary part ? */
+      /*	
+      force[IDX(i,j,k)].x +=  (1./3.)*fac*property.Amp_x* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)); 
+      force[IDX(i,j,k)].y += -(1./3.)*fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].x)); 
+      force[IDX(i,j,k)].z += -(1./3.)*fac*property.Amp_x* ( sin(two_pi*(vk[ii].z*z/LZ + phi[ii].x)); 
+      */
     }
  #endif  
 #endif
