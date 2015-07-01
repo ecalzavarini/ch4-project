@@ -343,9 +343,9 @@ void build_forcing(){
       force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi[0].x));       
     }
   #else 
-      /* Option 2 */
+      /* Type 2 forcing */
     for(ii=0; ii<nk; ii++){
-      fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / sqrt(vk2[ii]);      
+      fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii];      
       force[IDX(i,j,k)].x += 2.0*fac*(vk[ii].y * vk[ii].z); 
       force[IDX(i,j,k)].y -=     fac*(vk[ii].x * vk[ii].z); 
       force[IDX(i,j,k)].z -=     fac*(vk[ii].x * vk[ii].y);
