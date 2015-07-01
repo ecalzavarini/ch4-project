@@ -27,9 +27,9 @@
 //#define GRID_IRREGULAR_RANDOM
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
-#define GRID_POP_D2Q9 
+//#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
-//#define GRID_POP_D3Q19
+#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -58,10 +58,11 @@
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
 //#define LB_FLUID_FORCING_CELLULAR
-//#define LB_FLUID_FORCING_HIT
+#define LB_FLUID_FORCING_HIT
 //#define LB_FLUID_FORCING_HIT_LINEAR
-//#define LB_FLUID_FORCING_HIT_ZEROMODE
+#define LB_FLUID_FORCING_HIT_ZEROMODE
 //#define LB_FLUID_FORCING_HIT_RANDOM
+#define LB_FLUID_FORCING_HIT_TYPE2
 //#define LB_FLUID_FORCING_ABSORB
 
 /* Landscape definitions in the domain */
