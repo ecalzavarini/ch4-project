@@ -10,7 +10,10 @@ real_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[float,float,float
 complex_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[complex,complex,complex] })
 
 
-f = h5py.File('../RUN/field_5000.h5', 'r')
+
+fname = sys.argv[1]
+f = h5py.File( fname,'r') 
+#f = h5py.File('../RUN/field_5000.h5', 'r')
 
 vx=np.array(f['euler']['velocity_x'])
 vy=np.array(f['euler']['velocity_y'])
@@ -30,19 +33,21 @@ ur['z'] = vz
 ###################################################
 # Fourier  transform
 def fftv(ur):
-    uc = np.zeros((NX,NY,NZ/2+1),complex_vector_dtype) #this is internal variable
+    uc = np.zeros((NX,NY,NZ/2+1),complex_vector_dtype) #this is an internal variable
     norm=1.#/ur['x'].size
     uc['x'] = np.fft.rfftn(ur['x'])*norm
     uc['y'] = np.fft.rfftn(ur['y'])*norm
     uc['z'] = np.fft.rfftn(ur['z'])*norm
     return uc;
 
-##########
+###############################################
 # Preliminary to spectra 
 
 kx = np.fft.fftfreq(NX, 1./NX)
 ky = np.fft.fftfreq(NY, 1./NY)
-kz = np.linspace(0, NZ/2, NZ/2+1, float)
+#kz = np.linspace(0, NZ/2, NZ/2+1, float)
+kz = np.fft.rfftfreq(NZ, 1./NZ)
+
 
 ####################################################
 # Compute spectra
@@ -58,8 +63,8 @@ def compute_spectra(uc):
                     fac=0.5
                 else:
                     fac=1.0                    
-                ene = (abs(uc['x'][i,j,k]))**2. + (abs(uc['y'][i,j,k]))**2. + (abs(uc['y'][i,j,k]))**2.
                 if ik < NZ/2+1:
+                    ene = (np.abs(uc['x'][i,j,k]))**2. + (np.abs(uc['y'][i,j,k]))**2. + (np.abs(uc['y'][i,j,k]))**2.
                     spect[ik] += fac*ene;
     with open('spectra.dat', 'w') as f:
         for i in xrange(0,NZ/2+1):
