@@ -330,8 +330,18 @@ void build_forcing(){
       force[IDX(i,j,k)].y += property.Amp_y*(- u0_all.y);
       force[IDX(i,j,k)].z += property.Amp_z*(- u0_all.z);
  #endif
-  #ifndef LB_FLUID_FORCING_HIT_TYPE2
-      /* the other modes */
+  #ifdef LB_FLUID_FORCING_HIT_TYPE2
+      /* Type 2 forcing , taken from Computers and Mathematics with Applications vol. 58 (2009) pag. 1055-1061
+	 "Lattice Boltzmann simulations of homogeneous isotropic turbulence" by Waleed Abdel Kareema, Seiichiro Izawa , Ao-Kui Xiong , Yu Fukunishi  */
+    for(ii=0; ii<nk; ii++){
+      //fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii]; 
+      fac = property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii];      
+      force[IDX(i,j,k)].x += 2.0*fac*(vk[ii].y * vk[ii].z); 
+      force[IDX(i,j,k)].y -=     fac*(vk[ii].x * vk[ii].z); 
+      force[IDX(i,j,k)].z -=     fac*(vk[ii].x * vk[ii].y);
+    }
+  #else 
+     /* Force at large scale, similar to Federico, Prasad forcing */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
       force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
@@ -341,14 +351,6 @@ void build_forcing(){
       force[IDX(i,j,k)].x +=  2.0*fac*property.Amp_x * sin(two_pi*(vk[ii].x*x/LX + phi[0].x)); 
       force[IDX(i,j,k)].y +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].y*y/LY + phi[0].x)); 
       force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi[0].x));       
-    }
-  #else 
-      /* Type 2 forcing */
-    for(ii=0; ii<nk; ii++){
-      fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii];      
-      force[IDX(i,j,k)].x += 2.0*fac*(vk[ii].y * vk[ii].z); 
-      force[IDX(i,j,k)].y -=     fac*(vk[ii].x * vk[ii].z); 
-      force[IDX(i,j,k)].z -=     fac*(vk[ii].x * vk[ii].y);
     }
   #endif
 
