@@ -241,7 +241,7 @@ if(LNY_START == 0){
 
 	/* Y direction */	
 #ifdef LB_TEMPERATURE
-#ifdef LB_TEMPERATURE_BC_Y
+ #ifdef LB_TEMPERATURE_BC_Y
 
   pop g_eq, g_eq_w;
   my_double effDT, rho2;
@@ -276,12 +276,11 @@ if(LNY_END == NY){
 #endif
 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
-	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
+	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];	  
 
 #ifdef METHOD_MYQUICK
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j-1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j+2,k)].p[pp] =  fac*g[IDX(i,j-1,k)].p[pp];
-
 #endif
  }
 
@@ -309,7 +308,6 @@ if(LNY_START == 0){
 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) g[IDX(i,j-1,k)].p[pp] =  fac*g[IDX(i,j,k)].p[pp];
-
      
 #ifdef METHOD_MYQUICK 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
@@ -319,7 +317,7 @@ if(LNY_START == 0){
 
       
     }
-#endif
+ #endif
  
 #ifdef LB_TEMPERATURE_BC_X
 #ifdef LB_TEMPERATURE_BC_X_NOFLUX
@@ -2200,7 +2198,7 @@ if(LNY_START == 0){
 /***************************************************************************************************/
 }
 #endif
-/* end of gunction boundary_conditions_for_equilibrium */
+/* end of function boundary_conditions_for_equilibrium */
 
 
 /****************************************************************************************************/
@@ -2430,16 +2428,24 @@ if(LNY_END == NY){
 
  	  j = LNY+BRD-1; 
 
+
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
 	  
-#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-   T_wall = property.T_top;
-#endif
+ #ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE
+	  /* half fixed temperature, half  fixed-flux */
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
+ #endif
+
+ #ifdef LB_TEMPERATURE_BC_Y_P_FLUX
+	  /* we fix the temperature gradient at the wall */
+	  T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
+ #endif
 	  
 #else
 	  T_wall = 0.0;
 #endif
+
 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j+1,k)].p[pp] =  fac*f[IDX(i,j,k)].p[pp];
@@ -2457,27 +2463,30 @@ if(LNY_START == 0){
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_bot;
-#ifdef LB_TEMPERATURE_BC_Y_VARIABLE
-  if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
-#endif
+ #ifdef LB_TEMPERATURE_BC_Y_M_VARIABLE
+	  //if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0)  T_wall = property.T_bot; else T_wall = property.T_top;
+  //  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
+	  /* half fixed temperature, half  fixed-flux */
+	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
+ #endif
+
+ #ifdef LB_TEMPERATURE_BC_Y_M_FLUX
+	  /* we fix the temperature gradient at the wall */
+	  T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
+ #endif
+
 #else
 	  T_wall = 0.0;
 #endif
+
 
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j-1,k)].p[pp] =  fac*f[IDX(i,j,k)].p[pp];
 
      
-#ifdef METHOD_MYQUICK 
-	  
-#ifndef LB_TEMPERATURE_FLUCTUATION 
-	  T_wall = property.T_bot;
-#else
-	  T_wall = 0.0;
-#endif   
+#ifdef METHOD_MYQUICK 	  
 	  fac = 2.0*(T_wall-property.T_ref)/t[IDX(i,j+1,k)] - 1.0;
 	  for(pp=0;pp<NPOP;pp++) f[IDX(i,j-2,k)].p[pp] =  fac*f[IDX(i,j+1,k)].p[pp];
-
 #endif
 }
 
