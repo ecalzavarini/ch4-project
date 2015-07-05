@@ -12,7 +12,7 @@ void build_forcing(){
   vector u0, u0_all;
   vector u2,u2_all;
   my_double norm, k_turb, k0_turb , k_ratio;
-  my_double t0,t0_all;
+  my_double t0,t0_all , temp_linear;
   my_double s0,s0_all;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
 
@@ -391,6 +391,10 @@ void build_forcing(){
   temp = (t[IDX(i,j,k)] - property.T_top);
 #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
   temp = (t[IDX(i,j,k)] - property.T_bot);
+#elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
+  /* subtract to the temperature the linear profile */
+  temp_linear = -(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
+  temp = (t[IDX(i,j,k)] - temp_linear );
 #else
   /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
