@@ -618,7 +618,9 @@ void build_forcing(){
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_GRAD /* force temperature with constant gradient (along y) */
-    t_source[IDX(i,j,k)] += -property.Amp_t*u[IDX(i,j,k)].y;
+    fac = property.deltaT/property.SY;
+    //t_source[IDX(i,j,k)] += -property.Amp_t*u[IDX(i,j,k)].y;
+    t_source[IDX(i,j,k)] += -fac*u[IDX(i,j,k)].y;
 #endif
 
 #endif
