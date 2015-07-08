@@ -290,7 +290,7 @@ typedef struct {
    #endif
    #ifdef LAGRANGE_ORIENTATION_ACTIVE
    my_double swim_velocity;
-    #ifdef LAGRANGE_ORIENTATION_ACTIVE
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
     my_double shear_rate,critical_shear_rate;
     my_double time_from_jump,jump_time;
     #endif
