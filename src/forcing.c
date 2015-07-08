@@ -383,22 +383,23 @@ void build_forcing(){
      }
 #endif
 
-#ifdef LB_TEMPERATURE_BUOYANCY
+#ifdef LB_TEMPERATURE
+ #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
-#ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
+  #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
   temp = (t[IDX(i,j,k)] - property.T_ref);
-#elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
+  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
   temp = (t[IDX(i,j,k)] - property.T_top);
-#elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
+  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
   temp = (t[IDX(i,j,k)] - property.T_bot);
-#elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
+  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
   /* subtract to the temperature the linear profile */
-  temp_linear = -(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
+  temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
-#else
+  #else
   /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
-#endif
+  #endif
 
   //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
   fac = property.beta_t*temp; 
@@ -410,7 +411,8 @@ void build_forcing(){
       force[IDX(i,j,k)].z += fac*property.gravity_z;
 
       //fprintf(stderr, "fy %e\n",property.gravity_y);
-#endif
+ #endif /* LB_TEMPERATURE_BUOYANCY */
+#endif /* LB_TEMPERATURE */
 
 #ifdef LB_SCALAR_BUOYANCY
       //my_double temp, fac;
@@ -465,14 +467,15 @@ void build_forcing(){
 
 #endif
 
+#ifdef LB_TEMPERATURE
 /* From here HERE SOURCE TERM ON TEMPERATURE FIELD */
-#ifdef LB_TEMPERATURE_FORCING
+ #ifdef LB_TEMPERATURE_FORCING
       /* set to zero */ 
       t_source[IDX(i,j,k)] = 0.0;
 
    /* here we can for instance impose a temperature profile , or add a thermal source or make the field reactive*/
  
-#ifdef LB_TEMPERATURE_FORCING_SOURCE
+ #ifdef LB_TEMPERATURE_FORCING_SOURCE
   /* mimic source term  */
       my_double spot;
       /* penalization of a cube */
@@ -489,10 +492,10 @@ void build_forcing(){
       /* small central spot penalization */
       spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( spot < 1.0 ) t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_bot);
-#endif
+ #endif
 
 
-#ifdef LB_TEMPERATURE_FORCING_ABSORB  /* attempt to implement an absorbing layer for temperature */
+ #ifdef LB_TEMPERATURE_FORCING_ABSORB  /* attempt to implement an absorbing layer for temperature */
     fac = 0.9;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
@@ -506,35 +509,35 @@ void build_forcing(){
         
      t_source[IDX(i,j,k)] = -(t[IDX(i,j,k)] - property.T_top);
        }
-#endif
+ #endif
 
 
-#ifdef LB_TEMPERATURE_FORCING_PROFILE
+ #ifdef LB_TEMPERATURE_FORCING_PROFILE
   /* impose a mean linear temperature profile , note that bc for temp shall be set to 0 */
   t_source[IDX(i,j,k)] = (property.deltaT/property.SY)*u[IDX(i,j,k)].y;
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE_FORCING_REACTION
+ #ifdef LB_TEMPERATURE_FORCING_REACTION
   /* make the field reactive */
   t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE_FORCING_MONOD
+ #ifdef LB_TEMPERATURE_FORCING_MONOD
   #ifdef LB_SCALAR
   /* make the field react to the scalar concentration */
   t_source[IDX(i,j,k)] = property.Amp_t * s[IDX(i,j,k)]/(0.5 + s[IDX(i,j,k)]) * t[IDX(i,j,k)];
   #endif
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE_FORCING_BULK
-  t_source[IDX(i,j,k)] = property.Amp_t;
-#ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
-  if (center_V[IDX(i,j,k)].x > property.SX/2.) t_source[IDX(i,j,k)] = 0.0;
-#endif
-#endif
+ #ifdef LB_TEMPERATURE_FORCING_BULK
+   t_source[IDX(i,j,k)] = property.Amp_t;
+  #ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
+   if (center_V[IDX(i,j,k)].x > property.SX/2.) t_source[IDX(i,j,k)] = 0.0;
+  #endif
+ #endif
 
-#ifdef LB_TEMPERATURE_FORCING_RADIATION 
- #ifdef LB_TEMPERATURE_FORCING_RADIATION_SOLAR
+ #ifdef LB_TEMPERATURE_FORCING_RADIATION 
+  #ifdef LB_TEMPERATURE_FORCING_RADIATION_SOLAR
  /*
    Electromagnetic spectrum (see wikipedia):
    lambda: UV<400nm; VIS: 400nm<lambda<800nm; IR(near+far): lambda>800nm 
@@ -561,12 +564,12 @@ void build_forcing(){
   t_source[IDX(i,j,k)] += (0.123/0.481) * property.Amp_t*property.attenuation* (27.50/0.180) *exp(-(27.50/0.180)  * center_V[IDX(i,j,k)].y); 
   t_source[IDX(i,j,k)] += (0.202/0.481) * property.Amp_t*property.attenuation* (300.0/0.180) *exp(-(300.0/0.180)  * center_V[IDX(i,j,k)].y); 
 
- #else
+  #else
   /* just a monocromatic light source */
   t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
- #endif
- #ifdef LB_TEMPERATURE_FORCING_RADIATION_REFLECTION
-   #ifdef LB_TEMPERATURE_MELTING
+  #endif
+  #ifdef LB_TEMPERATURE_FORCING_RADIATION_REFLECTION
+    #ifdef LB_TEMPERATURE_MELTING
    /* In general the depth of the fluid layer is < property.SY 
      therefore a fraction of the radiation is reflected and a part is transmitted through the solid medium */
    /* The "local_depth" is computed from the melt fraction */
@@ -589,7 +592,7 @@ void build_forcing(){
      t_source[IDX(i,j,k)] += (1.0-reflection_ceff)*radiation_at_bottom*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
    }
 
-   #else
+    #else
    /* NO MELTING : in this case the depth of the fluid layer is = property.SY */
    /* the radiation is reflected, the transmitted one just goes out of the system */
    local_depth = property.SY;  /* the depth of the fluid layer */
@@ -599,36 +602,36 @@ void build_forcing(){
    reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
 
    t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
-   #endif
- #endif
-#endif 
+    #endif
+  #endif
+ #endif 
 
-#ifdef LB_TEMPERATURE_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on TEMPERATURE */     
- #ifdef LB_TEMPERATURE_FORCING_HIT_LINEAR
+ #ifdef LB_TEMPERATURE_FORCING_HIT /* for HOMOGENEOUS ISOTROPIC TURBULENCE on TEMPERATURE */     
+  #ifdef LB_TEMPERATURE_FORCING_HIT_LINEAR
    /* Inspired by Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */	
       if(out_all.t2 != 0.0) fac = 1.0/out_all.t2; else fac = 1.0;
       t_source[IDX(i,j,k)] += fac*property.Amp_t*t[IDX(i,j,k)];
- #else
- #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
+  #else
+  #ifdef LB_TEMPERATURE_FORCING_HIT_ZEROMODE 
       /* the zero mode */
       t_source[IDX(i,j,k)] += property.Amp_t*(-t0_all);
- #endif
+  #endif
       /*the other modes */
     for(ii=0; ii<nk_t; ii++){
       fac = pow(vk2_t[ii],-5./6.);
       t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk_t[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk_t[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk_t[ii].z*z/LZ + phi_t[ii].z)) );
     }
+  #endif
  #endif
-#endif
 
-#ifdef LB_TEMPERATURE_FORCING_GRAD /* force temperature with constant gradient (along y) */
+ #ifdef LB_TEMPERATURE_FORCING_GRAD /* force temperature with constant gradient (along y) */
     fac = property.deltaT/property.SY;
     //t_source[IDX(i,j,k)] += -property.Amp_t*u[IDX(i,j,k)].y;
-    t_source[IDX(i,j,k)] += -fac*u[IDX(i,j,k)].y;
-#endif
+    t_source[IDX(i,j,k)] += fac*u[IDX(i,j,k)].y;
+ #endif
 
-#endif
-
+ #endif /* LB_TEMPERATURE_FORCING */
+#endif /* LB_TEMPERATURE */
 
 /* From here HERE SOURCE TERM ON SCALAR FIELD */
 #ifdef LB_SCALAR_FORCING
@@ -826,13 +829,13 @@ invtau_s = 1.0/property.tau_s;
 	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
 	  }      
 #endif
-
 #endif
 
+#ifdef LB_TEMPERATURE
 #ifdef LB_TEMPERATURE_FORCING
-#ifndef METHOD_FORCING_MALASPINAS
+ #ifndef METHOD_FORCING_MALASPINAS
 
- #ifdef LB_TEMPERATURE_FORCING_PAST
+  #ifdef LB_TEMPERATURE_FORCING_PAST
 	/* a new version */
         ux = u[IDX(i, j, k)].x;
         uy = u[IDX(i, j, k)].y;
@@ -848,14 +851,13 @@ invtau_s = 1.0/property.tau_s;
 	rhs_g[IDX(i,j,k)].p[pp] -= 0.5 * wgt2*wgt[pp]*old_t_source[IDX(i,j,k)];
 
 	old_t_source[IDX(i,j,k)] = t_source[IDX(i,j,k)];
- #else
+  #else
        /* Not Guo here */
        /* This is the simplest method and the one that should normally be used */
-      rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];
-      
- #endif
+      rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];      
+  #endif
 
-#else
+ #else
       /* The forcing is as in Malaspinas PhD pag. 93 (bottom) , with a correction factor 2 (found empirically)*/	    
         ux = u[IDX(i, j, k)].x;
         uy = u[IDX(i, j, k)].y;
@@ -865,16 +867,17 @@ invtau_s = 1.0/property.tau_s;
 	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
 	//rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
 	rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
-#endif
+ #endif
 
 
-#ifdef  LB_TEMPERATURE_FORCING_DIRECT
+ #ifdef  LB_TEMPERATURE_FORCING_DIRECT
       if( sqrt(mask) < 10.0 ){
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_g[IDX(i,j,k)].p[pp] =  (g_eq.p[pp] - g[IDX(i,j,k)].p[pp] )/property.time_dt;
 	  }      
+ #endif
 #endif
-#endif
+#endif /* LB_TEMPERATURE */
 
 #ifdef LB_SCALAR_FORCING
 #ifndef METHOD_FORCING_MALASPINAS
