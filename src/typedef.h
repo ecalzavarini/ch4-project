@@ -293,6 +293,7 @@ typedef struct {
     #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
     my_double shear_rate,critical_shear_rate;
     my_double time_from_jump,jump_time;
+    my_double px_jump,py_jump,pz_jump;
     #endif
    #endif
   #endif

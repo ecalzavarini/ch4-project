@@ -205,23 +205,23 @@ if(ROOT){
 fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
-  fprintf(fin,"beta_coeff %e ",i,beta_coeff[i]);
+  fprintf(fin,"type %d beta_coeff %e ",i,beta_coeff[i]);
  #endif /* LAGRANGE_ADDEDMASS */
  #ifdef LAGRANGE_ORIENTATION
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
- fprintf(fin,"aspect_ratio %e ",i,aspect_ratio[i]);
+ fprintf(fin,"type %d aspect_ratio %e ",i,aspect_ratio[i]);
    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
-   fprintf(fin,"gyrotaxis_velocity %e ",i,gyrotaxis_velocity[i]);
+   fprintf(fin,"type %d gyrotaxis_velocity %e ",i,gyrotaxis_velocity[i]);
    #endif
   #endif
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
-   fprintf(fin,"rotational_diffusion %e ",i,rotational_diffusion[i]);
+   fprintf(fin,"type %d rotational_diffusion %e ",i,rotational_diffusion[i]);
   #endif
   #ifdef LAGRANGE_ORIENTATION_ACTIVE
-   fprintf(fin,"swim_velocity %e ",i,swim_velocity[i]);
+   fprintf(fin,"type %d swim_velocity %e ",i,swim_velocity[i]);
    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
-    fprintf(fin,"jump_time %e ",i,jump_time[i]);
-    fprintf(fin,"critical_shear_rate %e ",i,critical_shear_rate[i]);
+    fprintf(fin,"type %d jump_time %e ",i,jump_time[i]);
+    fprintf(fin,"type %d critical_shear_rate %e ",i,critical_shear_rate[i]);
    #endif
   #endif
  #endif /* LAGRANGE_ORIENTATION */
@@ -1343,17 +1343,24 @@ void move_particles(){
 	(tracer+ipart)->time_from_jump = 0.0;
         /* set initial velocity amplitude */
         velocity_amplitude = (tracer+ipart)->swim_velocity; 
-        /* generarate a new random vector  */  
+
+     /* old version 
+        // generarate a new random vector    
         vec = random_vector();
-        /* retrive last particle velocity*/
+        // retrive last particle velocity 
         v_old.x = (tracer+ipart)->vx_old;
         v_old.y = (tracer+ipart)->vy_old;
         v_old.z = (tracer+ipart)->vz_old;
-        /* choose vec direction in the same emisphere of the particle velocity */
+        // choose vec direction in the same emisphere of the particle velocity 
         if( scalar_product(vec,v_old) < 0.0 ) vec = vector_scale( -1.0 , vec);
         (tracer+ipart)->px = vec.x;
         (tracer+ipart)->py = vec.y;
-        (tracer+ipart)->pz = vec.z;	
+        (tracer+ipart)->pz = vec.z;
+     */
+	/* new version : take for jump the present orientation */  
+        (tracer+ipart)->px_jump = (tracer+ipart)->px;
+        (tracer+ipart)->py_jump = (tracer+ipart)->py;
+        (tracer+ipart)->pz_jump = (tracer+ipart)->pz;	
       } /* end if on shear rate */
 
     }else{
@@ -1362,10 +1369,16 @@ void move_particles(){
     }
 
       /* add jump part to the particle velocity */
+      /* old version 
       (tracer+ipart)->vx += velocity_amplitude*((tracer+ipart)->px);
       (tracer+ipart)->vy += velocity_amplitude*((tracer+ipart)->py);
       (tracer+ipart)->vz += velocity_amplitude*((tracer+ipart)->pz);
- 
+      */
+      /* new version : we jump with jeffrey */
+      (tracer+ipart)->vx += velocity_amplitude*((tracer+ipart)->px_jump);
+      (tracer+ipart)->vy += velocity_amplitude*((tracer+ipart)->py_jump);
+      (tracer+ipart)->vz += velocity_amplitude*((tracer+ipart)->pz_jump);
+
       /* increase time from jump */
       (tracer+ipart)->time_from_jump += property.time_dt;
 
@@ -2055,6 +2068,13 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
     sprintf(label,"jump_time");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+    /* jump orientation */
+    sprintf(label,"px_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_DOUBLE);
+    sprintf(label,"py_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_DOUBLE);
+    sprintf(label,"pz_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_DOUBLE);
     #endif
    #endif 
   #endif /* LAGRANGE_ORIENTATION */
@@ -2301,6 +2321,13 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
     sprintf(label,"jump_time");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+    /* jump orientation */
+    sprintf(label,"px_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_DOUBLE);
+    sprintf(label,"py_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_DOUBLE);
+    sprintf(label,"pz_jump");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_DOUBLE);
     #endif
    #endif
   #endif
