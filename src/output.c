@@ -109,6 +109,18 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  set_to_zero_output(ruler_y,NY);
  set_to_zero_output(ruler_z,NZ);
 
+#ifdef OUTPUT_ASCII_2D
+  /* set to zero 2D local rulers */
+ set_to_zero_output(ruler_xy_local,NX*NY);
+ set_to_zero_output(ruler_yz_local,NY*NZ);
+ set_to_zero_output(ruler_xz_local,NX*NZ);
+
+ /* set to zero 2D global ruler */
+ set_to_zero_output(ruler_xy,NX*NY);
+ set_to_zero_output(ruler_yz,NY*NZ);
+ set_to_zero_output(ruler_xz,NX*NZ);
+#endif
+
 #ifdef LB_FLUID
     out_local.x = out_local.y = out_local.z = 0.0; 
     out_local.ux = out_local.uy = out_local.uz = 0.0; 
