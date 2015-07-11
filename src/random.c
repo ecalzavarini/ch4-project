@@ -149,3 +149,17 @@ vector random_vector(){
   return vec;
 }
 
+
+/* generate unit random vector in 2 dimension */
+vector random_vector_2d(){
+  vector vec;
+  double theta, phi;
+
+  phi = two_pi*myrand();
+  vec.x = sin(phi);
+  vec.y = cos(phi);
+  vec.z = 0.0;
+
+  return vec;
+}
+

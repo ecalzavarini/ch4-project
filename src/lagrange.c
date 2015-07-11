@@ -282,6 +282,10 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
 (tracer+i)->x = LNX_START + myrand()*LNX;
 (tracer+i)->y = LNY_START + myrand()*LNY;
 (tracer+i)->z = LNZ_START + myrand()*LNZ;
+/* if in 2d */
+#ifdef GRID_POP_D2Q9
+(tracer+i)->z = LNZ_START + 0.5*LNZ;
+#endif
 
 #ifdef LB_FLUID_FORCING_LANDSCAPE
 /* This part is to not to put particle in static (solid)  LANDSCAPE */
@@ -291,6 +295,10 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
 (tracer+i)->x = LNX_START + myrand()*LNX;
 (tracer+i)->y = LNY_START + myrand()*LNY;
 (tracer+i)->z = LNZ_START + myrand()*LNZ;
+/* if in 2d */
+#ifdef GRID_POP_D2Q9
+(tracer+i)->z = LNZ_START + 0.5*LNZ;
+#endif
 
 for (n=0; n<LNX+TWO_BRD-1; n++) if(center_V[IDX(n, BRD, BRD)].x <= (tracer+i)->x && (tracer+i)->x < center_V[IDX(n+1,BRD, BRD)].x) im = n; 
 ip =  im + 1;
@@ -326,6 +334,10 @@ phi = two_pi*myrand();
 (tracer+i)->pz = cos(theta);
 */
  vec = random_vector();
+#ifdef GRID_POP_D2Q9
+ /* generate a random vector in the x,y plane */
+ vec = random_vector_2d();
+#endif
  (tracer+i)->px = vec.x;
  (tracer+i)->py = vec.y;
  (tracer+i)->pz = vec.z;
@@ -1647,6 +1659,10 @@ void move_particles(){
  #ifdef LAGRANGE_ORIENTATION_RANDOM
  /* randomly oriented vector */
  vec = random_vector();
+#ifdef GRID_POP_D2Q9
+ /* generate a random vector in the x,y plane */
+ vec = random_vector_2d();
+#endif
  vecP[0] = vec.x;
  vecP[1] = vec.y;
  vecP[2] = vec.z;
