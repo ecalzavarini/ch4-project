@@ -1358,7 +1358,15 @@ void move_particles(){
       velocity_amplitude = 0.0;
       /* but we are in the condition to jump */
 
+#ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_HIGHPASS
+	/* avoids low shear rate values */
+      if( shear_rate  < (tracer+ipart)->critical_shear_rate ){
+#else 
+	/* avoids high shear rate values */	
       if( shear_rate  > (tracer+ipart)->critical_shear_rate ){
+#endif
+
+
 	/* reset the time from jump */ 	
 	(tracer+ipart)->time_from_jump = 0.0;
         /* set initial velocity amplitude */
@@ -1698,23 +1706,23 @@ void move_particles(){
 #endif /* end of lagrange orientation */
 
 
-   /* In case of BC we use bounce-back rule for the particle */
+   /* In case of BC we use elastic bouncing rule for the particle */
   
 #ifdef LB_FLUID_BC
  #ifdef LB_FLUID_BC_Y
 
    if( (tracer+ipart)->y < 0.0 ){
      (tracer+ipart)->y *= -1.0; 
-     (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     //(tracer+ipart)->vx *= -1.0;
+     if( (tracer+ipart)->vy < 0.0 ) (tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vz *= -1.0;
    }
 
    if( (tracer+ipart)->y >= property.SY ){
      (tracer+ipart)->y = property.SY- ( (tracer+ipart)->y-property.SY ); 
-     (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     //(tracer+ipart)->vx *= -1.0;
+     if( (tracer+ipart)->vy > 0.0 ) (tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vz *= -1.0;
    }
  #endif
 
@@ -1723,15 +1731,15 @@ void move_particles(){
    if( (tracer+ipart)->x < 0.0 ){
      (tracer+ipart)->x *= -1.0; 
      (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     //(tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vz *= -1.0;
    }
 
    if( (tracer+ipart)->x >= property.SX ){
      (tracer+ipart)->x = property.SX- ( (tracer+ipart)->x-property.SX ); 
      (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     //(tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vz *= -1.0;
    }
  #endif
 
@@ -1739,15 +1747,15 @@ void move_particles(){
 
    if( (tracer+ipart)->z < 0.0 ){
      (tracer+ipart)->z *= -1.0; 
-     (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vx *= -1.0;
+     //(tracer+ipart)->vy *= -1.0;
      (tracer+ipart)->vz *= -1.0;
    }
 
    if( (tracer+ipart)->z >= property.SZ ){
      (tracer+ipart)->z = property.SZ- ( (tracer+ipart)->z-property.SZ ); 
-     (tracer+ipart)->vx *= -1.0;
-     (tracer+ipart)->vy *= -1.0;
+     //(tracer+ipart)->vx *= -1.0;
+     //(tracer+ipart)->vy *= -1.0;
      (tracer+ipart)->vz *= -1.0;
    }
  #endif
