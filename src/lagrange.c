@@ -1332,16 +1332,24 @@ void move_particles(){
    /* if the particle is alive there is an extra velocity to add */
 
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
- /* the particle can react to flow gradients and decide if to jump */
- /* compute |s| */
- (tracer+ipart)->shear_rate =  shear_rate = sqrt(
- ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
- ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
- ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
- 0.5*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) )*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) ) +  
- 0.5*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) )*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) ) +  
- 0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
 
+   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_TEMPERATURE
+    #ifdef LB_TEMPERATURE
+   /* the particle can react to the temperature value and decide if to jump */
+   /* put temperature value in in the shear_rate */
+   shear_rate = (tracer+ipart)->t;
+    #endif
+   #else
+  /* the particle can react to flow gradients and decide if to jump */
+  /* compute |s| */
+  (tracer+ipart)->shear_rate =  shear_rate = sqrt(
+  ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
+  ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
+  ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
+  0.5*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) )*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) ) +  
+  0.5*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) )*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) ) +  
+  0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
+   #endif
 
  jump_time_duration = - ((tracer+ipart)->jump_time)*log(0.01);
 
