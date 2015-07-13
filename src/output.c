@@ -68,17 +68,24 @@ void dump_averages(){
   tensor grad_u;
   int irun;
   my_double vol,lx,ly,lz,inv_lx,inv_ly,inv_lz;
-#ifdef LB_FLUID_FORCING_HIT
+#ifdef LB_FLUID
+ #ifdef LB_FLUID_FORCING_HIT
   my_double lambda, u_prime,Re_lambda;
-  my_double lk,tk,vk;
+  my_double lk,tk,vk,lL,tL,vL,k_turb;
+ #endif
 #endif
+
 #ifdef LB_TEMPERATURE
   my_double temp,t2,epst,dxt,dyt,dzt,uxt,uyt,uzt,nux,nuy,nuz,lb;
   vector grad_t;
-#ifdef LB_TEMPERATURE_MELTING   
+ #ifdef LB_TEMPERATURE_FORCING_HIT
+  my_double t_lambda, t_prime,Pe_lambda;
+ #endif
+ #ifdef LB_TEMPERATURE_MELTING   
   my_double lf, dtlf, enth;
-#endif 
+ #endif 
 #endif
+
 #ifdef LB_SCALAR
   my_double scal,s2,epss,dxs,dys,dzs,uxs,uys,uzs,nusx,nusy,nusz;
   vector grad_s;
@@ -799,9 +806,16 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     tk = pow( property.nu/out_all.eps,0.5);
     vk = pow( property.nu*out_all.eps,0.25);
 
+    /* Large scale, turnover time */
+    /* Same defintitions as in PHYSICS OF FLUIDS 25, 105114 (2013) Phares L. Carroll and G. Blanquart */
+    k_turb = 1.5* pow( u_prime , 2.0);
+    lL = pow( u_prime , 3.0) / out_all.eps ;
+    tL = k_turb / out_all.eps; 
+    vL = u_prime;
+
     sprintf(fname,"velocity_turbulence.dat");
     fout = fopen(fname,"a");    
-    fprintf(fout,"%e %e %e %e %e %e\n",time_now, (double)Re_lambda, lambda, lk,tk,vk);
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",time_now, (double)Re_lambda, lambda, lk,tk,vk,lL,tL,vL);
     fclose(fout);
 #endif
   }/* if ROOT */
@@ -845,6 +859,34 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].t/(double)irun, (double)ruler_z_running[k].t2/(double)irun, (double)ruler_z_running[k].epst/(double)irun, (double)ruler_z_running[k].dxt/(double)irun, (double)ruler_z_running[k].dyt/(double)irun, (double)ruler_z_running[k].dzt/(double)irun , (double)ruler_z_running[k].uxt/(double)irun, (double)ruler_z_running[k].uyt/(double)irun, (double)ruler_z_running[k].uzt/(double)irun, (double)ruler_z_running[k].nux/(double)irun, (double)ruler_z_running[k].nuy/(double)irun, (double)ruler_z_running[k].nuz/(double)irun,(double)ruler_z_running[k].lb/(double)irun );
     fclose(fout);
   }
+
+#ifdef LB_TEMPERATURE_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
+    /* Single component turbulence velocity , see Tennekes & Lumley page 66-67 */
+    u_prime = sqrt(  ((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz))/3.0   );
+    t_prime = sqrt(out_all.t2 - out_all.t*out_all.t);
+
+    /* Taylor scale for scalar lambda_t = sqrt(6 \chi t_prime / \eps_t )  */
+    t_lambda =  sqrt(6.0 * property.kappa * t_prime*t_prime /out_all.epst);  
+
+    /* Taylor Peclet number */
+    Pe_lambda = t_lambda * u_prime / property.kappa;
+    
+    /* Dissipative scales for temperature */
+    lk = pow( pow(property.kappa,3.0)/out_all.eps, 0.25);  /* Batchelor scale */
+    tk = pow( property.kappa/out_all.eps,0.5);
+    //    vk = lk/tk;
+
+    /* Large scale, turnover time */
+    k_turb = pow( t_prime , 2.0);
+    //    lL = pow( t_prime , 3.0) / out_all.epst ;
+    tL = k_turb / out_all.epst; 
+    //    vL = t_prime;
+
+    sprintf(fname,"temperature_turbulence.dat");
+    fout = fopen(fname,"a");    
+    fprintf(fout,"%e %e %e %e %e %e\n",time_now, Pe_lambda, t_lambda, lk,tk,tL);
+    fclose(fout);
+#endif
 
 #ifdef LB_TEMPERATURE_MELTING
   if(ROOT){
