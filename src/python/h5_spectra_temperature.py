@@ -9,8 +9,10 @@ from math import *
 #real_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[float,float,float] })
 #complex_vector_dtype=np.dtype({ 'names':['x','y','z'], 'formats':[complex,complex,complex] })
 
-
-f = h5py.File('/home/enrico/HIT/RUN/field_30000.h5', 'r')
+fname = sys.argv[1]
+f = h5py.File( fname,'r')
+#f = h5py.File('../RUN/field_5000.h5', 'r')    
+#f = h5py.File('/home/enrico/HIT/RUN/field_30000.h5', 'r')
 
 t=np.array(f['euler']['temperature'])
 
