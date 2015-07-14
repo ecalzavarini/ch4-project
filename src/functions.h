@@ -50,9 +50,6 @@ void initialization_forcing();
 void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq,char which_pop);
 void compute_advection(pop * f, pop *rhs_f, my_double tau, pop *f_eq,char which_pop);
 void hydro_fields(char which_pop);
-tensor strain_tensor(pop *f,int i, int j, int k);
-vector gradient_scalar(my_double *t, int i, int j, int k);
-tensor gradient_vector(vector *t, int i, int j, int k);
 //void add_forcing();
 //void build_forcing();
 #ifdef METHOD_CENTERED
@@ -72,6 +69,11 @@ my_double limiter(my_double r);
 my_double gradient_ratio(pop * f, int i, int j, int k, int pp,int dir);
 #endif
 #endif
+
+/* gradients.c */
+tensor strain_tensor(pop *f,int i, int j, int k);
+vector gradient_scalar(my_double *t, int i, int j, int k);
+tensor gradient_vector(vector *t, int i, int j, int k);
 
 /* forcing.c */
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
