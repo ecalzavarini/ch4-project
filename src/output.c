@@ -161,7 +161,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     out_local.epss = 0.0;
 #endif
 
-    /* Here we send recv to compute the gradients */
+    /* Here we send recv to compute the gradients by finite diffeence. 
+       This communication is required in order to have the value of the fields on the ghost borders cells
+     */
 #ifdef LB_FLUID
     sendrecv_borders_vector(u);
 #endif
