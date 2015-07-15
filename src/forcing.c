@@ -348,9 +348,11 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) );
       /* diagonal part: be careful it shall satisfy the incompressibility condition */      	
+      /*
       force[IDX(i,j,k)].x +=  2.0*fac*property.Amp_x * sin(two_pi*(vk[ii].x*x/LX + phi[0].x)); 
       force[IDX(i,j,k)].y +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].y*y/LY + phi[0].x)); 
       force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi[0].x));       
+      */
     }
   #endif
 
