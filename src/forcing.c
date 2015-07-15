@@ -35,7 +35,8 @@ void build_forcing(){
       }
  #else
    /* the phases make a random walk */
-      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
+      //fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
+      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
 	  /*
@@ -142,7 +143,8 @@ void build_forcing(){
  #else
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_t);
-      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
+      //      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
+      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
       if(ROOT){ 	
 	for (ii=0; ii<nk_t; ii++){
 	/*
@@ -199,7 +201,8 @@ void build_forcing(){
  #else
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_s);
-      fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
+      //fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
+      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
       if(ROOT){ 
 	for (ii=0; ii<nk_s; ii++){
 	  /*
