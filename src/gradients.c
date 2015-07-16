@@ -188,6 +188,7 @@ if(LNZ_START == 0 && k == BRD){
 
 
  #ifdef LAGRANGE_INTERPOLATION_FIX
+  #ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(i == BRD-1){
    tens.xx = ( t[IDX(i+2, j, k)].x - t[IDX(i+1, j, k)].x )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
@@ -202,6 +203,7 @@ if(i == LNX+BRD){
  }
 
    /* at the y boundaries */
+
 if(j == BRD-1){
    tens.xy = ( t[IDX(i, j+2, k)].x - t[IDX(i, j+1, k)].x )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
    tens.yy = ( t[IDX(i, j+2, k)].y - t[IDX(i, j+1, k)].y )/( center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y );
@@ -213,6 +215,7 @@ if(j == LNY+BRD){
    tens.yy = ( t[IDX(i, j-1, k)].y - t[IDX(i, j-2, k)].y )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
    tens.zy = ( t[IDX(i, j-1, k)].z - t[IDX(i, j-2, k)].z )/( center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y );
  }
+
 
    /* at the z boundaries */
 if(k == BRD-1){
@@ -226,10 +229,93 @@ if(k == LNZ+BRD){
    tens.yz = ( t[IDX(i, j, k-1)].y - t[IDX(i, j, k-2)].y )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
    tens.zz = ( t[IDX(i, j, k-1)].z - t[IDX(i, j, k-2)].z )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
  }
+  #endif
+  #ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(i == BRD-1){
+    i=i+1;
+    h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+    h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =   ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i+1, j, k)].x + a2*t[IDX(i+2, j, k)].x;
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i+1, j, k)].y + a2*t[IDX(i+2, j, k)].y;
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i+1, j, k)].z + a2*t[IDX(i+2, j, k)].z;
+ }
+ if(i == LNX+BRD){ 
+    i=i-1;
+    h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+    h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i-1, j, k)].x + a2*t[IDX(i-2, j, k)].x;  
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i-1, j, k)].y + a2*t[IDX(i-2, j, k)].y;  
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i-1, j, k)].z + a2*t[IDX(i-2, j, k)].z;   
+ }
+ 
+   /* at the y boundaries */
+if(j == BRD-1){
+    j=j+1;
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =   ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j+1, k)].x + a2*t[IDX(i, j+2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j+1, k)].y + a2*t[IDX(i, j+2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j+1, k)].z + a2*t[IDX(i, j+2, k)].z;
+
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(j == LNY+BRD){ 
+    j=j-1;
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j-1, k)].x + a2*t[IDX(i, j-2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j-1, k)].y + a2*t[IDX(i, j-2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j-1, k)].z + a2*t[IDX(i, j-2, k)].z; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+ 
+
+ 
+   /* at the z boundaries */
+if(k == BRD-1){
+    k=k+1;
+    h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+    h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k+1)].x + a2*t[IDX(i, j, k+2)].x;
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k+1)].y + a2*t[IDX(i, j, k+2)].y;
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k+1)].z + a2*t[IDX(i, j, k+2)].z;
+
+ }
+ if(k == LNZ+BRD){ 
+    k=k-1;
+    h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+    h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k-1)].x + a2*t[IDX(i, j, k-2)].x; 
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k-1)].y + a2*t[IDX(i, j, k-2)].y; 
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k-1)].z + a2*t[IDX(i, j, k-2)].z; 
+ }
+
+  #endif
  #endif
 #else 
 
  #ifdef LAGRANGE_INTERPOLATION_FIX
+  #ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(i == BRD-1){
    tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
@@ -268,6 +354,83 @@ if(k == LNZ+BRD){
    tens.yz = ( t[IDX(i, j, k)].y - t[IDX(i, j, k-1)].y )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
    tens.zz = ( t[IDX(i, j, k)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
  }
+  #endif
+  #ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(i == BRD-1){
+    h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+    h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =   ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i+1, j, k)].x + a2*t[IDX(i+2, j, k)].x;
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i+1, j, k)].y + a2*t[IDX(i+2, j, k)].y;
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i+1, j, k)].z + a2*t[IDX(i+2, j, k)].z;
+ }
+ if(i == LNX+BRD){ 
+    h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+    h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xx = a0*t[IDX(i, j, k)].x + a1*t[IDX(i-1, j, k)].x + a2*t[IDX(i-2, j, k)].x;  
+    tens.yx = a0*t[IDX(i, j, k)].y + a1*t[IDX(i-1, j, k)].y + a2*t[IDX(i-2, j, k)].y;  
+    tens.zx = a0*t[IDX(i, j, k)].z + a1*t[IDX(i-1, j, k)].z + a2*t[IDX(i-2, j, k)].z;   
+ }
+ 
+
+ 
+   /* at the y boundaries */
+if(j == BRD-1){
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =   ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j+1, k)].x + a2*t[IDX(i, j+2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j+1, k)].y + a2*t[IDX(i, j+2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j+1, k)].z + a2*t[IDX(i, j+2, k)].z;
+
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(j == LNY+BRD){ 
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xy = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j-1, k)].x + a2*t[IDX(i, j-2, k)].x;
+    tens.yy = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j-1, k)].y + a2*t[IDX(i, j-2, k)].y;
+    tens.zy = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j-1, k)].z + a2*t[IDX(i, j-2, k)].z; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+ 
+
+ 
+   /* at the z boundaries */
+if(k == BRD-1){
+    h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+    h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k+1)].x + a2*t[IDX(i, j, k+2)].x;
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k+1)].y + a2*t[IDX(i, j, k+2)].y;
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k+1)].z + a2*t[IDX(i, j, k+2)].z;
+
+ }
+ if(k == LNZ+BRD){ 
+    h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+    h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    tens.xz = a0*t[IDX(i, j, k)].x + a1*t[IDX(i, j, k-1)].x + a2*t[IDX(i, j, k-2)].x; 
+    tens.yz = a0*t[IDX(i, j, k)].y + a1*t[IDX(i, j, k-1)].y + a2*t[IDX(i, j, k-2)].y; 
+    tens.zz = a0*t[IDX(i, j, k)].z + a1*t[IDX(i, j, k-1)].z + a2*t[IDX(i, j, k-2)].z; 
+ }
+  #endif
  #endif
 
 #endif /* defined LB_FLUID_BC */
@@ -401,6 +564,7 @@ if(LNZ_START == 0 && k == BRD){
  #endif
 
  #ifdef LAGRANGE_INTERPOLATION_FIX
+  #ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(i == BRD-1){
    grad.x = ( t[IDX(i+2, j, k)] - t[IDX(i+1, j, k)] )/( center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x );
@@ -427,12 +591,83 @@ if(k == BRD-1){
  if(k == LNZ+BRD){ 
    grad.z = ( t[IDX(i, j, k-1)] - t[IDX(i, j, k-2)] )/( center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z );
  }
+  #endif
+  #ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(i == BRD-1){
+  i = i+1;
+  h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+  h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i+1, j, k)] + a2*t[IDX(i+2, j, k)];
+
+ }
+ if(i == LNX+BRD){ 
+  i = i-1;
+   h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+   h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i-1, j, k)] + a2*t[IDX(i-2, j, k)];   
+ }
+
+
+
+   /* at the y boundaries */
+if(j == BRD-1){
+  j=j+1;
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j+1, k)] + a2*t[IDX(i, j+2, k)];
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(j == LNY+BRD){ 
+  j=j-1;
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j-1, k)] + a2*t[IDX(i, j-2, k)]; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+
+
+
+   /* at the z boundaries */
+if(k == BRD-1){
+  k=k+1;
+  h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+  h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k+1)] + a2*t[IDX(i, j, k+2)];
+ }
+ if(k == LNZ+BRD){ 
+  k=k-1;
+   h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+   h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k-1)] + a2*t[IDX(i, j, k-2)]; 
+ }
+  #endif
  #endif
 
 #else /* if no boundary conditions are present, we just need the one sided fix for the lagrangian part 
          i.e.  we need to define a one sided procedure to compute the gradient on the borders */  
 
  #ifdef LAGRANGE_INTERPOLATION_FIX
+  #ifdef FIRST_ORDER_GRAD
    /* at the x boundaries , one sided 1st order difference*/
 if(i == BRD-1){
    grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x );
@@ -461,6 +696,70 @@ if(k == BRD-1){
  if(k == LNZ+BRD){ 
    grad.z = ( t[IDX(i, j, k)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z );
  }
+  #endif
+  #ifdef SECOND_ORDER_GRAD
+   /* at the x boundaries , one sided 2nd order difference*/
+   /* but it seems to be less precise than the first order */
+if(i == BRD-1){
+  h1 =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+  h2 =  center_V[IDX(i+2, j, k)].x - center_V[IDX(i+1, j, k)].x; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i+1, j, k)] + a2*t[IDX(i+2, j, k)];
+
+ }
+ if(i == LNX+BRD){ 
+   h1 =  center_V[IDX(i, j, k)].x - center_V[IDX(i-1, j, k)].x;
+   h2 =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i-2, j, k)].x; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.x = a0*t[IDX(i, j, k)] + a1*t[IDX(i-1, j, k)] + a2*t[IDX(i-2, j, k)];   
+ }
+
+
+
+   /* at the y boundaries */
+if(j == BRD-1){
+    h1 =  center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j, k)].y;
+    h2 =  center_V[IDX(i, j+2, k)].y - center_V[IDX(i, j+1, k)].y; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j+1, k)] + a2*t[IDX(i, j+2, k)];
+    //fprintf(stderr,"0 grad.y %e \n",grad.y);
+ }
+ if(j == LNY+BRD){ 
+    h1 =  center_V[IDX(i, j, k)].y - center_V[IDX(i, j-1, k)].y;
+    h2 =  center_V[IDX(i, j-1, k)].y - center_V[IDX(i, j-2, k)].y; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.y = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j-1, k)] + a2*t[IDX(i, j-2, k)]; 
+    //fprintf(stderr,"50 grad.y %e \n",grad.y);
+ }
+
+
+
+   /* at the z boundaries */
+if(k == BRD-1){
+  h1 =  center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k)].z;
+  h2 =  center_V[IDX(i, j, k+2)].z - center_V[IDX(i, j, k+1)].z; 
+    a0 =  -(2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 =  ( h1+h2 )/( h1*h2 );
+    a2 =  -( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k+1)] + a2*t[IDX(i, j, k+2)];
+ }
+ if(k == LNZ+BRD){ 
+   h1 =  center_V[IDX(i, j, k)].z - center_V[IDX(i, j, k-1)].z;
+   h2 =  center_V[IDX(i, j, k-1)].z - center_V[IDX(i, j, k-2)].z; 
+    a0 =  (2.0*h1+h2 )/( h1*(h1+h2) );
+    a1 = -( h1+h2 )/( h1*h2 );
+    a2 =  ( h1 )/( h2*(h1+h2) ); 
+    grad.z = a0*t[IDX(i, j, k)] + a1*t[IDX(i, j, k-1)] + a2*t[IDX(i, j, k-2)]; 
+ }
+  #endif
  #endif
 
 #endif /* (defined LB_TEMPERATURE_BC || defined LB_SCALAR_BC ) */
@@ -474,7 +773,7 @@ if(NZ==1) grad.z = 0.0;
 }
 
 
-/*********** OLD VERSIONS ************/
+/*********** OLD VERSIONS ******************************************************************************************/
 
 /* OLD version vector */
 
