@@ -4,7 +4,7 @@
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
 void build_forcing(){
   int i, j, k , ii,jj;
-  my_double fnx,fny,fnz,kn;
+  my_double fnx,fny,fnz,kn,omega_t;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
   my_double temp, fac, val; 
@@ -303,16 +303,22 @@ void build_forcing(){
 
 
 #ifdef LB_FLUID_FORCING_CELLULAR
- 
+ #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
     kn=0.5;
-    //y = (my_double)center_V[IDX(i,j,k)].y;
-    //x = (my_double)center_V[IDX(i,j,k)].x;
-
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].z += 0.0; 
+ 
+ #else
+    kn=0.5;
+    omega_t = two_pi*property.time_dt*(0.1/LX);
+	/* along x */  
+        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	force[IDX(i,j,k)].z += 0.0; 
 
+ #endif
 #endif  
 
 #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
