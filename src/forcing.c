@@ -260,32 +260,31 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = 0.0;
 	force[IDX(i,j,k)].z = 0.0;
 
-#ifdef LB_FLUID_FORCING_POISEUILLE 
+ #ifdef LB_FLUID_FORCING_POISEUILLE 
 	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
 	/* Here Amp indicates the maximal velocity at the center of the channel , note that in poiseuille flow U_max = Force * L^2/(8 \nu)  */
 	force[IDX(i,j,k)].x += 2.0*property.Amp_x*((4.*nu)*pow(LY,-2.0));  
 	force[IDX(i,j,k)].y += 2.0*property.Amp_y*((4.*nu)*pow(LX,-2.0));  
 	force[IDX(i,j,k)].z += 2.0*property.Amp_z*((4.*nu)*pow(LY,-2.0));  
-#endif
+ #endif
 
-#ifdef LB_FLUID_FORCING_CHANNEL
+ #ifdef LB_FLUID_FORCING_CHANNEL
 	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
 	/* Here Amp indicates the maximal velocity at the center of the turbulent channel , note that in this case we write U_max = sqrt(Force*L/2)  */
 	force[IDX(i,j,k)].x += 2.0*pow(property.Amp_x,2.0)/LY;
 	force[IDX(i,j,k)].y += 2.0*pow(property.Amp_y,2.0)/LX;
 	force[IDX(i,j,k)].z += 2.0*pow(property.Amp_z,2.0)/LY;
-#endif
+ #endif
 
-#ifdef LB_FLUID_FORCING_CONSTANT_POWER
+ #ifdef LB_FLUID_FORCING_CONSTANT_POWER
 	/* Here Amp indicates the power Force*velocity  */
 	/* note that out_all.uxt is computed only when we dumpe the averages */	
 	if(out_all.ux != 0) force[IDX(i,j,k)].x += property.Amp_x/out_all.ux; 
 	if(out_all.uy != 0) force[IDX(i,j,k)].y += property.Amp_y/out_all.uy;
 	if(out_all.uz != 0) force[IDX(i,j,k)].z += property.Amp_z/out_all.uz;
-#endif
+ #endif
 
-#ifdef LB_FLUID_FORCING_KOLMOGOROV 
- 
+ #ifdef LB_FLUID_FORCING_KOLMOGOROV 
     kn=1.0;
     fnx=nu*pow(two_pi/LX,2.0);
     fny=nu*pow(two_pi/LY,2.0);
@@ -299,18 +298,18 @@ void build_forcing(){
 
 	//   fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
 	//  exit(1);
-#endif  
+ #endif  
 
 
-#ifdef LB_FLUID_FORCING_CELLULAR
- #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
+ #ifdef LB_FLUID_FORCING_CELLULAR
+  #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
     kn=0.5;
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].z += 0.0; 
  
- #else
+  #else
     kn=0.5;
     omega_t = two_pi*property.time_dt*(0.1/LX);
 	/* along x */  
@@ -318,11 +317,11 @@ void build_forcing(){
 	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
 	force[IDX(i,j,k)].z += 0.0; 
 
- #endif
-#endif  
+  #endif
+ #endif  
 
-#ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
- #ifdef LB_FLUID_FORCING_HIT_LINEAR
+ #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
+  #ifdef LB_FLUID_FORCING_HIT_LINEAR
    /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */
 	//fac = 0.5*((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz));	
 	//if(fac != 0.0) fac = 1.0/fac; else fac = 1.0;	
@@ -330,16 +329,16 @@ void build_forcing(){
 	force[IDX(i,j,k)].x += fac*property.Amp_x*(u[IDX(i,j,k)].x - u0_all.x);
 	force[IDX(i,j,k)].y += fac*property.Amp_y*(u[IDX(i,j,k)].y - u0_all.y);
 	force[IDX(i,j,k)].z += fac*property.Amp_z*(u[IDX(i,j,k)].z - u0_all.z);
- #else
- #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
+  #else
+  #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
       /* the zero mode */
       //fac = sqrt(out_all.ux*out_all.ux + out_all.uy*out_all.uy + out_all.uz*out_all.uz);
       //if(fac != 0.0) fac = 1./fac; else fac = 1.0;
       force[IDX(i,j,k)].x += property.Amp_x*(- u0_all.x);
       force[IDX(i,j,k)].y += property.Amp_y*(- u0_all.y);
       force[IDX(i,j,k)].z += property.Amp_z*(- u0_all.z);
- #endif
-  #ifdef LB_FLUID_FORCING_HIT_TYPE2
+  #endif
+   #ifdef LB_FLUID_FORCING_HIT_TYPE2
       /* Type 2 forcing , taken from Computers and Mathematics with Applications vol. 58 (2009) pag. 1055-1061
 	 "Lattice Boltzmann simulations of homogeneous isotropic turbulence" by Waleed Abdel Kareema, Seiichiro Izawa , Ao-Kui Xiong , Yu Fukunishi  */
     for(ii=0; ii<nk; ii++){
@@ -349,7 +348,7 @@ void build_forcing(){
       force[IDX(i,j,k)].y -=     fac*(vk[ii].x * vk[ii].z); 
       force[IDX(i,j,k)].z -=     fac*(vk[ii].x * vk[ii].y);
     }
-  #else 
+   #else 
      /* Force at large scale, similar to Federico, Prasad forcing */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
@@ -363,12 +362,12 @@ void build_forcing(){
       force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi[0].x));       
       */
     }
-  #endif
+   #endif
 
- #endif  
-#endif
+  #endif  
+ #endif
 
-#ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
+ #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
     fac = 0.8;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
@@ -392,25 +391,25 @@ void build_forcing(){
     //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);
     
      }
-#endif
+ #endif
 
-#ifdef LB_TEMPERATURE
- #ifdef LB_TEMPERATURE_BUOYANCY
+ #ifdef LB_TEMPERATURE
+  #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
-  #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
+   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
   temp = (t[IDX(i,j,k)] - property.T_ref);
-  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
   temp = (t[IDX(i,j,k)] - property.T_top);
-  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
   temp = (t[IDX(i,j,k)] - property.T_bot);
-  #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
   /* subtract to the temperature the linear profile */
   temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
-  #else
+   #else
   /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
-  #endif
+   #endif
 
   //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
   fac = property.beta_t*temp; 
@@ -422,16 +421,16 @@ void build_forcing(){
       force[IDX(i,j,k)].z += fac*property.gravity_z;
 
       //fprintf(stderr, "fy %e\n",property.gravity_y);
- #endif /* LB_TEMPERATURE_BUOYANCY */
-#endif /* LB_TEMPERATURE */
+  #endif /* LB_TEMPERATURE_BUOYANCY */
+ #endif /* LB_TEMPERATURE */
 
-#ifdef LB_SCALAR_BUOYANCY
+ #ifdef LB_SCALAR_BUOYANCY
       //my_double temp, fac;
-#ifdef LB_SCALAR_BUOYANCY_SREF
+  #ifdef LB_SCALAR_BUOYANCY_SREF
       temp = (s[IDX(i,j,k)] - property.S_top);
-#else
+  #else
       temp =  s[IDX(i,j,k)] - 0.5*(property.S_bot + property.S_top);
-#endif
+  #endif
 
       fac = property.beta_s*temp;
 
@@ -439,11 +438,10 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.gravity_y;
       force[IDX(i,j,k)].z += fac*property.gravity_z;
 
-#endif
+ #endif
 
 
-
-#ifdef  LB_FLUID_FORCING_PENALIZATION
+ #ifdef  LB_FLUID_FORCING_PENALIZATION
       my_double mask;
       /* penalization of a cube */
       /*  
@@ -461,22 +459,27 @@ void build_forcing(){
 	  }
       */
 
-#ifdef LB_FLUID_FORCING_LANDSCAPE
+  #ifdef LB_FLUID_FORCING_LANDSCAPE
        if(landscape[IDX(i, j, k)]>0.0){
-#else
+  #else
       /* small central spot penalization */
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( mask < 10.0 ){       
-#endif
+  #endif
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
-	  }
-      
-#endif
+	  }     
+ #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
 
 
-#endif
+      /* Set forcing to zero if the domain has no thickness (e.g. in 2 dimensions , just 1 grid points in z-direction )*/
+      if(NX==1) force[IDX(i,j,k)].x = 0.0;
+      if(NY==1) force[IDX(i,j,k)].y = 0.0;
+      if(NZ==1) force[IDX(i,j,k)].z = 0.0;
+
+
+#endif /* end of LB_FLUID_FORCING */
 
 #ifdef LB_TEMPERATURE
 /* From here HERE SOURCE TERM ON TEMPERATURE FIELD */
