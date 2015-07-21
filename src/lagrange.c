@@ -458,7 +458,9 @@ kp =  km + 1;
   if(which_vector == 'u'){
     (tracer+ipart)->ux = v.x;
     (tracer+ipart)->uy = v.y;
-    (tracer+ipart)->uz = v.z; 
+    (tracer+ipart)->uz = v.z;
+    /* for two dimensions */
+    //    if(NZ==1) (tracer+ipart)->uz = 0.0;
   }
 
 #ifdef LAGRANGE_GRADIENT
@@ -1716,6 +1718,9 @@ void move_particles(){
      //(tracer+ipart)->vx *= -1.0;
      if( (tracer+ipart)->vy < 0.0 ) (tracer+ipart)->vy *= -1.0;
      //(tracer+ipart)->vz *= -1.0;
+  #ifdef LAGRANGE_ORIENTATION_BC
+     if( (tracer+ipart)->py < 0.0 ) (tracer+ipart)->py *= -1.0;
+  #endif 
    }
 
    if( (tracer+ipart)->y >= property.SY ){
@@ -1723,6 +1728,9 @@ void move_particles(){
      //(tracer+ipart)->vx *= -1.0;
      if( (tracer+ipart)->vy > 0.0 ) (tracer+ipart)->vy *= -1.0;
      //(tracer+ipart)->vz *= -1.0;
+  #ifdef LAGRANGE_ORIENTATION_BC
+     if( (tracer+ipart)->py > 0.0 ) (tracer+ipart)->py *= -1.0;
+  #endif 
    }
  #endif
 
