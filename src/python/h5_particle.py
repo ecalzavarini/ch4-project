@@ -34,10 +34,10 @@ for file in filenames:
 
 
             npart = name.shape[0]
-            which_part = float(sys.argv[2])
+            which_part = int(sys.argv[2])
 
-
-            fout = open('myfile','a')
+            foutname = 'trajectory_'+str(which_part)+'.dat'
+            fout = open(foutname,'a')
 
             for i in xrange(0,npart):
                if name[i] == which_part :
@@ -46,7 +46,7 @@ for file in filenames:
             fout.close()
 
 
-os.system("cat myfile") 
+#os.system("cat myfile") 
 
 
 
