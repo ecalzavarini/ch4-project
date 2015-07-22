@@ -7,15 +7,15 @@ void build_forcing(){
   my_double fnx,fny,fnz,kn,omega_t;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
-  my_double temp, fac, val; 
+  my_double temp, fac, val,fac1,fac2; 
   vector dist,vel;
   vector u0, u0_all;
   vector u2,u2_all;
   my_double norm, k_turb, k0_turb , k_ratio;
-  my_double t0,t0_all , temp_linear;
+  my_double t0,t0_all , temp_linear, t_turnover;
   my_double s0,s0_all;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
-
+  FILE *fout;
 
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
@@ -36,7 +36,9 @@ void build_forcing(){
  #else
    /* the phases make a random walk */
       //fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
-      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
+      t_turnover = (0.1/property.SY);
+      fac1 = property.time_dt/t_turnover;
+      fac2 = sqrt(2.0*property.time_dt);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
 	  /*
@@ -48,12 +50,17 @@ void build_forcing(){
 	  phi[ii].z += val*fac;
 	  */
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].x += val*fac;
+	  phi[ii].x += -phi[ii].x*fac1 + val*fac2;
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].y += val*fac;
+	  phi[ii].y += -phi[ii].y*fac1 + val*fac2;
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].z += val*fac;
+	  phi[ii].z += -phi[ii].z*fac1 + val*fac2;
 	}
+	/*
+  fout = fopen("phases.dat","a");
+  fprintf(fout," %e %e %e\n", phi[0].x, phi[0].y ,phi[0].z);
+  fclose(fout); 
+	*/
       }
  #endif
     /* the phases are broadcasted */
