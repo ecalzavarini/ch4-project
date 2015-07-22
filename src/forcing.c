@@ -36,9 +36,9 @@ void build_forcing(){
  #else
    /* the phases make a random walk */
       //fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
-      t_turnover = (0.1/property.SY);
+      t_turnover = (property.SY/0.1);
       fac1 = property.time_dt/t_turnover;
-      fac2 = sqrt(2.0*property.time_dt);
+      fac2 = sqrt(2.0*property.time_dt/t_turnover);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
 	  /*
@@ -56,11 +56,11 @@ void build_forcing(){
 	  val=random_gauss(0.0,1.0);
 	  phi[ii].z += -phi[ii].z*fac1 + val*fac2;
 	}
-	/*
+	
   fout = fopen("phases.dat","a");
   fprintf(fout," %e %e %e\n", phi[0].x, phi[0].y ,phi[0].z);
   fclose(fout); 
-	*/
+	
       }
  #endif
     /* the phases are broadcasted */
@@ -151,7 +151,10 @@ void build_forcing(){
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_t);
       //      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
-      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
+      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
+      t_turnover = (property.SY/0.1);
+      fac1 = property.time_dt/t_turnover;
+      fac2 = sqrt(2.0*property.time_dt/t_turnover);
       if(ROOT){ 	
 	for (ii=0; ii<nk_t; ii++){
 	/*
@@ -163,11 +166,11 @@ void build_forcing(){
           phi_t[ii].z += val*fac;
 	*/
 	  val=random_gauss(0.0,1.0);
-	  phi_t[ii].x += val*fac;
+	  phi_t[ii].x += -phi_t[ii].x*fac1 + val*fac2; 
 	  val=random_gauss(0.0,1.0);
-	  phi_t[ii].y += val*fac;
+	  phi_t[ii].y += -phi_t[ii].y*fac1 + val*fac2; 
 	  val=random_gauss(0.0,1.0);
-	  phi_t[ii].z += val*fac;
+	  phi_t[ii].z += -phi_t[ii].z*fac1 + val*fac2; 
 	}
       }
 #endif
@@ -209,7 +212,10 @@ void build_forcing(){
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_s);
       //fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
-      fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
+      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
+      t_turnover = (property.SY/0.1);
+      fac1 = property.time_dt/t_turnover;
+      fac2 = sqrt(2.0*property.time_dt/t_turnover);
       if(ROOT){ 
 	for (ii=0; ii<nk_s; ii++){
 	  /*
@@ -221,11 +227,11 @@ void build_forcing(){
           phi_s[ii].z += val*fac;
 	  */
 	  val=random_gauss(0.0,1.0);
-	  phi_s[ii].x += val*fac;
+	  phi_s[ii].x += -phi_s[ii].x*fac1 + val*fac2; 
 	  val=random_gauss(0.0,1.0);
-	  phi_s[ii].y += val*fac;
+	  phi_s[ii].y += -phi_s[ii].y*fac1 + val*fac2; 
 	  val=random_gauss(0.0,1.0);
-	  phi_s[ii].z += val*fac;
+	  phi_s[ii].z += -phi_s[ii].z*fac1 + val*fac2; 
 	}
       }
 #endif
