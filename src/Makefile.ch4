@@ -15,7 +15,7 @@ $(EXECUTABLE):  main.c $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) $(MYFLAGS) -o $(EXECUTABLE) main.c $(OBJECTS) $(LFLAGS)
 
 clean:
-	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN
+	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN  ./*.h5
 
 clean-dat:
 	rm -rf ./*.dat
@@ -23,4 +23,4 @@ clean-dat:
 clean-RUN:
 	rm -rf ./RUN
 tar:
-	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile ./*.in
+	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile* ./*.in  ./python/*.py 
