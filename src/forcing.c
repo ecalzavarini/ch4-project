@@ -12,7 +12,7 @@ void build_forcing(){
   vector u0, u0_all;
   vector u2,u2_all;
   my_double norm, k_turb, k0_turb , k_ratio;
-  my_double t0,t0_all , temp_linear, t_turnover;
+  my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity;
   my_double s0,s0_all;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
   FILE *fout;
@@ -37,8 +37,9 @@ void build_forcing(){
    /* the phases make a random walk */
       //fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
       t_turnover = (property.SY/0.1);
+      phi_diffusivity = 0.1/t_turnover;
       fac1 = property.time_dt/t_turnover;
-      fac2 = sqrt(2.0*property.time_dt/t_turnover);
+      fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
 	  /*
@@ -153,8 +154,9 @@ void build_forcing(){
       //      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
       //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
       t_turnover = (property.SY/0.1);
+      phi_diffusivity = 0.1/t_turnover;
       fac1 = property.time_dt/t_turnover;
-      fac2 = sqrt(2.0*property.time_dt/t_turnover);
+      fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
       if(ROOT){ 	
 	for (ii=0; ii<nk_t; ii++){
 	/*
@@ -214,8 +216,9 @@ void build_forcing(){
       //fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
       //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
       t_turnover = (property.SY/0.1);
+      phi_diffusivity = 0.1/t_turnover;
       fac1 = property.time_dt/t_turnover;
-      fac2 = sqrt(2.0*property.time_dt/t_turnover);
+      fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
       if(ROOT){ 
 	for (ii=0; ii<nk_s; ii++){
 	  /*
