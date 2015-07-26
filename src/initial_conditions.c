@@ -509,8 +509,8 @@ void initialization_forcing(){
   if(ROOT) fprintf(stderr,"initialization of LB_FLUID_FORCING_HIT\n");
 
   nk = 6;
+  if(!resume_u) phi_u  = (vector*) malloc(sizeof(vector)*nk);
   vk  = (vector*) malloc(sizeof(vector)*nk);
-  phi  = (vector*) malloc(sizeof(vector)*nk);
   vk2  = (my_double*) malloc(sizeof(my_double)*nk);
   randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
   /*  fprintf(stderr,"random %d\n",randomization_itime); */
@@ -530,24 +530,26 @@ void initialization_forcing(){
       for (ii=0; ii<nk; ii++) fprintf(stderr,"%d : %e %e %e squared norm %e\n",ii+1, vk[ii].x,vk[ii].y,vk[ii].z,vk2[ii]); 
     }
 
+    if(!resume_u){
   /* initialize phases */
-   for (ii=0; ii<nk; ii++) phi[ii].x = phi[ii].y = phi[ii].z = 0.0;
+   for (ii=0; ii<nk; ii++) phi_u[ii].x = phi_u[ii].y = phi_u[ii].z = 0.0;
 
       if(ROOT){ 
         for (ii=0; ii<nk; ii++){
-          phi[ii].x = myrand();
-          phi[ii].y = myrand();
-          phi[ii].z = myrand();
+          phi_u[ii].x = myrand();
+          phi_u[ii].y = myrand();
+          phi_u[ii].z = myrand();
         }
       }
-      MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+      MPI_Bcast(phi_u, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
 #endif
 
 #ifdef LB_TEMPERATURE_FORCING_HIT
   if(ROOT) fprintf(stderr,"initialization of LB_TEMPERATURE_FORCING_HIT\n");
   nk_t = 6;
+  if(!resume_t) phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
   vk_t  = (vector*) malloc(sizeof(vector)*nk_t);
-  phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
   vk2_t  = (my_double*) malloc(sizeof(my_double)*nk_t);
   randomization_itime_t = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
   /*  fprintf(stderr,"random %d\n",randomization_itime_t); */
@@ -562,7 +564,7 @@ void initialization_forcing(){
     /* compute the square */
     for (ii=0; ii<nk_t; ii++) vk2_t[ii] = vk_t[ii].x*vk_t[ii].x + vk_t[ii].y*vk_t[ii].y + vk_t[ii].z*vk_t[ii].z;
 
-
+    if(!resume_t){
   /* initialize phases */
    for (ii=0; ii<nk_t; ii++) phi_t[ii].x = phi_t[ii].y = phi_t[ii].z = 0.0;
 
@@ -574,13 +576,14 @@ void initialization_forcing(){
         }
      }
     MPI_Bcast(phi_t, nk_t, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
 #endif
 
 #ifdef LB_SCALAR_FORCING_HIT
   if(ROOT) fprintf(stderr,"initialization of LB_SCALAR_FORCING_HIT\n");
   nk_s = 6;
+  if(!resume_s) phi_s  = (vector*) malloc(sizeof(vector)*nk_s);
   vk_s  = (vector*) malloc(sizeof(vector)*nk_s);
-  phi_s  = (vector*) malloc(sizeof(vector)*nk_s);
   vk2_s  = (my_double*) malloc(sizeof(my_double)*nk_s);
   randomization_itime_s = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
   /*  fprintf(stderr,"random %d\n",randomization_itime); */
@@ -595,7 +598,7 @@ void initialization_forcing(){
     /* compute the square */
     for (ii=0; ii<nk_s; ii++) vk2_s[ii] = vk_s[ii].x*vk_s[ii].x + vk_s[ii].y*vk_s[ii].y + vk_s[ii].z*vk_s[ii].z;
 
-
+    if(!resume_s){
   /* initialize phases */
    for (ii=0; ii<nk_s; ii++) phi_s[ii].x = phi_s[ii].y = phi_s[ii].z = 0.0;
 
@@ -609,5 +612,6 @@ void initialization_forcing(){
         }
       }
     MPI_Bcast(phi_s, nk_s, MPI_vector_type, 0, MPI_COMM_WORLD);
+    }
 #endif
 } 

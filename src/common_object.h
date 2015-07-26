@@ -225,7 +225,7 @@ extern vector *u;
   #endif
   #ifdef LB_FLUID_FORCING_HIT
   extern int nk; 
-  extern vector *vk, *phi;
+  extern vector *vk, *phi_u;
   extern my_double *vk2;
   extern int randomization_itime;
   #endif

@@ -28,9 +28,9 @@ void build_forcing(){
    /* the phases are random */
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
-	  phi[ii].x = myrand();
-	  phi[ii].y = myrand();
-	  phi[ii].z = myrand();
+	  phi_u[ii].x = myrand();
+	  phi_u[ii].y = myrand();
+	  phi_u[ii].z = myrand();
 	}
       }
  #else
@@ -44,28 +44,28 @@ void build_forcing(){
 	for (ii=0; ii<nk; ii++){
 	  /*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
-	  phi[ii].x += val*fac;
+	  phi_u[ii].x += val*fac;
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
-	  phi[ii].y += val*fac;
+	  phi_u[ii].y += val*fac;
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
-	  phi[ii].z += val*fac;
+	  phi_u[ii].z += val*fac;
 	  */
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].x += -phi[ii].x*fac1 + val*fac2;
+	  phi_u[ii].x += -phi_u[ii].x*fac1 + val*fac2;
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].y += -phi[ii].y*fac1 + val*fac2;
+	  phi_u[ii].y += -phi_u[ii].y*fac1 + val*fac2;
 	  val=random_gauss(0.0,1.0);
-	  phi[ii].z += -phi[ii].z*fac1 + val*fac2;
+	  phi_u[ii].z += -phi_u[ii].z*fac1 + val*fac2;
 	}
 	
   fout = fopen("phases.dat","a");
-  fprintf(fout," %e %e %e\n", phi[0].x, phi[0].y ,phi[0].z);
+  fprintf(fout," %e %e %e\n", phi_u[0].x, phi_u[0].y ,phi_u[0].z);
   fclose(fout); 
 	
       }
  #endif
     /* the phases are broadcasted */
-   MPI_Bcast(phi, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+   MPI_Bcast(phi_u, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
 
  #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
     /* compute the zero mode intensity (the mean velocity) */
@@ -358,8 +358,8 @@ void build_forcing(){
       /* Type 2 forcing , taken from Computers and Mathematics with Applications vol. 58 (2009) pag. 1055-1061
 	 "Lattice Boltzmann simulations of homogeneous isotropic turbulence" by Waleed Abdel Kareema, Seiichiro Izawa , Ao-Kui Xiong , Yu Fukunishi  */
     for(ii=0; ii<nk; ii++){
-      //fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii]; 
-      fac = property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi[ii].x) / vk2[ii];      
+      //fac = pow(vk2[ii],-5./6.) * property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi_u[ii].x) / vk2[ii]; 
+      fac = property.Amp_x * sin(two_pi*(vk[ii].x*x/LX  + vk[ii].y*y/LY + vk[ii].z*z/LZ ) + two_pi*phi_u[ii].x) / vk2[ii];      
       force[IDX(i,j,k)].x += 2.0*fac*(vk[ii].y * vk[ii].z); 
       force[IDX(i,j,k)].y -=     fac*(vk[ii].x * vk[ii].z); 
       force[IDX(i,j,k)].z -=     fac*(vk[ii].x * vk[ii].y);
@@ -368,14 +368,14 @@ void build_forcing(){
      /* Force at large scale, similar to Federico, Prasad forcing */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-5./6.);
-      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
-      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi[ii].z)) );
-      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi[ii].x)) );
+      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
+      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
+      force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
       /* diagonal part: be careful it shall satisfy the incompressibility condition */      	
       /*
-      force[IDX(i,j,k)].x +=  2.0*fac*property.Amp_x * sin(two_pi*(vk[ii].x*x/LX + phi[0].x)); 
-      force[IDX(i,j,k)].y +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].y*y/LY + phi[0].x)); 
-      force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi[0].x));       
+      force[IDX(i,j,k)].x +=  2.0*fac*property.Amp_x * sin(two_pi*(vk[ii].x*x/LX + phi_u[0].x)); 
+      force[IDX(i,j,k)].y +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].y*y/LY + phi_u[0].x)); 
+      force[IDX(i,j,k)].z +=  -fac*property.Amp_x * sin(two_pi*(vk[ii].z*z/LZ + phi_u[0].x));       
       */
     }
    #endif

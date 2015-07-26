@@ -4,6 +4,8 @@
 
 #define H5FILE_NAME "RUN/field.h5"
 
+#define ARANK  1   /* Rank and dimension sizes of the first dataset attribute */
+
 void output_h5(){
   char *fname;
   int RANK = 3;
@@ -137,6 +139,7 @@ void output_h5(){
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, landscape);
  H5Dclose(edataset);
 #endif
+
 
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -292,6 +295,17 @@ void write_pop_h5(){
   int size = (LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD);
   //my_double  *aux;
 
+  /* definitions for attributes */
+#ifdef LB_FLUID_FORCING_HIT
+   hid_t   attr1, attr2, attr3; /* Attribute identifiers */
+   hid_t   attr;
+   hid_t   aid1, aid2, aid3;    /* Attribute dataspace identifiers */ 
+   hid_t   atype;               /* Attribute type */
+
+   //hsize_t fdim[] = {SIZE};
+   hsize_t adim[] = {nk};  /* Dimensions of the first attribute  */
+#endif
+
 
   efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
   efilespace = H5Screate_simple(RANK, efile_3d, NULL);
@@ -372,6 +386,68 @@ void write_pop_h5(){
   H5Pclose(xfer_plist);
   H5Pclose(property_id);
   H5Gclose(group);
+
+/* ATTRIBUTES for FORCING */
+#if defined(LB_FLUID_FORCING_HIT)||defined(LB_TEMPERATURE_FORCING_HIT)||defined(LB_SCALAR_FORCING_HIT) 
+
+ hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
+ H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
+ H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
+ H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+
+ /* Create a group */
+ group   = H5Gcreate (file_id, "/forcing", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+
+ /* Create scalar attribute : number of modes */
+ aid1  = H5Screate(H5S_SCALAR);
+ attr1 = H5Acreate(group, "number of modes (nk)", H5T_NATIVE_INT, aid1,H5P_DEFAULT,H5P_DEFAULT);
+ /* Write scalar attribute */
+ ret = H5Awrite(attr1, H5T_NATIVE_INT, &nk); 
+ H5Aclose(attr1);
+ H5Sclose(aid1); 
+ 
+
+ #ifdef LB_FLUID_FORCING_HIT
+   /* Create dataspace for the phase attirbutes */
+   aid2 = H5Screate(H5S_SIMPLE);
+   ret  = H5Sset_extent_simple(aid2, ARANK, adim, NULL);
+   /* Create array attribute */
+   attr2 = H5Acreate(group, "phi_u", hdf5_type, aid2,H5P_DEFAULT,H5P_DEFAULT);
+   /* Write array attribute */
+   ret = H5Awrite(attr2, hdf5_type, phi_u);
+   H5Aclose(attr2);
+   H5Sclose(aid2);
+ #endif
+
+ #ifdef LB_TEMPERATURE_FORCING_HIT
+   /* Create dataspace for the phase attirbutes */
+   aid2 = H5Screate(H5S_SIMPLE);
+   ret  = H5Sset_extent_simple(aid2, ARANK, adim, NULL);
+   /* Create array attribute */
+   attr2 = H5Acreate(group, "phi_t", hdf5_type, aid2,H5P_DEFAULT,H5P_DEFAULT);
+   /* Write array attribute */
+   ret = H5Awrite(attr2, hdf5_type, phi_t);
+   H5Aclose(attr2);
+   H5Sclose(aid2);
+ #endif
+
+ #ifdef LB_SCALAR_FORCING_HIT
+   /* Create dataspace for the phase attirbutes */
+   aid2 = H5Screate(H5S_SIMPLE);
+   ret  = H5Sset_extent_simple(aid2, ARANK, adim, NULL);
+   /* Create array attribute */
+   attr2 = H5Acreate(group, "phi_s", hdf5_type, aid2,H5P_DEFAULT,H5P_DEFAULT);
+   /* Write array attribute */
+   ret = H5Awrite(attr2, hdf5_type, phi_s);
+   H5Aclose(attr2);
+   H5Sclose(aid2);
+ #endif
+  
+   /* close group */
+   H5Gclose(group);
+ #endif
+
+
   H5Fclose(file_id);  
 
   /* we rename the file */
@@ -403,6 +479,17 @@ void read_pop_h5(){
   hid_t hdf5_type;
   hsize_t array[ ] = {3}; 
   int i;
+
+#ifdef LB_FLUID_FORCING_HIT
+   hid_t   attr1, attr2, attr3; /* Attribute identifiers */
+   hid_t   attr;
+   hid_t   aid1, aid2, aid3;    /* Attribute dataspace identifiers */ 
+   hid_t   atype , aspace;               /* Attribute type */
+   
+
+   //hsize_t fdim[] = {SIZE};
+   hsize_t adim[] = {nk};  /* Dimensions of the first attribute  */
+#endif
 
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
@@ -471,6 +558,80 @@ void read_pop_h5(){
   H5Pclose(xfer_plist);
   H5Pclose(property_id);
   H5Gclose(group);
+
+
+/* ATTRIBUTES for FORCING */
+#if defined(LB_FLUID_FORCING_HIT)||defined(LB_TEMPERATURE_FORCING_HIT)||defined(LB_SCALAR_FORCING_HIT) 
+   hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
+   H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
+   H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
+   H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+
+ /* Create a group */
+ group   = H5Gopen(file_id, "/forcing", H5P_DEFAULT);
+
+ property_id  = H5Pcreate(H5P_GROUP_ACCESS);
+ //xfer_plist = H5Pcreate(H5P_DATASET_XFER);
+ //ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE); 
+
+ /* Create attirbute identifier */
+ attr1 = H5Aopen(group, "number of modes (nk)",H5P_DEFAULT);
+ /* Read scalar attribute */
+ ret = H5Aread(attr1, H5T_NATIVE_INT, &nk); 
+ H5Aclose(attr1);
+ if(ROOT)fprintf(stderr,"The value of the attribute \"number of modes (nk)\" is %d \n", nk);
+
+ #ifdef LB_FLUID_FORCING_HIT
+  if(resume_u){ 
+  /* Create attirbute identifier */
+   attr2 = H5Aopen(group, "phi_u", H5P_DEFAULT);
+   //aspace = H5Aget_space(attr2);
+   //atype  = H5Aget_type(attr2);
+   phi_u  = (vector*) malloc(sizeof(vector)*nk);
+   /* Read array attribute */
+   ret = H5Aread(attr2,hdf5_type, phi_u);
+   //H5Tclose(atype);
+   H5Aclose(attr2);
+   if(ROOT) for (i = 0; i < nk; i++) fprintf(stderr,"The value of the attribute \"phi_u\" is %e %e %e \n", phi_u[i].x,phi_u[i].y ,phi_u[i].z);
+  }
+ #endif
+
+ #ifdef LB_TEMPERATURE_FORCING_HIT
+  if(resume_t){ 
+   /* Create attirbute identifier */
+   attr2 = H5Aopen(group, "phi_t", H5P_DEFAULT);
+   //aspace = H5Aget_space(attr2);
+   //atype  = H5Aget_type(attr2);
+   phi_t  = (vector*) malloc(sizeof(vector)*nk);
+   /* Read array attribute */
+   ret = H5Aread(attr2,hdf5_type, phi_t);
+   //H5Tclose(atype);
+   H5Aclose(attr2);
+   if(ROOT) for (i = 0; i < nk; i++) fprintf(stderr,"The value of the attribute \"phi_t\" is %e %e %e \n", phi_t[i].x,phi_t[i].y ,phi_t[i].z);
+  }
+ #endif
+
+ #ifdef LB_SCALAR_FORCING_HIT
+  if(resume_s){ 
+    /* Create attirbute identifier */
+   attr2 = H5Aopen(group, "phi_s", H5P_DEFAULT);
+   //aspace = H5Aget_space(attr2);
+   //atype  = H5Aget_type(attr2);
+   phi_s  = (vector*) malloc(sizeof(vector)*nk);
+   /* Read array attribute */
+   ret = H5Aread(attr2,hdf5_type, phi_s);
+   //H5Tclose(atype);
+   H5Aclose(attr2);
+   if(ROOT) for (i = 0; i < nk; i++) fprintf(stderr,"The value of the attribute \"phi_s\" is %e %e %e \n", phi_s[i].x,phi_s[i].y ,phi_s[i].z);
+  }
+ #endif
+  
+   /* close group */
+   H5Pclose(property_id);
+   H5Gclose(group);
+ #endif
+
+
   H5Fclose(file_id);  
 
 }

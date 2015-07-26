@@ -226,7 +226,7 @@ my_double invcs, invcs2, invcs4;
   #endif
   #ifdef LB_FLUID_FORCING_HIT
   int nk;
-  vector *vk, *phi;
+  vector *vk, *phi_u;
   my_double *vk2;
   int randomization_itime;
   #endif
