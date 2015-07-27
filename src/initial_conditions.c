@@ -509,7 +509,7 @@ void initialization_forcing(){
   if(ROOT) fprintf(stderr,"initialization of LB_FLUID_FORCING_HIT\n");
 
   nk = 6;
-  if(!resume_u) phi_u  = (vector*) malloc(sizeof(vector)*nk);
+  if(phi_u == NULL) phi_u  = (vector*) malloc(sizeof(vector)*nk);
   vk  = (vector*) malloc(sizeof(vector)*nk);
   vk2  = (my_double*) malloc(sizeof(my_double)*nk);
   randomization_itime = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
@@ -548,7 +548,7 @@ void initialization_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_HIT
   if(ROOT) fprintf(stderr,"initialization of LB_TEMPERATURE_FORCING_HIT\n");
   nk_t = 6;
-  if(!resume_t) phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
+  if(phi_t == NULL) phi_t  = (vector*) malloc(sizeof(vector)*nk_t);
   vk_t  = (vector*) malloc(sizeof(vector)*nk_t);
   vk2_t  = (my_double*) malloc(sizeof(my_double)*nk_t);
   randomization_itime_t = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  
@@ -582,7 +582,7 @@ void initialization_forcing(){
 #ifdef LB_SCALAR_FORCING_HIT
   if(ROOT) fprintf(stderr,"initialization of LB_SCALAR_FORCING_HIT\n");
   nk_s = 6;
-  if(!resume_s) phi_s  = (vector*) malloc(sizeof(vector)*nk_s);
+  if(phi_s == NULL) phi_s  = (vector*) malloc(sizeof(vector)*nk_s);
   vk_s  = (vector*) malloc(sizeof(vector)*nk_s);
   vk2_s  = (my_double*) malloc(sizeof(my_double)*nk_s);
   randomization_itime_s = (int)floor( ( sqrt( pow(LX,2.0) +  pow(LY,2.0) +  pow(LZ,2.0) ) / U ) / property.time_dt );  

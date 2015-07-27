@@ -567,7 +567,13 @@ void read_pop_h5(){
    H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
    H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
 
- /* Create a group */
+/* Check existence of the group "/forcing"  */
+   status = H5Eset_auto(NULL, NULL,NULL);
+   status = H5Gget_objinfo (file_id, "/forcing", 0, NULL);
+   if (status == 0){ 
+    if(ROOT) printf ("The group /forcing exists.\n");
+
+ /* a group */
  group   = H5Gopen(file_id, "/forcing", H5P_DEFAULT);
 
  property_id  = H5Pcreate(H5P_GROUP_ACCESS);
@@ -629,9 +635,13 @@ void read_pop_h5(){
    /* close group */
    H5Pclose(property_id);
    H5Gclose(group);
+
+ }else{
+  if(ROOT)  fprintf(stderr,"HDF5: Group \"/forcing\" not found! \n");
+ }
  #endif
 
-
+  /* close the file */
   H5Fclose(file_id);  
 
 }
