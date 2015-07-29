@@ -1462,8 +1462,8 @@ void move_particles(){
   }
   /* Compute tracer acceleration : if v=u as here, then a = D_t u */
   (tracer+ipart)->ax = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
-  (tracer+ipart)->ay = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
-  (tracer+ipart)->az = ((tracer+ipart)->vx - (tracer+ipart)->vx_old )/property.time_dt;
+  (tracer+ipart)->ay = ((tracer+ipart)->vy - (tracer+ipart)->vy_old )/property.time_dt;
+  (tracer+ipart)->az = ((tracer+ipart)->vz - (tracer+ipart)->vz_old )/property.time_dt;
 
 
    if(itime==0 && resume==0){
