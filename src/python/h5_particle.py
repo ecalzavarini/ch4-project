@@ -34,6 +34,10 @@ for file in filenames:
             ax=np.array( fin['lagrange']['ax'])
             ay=np.array( fin['lagrange']['ay'])
             az=np.array( fin['lagrange']['az'])
+            if(fin['lagrange']['px']): 
+                px=np.array( fin['lagrange']['px'])
+                py=np.array( fin['lagrange']['py'])
+                pz=np.array( fin['lagrange']['pz'])
 
             npart = name.shape[0]
             which_part = int(sys.argv[2])
@@ -43,8 +47,7 @@ for file in filenames:
 
             for i in xrange(0,npart):
                if name[i] == which_part :
-                    print(name[i],x[i],y[i],z[i],vx[i],vy[i],vz[i],ax[i],ay[i],az[i],file=fout)
-
+                    print(name[i],x[i],y[i],z[i],vx[i],vy[i],vz[i],ax[i],ay[i],az[i],px[i],py[i],pz[i],file=fout)
             fout.close()
 
 
