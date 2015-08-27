@@ -44,6 +44,25 @@ tensor gradient_vector(vector *t, int i, int j, int k){
   tensor tens;
   my_double a0,a1,a2,h1,h2;
 
+#ifdef LAGRANGE
+  /* particles can be nasty */
+/* in the bulk , centered 2nd order finite difference */
+  if( i > 0 && i < LNX+TWO_BRD-1 ){
+   tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i-1, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+   tens.yx = ( t[IDX(i+1, j, k)].y - t[IDX(i-1, j, k)].y )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+   tens.zx = ( t[IDX(i+1, j, k)].z - t[IDX(i-1, j, k)].z )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+  }
+  if( j > 0 && j < LNY+TWO_BRD-1 ){
+   tens.xy = ( t[IDX(i, j+1, k)].x - t[IDX(i, j-1, k)].x )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+   tens.yy = ( t[IDX(i, j+1, k)].y - t[IDX(i, j-1, k)].y )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+   tens.zy = ( t[IDX(i, j+1, k)].z - t[IDX(i, j-1, k)].z )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+  }
+  if( k > 0 && k < LNZ+TWO_BRD-1 ){   
+   tens.xz = ( t[IDX(i, j, k+1)].x - t[IDX(i, j, k-1)].x )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+   tens.yz = ( t[IDX(i, j, k+1)].y - t[IDX(i, j, k-1)].y )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+   tens.zz = ( t[IDX(i, j, k+1)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+  }
+#else
 /* in the bulk , centered 2nd order finite difference */
    tens.xx = ( t[IDX(i+1, j, k)].x - t[IDX(i-1, j, k)].x )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
    tens.xy = ( t[IDX(i, j+1, k)].x - t[IDX(i, j-1, k)].x )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
@@ -56,10 +75,10 @@ tensor gradient_vector(vector *t, int i, int j, int k){
    tens.zx = ( t[IDX(i+1, j, k)].z - t[IDX(i-1, j, k)].z )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
    tens.zy = ( t[IDX(i, j+1, k)].z - t[IDX(i, j-1, k)].z )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
    tens.zz = ( t[IDX(i, j, k+1)].z - t[IDX(i, j, k-1)].z )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
-
+#endif
 
  /* We assume that a send/recv for the borders of the vector field in object has been performed.
-    However if boundary conditions are present the gardients are computed one-sidedly in the domain.
+    However if boundary conditions are present the gradients are computed one-sidedly in the domain.
     The same is true for the fix needed by the lagrangian part  */
 #ifdef LB_FLUID_BC
 
@@ -312,7 +331,7 @@ if(k == BRD-1){
 
   #endif
  #endif
-#else 
+#else /* if LB_FLUID_BC is NOT defined ,  do the following... */
 
  #ifdef LAGRANGE_INTERPOLATION_FIX
   #ifdef FIRST_ORDER_GRAD
@@ -452,11 +471,18 @@ vector gradient_scalar(my_double *t, int i, int j, int k){
   vector grad;
   my_double a0,a1,a2,h1,h2;
 
+#ifdef LAGRANGE
+  /* particles can be nasty */
+  /* in the bulk , centered 2nd order finite difference */
+  if( i > 0 && i < LNX+TWO_BRD-1 )   grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
+  if( j > 0 && i < LNY+TWO_BRD-1 )   grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+  if( k > 0 && i < LNZ+TWO_BRD-1 )   grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+#else
   /* in the bulk , centered 2nd order finite difference */
    grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
    grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
    grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
-
+#endif
 
  /* We assume that a send/recv for the borders of the scalar field in object has been performed.
     However if boundary conditions are present the gardients are computed one-sidedly in the domain.
