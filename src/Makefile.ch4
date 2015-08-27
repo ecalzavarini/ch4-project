@@ -22,5 +22,9 @@ clean-dat:
 
 clean-RUN:
 	rm -rf ./RUN
+
+clean-h5:
+	rm -rf ./*.h5
+
 tar:
 	tar cvzf ch4-project_backup.tgz ./*.c ./*.h Makefile* ./*.in  ./python/*.py 
