@@ -11,6 +11,9 @@ void initial_conditions(int restart)
   my_double val;
   int iy,iyp,iym;
   my_double norm, norm_all;
+  char fnamein[128];
+  FILE * fin;
+  
 
 
 #ifdef LB_FLUID
@@ -367,11 +370,27 @@ void initial_conditions(int restart)
 
 #ifdef OUTPUT_H5
    /*  if requested in param.in , read the populations from file pop.h5*/
-   if(restart) read_pop_h5();
+  sprintf(fnamein,"pop.h5");  
+  fin = fopen("pop.h5","r"); 
+  if(restart && fin != NULL){
+    read_pop_h5();
+      if(ROOT) fprintf(stderr,"The %s file is present!\n Populations are initialized from file.\n",fnamein);
+      fclose(fin);
+  }else{   
+      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Populations are initialized from memory.\n",fnamein);
+  }
 
  #ifdef LB_TEMPERATURE_MELTING
    /*  if requested melting is active, and resume is asked for, read it from file liquid_frac.h5 */
-	if(restart && resume_t)  read_scalar_h5(liquid_frac,"liquid_frac");
+  sprintf(fnamein,"liquid_frac.h5");  
+  fin = fopen("liquid_frac.h5","r"); 
+  if(restart && resume_t && fin != NULL){
+    read_scalar_h5(liquid_frac,"liquid_frac");
+      if(ROOT) fprintf(stderr,"The %s file is present!\n melting interface is initialized from file.\n",fnamein);
+      fclose(fin);
+  }else{   
+      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n melting interface is initialized from memory.\n",fnamein);
+  }
  #endif
 
    //#define PERTURBATE
