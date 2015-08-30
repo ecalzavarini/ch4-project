@@ -77,6 +77,7 @@ void initial_conditions_particles(int restart){
  if(restart && fin != NULL){
   
      read_point_particle_h5();
+     sendrecv_particles();
       if(ROOT) fprintf(stderr,"The %s file is present!\n Particles will be initialized from file.\n",fnamein);
       fclose(fin);
 
@@ -363,7 +364,7 @@ phi = two_pi*myrand();
  free(swim_velocity);
 */
 
-    }/* end of if /else on restart */
+ }/* end of if /else on restart */
 
 
 }/* end of function */
