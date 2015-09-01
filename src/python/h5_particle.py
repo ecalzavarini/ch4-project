@@ -23,21 +23,25 @@ for file in filenames:
             fpath = dirname+"/"+file
             #print(fpath)
             fin = h5py.File( fpath,'r')
+            group = fin['lagrange']
+            labels = group.keys()
+            #nl = len(labels)
+            
+            name=np.array( group['name'])
+            x=np.array( group['x'])
+            y=np.array( group['y'])
+            z=np.array( group['z'])
+            vx=np.array( group['vx'])
+            vy=np.array( group['vy'])
+            vz=np.array( group['vz'])
+            ax=np.array( group['ax'])
+            ay=np.array( group['ay'])
+            az=np.array( group['az'])
 
-            name=np.array( fin['lagrange']['name'])
-            x=np.array( fin['lagrange']['x'])
-            y=np.array( fin['lagrange']['y'])
-            z=np.array( fin['lagrange']['z'])
-            vx=np.array( fin['lagrange']['vx'])
-            vy=np.array( fin['lagrange']['vy'])
-            vz=np.array( fin['lagrange']['vz'])
-            ax=np.array( fin['lagrange']['ax'])
-            ay=np.array( fin['lagrange']['ay'])
-            az=np.array( fin['lagrange']['az'])
-            if(fin['lagrange']['px']): 
-                px=np.array( fin['lagrange']['px'])
-                py=np.array( fin['lagrange']['py'])
-                pz=np.array( fin['lagrange']['pz'])
+            if  'px' in labels:
+                px=np.array( group['px'])
+                py=np.array( group['py'])
+                pz=np.array( group['pz'])
 
             npart = name.shape[0]
             which_part = int(sys.argv[2])
@@ -47,7 +51,10 @@ for file in filenames:
 
             for i in xrange(0,npart):
                if name[i] == which_part :
+                   if  'px' in labels:
                     print(name[i],x[i],y[i],z[i],vx[i],vy[i],vz[i],ax[i],ay[i],az[i],px[i],py[i],pz[i],file=fout)
+                   else: 
+                    print(name[i],x[i],y[i],z[i],vx[i],vy[i],vz[i],ax[i],ay[i],az[i],file=fout)
             fout.close()
 
 
