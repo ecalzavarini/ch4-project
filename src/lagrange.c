@@ -1309,7 +1309,7 @@ void output_particles(){
 
 #endif /* end of OUTPUT_H5 */
 
-    }/* en of if on itime , check if we have to dump particle */
+    }/* end of if on itime , check if we have to dump particle */
 
 }/* end of function output_particles */
 
@@ -1805,20 +1805,18 @@ void move_particles(){
 
 }/* end of loop on particles */
 
-
   sendrecv_particles();
 
 }/* end of move_particles */
 
 
-// /*
+/* rearrange particles on the right processors */
 void sendrecv_particles(){
 
   int ipart,i;
   int npart_here,npart_there,all_npart_there,all_npart;  
   point_particle part;
   int *displs,*rcounts;
-  // */
 
 /* Here we perform the particle re-arrangement between processors */
 
