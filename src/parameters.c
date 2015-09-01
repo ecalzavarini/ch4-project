@@ -274,6 +274,13 @@ void assign_parameters(){
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Stefan = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
   fclose(fout);
+   #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
+    sprintf(name,"cavity_radius");
+    property.cavity_radius = read_parameter(name);
+    fprintf(stderr,"The hemispherical pond has -> cavity_radius = %e\n", property.cavity_radius );
+    #endif
+   #endif
   #endif
  #endif /* end of ifdef LB_TEMPERATURE_FORCING */
 #endif /* end of ifdef LB_TEMPERATURE */

@@ -67,6 +67,11 @@ typedef struct {
   #endif
   #ifdef LB_TEMPERATURE_MELTING
   my_double T_solid,latent_heat,specific_heat;
+   #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
+  my_double cavity_radius; 
+    #endif
+   #endif
   #endif
  #endif
  #ifdef LB_SCALAR

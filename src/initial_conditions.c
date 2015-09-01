@@ -304,7 +304,7 @@ void initial_conditions(int restart)
       y = center_V[IDX(i, j, k)].y; 
       z = center_V[IDX(i, j, k)].z - property.SZ/2.0;
       val = sqrt(x*x + y*y + z*z);
-      if( val > 20 ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
+      if( val > property.cavity_radius ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
     #endif  
    #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
