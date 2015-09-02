@@ -56,7 +56,7 @@ for file in filenames:
                    else: 
                     print(name[i],x[i],y[i],z[i],vx[i],vy[i],vz[i],ax[i],ay[i],az[i],file=fout)
             fout.close()
-
+            fin.close()
 
 #os.system("cat myfile") 
 
