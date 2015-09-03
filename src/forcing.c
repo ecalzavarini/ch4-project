@@ -722,10 +722,17 @@ void add_forcing(){
   my_double rho ,temp , wgt2;
   pop p_eq , g_eq , h_eq;
   my_double mask;
-
+  my_double magic_gamma;
 
 #ifdef LB_FLUID
 invtau = 1.0/property.tau_u;
+ #ifdef METHOD_TRT
+        /* This is two relaxation time TRT */
+ magic_gamma = 0.25; //3./16.;
+        /* see http://arxiv.org/abs/1508.07982v1 */
+	/* this is invtau_minus */
+        invtau = (4. - 2.*invtau)/(2.+(4.*magic_gamma -1.)*invtau);
+ #endif
 
  fac = 1.0; /* this is for streaming if GUO is not defined */
 #ifdef METHOD_FORCING_GUO
@@ -742,6 +749,14 @@ invtau = 1.0/property.tau_u;
 #ifdef LB_TEMPERATURE
 invtau_t = 1.0/property.tau_t;
 
+ #ifdef METHOD_TRT
+        /* This is two relaxation time TRT */
+        magic_gamma = 0.25;
+        /* see http://arxiv.org/abs/1508.07982v1 */
+	/* this is invtau_minus */
+        invtau_t = (4. - 2.*invtau_t)/(2.+(4.*magic_gamma -1.)*invtau_t);
+ #endif
+
 #ifdef METHOD_FORCING_MALASPINAS
   fac_t = (1.0-0.5*property.time_dt*invtau_t);
 #endif
@@ -756,6 +771,14 @@ invtau_t = 1.0/property.tau_t;
 
 #ifdef LB_SCALAR
 invtau_s = 1.0/property.tau_s;
+
+ #ifdef METHOD_TRT
+        /* This is two relaxation time TRT */
+        magic_gamma = 0.25;
+        /* see http://arxiv.org/abs/1508.07982v1 */
+	/* this is invtau_minus */
+        invtau_s = (4. - 2.*invtau_s)/(2.+(4.*magic_gamma -1.)*invtau_s);
+ #endif
 
 #ifdef METHOD_FORCING_MALASPINAS
   fac_s = (1.0-0.5*property.time_dt*invtau_s);
@@ -833,7 +856,9 @@ invtau_s = 1.0/property.tau_s;
 #endif
 	    
 #else   
+
 	    /* This is METHOD_FORCING_GUO */
+	    
 	rho = dens[IDX(i,j,k)];  
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
@@ -845,7 +870,8 @@ invtau_s = 1.0/property.tau_s;
 		
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
-       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;  		
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;
+	    
 #endif
 
 #ifdef  LB_FLUID_FORCING_DIRECT

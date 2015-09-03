@@ -1040,9 +1040,15 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
   my_double tau_les;
   vector rho_dt_u , u_dt_rho;
   my_double wgt2;
- 
- 
-invtau = 1.0/tau;
+#ifdef METHOD_TRT
+ /* This is Two Relaxation Time (TRT) */
+ my_double magic_gamma;
+ my_double invtau_minus;
+ pop ff_eq_plus, ff_eq_minus, ff_plus, ff_minus;
+#endif
+
+ /* Inverse of the relaxation time */ 
+ invtau = 1.0/tau;
 
 
 #ifndef METHOD_COLLISION_IMPLICIT
@@ -1081,7 +1087,22 @@ invtau = 1.0/tau;
 
 
 #ifndef METHOD_EXPONENTIAL
+  #ifdef METHOD_TRT
+	/* This is two relaxation time TRT */
+	magic_gamma = 0.25; //3./16.;
+	/* see http://arxiv.org/abs/1508.07982v1 */
+	invtau_minus = (4. - 2.*invtau)/(2.+(4.*magic_gamma -1.)*invtau);
+	for (pp=0; pp<NPOP; pp++){
+	    ff_eq_plus.p[pp]  = 0.5*(ff_eq.p[pp] + ff_eq.p[inv[pp]]);
+	    ff_eq_minus.p[pp] = 0.5*(ff_eq.p[pp] - ff_eq.p[inv[pp]]);
+	    ff_plus.p[pp]  = 0.5*(f[IDX(i,j,k)].p[pp] + f[IDX(i,j,k)].p[inv[pp]]);
+	    ff_minus.p[pp] = 0.5*(f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[inv[pp]]);		
+	fcoll.p[pp] = -invtau * (ff_plus.p[pp] - ff_eq_plus.p[pp]) -invtau_minus * (ff_minus.p[pp] - ff_eq_minus.p[pp]);
+      }
+  #else
+	/* This is single relaxation time SRT */
        	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
+  #endif
 
 #ifdef METHOD_LOG
 	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] =  ( exp(invtau*(ff_eq.p[pp] - f[IDX(i,j,k)].p[pp]) ) - 1.0);
