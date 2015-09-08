@@ -412,6 +412,8 @@ void hydro_fields(char which_pop){
 	char            name[256] = "NULL";
 	FILE           *fin, *fout;
 #endif
+	vector u0, u0_all;
+	my_double norm;
 
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
@@ -457,6 +459,36 @@ void hydro_fields(char which_pop){
 				 #endif
 				#endif
 #endif
+#define NO_ZERO_MODE
+#ifdef NO_ZERO_MODE
+    /* compute the total turbulent kinetic energy */
+
+    u0.x = u0_all.x = 0.0;
+    u0.y = u0_all.y = 0.0;
+    u0.z = u0_all.z = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            u0.x += u[IDX(i,j,k)].x;
+            u0.y += u[IDX(i,j,k)].y;
+            u0.z += u[IDX(i,j,k)].z;
+          }
+
+    MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+      u0_all.x *= norm;
+      u0_all.y *= norm;
+      u0_all.z *= norm;
+
+      u[IDX(i, j, k)].x -= u0_all.x;
+      u[IDX(i, j, k)].y -= u0_all.y;
+      u[IDX(i, j, k)].z -= u0_all.z;
+
+#endif
+
 			  }
 #endif
 
