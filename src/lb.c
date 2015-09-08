@@ -502,8 +502,7 @@ void hydro_fields(char which_pop){
 			}/* for i,j,k */
 
 
-#define NO_ZERO_MODE
-#ifdef NO_ZERO_MODE
+#ifdef LB_FLUID_NOZEROMODE
 if(which_pop == 'p'){
     /* compute the total turbulent kinetic energy */
 
@@ -526,6 +525,7 @@ if(which_pop == 'p'){
       u0_all.x *= norm;
       u0_all.y *= norm;
       u0_all.z *= norm;
+
      for (i = BRD; i < LNX+BRD; i++)
        for (j = BRD; j < LNY+BRD; j++)
 	 for (k = BRD; k < LNZ+BRD; k++) {
