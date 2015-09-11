@@ -312,7 +312,8 @@ void build_forcing(){
 	force[IDX(i,j,k)].y += property.Amp_y*fnx*sin(kn*two_pi*x/LX); 
 	force[IDX(i,j,k)].z += property.Amp_z*fny*sin(kn*two_pi*y/LY);  
 
-	//   fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
+	//   fprintf(stderr,"force[IDX(i,j,k)].x %e force[IDX(i,j,k)].y %e force[IDX(i,j,k)].z %e\n",force[IDX(i,j,k)].x, force[IDX(i,j,k)].y,force[IDX(i,j,k)].z);
+	//  fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
 	//  exit(1);
  #endif  
 
@@ -489,11 +490,13 @@ void build_forcing(){
  #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
 
 
-      /* Set forcing to zero if the domain has no thickness (e.g. in 2 dimensions , just 1 grid points in z-direction )*/
+      /* Set forcing to zero if the domain has no thickness (e.g. in 2 dimensions , just 1 grid points in z-direction ) */
+      /* TO BE REMOVED, causes problems to 1,50,1 poiseuillle flow */
+      /*
       if(NX==1) force[IDX(i,j,k)].x = 0.0;
       if(NY==1) force[IDX(i,j,k)].y = 0.0;
       if(NZ==1) force[IDX(i,j,k)].z = 0.0;
-
+      */
 
 #endif /* end of LB_FLUID_FORCING */
 
@@ -857,8 +860,7 @@ invtau_s = 1.0/property.tau_s;
 	    
 #else   
 
-	    /* This is METHOD_FORCING_GUO */
-	    
+	    /* This is METHOD_FORCING_GUO */    
 	rho = dens[IDX(i,j,k)];  
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
