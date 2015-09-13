@@ -11,6 +11,7 @@ void build_forcing(){
   vector dist,vel;
   vector u0, u0_all;
   vector u2,u2_all;
+  vector f0,f0_all;
   my_double norm, k_turb, k0_turb , k_ratio;
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity;
   my_double s0,s0_all;
@@ -478,15 +479,19 @@ void build_forcing(){
 
   #ifdef LB_FLUID_FORCING_LANDSCAPE
        if(landscape[IDX(i, j, k)]>0.0){
+	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
+	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
+	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
+      }    
   #else
       /* small central spot penalization */
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
       if( mask < 10.0 ){       
-  #endif
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
-	  }     
+      }     
+  #endif
  #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
 
 
@@ -653,7 +658,7 @@ void build_forcing(){
     for(ii=0; ii<nk_t; ii++){
       fac = pow(vk2_t[ii],-5./6.);
       t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk_t[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk_t[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk_t[ii].z*z/LZ + phi_t[ii].z)) );
-    }
+      }
   #endif
  #endif
 
@@ -708,9 +713,44 @@ void build_forcing(){
 
 #endif
 
-
       }/* i,j,k */
-}
+
+
+#ifdef LB_FLUID_FORCING_NOZEROMODE
+    /* compute the mean forcing value */
+    f0.x = f0_all.x = 0.0;
+    f0.y = f0_all.y = 0.0;
+    f0.z = f0_all.z = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            f0.x += force[IDX(i,j,k)].x;
+            f0.y += force[IDX(i,j,k)].y;
+            f0.z += force[IDX(i,j,k)].z;
+          }
+
+    MPI_Allreduce(&f0, &f0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+      f0_all.x *= norm;
+      f0_all.y *= norm;
+      f0_all.z *= norm;
+
+     for (i = BRD; i < LNX+BRD; i++)
+       for (j = BRD; j < LNY+BRD; j++)
+	 for (k = BRD; k < LNZ+BRD; k++) {
+	   force[IDX(i, j, k)].x -= f0_all.x;
+	   force[IDX(i, j, k)].y -= f0_all.y;
+	   force[IDX(i, j, k)].z -= f0_all.z;
+	 }/* for i,j,k */
+#endif
+
+
+
+
+}/* end of build_forcing */
 #endif
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
