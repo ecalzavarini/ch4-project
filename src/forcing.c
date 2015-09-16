@@ -369,7 +369,7 @@ void build_forcing(){
    #else 
      /* Force at large scale, similar to Federico, Prasad forcing */
     for(ii=0; ii<nk; ii++){
-      fac = pow(vk2[ii],-5./6.);
+      fac = pow(vk2[ii],-2./6.);
       force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
@@ -656,7 +656,7 @@ void build_forcing(){
   #endif
       /*the other modes */
     for(ii=0; ii<nk_t; ii++){
-      fac = pow(vk2_t[ii],-5./6.);
+      fac = pow(vk2_t[ii],-2./6.);
       t_source[IDX(i,j,k)] += fac*property.Amp_t*( sin(two_pi*(vk_t[ii].x*x/LX + phi_t[ii].x)) + sin(two_pi*(vk_t[ii].y*y/LY + phi_t[ii].y)) + sin(two_pi*(vk_t[ii].z*z/LZ + phi_t[ii].z)) );
       }
   #endif
@@ -701,7 +701,7 @@ void build_forcing(){
  #endif
       /*the other modes */
     for(ii=0; ii<nk_s; ii++){
-      fac = pow(vk2_s[ii],-5./6.);
+      fac = pow(vk2_s[ii],-2./6.);
       s_source[IDX(i,j,k)] += fac*property.Amp_s*( sin(two_pi*(vk_s[ii].x*x/LX + phi_s[ii].x)) + sin(two_pi*(vk_s[ii].y*y/LY + phi_s[ii].y)) + sin(two_pi*(vk_s[ii].z*z/LZ + phi_s[ii].z)) );
     }
  #endif
