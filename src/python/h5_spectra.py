@@ -77,5 +77,6 @@ uc = fftv(ur)
 compute_spectra(uc)
 number=filter(str.isdigit, "fname")
 print(number)
-fname_new = 'spectra_'+number+'.dat'
+number=filter(str.isdigit, fname)
+fname_new = 'spectra_'+number[:-1]+'.dat'
 os.rename("spectra.dat", fname_new)
