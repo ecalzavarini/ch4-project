@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 import h5py
 import numpy as np
-import sys
+import sys , os
 #import math
 from math import *
 
@@ -75,4 +75,7 @@ def compute_spectra(uc):
 
 uc = fftv(ur) 
 compute_spectra(uc)
-
+number=filter(str.isdigit, "fname")
+print(number)
+fname_new = 'spectra_'+number+'.dat'
+os.rename("spectra.dat", fname_new)
