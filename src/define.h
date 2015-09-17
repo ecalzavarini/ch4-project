@@ -66,6 +66,7 @@
 //#define LB_FLUID_FORCING_HIT_TYPE2
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
+#define LB_FLUID_FORCING_CONSTANT_POWER
 
 /* Landscape definitions in the domain */
 //#define LB_FLUID_FORCING_LANDSCAPE

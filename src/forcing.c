@@ -12,6 +12,7 @@ void build_forcing(){
   vector u0, u0_all;
   vector u2,u2_all;
   vector f0,f0_all;
+  vector coeff;
   my_double norm, k_turb, k0_turb , k_ratio;
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity;
   my_double s0,s0_all;
@@ -293,7 +294,7 @@ void build_forcing(){
 	force[IDX(i,j,k)].z += 2.0*pow(property.Amp_z,2.0)/LY;
  #endif
 
- #ifdef LB_FLUID_FORCING_CONSTANT_POWER
+ #ifdef LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER
 	/* Here Amp indicates the power Force*velocity  */
 	/* note that out_all.uxt is computed only when we dumpe the averages */	
 	if(out_all.ux != 0) force[IDX(i,j,k)].x += property.Amp_x/out_all.ux; 
@@ -747,7 +748,43 @@ void build_forcing(){
 	 }/* for i,j,k */
 #endif
 
+#ifdef LB_FLUID_FORCING_CONSTANT_POWER
+     /* compute the total mean power value per unit volume, <F*u>_V / L^3  */
+    f0.x = f0_all.x = 0.0;
+    f0.y = f0_all.y = 0.0;
+    f0.z = f0_all.z = 0.0;
 
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            f0.x += force[IDX(i,j,k)].x*u[IDX(i,j,k)].x;
+            f0.y += force[IDX(i,j,k)].y*u[IDX(i,j,k)].y;
+            f0.z += force[IDX(i,j,k)].z*u[IDX(i,j,k)].z;
+          }
+
+    MPI_Allreduce(&f0, &f0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+      f0_all.x *= norm;
+      f0_all.y *= norm;
+      f0_all.z *= norm;
+
+      fac = pow(0.1,3.0)/property.SX;  /* the idea is the following to fix the constant power per unit volume at : U^3/L */
+
+      if(f0_all.x != 0.0) coeff.x = fac/f0_all.x; else coeff.x = 1.0;
+      if(f0_all.y != 0.0) coeff.y = fac/f0_all.y; else coeff.y = 1.0;
+      if(f0_all.z != 0.0) coeff.z = fac/f0_all.z; else coeff.z = 1.0;
+
+
+     for (i = BRD; i < LNX+BRD; i++)
+       for (j = BRD; j < LNY+BRD; j++)
+	 for (k = BRD; k < LNZ+BRD; k++) {
+	   force[IDX(i, j, k)].x *= coeff.x;
+	   force[IDX(i, j, k)].y *= coeff.y;
+	   force[IDX(i, j, k)].z *= coeff.z;
+	 }/* for i,j,k */
+#endif
 
 
 }/* end of build_forcing */
