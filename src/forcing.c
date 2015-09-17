@@ -770,11 +770,10 @@ void build_forcing(){
       f0_all.y *= norm;
       f0_all.z *= norm;
 
-      fac = pow(0.1,3.0)/property.SX;  /* the idea is the following to fix the constant power per unit volume at : U^3/L */
-
-      if(f0_all.x != 0.0) coeff.x = fac/f0_all.x; else coeff.x = 1.0;
-      if(f0_all.y != 0.0) coeff.y = fac/f0_all.y; else coeff.y = 1.0;
-      if(f0_all.z != 0.0) coeff.z = fac/f0_all.z; else coeff.z = 1.0;
+      //fac = pow(0.1,3.0)/property.SX;  /* the idea is the following to fix the constant power per unit volume at : U^3/L */    
+      if(f0_all.x != 0.0) coeff.x = property.Amp_x/f0_all.x; else coeff.x = 1.0;
+      if(f0_all.y != 0.0) coeff.y = property.Amp_y/f0_all.y; else coeff.y = 1.0;
+      if(f0_all.z != 0.0) coeff.z = property.Amp_z/f0_all.z; else coeff.z = 1.0;
 
 
      for (i = BRD; i < LNX+BRD; i++)
