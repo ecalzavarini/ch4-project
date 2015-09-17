@@ -50,9 +50,9 @@
 //#define LB_INITIAL_CONSTANT_T_TOP
 //#define LB_FLUID_INITIAL_UNIT_DENSITY
 #define LB_FLUID_FORCING  /* activate force on the fluid */
-//#define LB_FLUID_FORCING_CHANNEL
-//#define LB_FLUID_FORCING_POISEUILLE
-//#define LB_FLUID_FORCING_CONSTANT_POWER
+//#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
+//#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
+//#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
 #define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
@@ -66,7 +66,6 @@
 //#define LB_FLUID_FORCING_HIT_TYPE2
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
-//#define LB_FLUID_NOZEROMODE
 
 /* Landscape definitions in the domain */
 //#define LB_FLUID_FORCING_LANDSCAPE
