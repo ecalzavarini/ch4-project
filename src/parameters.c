@@ -169,6 +169,16 @@ void assign_parameters(){
   fprintf(stderr,"Properties: Amp_x %g\n",(double)property.Amp_x);
   fprintf(stderr,"Properties: Amp_y %g\n",(double)property.Amp_y);
   fprintf(stderr,"Properties: Amp_z %g\n",(double)property.Amp_z);
+  #ifdef LB_FLUID_FORCING_GRAVITY
+  /* Introduce the gravity vector parameter (without applying any force): it is used for the buoyancy */
+  sprintf(name,"gravity_x");
+  property.gravity_x = read_parameter(name);
+  sprintf(name,"gravity_y");
+  property.gravity_y = read_parameter(name);
+  sprintf(name,"gravity_z");
+  property.gravity_z = read_parameter(name);
+  fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
+  #endif
   #ifdef LB_FLUID_FORCING_POISEUILLE
   fprintf(stderr,"Reynolds (Poiseuille) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
   fout = fopen("numbers.dat","a");
@@ -224,6 +234,7 @@ void assign_parameters(){
   sprintf(name,"beta2_t");
   property.beta2_t = read_parameter(name);
   fprintf(stderr,"quadratic volume expansion coefficient %g\n",(double)property.beta2_t);
+  /*
   sprintf(name,"gravity_x");
   property.gravity_x = read_parameter(name);
   sprintf(name,"gravity_y");
@@ -231,7 +242,7 @@ void assign_parameters(){
   sprintf(name,"gravity_z");
   property.gravity_z = read_parameter(name);
   fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
-
+  */
   fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
   fout = fopen("numbers.dat","a");

@@ -50,6 +50,9 @@ typedef struct {
   my_double tau_u , nu;
  #ifdef LB_FLUID_FORCING
   my_double Amp_x,Amp_y,Amp_z;
+  #ifdef LB_FLUID_FORCING_GRAVITY
+   my_double gravity_x,gravity_y,gravity_z;
+  #endif
  #endif
  #ifdef LB_TEMPERATURE
   my_double tau_t, kappa;
@@ -57,7 +60,7 @@ typedef struct {
   my_double grad_T_bot,grad_T_top;
   #ifdef LB_TEMPERATURE_BUOYANCY
   my_double beta_t,beta2_t;
-  my_double gravity_x,gravity_y,gravity_z;
+  //  my_double gravity_x,gravity_y,gravity_z;
   #endif
   #ifdef LB_TEMPERATURE_FORCING
   my_double Amp_t;
