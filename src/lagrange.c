@@ -25,7 +25,7 @@ void allocate_particles(){
 					       
   }
 
-  }/* end if on PARTICLE_NUMBER */
+  }/* end if on particle_number */
 
   fprintf(stderr,"me %d : I have %d particles\n",me, npart);
 
@@ -56,6 +56,7 @@ void initial_conditions_particles(int restart){
 
   int type;
   my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
+  my_double *particle_radius, *particle_density;
   my_double *critical_shear_rate, *jump_time;
   vector vec;
 
@@ -88,6 +89,53 @@ void initial_conditions_particles(int restart){
 
 /* restart from memory */
 
+#ifdef LAGRANGE_RADIUSandDENSITY
+/* if the particle_radius and the particle_density is specified instead of tau_drag and beta_coeff */
+      /* RADIUS */
+ particle_radius = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.particle_radius_types;
+ if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.particle_radius_types; i++){
+  particle_radius[ i+j*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d particle_radius %g\n",i,particle_radius[i]);
+      /* DENSITY */
+ particle_density = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.particle_density_types;
+ if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.particle_density_types; i++){
+  particle_density[ i+j*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d particle_density %g\n",i,particle_density[i]);
+
+
+ /* derive tau_drag from radius and density */
+ tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ for(i=0;i<property.particle_types;i++){
+   /* we use the definition \tau = (2/9)*(\rho_p / \rho_f)*r^2/\nu  , with assumption \rho_f = 1 */
+   tau_drag[i] = (2./9.) * particle_density[i] * pow(particle_radius[i],2.0)/(property.nu);
+     }
+
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_ADDEDMASS
+ /* derive beta_coeff from density , assuming fluid density equal to 1*/
+ beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ for(i=0;i<property.particle_types;i++){
+   beta_coeff[i] = 3.0/(1.0+2.0*particle_density[i]);
+   /* adjust tau for added mass \tau = r^2/(3*\beta*\nu), with assumption \rho_f = 1 */
+   tau_drag[i] = pow(particle_radius[i],2.0)/(3.0*beta_coeff[i]*property.nu);
+     }
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
+ #endif
+#endif
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d tau_drag %g\n",i,tau_drag[i]);
+
+#else /* else of LAGRANGE_RADIUSandDENSITY */
+
 /* build particle property types arrays */
  tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.tau_drag_types;
@@ -110,6 +158,10 @@ void initial_conditions_particles(int restart){
  }
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
  #endif
+#endif
+#endif /* end of LAGRANGE_RADIUSandDENSITY */
+
+#ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ORIENTATION
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
  aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
@@ -203,7 +255,14 @@ if(ROOT){
   fin = fopen("particle_properties.dat","w");
   for(i=0;i<property.particle_types;i++){
 
+#ifdef LAGRANGE_RADIUSandDENSITY
+fprintf(fin,"type %d particle_radius %e ",i,particle_radius[i]);
+fprintf(fin,"particle_density %e ",particle_density[i]);
+fprintf(fin,"tau_drag %e ",tau_drag[i]);
+#else
 fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
+#endif
+
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
   fprintf(fin,"type %d beta_coeff %e ",i,beta_coeff[i]);

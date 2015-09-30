@@ -233,10 +233,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-//#define LAGRANGE
+#define LAGRANGE
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
+#define LAGRANGE_RADIUSandDENSITY
 //#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY

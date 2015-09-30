@@ -58,6 +58,14 @@ Amp_s 0.01
 time_dump_lagr 1
 particle_number 16000
 
+particle_radius_types 4
+particle_radius_min 0
+particle_radius_max 4
+
+particle_density_types 4
+particle_density_min 0
+particle_density_max 10
+
 tau_drag_types 1
 tau_drag_min 0
 tau_drag_max 0

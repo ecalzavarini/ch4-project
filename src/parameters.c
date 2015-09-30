@@ -343,6 +343,34 @@ void assign_parameters(){
   property.particle_number = read_parameter(name);
   fprintf(stderr,"Properties: particle_number %g\n",(double)property.particle_number);
 
+ #ifdef LAGRANGE_RADIUSandDENSITY  
+  /* particle radius  */
+  sprintf(name,"particle_radius_types");
+  property.particle_radius_types = read_parameter(name); 
+  sprintf(name,"particle_radius_min");
+  property.particle_radius_min = read_parameter(name);
+  sprintf(name,"particle_radius_max");
+  property.particle_radius_max = read_parameter(name);
+  fprintf(stderr,"particle_radius_types %g , particle_radius_max %g , particle_radius_min %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
+  if( property.particle_radius_types <1 || property.particle_radius_max < property.particle_radius_min ){ fprintf(stderr,"Error in particle_radius parameters\n Exit.\n"); exit(0);}
+
+  /* total number of particles types up to now */
+  property.particle_types = property.particle_radius_types;
+
+  /* particle_density  */  
+  sprintf(name,"particle_density_types");
+  property.particle_density_types = read_parameter(name); 
+  sprintf(name,"particle_density_min");
+  property.particle_density_min = read_parameter(name);
+  sprintf(name,"particle_density_max");
+  property.particle_density_max = read_parameter(name);
+  fprintf(stderr,"particle_density_types %g , particle_density_max %g , particle_density_min %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
+  if( property.particle_density_types <1 || property.particle_density_max < property.particle_density_min ){ fprintf(stderr,"Error in particle_density parameters\n Exit.\n"); exit(0);}
+
+  /* total number of particles types up to now */
+  property.particle_types *= property.particle_density_types;
+
+ #else /* if LAGRANGE_RADIUSandDENSITY is not defined, we read tau_drag and beta_coeff as parameters */
   /* drag response time tau_drag */  
   sprintf(name,"tau_drag_types");
   property.tau_drag_types = read_parameter(name); 
@@ -356,8 +384,8 @@ void assign_parameters(){
   /* total number of particles types up to now */
   property.particle_types = property.tau_drag_types;
 
- #ifdef LAGRANGE_GRADIENT
-  #ifdef LAGRANGE_ADDEDMASS
+  #ifdef LAGRANGE_GRADIENT
+   #ifdef LAGRANGE_ADDEDMASS
   /* added mass  */  
   sprintf(name,"beta_coeff_types");
   property.beta_coeff_types = read_parameter(name); 
@@ -370,8 +398,11 @@ void assign_parameters(){
 
   /* total number of particles types up to now */
   property.particle_types *= property.beta_coeff_types;
+   #endif
   #endif
+ #endif
 
+ #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION
    #ifdef LAGRANGE_ORIENTATION_JEFFREY
    /* aspect ratio for rotation  */ 

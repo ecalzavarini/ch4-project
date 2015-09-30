@@ -94,6 +94,10 @@ typedef struct {
   my_double particle_number;
   my_double particle_types; 
   my_double tau_drag_types, tau_drag_min , tau_drag_max;
+  #ifdef LAGRANGE_RADIUSandDENSITY
+   my_double particle_radius_types, particle_radius_min , particle_radius_max;
+   my_double particle_density_types, particle_density_min , particle_density_max;
+  #endif
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ADDEDMASS
   my_double beta_coeff_types, beta_coeff_min , beta_coeff_max;
