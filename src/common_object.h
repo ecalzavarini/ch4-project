@@ -33,6 +33,8 @@ extern MPI_Datatype MPI_vector_plane_x,MPI_vector_plane_y,MPI_vector_plane_z;
 
 #ifdef LAGRANGE
 extern MPI_Datatype MPI_point_particle_type;
+extern MPI_Datatype MPI_output_particle_type;
+extern MPI_Op MPI_SUM_output_particle;
 #endif
 
 /* random seed */

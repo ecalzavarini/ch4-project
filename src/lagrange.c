@@ -265,23 +265,23 @@ fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
-  fprintf(fin,"type %d beta_coeff %e ",i,beta_coeff[i]);
+  fprintf(fin,"beta_coeff %e ",beta_coeff[i]);
  #endif /* LAGRANGE_ADDEDMASS */
  #ifdef LAGRANGE_ORIENTATION
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
- fprintf(fin,"type %d aspect_ratio %e ",i,aspect_ratio[i]);
+ fprintf(fin,"aspect_ratio %e ",aspect_ratio[i]);
    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
-   fprintf(fin,"type %d gyrotaxis_velocity %e ",i,gyrotaxis_velocity[i]);
+   fprintf(fin,"gyrotaxis_velocity %e ",gyrotaxis_velocity[i]);
    #endif
   #endif
   #ifdef LAGRANGE_ORIENTATION_DIFFUSION
-   fprintf(fin,"type %d rotational_diffusion %e ",i,rotational_diffusion[i]);
+   fprintf(fin,"rotational_diffusion %e ",rotational_diffusion[i]);
   #endif
   #ifdef LAGRANGE_ORIENTATION_ACTIVE
-   fprintf(fin,"type %d swim_velocity %e ",i,swim_velocity[i]);
+   fprintf(fin,"swim_velocity %e ",swim_velocity[i]);
    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
-    fprintf(fin,"type %d jump_time %e ",i,jump_time[i]);
-    fprintf(fin,"type %d critical_shear_rate %e ",i,critical_shear_rate[i]);
+    fprintf(fin,"jump_time %e ",jump_time[i]);
+    fprintf(fin,"critical_shear_rate %e ",critical_shear_rate[i]);
    #endif
   #endif
  #endif /* LAGRANGE_ORIENTATION */
@@ -1372,6 +1372,148 @@ void output_particles(){
 
 }/* end of function output_particles */
 
+
+/* dump lagrangian averages */
+void dump_particle_averages(){
+
+  output_particle *out_particle_local, *out_particle_all;
+  int ipart, type;
+  my_double norm;
+  FILE *fout;
+  char fname[128];
+
+if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
+
+  /* malloc */
+  out_particle_local  = (output_particle*) malloc(sizeof(output_particle)*(int)property.particle_types);
+  out_particle_all  = (output_particle*) malloc(sizeof(output_particle)*(int)property.particle_types);
+
+  /* set to zero */
+ for (type=0;type<(int)property.particle_types;type++) {
+   out_particle_local[type].vx = out_particle_all[type].vx = 0.0;
+   out_particle_local[type].vy = out_particle_all[type].vy = 0.0;
+   out_particle_local[type].vz = out_particle_all[type].vz = 0.0;
+
+   out_particle_local[type].vx2 = out_particle_all[type].vx2 = 0.0;
+   out_particle_local[type].vy2 = out_particle_all[type].vy2 = 0.0;
+   out_particle_local[type].vz2 = out_particle_all[type].vz2 = 0.0;
+
+   out_particle_local[type].ax = out_particle_all[type].ax = 0.0;
+   out_particle_local[type].ay = out_particle_all[type].ay = 0.0;
+   out_particle_local[type].az = out_particle_all[type].az = 0.0;
+
+   out_particle_local[type].ax2 = out_particle_all[type].ax2 = 0.0;
+   out_particle_local[type].ay2 = out_particle_all[type].ay2 = 0.0;
+   out_particle_local[type].az2 = out_particle_all[type].az2 = 0.0;
+ #ifdef LAGRANGE_GRADIENT
+  #ifdef LAGRANGE_ORIENTATION
+   out_particle_local[type].dt_px = out_particle_all[type].dt_px = 0.0;
+   out_particle_local[type].dt_py = out_particle_all[type].dt_py = 0.0;
+   out_particle_local[type].dt_pz = out_particle_all[type].dt_pz = 0.0;
+
+   out_particle_local[type].dt_px2 = out_particle_all[type].dt_px2 = 0.0;
+   out_particle_local[type].dt_py2 = out_particle_all[type].dt_py2 = 0.0;
+   out_particle_local[type].dt_pz2 = out_particle_all[type].dt_pz2 = 0.0;
+  #endif 
+ #endif
+ }   
+
+/* Begin loop on particles */
+ for (ipart=0;ipart<npart;ipart++) {
+
+ type = ((int)(tracer+ipart)->name)%(int)property.particle_types;
+
+ out_particle_local[type].vx += (tracer+ipart)->vx;
+ out_particle_local[type].vy += (tracer+ipart)->vy;
+ out_particle_local[type].vz += (tracer+ipart)->vz;
+
+ out_particle_local[type].vx2 += (tracer+ipart)->vx * (tracer+ipart)->vx;
+ out_particle_local[type].vy2 += (tracer+ipart)->vy * (tracer+ipart)->vy;
+ out_particle_local[type].vz2 += (tracer+ipart)->vz * (tracer+ipart)->vz;
+
+ out_particle_local[type].ax += (tracer+ipart)->ax;
+ out_particle_local[type].ay += (tracer+ipart)->ay;
+ out_particle_local[type].az += (tracer+ipart)->az;
+
+ out_particle_local[type].ax2 += (tracer+ipart)->ax * (tracer+ipart)->ax;
+ out_particle_local[type].ay2 += (tracer+ipart)->ay * (tracer+ipart)->ay;
+ out_particle_local[type].az2 += (tracer+ipart)->az * (tracer+ipart)->az;
+ #ifdef LAGRANGE_GRADIENT
+  #ifdef LAGRANGE_ORIENTATION
+ out_particle_local[type].dt_px += (tracer+ipart)->dt_px;
+ out_particle_local[type].dt_py += (tracer+ipart)->dt_py;
+ out_particle_local[type].dt_pz += (tracer+ipart)->dt_pz;
+
+ out_particle_local[type].dt_px2 += (tracer+ipart)->dt_px * (tracer+ipart)->dt_px;
+ out_particle_local[type].dt_py2 += (tracer+ipart)->dt_py * (tracer+ipart)->dt_py;
+ out_particle_local[type].dt_pz2 += (tracer+ipart)->dt_pz * (tracer+ipart)->dt_pz;
+  #endif
+ #endif
+
+ }/* end of for on ipart */
+
+   /* Sum all */
+ MPI_Allreduce(out_particle_local, out_particle_all, (int)property.particle_types, MPI_output_particle_type, MPI_SUM_output_particle, MPI_COMM_WORLD );
+
+  /* Normalization */
+  norm=(my_double)property.particle_types/(my_double)property.particle_number;
+
+ for (type=0;type<(int)property.particle_types;type++) {
+   out_particle_all[type].vx *= norm;
+   out_particle_all[type].vy *= norm;
+   out_particle_all[type].vz *= norm;
+
+   out_particle_all[type].vx2 *= norm;
+   out_particle_all[type].vy2 *= norm;
+   out_particle_all[type].vz2 *= norm;
+
+   out_particle_all[type].ax *= norm;
+   out_particle_all[type].ay *= norm;
+   out_particle_all[type].az *= norm;
+
+   out_particle_all[type].ax2 *= norm;
+   out_particle_all[type].ay2 *= norm;
+   out_particle_all[type].az2 *= norm;
+ #ifdef LAGRANGE_GRADIENT
+  #ifdef LAGRANGE_ORIENTATION
+   out_particle_all[type].dt_px *= norm;
+   out_particle_all[type].dt_py *= norm;
+   out_particle_all[type].dt_pz *= norm;
+
+   out_particle_all[type].dt_px2 *= norm;
+   out_particle_all[type].dt_py2 *= norm;
+   out_particle_all[type].dt_pz2 *= norm;
+  #endif 
+ #endif
+ }
+
+if(ROOT){
+    sprintf(fname,"particle_averages.dat");
+    fout = fopen(fname,"a");    
+ for (type=0;type<(int)property.particle_types;type++) {
+   fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e ",time_now, (double)type,
+	   (double)out_particle_all[type].vx ,(double)out_particle_all[type].vy ,(double)out_particle_all[type].vz ,
+	   (double)out_particle_all[type].vx2,(double)out_particle_all[type].vy2,(double)out_particle_all[type].vz2,
+	   (double)out_particle_all[type].ax ,(double)out_particle_all[type].ay ,(double)out_particle_all[type].az ,
+	   (double)out_particle_all[type].ax2,(double)out_particle_all[type].ay2,(double)out_particle_all[type].az2 );
+ #ifdef LAGRANGE_GRADIENT
+  #ifdef LAGRANGE_ORIENTATION
+   fprintf(fout,"%e %e %e %e %e %e ",
+	   (double)out_particle_all[type].dt_px ,(double)out_particle_all[type].dt_py ,(double)out_particle_all[type].dt_pz,
+	   (double)out_particle_all[type].dt_px2,(double)out_particle_all[type].dt_py2,(double)out_particle_all[type].dt_pz2);
+  #endif 
+ #endif
+   fprintf(fout,"\n");
+ }
+    fclose(fout);
+ }/* ROOT */
+
+  free(out_particle_local);
+  free(out_particle_all);
+
+ }/* if on time */
+
+}/* end of dump_particle_averages */
 
 
 /* advance in time particles and assign them to the right processors */

@@ -50,7 +50,7 @@
 //#define LB_INITIAL_CONSTANT_T_TOP
 //#define LB_FLUID_INITIAL_UNIT_DENSITY
 #define LB_FLUID_FORCING  /* activate force on the fluid */
-#define LB_FLUID_FORCING_GRAVITY /* introduce the gravity parameter vector (without applying it) */
+#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
@@ -237,12 +237,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-#define LAGRANGE_RADIUSandDENSITY
-//#define LAGRANGE_GRADIENT 
+//#define LAGRANGE_RADIUSandDENSITY
+#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_GRAVITY
-//#define LAGRANGE_ORIENTATION
-//#define LAGRANGE_ORIENTATION_JEFFREY
+#define LAGRANGE_ORIENTATION
+#define LAGRANGE_ORIENTATION_JEFFREY
 //#define LAGRANGE_ORIENTATION_BC
 //#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
 //#define LAGRANGE_ORIENTATION_DIFFUSION

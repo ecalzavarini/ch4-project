@@ -7,6 +7,9 @@ void initialization_MPI();
 void measure_time();
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
 void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
+#ifdef LAGRANGE
+void sum_output_particle(output_particle *a, output_particle *b, int *length, MPI_Datatype *dtype);
+#endif
 
 /* parameters.c */
 my_double read_parameter();
@@ -108,6 +111,7 @@ void move_particles();
 void sendrecv_particles();
 void write_point_particle_h5();
 void read_point_particle_h5();
+void dump_particle_averages();
 #endif
 
 /* random.c */

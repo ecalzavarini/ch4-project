@@ -15,7 +15,7 @@ time_dt 1.0
 time_start 0.0
 time_end 20000.
 time_dump_field 10000.
-time_dump_diagn 1.
+time_dump_diagn 10.
 
 tau_u 1.0
 
@@ -59,11 +59,11 @@ time_dump_lagr 1
 particle_number 16000
 
 particle_radius_types 4
-particle_radius_min 0
+particle_radius_min 1
 particle_radius_max 4
 
-particle_density_types 4
-particle_density_min 0
+particle_density_types 3
+particle_density_min 1
 particle_density_max 10
 
 tau_drag_types 1

@@ -134,7 +134,8 @@ int main(int argc, char **argv){
         interpolate_scalar_at_particles(s,'s');
 #endif
 	move_particles();
-        output_particles();
+        output_particles();       /* binary */
+	dump_particle_averages(); /* ascii diagnostic averages */
 #endif
 	}/* loop on time: time_now */
 
