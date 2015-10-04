@@ -59,11 +59,12 @@ void build_forcing(){
 	  val=random_gauss(0.0,1.0);
 	  phi_u[ii].z += -phi_u[ii].z*fac1 + val*fac2;
 	}
-	
-  fout = fopen("phases.dat","a");
-  fprintf(fout," %e %e %e\n", phi_u[0].x, phi_u[0].y ,phi_u[0].z);
-  fclose(fout); 
-	
+	/* OUTPUT PHASES */ 
+  #ifdef LB_FLUID_FORCING_HIT_DEBUG
+	fout = fopen("phases.dat","a");
+	fprintf(fout," %e %e %e %e\n", time_now, phi_u[0].x, phi_u[0].y ,phi_u[0].z);
+	fclose(fout); 
+  #endif	
       }
  #endif
     /* the phases are broadcasted */
