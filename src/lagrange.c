@@ -57,6 +57,7 @@ void initial_conditions_particles(int restart){
   int type;
   my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
   my_double *particle_radius, *particle_density;
+  my_double *gravity_coeff;
   my_double *critical_shear_rate, *jump_time;
   vector vec;
 
@@ -161,6 +162,20 @@ void initial_conditions_particles(int restart){
 #endif
 #endif /* end of LAGRANGE_RADIUSandDENSITY */
 
+#ifdef LAGRANGE_GRAVITY
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+ gravity_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
+ cycles = property.particle_types/property.gravity_coeff_types;
+ if(property.gravity_coeff_types > 1 )  step = (property.gravity_coeff_max - property.gravity_coeff_min)/(property.gravity_coeff_types-1.0); else step = 0;
+ for (j=0; j<(int)cycles; j++){
+ for (i=0; i<(int)property.gravity_coeff_types; i++){
+  gravity_coeff[ i+j*(int)property.gravity_coeff_types ] = property.gravity_coeff_min + i*step;
+   }
+ }
+ for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gravity_coeff %g\n",i,gravity_coeff[i]);
+ #endif
+#endif
+
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ORIENTATION
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
@@ -263,6 +278,12 @@ fprintf(fin,"tau_drag %e ",tau_drag[i]);
 fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 #endif
 
+#ifdef LAGRANGE_GRAVITY
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+ fprintf(fin,"gravity_coeff %e ",gravity_coeff[i]);
+ #endif
+#endif
+
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
   fprintf(fin,"beta_coeff %e ",beta_coeff[i]);
@@ -303,6 +324,12 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
 /* viscous drag */
 (tracer+i)->tau_drag = tau_drag[type];
 //(tracer+i)->tau_drag = 0.0;
+#ifdef LAGRANGE_GRAVITY
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+/* gravity coefficient: modulates gravity per particle type */
+(tracer+i)->gravity_coeff = gravity_coeff[type];
+ #endif
+#endif
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
  /* added mass */
@@ -924,6 +951,16 @@ void output_particles(){
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
 
+#ifdef LAGRANGE_GRAVITY
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+		/* GRAVITY ADJUSTABLE COEFFICIENT */
+		dataset_id = H5Dcreate(group, "gravity_coeff", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->gravity_coeff;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+ #endif
+#endif
+
 #ifdef LAGRANGE_GRADIENT
 		/* FLUID VELOCITY GRADIENT */
 		dataset_id = H5Dcreate(group, "dx_ux", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
@@ -1191,6 +1228,17 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");  
+
+#ifdef LAGRANGE_GRAVITY
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+		/* gravity_coeff */
+                fprintf(fout,"<Attribute Name=\"gravity_coeff\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/gravity_coeff\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n"); 
+ #endif
+#endif
 
 #ifdef LAGRANGE_GRADIENT
 		/* fluid velocity gradient */
@@ -1700,10 +1748,17 @@ void move_particles(){
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
 
 
-#ifdef LAGRANGE_GRAVITY /* note that works only if LB_TEMPERATURE_BUOYANCY is defined */
+#ifdef LAGRANGE_GRAVITY /* note that works only if LB_FORCING_GRAVITY is defined */
+   /*  add: -g to acceleration */ 
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+     (tracer+ipart)->ax -= (tracer+ipart)->gravity_coeff*property.gravity_x;
+     (tracer+ipart)->ay -= (tracer+ipart)->gravity_coeff*property.gravity_y;
+     (tracer+ipart)->az -= (tracer+ipart)->gravity_coeff*property.gravity_z; 
+ #else   
      (tracer+ipart)->ax -= property.gravity_x;
      (tracer+ipart)->ay -= property.gravity_y;
      (tracer+ipart)->az -= property.gravity_z; 
+ #endif
 #endif
 
 #ifdef LAGRANGE_ADDEDMASS
@@ -1711,9 +1766,16 @@ void move_particles(){
    if((tracer+ipart)->beta_coeff != 0.0){
 
 #ifdef LAGRANGE_GRAVITY
-     (tracer+ipart)->ax -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_x;
-     (tracer+ipart)->ay -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_y;
-     (tracer+ipart)->az -= ( 1.0 - (tracer+ipart)->beta_coeff )*property.gravity_z; 
+  /*  add also: -\beta*g to acceleration */ 
+ #ifdef LAGRANGE_GRAVITY_VARIABLE
+     (tracer+ipart)->ax -= (  - (tracer+ipart)->beta_coeff )*(tracer+ipart)->gravity_coeff*property.gravity_x;
+     (tracer+ipart)->ay -= (  - (tracer+ipart)->beta_coeff )*(tracer+ipart)->gravity_coeff*property.gravity_y;
+     (tracer+ipart)->az -= (  - (tracer+ipart)->beta_coeff )*(tracer+ipart)->gravity_coeff*property.gravity_z; 
+ #else    
+     (tracer+ipart)->ax -= (  - (tracer+ipart)->beta_coeff )*property.gravity_x;
+     (tracer+ipart)->ay -= (  - (tracer+ipart)->beta_coeff )*property.gravity_y;
+     (tracer+ipart)->az -= (  - (tracer+ipart)->beta_coeff )*property.gravity_z; 
+ #endif    
 #endif
 
   if(itime==0 && resume==0){ 
@@ -2280,7 +2342,12 @@ void write_point_particle_h5(){
     sprintf(label,"uz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
     //#endif
-
+ #ifdef LAGRANGE_GRAVITY
+  #ifdef LAGRANGE_GRAVITY_VARIABLE
+     sprintf(label,"gravity_coeff");
+     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_DOUBLE);
+  #endif
+ #endif
  #ifdef LAGRANGE_GRADIENT
     sprintf(label,"dx_ux");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);

@@ -401,6 +401,23 @@ void assign_parameters(){
    #endif
   #endif
  #endif
+ 
+ #ifdef LAGRANGE_GRAVITY
+  #ifdef LAGRANGE_GRAVITY_VARIABLE
+  /* gravity coeff  */  
+  sprintf(name,"gravity_coeff_types");
+  property.gravity_coeff_types = read_parameter(name); 
+  sprintf(name,"gravity_coeff_min");
+  property.gravity_coeff_min = read_parameter(name);
+  sprintf(name,"gravity_coeff_max");
+  property.gravity_coeff_max = read_parameter(name);
+  fprintf(stderr,"gravity_coeff_types %g , gravity_coeff_max %g , gravity_coeff_min %g\n",(double)property.gravity_coeff_types, (double)property.gravity_coeff_min, (double)property.gravity_coeff_max);
+  if( property.gravity_coeff_types <1 || property.gravity_coeff_max < property.gravity_coeff_min ){ fprintf(stderr,"Error in gravity_coeff parameters\n Exit.\n"); exit(0);}
+
+  /* total number of particles types up to now */
+  property.particle_types *= property.gravity_coeff_types;
+  #endif
+ #endif
 
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION

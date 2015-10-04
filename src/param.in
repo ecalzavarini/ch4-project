@@ -67,12 +67,16 @@ particle_density_min 1
 particle_density_max 10
 
 tau_drag_types 1
-tau_drag_min 0
-tau_drag_max 0
+tau_drag_min 1
+tau_drag_max 1
 
 beta_coeff_types 1
-beta_coeff_min 1
-beta_coeff_max 1
+beta_coeff_min 3
+beta_coeff_max 3
+
+gravity_coeff_types 10
+gravity_coeff_min 0.1
+gravity_coeff_max 10
 
 aspect_ratio_types 10
 aspect_ratio_min 1.

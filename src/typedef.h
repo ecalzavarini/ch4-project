@@ -98,6 +98,11 @@ typedef struct {
    my_double particle_radius_types, particle_radius_min , particle_radius_max;
    my_double particle_density_types, particle_density_min , particle_density_max;
   #endif
+  #ifdef LAGRANGE_GRAVITY
+   #ifdef LAGRANGE_GRAVITY_VARIABLE
+   my_double gravity_coeff_types, gravity_coeff_min , gravity_coeff_max;
+   #endif
+  #endif
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ADDEDMASS
   my_double beta_coeff_types, beta_coeff_min , beta_coeff_max;
@@ -281,6 +286,11 @@ typedef struct {
 #ifdef LB_FLUID
   my_double ux, uy , uz; /* fluid velocity */
   my_double ux_old, uy_old , uz_old; 
+ #ifdef LAGRANGE_GRAVITY
+  #ifdef LAGRANGE_GRAVITY_VARIABLE
+  my_double gravity_coeff;
+  #endif
+ #endif
  #ifdef LAGRANGE_GRADIENT
   my_double dx_ux,dy_ux,dz_ux;
   my_double dx_uy,dy_uy,dz_uy;
