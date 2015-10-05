@@ -55,13 +55,14 @@ void initial_conditions_particles(int restart){
   FILE *fin;
 
   int type;
-  my_double cycles, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
+  my_double cycles, repetitions,step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
   my_double *particle_radius, *particle_density;
   my_double *gravity_coeff;
   my_double *critical_shear_rate, *jump_time;
   vector vec;
+  double *type_counter_local,*type_counter_all;
 
-    rcounts = (int *)malloc(nprocs*sizeof(int)); 
+    rcounts = (int*)malloc(nprocs*sizeof(int)); 
 
     MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
 
@@ -90,27 +91,36 @@ void initial_conditions_particles(int restart){
 
 /* restart from memory */
 
+      repetitions = 1.0;
+
 #ifdef LAGRANGE_RADIUSandDENSITY
 /* if the particle_radius and the particle_density is specified instead of tau_drag and beta_coeff */
       /* RADIUS */
  particle_radius = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_radius_types;
  if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.particle_radius_types; i++){
-  particle_radius[ i+j*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions); k++){
+   for (i=0; i<(int)property.particle_radius_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+     }
    }
  }
+ repetitions *= property.particle_radius_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d particle_radius %g\n",i,particle_radius[i]);
+
       /* DENSITY */
  particle_density = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_density_types;
  if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.particle_density_types; i++){
-  particle_density[ i+j*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.particle_density_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+     }
    }
  }
+ repetitions *= property.particle_density_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d particle_density %g\n",i,particle_density[i]);
 
 
@@ -141,22 +151,28 @@ void initial_conditions_particles(int restart){
  tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.tau_drag_types;
  if(property.tau_drag_types > 1 )  step = (property.tau_drag_max - property.tau_drag_min)/(property.tau_drag_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.tau_drag_types; i++){
-  tau_drag[ i+j*(int)property.tau_drag_types ] = property.tau_drag_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.tau_drag_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       tau_drag[ j+i*(int)repetitions+k*(int)repetitions*(int)property.tau_drag_types ] = property.tau_drag_min + i*step;
+     }
    }
  }
+ repetitions *= property.tau_drag_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d tau_drag %g\n",i,tau_drag[i]);
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_ADDEDMASS
  beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.beta_coeff_types;
  if(property.beta_coeff_types > 1 )  step = (property.beta_coeff_max - property.beta_coeff_min)/(property.beta_coeff_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.beta_coeff_types; i++){
-  beta_coeff[ i+j*(int)property.beta_coeff_types ] = property.beta_coeff_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.beta_coeff_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       beta_coeff[ j+i*(int)repetitions+k*(int)repetitions*(int)property.beta_coeff_types ] = property.beta_coeff_min + i*step;
+     }
    }
  }
+ repetitions *= property.beta_coeff_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d beta_coeff %g\n",i,beta_coeff[i]);
  #endif
 #endif
@@ -167,11 +183,14 @@ void initial_conditions_particles(int restart){
  gravity_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.gravity_coeff_types;
  if(property.gravity_coeff_types > 1 )  step = (property.gravity_coeff_max - property.gravity_coeff_min)/(property.gravity_coeff_types-1.0); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.gravity_coeff_types; i++){
-  gravity_coeff[ i+j*(int)property.gravity_coeff_types ] = property.gravity_coeff_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.gravity_coeff_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       gravity_coeff[ j+i*(int)repetitions+k*(int)repetitions*(int)property.gravity_coeff_types ] = property.gravity_coeff_min + i*step;
+     }
    }
  }
+ repetitions *= property.gravity_coeff_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gravity_coeff %g\n",i,gravity_coeff[i]);
  #endif
 #endif
@@ -185,31 +204,37 @@ void initial_conditions_particles(int restart){
  //if(property.aspect_ratio_types > 1 )  step = (property.aspect_ratio_max - property.aspect_ratio_min)/(property.aspect_ratio_types-1.0); else step = 0;
  /* geometric increment */
  if(property.aspect_ratio_types > 1 )  step = pow(property.aspect_ratio_max/property.aspect_ratio_min, 1.0/(property.aspect_ratio_types-1.0)); else step = 0;
- for (j=0; j<(int)cycles; j++){
- for (i=0; i<(int)property.aspect_ratio_types; i++){
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.aspect_ratio_types; i++){
+     for (j=0; j<(int)repetitions; j++){
  /* linear increment */
-  //aspect_ratio[ i+j*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
- /* geometric increment */
-   aspect_ratio[ i+j*(int)property.aspect_ratio_types ] = property.aspect_ratio_min * pow(step,(double)i);
+ //      aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
+/* geometric increment */
+       aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min * pow(step,(double)i);
+     }
    }
  }
+ repetitions *= property.aspect_ratio_types; 
  for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d aspect_ratio %g\n",i,aspect_ratio[i]);
 
    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   gyrotaxis_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.gyrotaxis_velocity_types;
  /* linear increment */
-  //  if(property.gyrotaxis_velocity_types > 1 )  step = (property.gyrotaxis_velocity_max - property.gyrotaxis_velocity_min)/(property.gyrotaxis_velocity_types-1.0); else step = 0;
+ //if(property.gyrotaxis_velocity_types > 1 )  step = (property.gyrotaxis_velocity_max - property.gyrotaxis_velocity_min)/(property.gyrotaxis_velocity_types-1.0); else step = 0;
  /* geometric increment */
  if(property.gyrotaxis_velocity_types > 1 )  step = pow(property.gyrotaxis_velocity_max/property.gyrotaxis_velocity_min, 1.0/(property.gyrotaxis_velocity_types-1.0)); else step = 0;
-  for (j=0; j<(int)cycles; j++){
-  for (i=0; i<(int)property.gyrotaxis_velocity_types; i++){
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.gyrotaxis_velocity_types; i++){
+     for (j=0; j<(int)repetitions; j++){
  /* linear increment */
-    //  gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
- /* geometric increment */
-   gyrotaxis_velocity[ i+j*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min * pow(step,(double)i);
+ //      gyrotaxis_velocity[ j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
+/* geometric increment */
+       gyrotaxis_velocity[ j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min * pow(step,(double)i);
+     }
    }
-  }
+ }
+ repetitions *= property.gyrotaxis_velocity_types; 
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gyrotaxis_velocity %g\n",i,gyrotaxis_velocity[i]);
    #endif
   #endif /* LAGRANGE_ORIENTATION_JEFFREY */
@@ -218,11 +243,14 @@ void initial_conditions_particles(int restart){
   rotational_diffusion = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.rotational_diffusion_types;
   if(property.rotational_diffusion_types > 1 )  step = (property.rotational_diffusion_max - property.rotational_diffusion_min)/(property.rotational_diffusion_types-1.0); else step = 0;
-  for (j=0; j<(int)cycles; j++){
-  for (i=0; i<(int)property.rotational_diffusion_types; i++){
-  rotational_diffusion[ i+j*(int)property.rotational_diffusion_types ] = property.rotational_diffusion_min + i*step;
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.rotational_diffusion_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       rotational_diffusion[ j+i*(int)repetitions+k*(int)repetitions*(int)property.rotational_diffusion_types ] = property.rotational_diffusion_min + i*step;
+     }
    }
-  }
+ }
+ repetitions *= property.rotational_diffusion_types; 
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d rotational_diffusion %g\n",i,rotational_diffusion[i]);
   #endif /* LAGRANGE_ORIENTATION_DIFFUSION */
 
@@ -230,11 +258,14 @@ void initial_conditions_particles(int restart){
   swim_velocity = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.swim_velocity_types;
   if(property.swim_velocity_types > 1 )  step = (property.swim_velocity_max - property.swim_velocity_min)/(property.swim_velocity_types-1.0); else step = 0;
-  for (j=0; j<(int)cycles; j++){
-  for (i=0; i<(int)property.swim_velocity_types; i++){
-   swim_velocity[ i+j*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
-    }
-  }
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.swim_velocity_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       swim_velocity[ j+i*(int)repetitions+k*(int)repetitions*(int)property.swim_velocity_types ] = property.swim_velocity_min + i*step;
+     }
+   }
+ }
+ repetitions *= property.swim_velocity_types; 
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d swim_velocity %g\n",i,swim_velocity[i]);
 
    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
@@ -242,27 +273,57 @@ void initial_conditions_particles(int restart){
   critical_shear_rate = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.critical_shear_rate_types;
   if(property.critical_shear_rate_types > 1 )  step = (property.critical_shear_rate_max - property.critical_shear_rate_min)/(property.critical_shear_rate_types-1.0); else step = 0;
-  for (j=0; j<(int)cycles; j++){
-  for (i=0; i<(int)property.critical_shear_rate_types; i++){
-   critical_shear_rate[ i+j*(int)property.critical_shear_rate_types ] = property.critical_shear_rate_min + i*step;
-    }
-  }
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.critical_shear_rate_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       critical_shear_rate[ j+i*(int)repetitions+k*(int)repetitions*(int)property.critical_shear_rate_types ] = property.critical_shear_rate_min + i*step;
+     }
+   }
+ }
+ repetitions *= property.critical_shear_rate_types; 
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d critical_shear_rate %g\n",i,critical_shear_rate[i]);
 
   /* jump_time */
   jump_time = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
   cycles = property.particle_types/property.jump_time_types;
   if(property.jump_time_types > 1 )  step = (property.jump_time_max - property.jump_time_min)/(property.jump_time_types-1.0); else step = 0;
-  for (j=0; j<(int)cycles; j++){
-  for (i=0; i<(int)property.jump_time_types; i++){
-  jump_time[ i+j*(int)property.jump_time_types ] = property.jump_time_min + i*step;
-    }
-  }
+ for (k=0; k<(int)(cycles/repetitions)  ; k++){
+   for (i=0; i<(int)property.jump_time_types; i++){
+     for (j=0; j<(int)repetitions; j++){
+       jump_time[ j+i*(int)repetitions+k*(int)repetitions*(int)property.jump_time_types ] = property.jump_time_min + i*step;
+     }
+   }
+ }
+ repetitions *= property.jump_time_types; 
   for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d jump_time %g\n",i,jump_time[i]);
    #endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP */
   #endif /* LAGRANGE_ORIENTATION_ACTIVE */
  #endif /* LAGRANGE_ORIENTATION */
 #endif /* LAGRANGE_GRADIENT */
+
+/* Here we ASSIGN IDENTIFICATION NUMBERS (NAMES) to particles, and
+   at the same time count the number of particles per family */
+  
+  /* malloc counters */
+  type_counter_local = (my_double*) malloc(sizeof(my_double)*(int)property.particle_types);
+  type_counter_all = (my_double*) malloc(sizeof(my_double)*(int)property.particle_types);
+
+  /* set counters to zero */
+ for (type=0;type<(int)property.particle_types;type++)  type_counter_local[type] = type_counter_all[type] = 0.0;
+
+ /* loop on particles  particles */
+ for (i=0;i<npart;i++) {
+
+   /* name */
+   (tracer+i)->name = i+name_offset;
+
+   /* family */
+   type = ((int)(tracer+i)->name)%(int)property.particle_types;
+   type_counter_local[type] += 1.0;
+ }
+ /* Sum */
+ MPI_Allreduce(type_counter_local, type_counter_all, (int)property.particle_types, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+ 
 
 /* write on file particle properties by family */
 if(ROOT){
@@ -270,12 +331,20 @@ if(ROOT){
   fin = fopen("particle_properties.dat","w");
   for(i=0;i<property.particle_types;i++){
 
+fprintf(fin,"type %d counter_all %d ",i, (int)type_counter_all[i]);
+
 #ifdef LAGRANGE_RADIUSandDENSITY
-fprintf(fin,"type %d particle_radius %e ",i,particle_radius[i]);
+fprintf(fin,"particle_radius %e ",particle_radius[i]);
 fprintf(fin,"particle_density %e ",particle_density[i]);
 fprintf(fin,"tau_drag %e ",tau_drag[i]);
 #else
-fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
+fprintf(fin,"tau_drag %e ",i,tau_drag[i]);
+#endif
+
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_ADDEDMASS
+  fprintf(fin,"beta_coeff %e ",beta_coeff[i]);
+ #endif /* LAGRANGE_ADDEDMASS */
 #endif
 
 #ifdef LAGRANGE_GRAVITY
@@ -285,9 +354,6 @@ fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 #endif
 
 #ifdef LAGRANGE_GRADIENT
- #ifdef LAGRANGE_ADDEDMASS
-  fprintf(fin,"beta_coeff %e ",beta_coeff[i]);
- #endif /* LAGRANGE_ADDEDMASS */
  #ifdef LAGRANGE_ORIENTATION
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
  fprintf(fin,"aspect_ratio %e ",aspect_ratio[i]);
@@ -317,7 +383,7 @@ fprintf(fin,"type %d tau_drag %e ",i,tau_drag[i]);
 for (i=0;i<npart;i++) {
 
 /* name */
-(tracer+i)->name = i+name_offset;
+//(tracer+i)->name = i+name_offset;
 
 type = ((int)(tracer+i)->name)%(int)property.particle_types;
 
@@ -1426,7 +1492,7 @@ void dump_particle_averages(){
 
   output_particle *out_particle_local, *out_particle_all;
   int ipart, type;
-  my_double norm;
+  double norm, *counter_local, *counter_all;
   FILE *fout;
   char fname[128];
 
@@ -1435,9 +1501,13 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   /* malloc */
   out_particle_local  = (output_particle*) malloc(sizeof(output_particle)*(int)property.particle_types);
   out_particle_all  = (output_particle*) malloc(sizeof(output_particle)*(int)property.particle_types);
+  counter_local = (my_double*) malloc(sizeof(my_double)*(int)property.particle_types);
+  counter_all = (my_double*) malloc(sizeof(my_double)*(int)property.particle_types);
 
   /* set to zero */
  for (type=0;type<(int)property.particle_types;type++) {
+   counter_local[type] = counter_all[type] = 0.0;
+
    out_particle_local[type].vx = out_particle_all[type].vx = 0.0;
    out_particle_local[type].vy = out_particle_all[type].vy = 0.0;
    out_particle_local[type].vz = out_particle_all[type].vz = 0.0;
@@ -1471,6 +1541,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
  type = ((int)(tracer+ipart)->name)%(int)property.particle_types;
 
+ counter_local[type] += 1.0;
+
  out_particle_local[type].vx += (tracer+ipart)->vx;
  out_particle_local[type].vy += (tracer+ipart)->vy;
  out_particle_local[type].vz += (tracer+ipart)->vz;
@@ -1502,11 +1574,15 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
    /* Sum all */
  MPI_Allreduce(out_particle_local, out_particle_all, (int)property.particle_types, MPI_output_particle_type, MPI_SUM_output_particle, MPI_COMM_WORLD );
-
-  /* Normalization */
-  norm=(my_double)property.particle_types/(my_double)property.particle_number;
+ MPI_Allreduce(counter_local, counter_all, (int)property.particle_types, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
  for (type=0;type<(int)property.particle_types;type++) {
+
+   /* Normalization */
+   norm = 1.0/counter_all[type];
+
+   //if(ROOT)fprintf(stdout,"counter %f type %d\n", counter_all[type], type);
+   
    out_particle_all[type].vx *= norm;
    out_particle_all[type].vy *= norm;
    out_particle_all[type].vz *= norm;
@@ -1535,6 +1611,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  #endif
  }
 
+
 if(ROOT){
     sprintf(fname,"particle_averages.dat");
     fout = fopen(fname,"a");    
@@ -1558,6 +1635,8 @@ if(ROOT){
 
   free(out_particle_local);
   free(out_particle_all);
+  free(counter_local);
+  free(counter_all);
 
  }/* if on time */
 
