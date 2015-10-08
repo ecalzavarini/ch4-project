@@ -1573,7 +1573,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  }/* end of for on ipart */
 
    /* Sum all */
+ //if(ROOT) for(type=0;type<(int)property.particle_types;type++) fprintf(stdout,"before %e %e type %d\n", out_particle_local[type].vx2, out_particle_all[type].vx2, type);
  MPI_Allreduce(out_particle_local, out_particle_all, (int)property.particle_types, MPI_output_particle_type, MPI_SUM_output_particle, MPI_COMM_WORLD );
+ //if(ROOT) for(type=0;type<(int)property.particle_types;type++) fprintf(stdout,"after %e %e type %d\n", out_particle_local[type].vx2, out_particle_all[type].vx2, type);
  MPI_Allreduce(counter_local, counter_all, (int)property.particle_types, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
  for (type=0;type<(int)property.particle_types;type++) {

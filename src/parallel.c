@@ -76,34 +76,34 @@ void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype){
 }
 
 #ifdef LAGRANGE
-void sum_output_particle(output_particle *f, output_particle *g,  int *length, MPI_Datatype *dtype){
+void sum_output_particle(output_particle *a, output_particle *b,  int *length, MPI_Datatype *dtype){
   int i;
   for(i=0;i<*length;i++){
-    f[i].vx += g[i].vx;
-    f[i].vy += g[i].vy;
-    f[i].vz += g[i].vz;
+    (b+i)->vx += (a+i)->vx;
+    (b+i)->vy += (a+i)->vy;
+    (b+i)->vz += (a+i)->vz;
 
-    f[i].vx2 += g[i].vx2;
-    f[i].vy2 += g[i].vy2;
-    f[i].vz2 += g[i].vz2;
+    (b+i)->vx2 += (a+i)->vx2;
+    (b+i)->vy2 += (a+i)->vy2;
+    (b+i)->vz2 += (a+i)->vz2;
 
-    f[i].ax += g[i].ax;
-    f[i].ay += g[i].ay;
-    f[i].az += g[i].az;
+    (b+i)->ax += (a+i)->ax;
+    (b+i)->ay += (a+i)->ay;
+    (b+i)->az += (a+i)->az;
 
-    f[i].ax2 += g[i].ax2;
-    f[i].ay2 += g[i].ay2;
-    f[i].az2 += g[i].az2;
+    (b+i)->ax2 += (a+i)->ax2;
+    (b+i)->ay2 += (a+i)->ay2;
+    (b+i)->az2 += (a+i)->az2;
 
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION
-    f[i].dt_px += g[i].dt_px;
-    f[i].dt_py += g[i].dt_py;
-    f[i].dt_pz += g[i].dt_pz;
+    (b+i)->dt_px += (a+i)->dt_px;
+    (b+i)->dt_py += (a+i)->dt_py;
+    (b+i)->dt_pz += (a+i)->dt_pz;
 
-    f[i].dt_px2 += g[i].dt_px2;
-    f[i].dt_py2 += g[i].dt_py2;
-    f[i].dt_pz2 += g[i].dt_pz2;
+    (b+i)->dt_px2 += (a+i)->dt_px2;
+    (b+i)->dt_py2 += (a+i)->dt_py2;
+    (b+i)->dt_pz2 += (a+i)->dt_pz2;
   #endif
  #endif
   }
