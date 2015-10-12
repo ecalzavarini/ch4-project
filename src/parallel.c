@@ -191,6 +191,17 @@ int compare(const void *a, const void *b)
 }
 
 
+int check_prime(int x){
+    int i;
+    for(i=2;x%i!=0;i++);
+        if(x==i) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+}
+
 
 void processor_splitting()
 {
@@ -199,6 +210,7 @@ void processor_splitting()
 	int             sort3d[3], sort2d[2];
 	int             i, j, k, ami, next, next_x, next_y, next_z;
 	int error=0;
+	int             prime;
 
 	/* grid processor splitting */
 	LNX = NX;
@@ -206,33 +218,43 @@ void processor_splitting()
 	LNZ = NZ;
 	tnprocs = nprocs;
 	nxprocs = nyprocs = nzprocs = 1;
+	prime = 2;
 
 	if (ROOT) {
 
-	  /* Try divisibility by 2 */
+	  /* Try divisibility by prime factors */
 		while (nxprocs * nyprocs * nzprocs < nprocs) {
-			sort3d[0] = (LNX % 2 == 0) ? LNX : 0;
-			sort3d[1] = (LNY % 2 == 0) ? LNY : 0;
-			sort3d[2] = (LNZ % 2 == 0) ? LNZ : 0;
+			sort3d[0] = (LNX % prime == 0) ? LNX : 0;
+			sort3d[1] = (LNY % prime == 0) ? LNY : 0;
+			sort3d[2] = (LNZ % prime == 0) ? LNZ : 0;
 			qsort(sort3d, 3, sizeof(int), compare);
 			if (sort3d[2] == LNX) {
-				LNX /= 2;
-				nxprocs *= 2;
+				LNX /= prime;
+				nxprocs *= prime;
 			} else {
 				if (sort3d[2] == LNY) {
-					LNY /= 2;
-					nyprocs *= 2;
+					LNY /= prime;
+					nyprocs *= prime;
 				} else {
 					if (sort3d[2] == LNZ) {
-						LNZ /= 2;
-						nzprocs *= 2;
+						LNZ /= prime;
+						nzprocs *= prime;
 					}
 				}
 			}
 			//fprintf(stderr,"LNX %d , LNY %d , LNZ %d\n",LNX,LNY,LNZ);
 			//fprintf(stderr,"nxprocs %d , nyprocs %d , nzprocs %d\n",nxprocs,nyprocs,nzprocs);
-			if (LNX % 2 != 0 && LNY % 2 != 0 && LNZ % 2 != 0)
-				break;
+			if (LNX % prime != 0 && LNY % prime != 0 && LNZ % prime != 0){
+			  /************ take the next prime factor *****************/
+			  for(i=prime+1;;i++){
+			    if(check_prime(i)){
+			      prime=i;
+			      break;
+			    }
+			  }
+			  /*****************************/
+			}
+			
 		}/* end of while loop */
 
 		if (nxprocs * nyprocs * nzprocs == nprocs) {
