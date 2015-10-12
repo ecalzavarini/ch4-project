@@ -87,6 +87,10 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->vy2 += (a+i)->vy2;
     (b+i)->vz2 += (a+i)->vz2;
 
+    (b+i)->vx4 += (a+i)->vx4;
+    (b+i)->vy4 += (a+i)->vy4;
+    (b+i)->vz4 += (a+i)->vz4;
+
     (b+i)->ax += (a+i)->ax;
     (b+i)->ay += (a+i)->ay;
     (b+i)->az += (a+i)->az;
@@ -94,6 +98,10 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->ax2 += (a+i)->ax2;
     (b+i)->ay2 += (a+i)->ay2;
     (b+i)->az2 += (a+i)->az2;
+
+    (b+i)->ax4 += (a+i)->ax4;
+    (b+i)->ay4 += (a+i)->ay4;
+    (b+i)->az4 += (a+i)->az4;
 
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION
@@ -104,6 +112,10 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->dt_px2 += (a+i)->dt_px2;
     (b+i)->dt_py2 += (a+i)->dt_py2;
     (b+i)->dt_pz2 += (a+i)->dt_pz2;
+
+    (b+i)->dt_px4 += (a+i)->dt_px4;
+    (b+i)->dt_py4 += (a+i)->dt_py4;
+    (b+i)->dt_pz4 += (a+i)->dt_pz4;
   #endif
  #endif
   }
