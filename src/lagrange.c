@@ -2102,9 +2102,9 @@ void move_particles(){
  vecP[2] = vec.z;
 
  /* compute acceleration */
- vecFold[0] = (vec.x - (tracer+ipart)->px)/property.time_dt;
- vecFold[1] = (vec.y - (tracer+ipart)->py)/property.time_dt;
- vecFold[2] = (vec.z - (tracer+ipart)->pz)/property.time_dt;
+ vecFold[0] = (vecP[0] - (tracer+ipart)->px)/property.time_dt;
+ vecFold[1] = (vecP[1] - (tracer+ipart)->py)/property.time_dt;
+ vecFold[2] = (vecP[2] - (tracer+ipart)->pz)/property.time_dt;
  #endif /* LAGRANGE_ORIENTATION_RANDOM */
 
 	      /* normalize P vector */
@@ -2116,11 +2116,12 @@ void move_particles(){
      (tracer+ipart)->px = vecP[0];
      (tracer+ipart)->py = vecP[1];
      (tracer+ipart)->pz = vecP[2];
-              /* assign the just computed dP /dt  vector */
+
+              /* assign the just computed dP /dt  vector */     
      (tracer+ipart)->dt_px = vecFold[0];
      (tracer+ipart)->dt_py = vecFold[1];
      (tracer+ipart)->dt_pz = vecFold[2];
-
+     
 #endif /* end of lagrange orientation */
 
 

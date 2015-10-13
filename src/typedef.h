@@ -341,12 +341,15 @@ typedef struct {
 typedef struct {
   my_double vx,vy,vz;
   my_double vx2,vy2,vz2;
+  my_double vx4,vy4,vz4;
   my_double ax,ay,az;
   my_double ax2,ay2,az2;
+  my_double ax4,ay4,az4;
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION
   my_double dt_px,dt_py,dt_pz;
   my_double dt_px2,dt_py2,dt_pz2;
+  my_double dt_px4,dt_py4,dt_pz4;
   #endif
  #endif
 } output_particle;
