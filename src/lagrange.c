@@ -1563,9 +1563,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  out_particle_local[type].vy2 += (tracer+ipart)->vy * (tracer+ipart)->vy;
  out_particle_local[type].vz2 += (tracer+ipart)->vz * (tracer+ipart)->vz;
 
- out_particle_local[type].vx2 += pow((tracer+ipart)->vx,4.0); 
- out_particle_local[type].vy2 += pow((tracer+ipart)->vy,4.0); 
- out_particle_local[type].vz2 += pow((tracer+ipart)->vz,4.0); 
+ out_particle_local[type].vx4 += pow((tracer+ipart)->vx,4.0); 
+ out_particle_local[type].vy4 += pow((tracer+ipart)->vy,4.0); 
+ out_particle_local[type].vz4 += pow((tracer+ipart)->vz,4.0); 
 
  out_particle_local[type].ax += (tracer+ipart)->ax;
  out_particle_local[type].ay += (tracer+ipart)->ay;
