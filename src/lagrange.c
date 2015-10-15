@@ -98,11 +98,17 @@ void initial_conditions_particles(int restart){
       /* RADIUS */
  particle_radius = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_radius_types;
- if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
+ /* linear increment */
+ //if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
+ /* geometric increment */
+ if(property.particle_radius_types > 1 )  step = pow(property.particle_radius_max/property.particle_radius_min, 1.0/(property.particle_radius_types-1.0)); else step = 0;
  for (k=0; k<(int)(cycles/repetitions); k++){
    for (i=0; i<(int)property.particle_radius_types; i++){
      for (j=0; j<(int)repetitions; j++){
-       particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+ /* linear increment */
+       //particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+ /* geometric increment */
+       particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min * pow(step,(double)i);
      }
    }
  }
@@ -112,11 +118,17 @@ void initial_conditions_particles(int restart){
       /* DENSITY */
  particle_density = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_density_types;
- if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
+ /* linear increment */
+ //if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
+ /* geometric increment */
+ if(property.particle_density_types > 1 )  step = pow(property.particle_density_max/property.particle_density_min, 1.0/(property.particle_density_types-1.0)); else step = 0;
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.particle_density_types; i++){
      for (j=0; j<(int)repetitions; j++){
-       particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+ /* linear increment */
+       // particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+ /* geometric increment */
+       particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min * pow(step,(double)i);
      }
    }
  }
