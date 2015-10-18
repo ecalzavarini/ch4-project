@@ -98,17 +98,21 @@ void initial_conditions_particles(int restart){
       /* RADIUS */
  particle_radius = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_radius_types;
- /* linear increment */
- //if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
- /* geometric increment */
- if(property.particle_radius_types > 1 )  step = pow(property.particle_radius_max/property.particle_radius_min, 1.0/(property.particle_radius_types-1.0)); else step = 0;
+ /* default: linear increment */
+ if(property.particle_radius_types > 1 )  step = (property.particle_radius_max - property.particle_radius_min)/(property.particle_radius_types-1.0); else step = 0;
+ #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
+  /* geometric increment */
+  if(property.particle_radius_types > 1 )  step = pow(property.particle_radius_max/property.particle_radius_min, 1.0/(property.particle_radius_types-1.0)); else step = 0;
+ #endif
  for (k=0; k<(int)(cycles/repetitions); k++){
    for (i=0; i<(int)property.particle_radius_types; i++){
      for (j=0; j<(int)repetitions; j++){
- /* linear increment */
-       //particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
- /* geometric increment */
+ /* default: linear increment */
+       particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min + i*step;
+ #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
+  /* geometric increment */
        particle_radius[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_radius_types ] = property.particle_radius_min * pow(step,(double)i);
+ #endif
      }
    }
  }
@@ -119,16 +123,20 @@ void initial_conditions_particles(int restart){
  particle_density = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.particle_density_types;
  /* linear increment */
- //if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
+ if(property.particle_density_types > 1 )  step = (property.particle_density_max - property.particle_density_min)/(property.particle_density_types-1.0); else step = 0;
+ #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
  /* geometric increment */
  if(property.particle_density_types > 1 )  step = pow(property.particle_density_max/property.particle_density_min, 1.0/(property.particle_density_types-1.0)); else step = 0;
+ #endif
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.particle_density_types; i++){
      for (j=0; j<(int)repetitions; j++){
- /* linear increment */
-       // particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+ /* default: linear increment */
+       particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min + i*step;
+ #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
  /* geometric increment */
        particle_density[ j+i*(int)repetitions+k*(int)repetitions*(int)property.particle_density_types ] = property.particle_density_min * pow(step,(double)i);
+ #endif
      }
    }
  }
@@ -213,16 +221,20 @@ void initial_conditions_particles(int restart){
  aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.aspect_ratio_types;
  /* linear increment */
- //if(property.aspect_ratio_types > 1 )  step = (property.aspect_ratio_max - property.aspect_ratio_min)/(property.aspect_ratio_types-1.0); else step = 0;
+ if(property.aspect_ratio_types > 1 )  step = (property.aspect_ratio_max - property.aspect_ratio_min)/(property.aspect_ratio_types-1.0); else step = 0;
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
  /* geometric increment */
  if(property.aspect_ratio_types > 1 )  step = pow(property.aspect_ratio_max/property.aspect_ratio_min, 1.0/(property.aspect_ratio_types-1.0)); else step = 0;
+   #endif
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.aspect_ratio_types; i++){
      for (j=0; j<(int)repetitions; j++){
  /* linear increment */
- //      aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
-/* geometric increment */
+       aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
+   #ifdef LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
+ /* geometric increment */
        aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min * pow(step,(double)i);
+   #endif
      }
    }
  }
