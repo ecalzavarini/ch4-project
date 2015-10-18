@@ -55,7 +55,7 @@ beta_s 0.001897778
 
 Amp_s 0.01
 
-time_dump_lagr 1
+time_dump_lagr 100
 particle_number 16000
 
 particle_radius_types 4

@@ -512,8 +512,16 @@ void assign_parameters(){
   #endif /* LAGRANGE_ORIENTATION */
  #endif /* LAGRANGE_GRADIENT */
 
+ /* Here we define the number of tracer types to add. Normally "fluid_tracer" is set to one */
+      property.fluid_tracers = 0.0; 
+ #ifdef LAGRANGE_ADD_TRACER
+      property.fluid_tracers = 1.0;
+      property.particle_types += property.fluid_tracers;
+      fprintf(stderr,"The first particle_type is a fluid tracer\n");
+ #endif
+
   /* total number of particles types */
-   fprintf(stderr,"Properties: particle_types %g\n",(double)property.particle_types);   
+   fprintf(stderr,"Properties: particle_types %g\n",(double)property.particle_types);     
 #endif /* LAGRANGE */
 
   /* size of types, just for a check */
