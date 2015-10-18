@@ -202,11 +202,21 @@ void initial_conditions_particles(int restart){
  #ifdef LAGRANGE_GRAVITY_VARIABLE
  gravity_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.gravity_coeff_types;
+ /* default: linear increment */
  if(property.gravity_coeff_types > 1 )  step = (property.gravity_coeff_max - property.gravity_coeff_min)/(property.gravity_coeff_types-1.0); else step = 0;
+  #ifdef LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
+  /* geometric increment */
+  if(property.gravity_coeff_types > 1 )  step = pow(property.gravity_coeff_max/property.gravity_coeff_min, 1.0/(property.gravity_coeff_types-1.0)); else step = 0;
+  #endif
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.gravity_coeff_types; i++){
      for (j=0; j<(int)repetitions; j++){
+ /* default: linear increment */
        gravity_coeff[ j+i*(int)repetitions+k*(int)repetitions*(int)property.gravity_coeff_types ] = property.gravity_coeff_min + i*step;
+  #ifdef LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
+ /* geometric increment */
+       gravity_coeff[ j+i*(int)repetitions+k*(int)repetitions*(int)property.gravity_coeff_types ] = property.gravity_coeff_min * pow(step,(double)i);
+  #endif
      }
    }
  }
@@ -220,7 +230,7 @@ void initial_conditions_particles(int restart){
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
  aspect_ratio = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = property.particle_types/property.aspect_ratio_types;
- /* linear increment */
+ /* deafult: linear increment */
  if(property.aspect_ratio_types > 1 )  step = (property.aspect_ratio_max - property.aspect_ratio_min)/(property.aspect_ratio_types-1.0); else step = 0;
    #ifdef LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
  /* geometric increment */
@@ -229,7 +239,7 @@ void initial_conditions_particles(int restart){
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.aspect_ratio_types; i++){
      for (j=0; j<(int)repetitions; j++){
- /* linear increment */
+ /* default: linear increment */
        aspect_ratio[ j+i*(int)repetitions+k*(int)repetitions*(int)property.aspect_ratio_types ] = property.aspect_ratio_min + i*step;
    #ifdef LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
  /* geometric increment */
