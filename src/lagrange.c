@@ -173,6 +173,7 @@ void initial_conditions_particles(int restart){
  tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = (property.particle_types-property.fluid_tracers)/property.tau_drag_types;
  if(property.tau_drag_types > 1 )  step = (property.tau_drag_max - property.tau_drag_min)/(property.tau_drag_types-1.0); else step = 0;
+ for (n=0; n<(int)property.fluid_tracers; n++) tau_drag[n] = 0.0; /* this is for the tracer */
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.tau_drag_types; i++){
      for (j=0; j<(int)repetitions; j++){
@@ -187,6 +188,7 @@ void initial_conditions_particles(int restart){
  beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = (property.particle_types-property.fluid_tracers)/property.beta_coeff_types;
  if(property.beta_coeff_types > 1 )  step = (property.beta_coeff_max - property.beta_coeff_min)/(property.beta_coeff_types-1.0); else step = 0;
+ for (n=0; n<(int)property.fluid_tracers; n++) beta_coeff[n] = 1.0; /* this is for the tracer */
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.beta_coeff_types; i++){
      for (j=0; j<(int)repetitions; j++){
