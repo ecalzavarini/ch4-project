@@ -86,8 +86,8 @@ void initial_conditions_particles(int restart){
 
     }else{
     
-      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Particles will be initialized from memory.\n",fnamein);
-     
+   if(restart) if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Particles will be initialized from memory.\n",fnamein);
+   if(!restart) if(ROOT) fprintf(stderr,"Warning message -> %s file not requested!\n Particles will be initialized from memory.\n",fnamein);    
 
 /* Restart from memory */
 
@@ -2447,7 +2447,17 @@ void write_point_particle_h5(){
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
  
-    char label[128]; 
+    char label[128];
+
+  /* definitions for attributes */
+
+   hid_t   attr1, attr2; /* Attribute identifiers */
+   hid_t   attr;
+   hid_t   aid1, aid2;    /* Attribute dataspace identifiers */ 
+   hid_t   atype;               /* Attribute type */
+   hsize_t adim[] = {(int)property.particle_types};  /* Dimensions of the first attribute  */
+
+ 
 
     /* create point particle compound */
     hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(point_particle));
@@ -2659,6 +2669,34 @@ void write_point_particle_h5(){
   H5Pclose(xfer_plist);
   H5Pclose(property_id);
   H5Gclose(group);
+
+  /* Here write particle properties attributes in the file */
+ /* Create a group */
+  group   = H5Gcreate (file_id, "/properties", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+
+ /* Create scalar attribute : number of types */
+  aid1  = H5Screate(H5S_SCALAR);
+  attr1 = H5Acreate(group, "particle_types", H5T_NATIVE_DOUBLE, aid1,H5P_DEFAULT,H5P_DEFAULT);
+ /* Write scalar attribute */
+  ret = H5Awrite(attr1, H5T_NATIVE_DOUBLE, &property.particle_types); 
+  H5Aclose(attr1);
+  H5Sclose(aid1); 
+
+   /* Create dataspace for the properties attirbutes */
+   //aid2 = H5Screate(H5S_SIMPLE);
+   //ret  = H5Sset_extent_simple(aid2, ARANK, adim, NULL);
+   /* Create array attribute */
+   //attr2 = H5Acreate(group, "tau_drag", H5T_NATIVE_DOUBLE, aid2,H5P_DEFAULT,H5P_DEFAULT);
+   /* Write array attribute */
+   //ret = H5Awrite(attr2, hdf5_type, tau_drag);
+   //H5Aclose(attr2);
+   //H5Sclose(aid2);
+
+  /* close group */
+  H5Gclose(group);
+  /* end of attributes */
+
+  /* close file */
   H5Fclose(file_id);  
 
  /* create the file names */
