@@ -377,7 +377,8 @@ void initial_conditions(int restart)
       if(ROOT) fprintf(stderr,"The %s file is present!\n Populations are initialized from file.\n",fnamein);
       fclose(fin);
   }else{   
-      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n Populations are initialized from memory.\n",fnamein);
+    if(restart) if(ROOT)  fprintf(stderr,"Warning message -> %s file is missing!\n Populations are initialized from memory.\n",fnamein);
+    if(!restart) if(ROOT) fprintf(stderr,"Warning message -> %s file not requested!\n Populations are initialized from memory.\n",fnamein);
   }
 
  #ifdef LB_TEMPERATURE_MELTING

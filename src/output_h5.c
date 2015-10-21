@@ -445,7 +445,7 @@ void write_pop_h5(){
   
    /* close group */
    H5Gclose(group);
- #endif
+#endif
 
 
   H5Fclose(file_id);  
