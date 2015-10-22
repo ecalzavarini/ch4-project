@@ -172,12 +172,22 @@ void initial_conditions_particles(int restart){
 /* build particle property types arrays */
  tau_drag = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = (property.particle_types-property.fluid_tracers)/property.tau_drag_types;
+ /* default: linear increment */
  if(property.tau_drag_types > 1 )  step = (property.tau_drag_max - property.tau_drag_min)/(property.tau_drag_types-1.0); else step = 0;
+ #ifdef LAGRANGE_TAUDRAG_INCREMENT_LOG
+ /* geometric increment */
+ if(property.tau_drag_types > 1 )  step = pow(property.tau_drag_max/property.tau_drag_min, 1.0/(property.tau_drag_types-1.0)); else step = 0;
+ #endif
  for (n=0; n<(int)property.fluid_tracers; n++) tau_drag[n] = 0.0; /* this is for the tracer */
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.tau_drag_types; i++){
      for (j=0; j<(int)repetitions; j++){
+  /* default: linear increment */
        tau_drag[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.tau_drag_types ] = property.tau_drag_min + i*step;
+  #ifdef LAGRANGE_TAUDRAG_INCREMENT_LOG
+ /* geometric increment */
+       tau_drag[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.tau_drag_types ] = property.tau_drag_min * pow(step,(double)i);
+  #endif
      }
    }
  }
@@ -187,12 +197,22 @@ void initial_conditions_particles(int restart){
  #ifdef LAGRANGE_ADDEDMASS
  beta_coeff = (my_double*) malloc(sizeof(my_double)*property.particle_types); 
  cycles = (property.particle_types-property.fluid_tracers)/property.beta_coeff_types;
+ /* default: linear increment */
  if(property.beta_coeff_types > 1 )  step = (property.beta_coeff_max - property.beta_coeff_min)/(property.beta_coeff_types-1.0); else step = 0;
+  #ifdef LAGRANGE_ADDEDMASS_INCREMENT_LOG
+  /* geometric increment */
+  if(property.beta_coeff_types > 1 )  step = pow(property.beta_coeff_max/property.beta_coeff_min, 1.0/(property.beta_coeff_types-1.0)); else step = 0;
+  #endif
  for (n=0; n<(int)property.fluid_tracers; n++) beta_coeff[n] = 1.0; /* this is for the tracer */
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.beta_coeff_types; i++){
      for (j=0; j<(int)repetitions; j++){
+ /* default: linear increment */
        beta_coeff[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.beta_coeff_types ] = property.beta_coeff_min + i*step;
+  #ifdef LAGRANGE_ADDEDMASS_INCREMENT_LOG
+ /* geometric increment */
+       beta_coeff[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.beta_coeff_types ] = property.beta_coeff_min * pow(step,(double)i);
+  #endif
      }
    }
  }
