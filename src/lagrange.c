@@ -2825,7 +2825,12 @@ void read_point_particle_h5(){
     sprintf(label,"uz_old");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
     //#endif
-
+ #ifdef LAGRANGE_GRAVITY
+  #ifdef LAGRANGE_GRAVITY_VARIABLE
+     sprintf(label,"gravity_coeff");
+     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_DOUBLE);
+  #endif
+ #endif
  #ifdef LAGRANGE_GRADIENT
     sprintf(label,"dx_ux");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
