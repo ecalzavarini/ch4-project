@@ -1611,6 +1611,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
    out_particle_local[type].dt_pz4 = out_particle_all[type].dt_pz4 = 0.0;
   #endif 
  #endif
+ #ifdef LB_TEMPERATURE
+   out_particle_local[type].t = out_particle_all[type].t = 0.0;
+   out_particle_local[type].t2 = out_particle_all[type].t2 = 0.0;
+   out_particle_local[type].t4 = out_particle_all[type].t4 = 0.0;
+ #endif
+
  }   
 
 /* Begin loop on particles */
@@ -1659,7 +1665,12 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  out_particle_local[type].dt_pz4 += pow((tracer+ipart)->dt_pz,4.0);
   #endif
  #endif
-
+ #ifdef LB_TEMPERATURE
+ out_particle_local[type].t += (tracer+ipart)->t;
+ out_particle_local[type].t2 += (tracer+ipart)->t * (tracer+ipart)->t;
+ out_particle_local[type].t4 += pow((tracer+ipart)->t,4.0); 
+ #endif
+ 
  }/* end of for on ipart */
 
    /* Sum all */
@@ -1713,6 +1724,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
    out_particle_all[type].dt_pz4 *= norm;
   #endif 
  #endif
+ #ifdef LB_TEMPERATURE
+  out_particle_all[type].t *= norm;
+  out_particle_all[type].t2 *= norm;
+  out_particle_all[type].t4 *= norm;
+ #endif  
  }
 
 
@@ -1735,6 +1751,10 @@ if(ROOT){
 	   (double)out_particle_all[type].dt_px4, (double)out_particle_all[type].dt_py4,(double)out_particle_all[type].dt_pz4);
   #endif 
  #endif
+ #ifdef LB_TEMPERATURE
+   fprintf(fout,"%e %e %e ",
+           (double)out_particle_all[type].t ,(double)out_particle_all[type].t2 ,(double)out_particle_all[type].t4);
+ #endif  
    fprintf(fout,"\n");
  }
     fclose(fout);

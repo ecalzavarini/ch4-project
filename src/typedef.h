@@ -353,6 +353,9 @@ typedef struct {
   my_double dt_px4,dt_py4,dt_pz4;
   #endif
  #endif
+ #ifdef LB_TEMPERATURE
+  my_double t,t2,t4; 
+ #endif
 } output_particle;
 
 #define SIZE_OF_OUTPUT_PARTICLE SIZE_STRUCT(output_particle)
