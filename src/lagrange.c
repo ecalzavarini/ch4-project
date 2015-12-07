@@ -1830,8 +1830,8 @@ void move_particles(){
     #endif
    #else
   /* the particle can react to flow gradients and decide if to jump */
-  /* compute |s| */
-  (tracer+ipart)->shear_rate =  shear_rate = sqrt(
+  /* compute gamma_dot = sqrt( 2*S \ddot S) */
+   (tracer+ipart)->shear_rate =  shear_rate = sqrt(2.)*sqrt(
   ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
   ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
   ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
