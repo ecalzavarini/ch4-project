@@ -567,6 +567,9 @@ phi = two_pi*myrand();
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
 /* time from jump is initialized in a arbitrary range between 0 and 10 jump_times */
     (tracer+i)->time_from_jump = 10.*myrand()*(tracer+i)->jump_time;
+    (tracer+i)->px_jump = (tracer+i)->px;
+    (tracer+i)->py_jump = (tracer+i)->py;
+    (tracer+i)->pz_jump = (tracer+i)->pz;
   #endif
  #endif
 #endif
@@ -1849,12 +1852,12 @@ void move_particles(){
 
 #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_HIGHPASS
 	/* avoids low shear rate values */
-      if( shear_rate  < (tracer+ipart)->critical_shear_rate ){
+      if( shear_rate  < (tracer+ipart)->critical_shear_rate )
 #else 
 	/* avoids high shear rate values */	
-      if( shear_rate  > (tracer+ipart)->critical_shear_rate ){
+      if( shear_rate  > (tracer+ipart)->critical_shear_rate )
 #endif
-
+	{ /* begins one of the  if above /	
 
 	/* reset the time from jump */ 	
 	(tracer+ipart)->time_from_jump = 0.0;
@@ -1883,6 +1886,8 @@ void move_particles(){
     }else{
       /* hence (tracer+ipart)->time_from_jump < jump_time_duration  : we are already jumping */
       velocity_amplitude = (tracer+ipart)->swim_velocity * exp( -((tracer+ipart)->time_from_jump) / ((tracer+ipart)->jump_time) ); 
+      
+      if((tracer+ipart)->jump_time == 0.0) velocity_amplitude = 0.0;  /* this is for the tracer */
     }
 
       /* add jump part to the particle velocity */
