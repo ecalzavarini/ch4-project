@@ -14,8 +14,8 @@ void build_forcing(){
   vector f0,f0_all;
   vector coeff;
   my_double norm, k_turb, k0_turb , k_ratio;
-  my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity;
-  my_double s0,s0_all;
+  my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity,t0_coeff;
+  my_double s0,s0_all,s0_coeff;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
   FILE *fout;
 
@@ -787,6 +787,59 @@ void build_forcing(){
 	 }/* for i,j,k */
 #endif
 
+#ifdef LB_TEMPERATURE
+ #ifdef LB_FLUID_TEMPERATURE_NOZEROMODE
+    /* compute the mean forcing value */
+    t0 = t0_all = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            t0 += t_source[IDX(i,j,k)];
+          }
+
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+      t0_all *= norm;
+
+     for (i = BRD; i < LNX+BRD; i++)
+       for (j = BRD; j < LNY+BRD; j++)
+	 for (k = BRD; k < LNZ+BRD; k++) {
+	   t_source[IDX(i, j, k)] -= t0_all;
+	 }/* for i,j,k */
+ #endif
+ #ifdef LB_TEMPERATURE_FORCING_CONSTANT_POWER
+     /* compute the total mean power value per unit volume, <F*t>_V / L^3  */
+    t0 = t0_all = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            t0 += t_source[IDX(i,j,k)]*t[IDX(i,j,k)];
+          }
+
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+    norm = 1.0/(property.NX*property.NY*property.NZ);
+
+    /* this is the global mean power per unit volume */
+    fac = t0_all *norm;
+
+    if(fac != 0.0){
+      t0_coeff = property.Amp_t/fac;
+    }else{
+      t0_coeff = 1.0;
+    }
+
+     for (i = BRD; i < LNX+BRD; i++)
+       for (j = BRD; j < LNY+BRD; j++)
+	 for (k = BRD; k < LNZ+BRD; k++) {
+	   t_source[IDX(i, j, k)] *= t0_coeff;
+	 }/* for i,j,k */
+ #endif
+#endif
 
 }/* end of build_forcing */
 #endif
