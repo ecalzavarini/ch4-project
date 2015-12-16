@@ -793,7 +793,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].ene/(double)irun, (double)ruler_z_running[k].rho/(double)irun, (double)ruler_z_running[k].ux/(double)irun, (double)ruler_z_running[k].uy/(double)irun, (double)ruler_z_running[k].uz/(double)irun, (double)ruler_z_running[k].ux2/(double)irun , (double)ruler_z_running[k].uy2/(double)irun, (double)ruler_z_running[k].uz2/(double)irun, (double)ruler_z_running[k].eps/(double)irun,(double)ruler_z_running[k].rho2/(double)irun);
     fclose(fout);
 
-#ifdef LB_FLUID_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
+ #ifdef LB_FLUID_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
     /* Single component turbulence velocity , see Tennekes & Lumley page 66-67 */
     u_prime = sqrt(  ((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz))/3.0   );
 
@@ -819,7 +819,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fout = fopen(fname,"a");    
     fprintf(fout,"%e %e %e %e %e %e %e %e %e\n",time_now, (double)Re_lambda, lambda, lk,tk,vk,lL,tL,vL);
     fclose(fout);
-#endif
+ #endif
   }/* if ROOT */
 #endif
   
@@ -860,9 +860,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fout = fopen(fname,"w");
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z_running[k].z/(double)irun, (double)ruler_z_running[k].t/(double)irun, (double)ruler_z_running[k].t2/(double)irun, (double)ruler_z_running[k].epst/(double)irun, (double)ruler_z_running[k].dxt/(double)irun, (double)ruler_z_running[k].dyt/(double)irun, (double)ruler_z_running[k].dzt/(double)irun , (double)ruler_z_running[k].uxt/(double)irun, (double)ruler_z_running[k].uyt/(double)irun, (double)ruler_z_running[k].uzt/(double)irun, (double)ruler_z_running[k].nux/(double)irun, (double)ruler_z_running[k].nuy/(double)irun, (double)ruler_z_running[k].nuz/(double)irun,(double)ruler_z_running[k].lb/(double)irun );
     fclose(fout);
-  }
+  
 
-#ifdef LB_TEMPERATURE_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
+ #ifdef LB_TEMPERATURE_FORCING_HIT  /* output for HOMOGENEOUS ISOTROPIC TURBULENCE */
     /* Single component turbulence velocity , see Tennekes & Lumley page 66-67 */
     u_prime = sqrt(  ((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz))/3.0   );
     t_prime = sqrt(out_all.t2 - out_all.t*out_all.t);
@@ -888,7 +888,8 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     fout = fopen(fname,"a");    
     fprintf(fout,"%e %e %e %e %e %e\n",time_now, Pe_lambda, t_lambda, lk,tk,tL);
     fclose(fout);
-#endif
+ #endif
+  }/* end of if ROOT */
 
 #ifdef LB_TEMPERATURE_MELTING
   if(ROOT){
