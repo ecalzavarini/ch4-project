@@ -1823,7 +1823,8 @@ void move_particles(){
  #ifdef LAGRANGE_ORIENTATION_ACTIVE 
    /* if the particle is alive there is an extra velocity to add */
 
-  #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
+  #if defined(LAGRANGE_ORIENTATION_ACTIVE_JUMP)
+   /* We perform jumps like a Copepod */
 
    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_TEMPERATURE
     #ifdef LB_TEMPERATURE
@@ -1832,31 +1833,31 @@ void move_particles(){
    shear_rate = (tracer+ipart)->t;
     #endif
    #else
-  /* the particle can react to flow gradients and decide if to jump */
-  /* compute gamma_dot = sqrt( 2*S \ddot S) */
+   /* the particle can react to flow gradients and decide if to jump */
+   /* compute gamma_dot = sqrt( 2*S \ddot S) */
    (tracer+ipart)->shear_rate =  shear_rate = sqrt(2.)*sqrt(
-  ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
-  ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
-  ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
-  0.5*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) )*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) ) +  
-  0.5*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) )*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) ) +  
-  0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
+   ((tracer+ipart)->dx_ux) *  ((tracer+ipart)->dx_ux) +
+   ((tracer+ipart)->dy_uy) *  ((tracer+ipart)->dz_uy) +
+   ((tracer+ipart)->dz_uz) *  ((tracer+ipart)->dz_uz) +
+   0.5*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) )*( ((tracer+ipart)->dy_ux) + ((tracer+ipart)->dx_uy) ) +  
+   0.5*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) )*( ((tracer+ipart)->dz_ux) + ((tracer+ipart)->dx_uz) ) +  
+   0.5*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) )*( ((tracer+ipart)->dy_uz) + ((tracer+ipart)->dz_uy) ) );
    #endif
 
- jump_time_duration = - ((tracer+ipart)->jump_time)*log(0.01);
+   jump_time_duration = - ((tracer+ipart)->jump_time)*log(0.01);
 
     if((tracer+ipart)->time_from_jump > jump_time_duration){
       /* set to zero the velocity amplitude */
       velocity_amplitude = 0.0;
       /* but we are in the condition to jump */
 
-#ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_HIGHPASS
+    #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP_HIGHPASS
 	/* avoids low shear rate values */
       if( shear_rate  < (tracer+ipart)->critical_shear_rate )
-#else 
+    #else 
 	/* avoids high shear rate values */	
       if( shear_rate  > (tracer+ipart)->critical_shear_rate )
-#endif
+    #endif
 	{ /* begins one of the  if above /	
 
 	/* reset the time from jump */ 	
@@ -1904,15 +1905,24 @@ void move_particles(){
       /* increase time from jump */
       (tracer+ipart)->time_from_jump += property.time_dt;
 
-   #else /* NOT LAGRANGE_ORIENTATION_ACTIVE_JUMP */
-  
+      //#endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP */
+  #elif defined(LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC)
+      //#ifdef LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC 
+      /* Does not take the fluid velocity */
       /* it just swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
+   (tracer+ipart)->vx = ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
+   (tracer+ipart)->vy = ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
+   (tracer+ipart)->vz = ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
+   //#endif /* LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC */
+  #else
+   /* Default behaviour for LAGRANGE_ORIENTATION_ACTIVE : fluid velocity + swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
    (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
    (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
    // fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vx , (tracer+ipart)->swim_velocity , (tracer+ipart)->px );
-  //  fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vy , (tracer+ipart)->swim_velocity , (tracer+ipart)->py );
-  #endif /* NOT LAGRANGE_ORIENTATION_ACTIVE_JUMP */
+   //  fprintf(stderr,"%g %g %g %g \n",(tracer+ipart)->name , (tracer+ipart)->vy , (tracer+ipart)->swim_velocity , (tracer+ipart)->py );
+  #endif
+
  #endif /* LAGRANGE_ORIENTATION_ACTIVE */
 #endif /* LAGRANGE_ORIENTATION */
 
