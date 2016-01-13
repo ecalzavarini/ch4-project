@@ -1783,6 +1783,7 @@ void move_particles(){
   my_double invtau;
   vector Dt_u;
   vector vec, v_old;
+  vector omega,lift_coeff;
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
   my_double scalOSO, f_alpha, alpha,norm , gyro;
@@ -2024,6 +2025,25 @@ void move_particles(){
    (tracer+ipart)->ax += Dt_u.x*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->ay += Dt_u.y*(tracer+ipart)->beta_coeff;
    (tracer+ipart)->az += Dt_u.z*(tracer+ipart)->beta_coeff;
+
+
+ #ifdef LAGRANGE_ADDEDMASS_LIFT
+   /* Here we add the Lift force */
+
+   /* compute vorticity vector : omega = nabla x u */
+   omega.x =  (tracer+ipart)->dy_uz  - (tracer+ipart)->dz_uy;
+   omega.y =  (tracer+ipart)->dz_ux  - (tracer+ipart)->dx_uz;
+   omega.z =  (tracer+ipart)->dx_uy  - (tracer+ipart)->dy_ux;
+   
+   /* lift force computation assuming lift coefficient CL = 1/2 */
+   /*  - beta/3 (u - v) x omega */
+   lift_coeff = ( (tracer+ipart)->beta_coeff )/3.0;
+
+   (tracer+ipart)->ax += -lift_coeff*( ((tracer+ipart)->uy - (tracer+ipart)->vy))*omega.z - ((tracer+ipart)->uz - (tracer+ipart)->vz))*omega.y );
+   (tracer+ipart)->ay += -lift_coeff*( ((tracer+ipart)->uz - (tracer+ipart)->vz))*omega.x - ((tracer+ipart)->ux - (tracer+ipart)->vx))*omega.z );
+   (tracer+ipart)->az += -lift_coeff*( ((tracer+ipart)->ux - (tracer+ipart)->vx))*omega.y - ((tracer+ipart)->uy - (tracer+ipart)->vy))*omega.x );
+
+ #endif /* end of lift */
 
    }/* end of if on addedd mass */
 #endif
