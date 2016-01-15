@@ -1118,3 +1118,67 @@ if(k == BRD-1){
     return grad;
 }
 
+
+
+
+/* LAPLACIAN */
+/* Note : inefficient implementation, to be simplified */
+
+my_double laplacian_scalar(my_double *t, int i, int j, int k){
+
+  vector vec_xm,vec_xp;
+  vector vec_ym,vec_yp;
+  vector vec_zm,vec_zp;
+  my_double lap;
+
+  vec_xm = gradient_scalar(t, i-1, j,k);
+  vec_xp = gradient_scalar(t, i+1, j,k);
+
+  vec_ym = gradient_scalar(t, i, j-1,k);
+  vec_yp = gradient_scalar(t, i, j+1,k);
+
+  vec_zm = gradient_scalar(t, i, j,k-1);
+  vec_zp = gradient_scalar(t, i, j,k+1);
+
+  /* do not work on the edges, i,j or k = 0 */
+ lap =  (vec_xp.x - vec_xm.x)/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x ) +
+        (vec_yp.y - vec_ym.y)/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y ) +
+        (vec_zp.z - vec_zm.z)/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z ) ;
+
+ return lap;
+
+}
+
+
+vector laplacian_vector(my_double *t, int i, int j, int k){
+
+
+  tensor vec_xm,vec_xp;
+  tensor vec_ym,vec_yp;
+  tensor vec_zm,vec_zp;  
+  vector lap;
+
+  vec_xm = gradient_vector(t, i-1, j,k);
+  vec_xp = gradient_vector(t, i+1, j,k);
+  vec_ym = gradient_vector(t, i, j-1,k);
+  vec_yp = gradient_vector(t, i, j+1,k);
+  vec_zm = gradient_vector(t, i, j,k-1);
+  vec_zp = gradient_vector(t, i, j,k+1);
+
+  /* do not work on the edges, i,j or k = 0 */
+ lap.x =  (vec_xp.xx - vec_xm.xx)/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x ) +
+          (vec_yp.xy - vec_ym.xy)/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y ) +
+          (vec_zp.xz - vec_zm.xz)/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z ) ;
+
+ lap.y =  (vec_xp.yx - vec_xm.yx)/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x ) +
+          (vec_yp.yy - vec_ym.yy)/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y ) +
+          (vec_zp.yz - vec_zm.yz)/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z ) ;
+
+ lap.z =  (vec_xp.zx - vec_xm.zx)/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x ) +
+          (vec_yp.zy - vec_ym.zy)/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y ) +
+          (vec_zp.zz - vec_zm.zz)/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z ) ;
+
+
+ return lap;
+
+}
