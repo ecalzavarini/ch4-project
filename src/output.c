@@ -840,6 +840,13 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     for (j = 0; j < NY; j++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[j].y, (double)ruler_y[j].t, (double)ruler_y[j].t2, (double)ruler_y[j].epst, (double)ruler_y[j].dxt, (double)ruler_y[j].dyt, (double)ruler_y[j].dzt , (double)ruler_y[j].uxt, (double)ruler_y[j].uyt,(double)ruler_y[j].uzt, (double)ruler_y[j].nux, (double)ruler_y[j].nuy, (double)ruler_y[j].nuz,(double)ruler_y[j].lb);
     fclose(fout);
 
+#ifdef LB_TEMPERATURE_OUTPUT_BABAK
+    sprintf(fname,"heat_flux.dat");
+    fout = fopen(fname,"a");
+    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[0].y, (double)ruler_y[0].t, (double)ruler_y[0].t2, (double)ruler_y[0].epst, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    fclose(fout);
+#endif
+
     sprintf(fname,"temperature_averages_z.dat");
     fout = fopen(fname,"w");
     for (k = 0; k < NZ; k++) fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_z[k].z, (double)ruler_z[k].t, (double)ruler_z[k].t2, (double)ruler_z[k].epst, (double)ruler_z[k].dxt, (double)ruler_z[k].dyt, (double)ruler_z[k].dzt , (double)ruler_z[k].uxt, (double)ruler_z[k].uyt, (double)ruler_z[k].uzt, (double)ruler_z[k].nux, (double)ruler_z[k].nuy, (double)ruler_z[k].nuz,(double)ruler_z[k].lb );
