@@ -77,6 +77,8 @@ my_double gradient_ratio(pop * f, int i, int j, int k, int pp,int dir);
 tensor strain_tensor(pop *f,int i, int j, int k);
 vector gradient_scalar(my_double *t, int i, int j, int k);
 tensor gradient_vector(vector *t, int i, int j, int k);
+my_double laplacian_scalar(my_double *t, int i, int j, int k);
+vector laplacian_vector(vector *t, int i, int j, int k);
 
 /* forcing.c */
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
