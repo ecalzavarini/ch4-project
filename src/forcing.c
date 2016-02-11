@@ -12,7 +12,7 @@ void build_forcing(){
   vector u0, u0_all;
   vector u2,u2_all;
   vector f0,f0_all;
-  vector coeff;
+  vector coeff,vec;
   my_double norm, k_turb, k0_turb , k_ratio;
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity,t0_coeff;
   my_double s0,s0_all,s0_coeff;
@@ -339,6 +339,13 @@ void build_forcing(){
 
   #endif
  #endif  
+
+ #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form laplacian( Amp * u ), where Amp has the role of a diffusivity */
+	vec = laplacian_vector(u, i, j, k);
+        force[IDX(i,j,k)].x += 0.5*vec.x; //property.Amp_x*vec.x; 
+	force[IDX(i,j,k)].y += 0.5*vec.y; //property.Amp_y*vec.y; 
+	force[IDX(i,j,k)].z += 0.5*vec.z; //property.Amp_z*vec.z; 
+ #endif
 
  #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
   #ifdef LB_FLUID_FORCING_HIT_LINEAR
