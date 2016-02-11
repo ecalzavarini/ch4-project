@@ -1150,8 +1150,7 @@ my_double laplacian_scalar(my_double *t, int i, int j, int k){
 }
 
 
-vector laplacian_vector(my_double *t, int i, int j, int k){
-
+vector laplacian_vector(vector *t, int i, int j, int k){
 
   tensor vec_xm,vec_xp;
   tensor vec_ym,vec_yp;
@@ -1177,7 +1176,6 @@ vector laplacian_vector(my_double *t, int i, int j, int k){
  lap.z =  (vec_xp.zx - vec_xm.zx)/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x ) +
           (vec_yp.zy - vec_ym.zy)/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y ) +
           (vec_zp.zz - vec_zm.zz)/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z ) ;
-
 
  return lap;
 
