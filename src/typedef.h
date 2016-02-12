@@ -47,7 +47,7 @@ typedef struct {
   my_double SX , SY , SZ; 
   my_double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
-  my_double tau_u , nu;
+  my_double tau_u , nu , nu_add;
  #ifdef LB_FLUID_FORCING
   my_double Amp_x,Amp_y,Amp_z;
   #ifdef LB_FLUID_FORCING_GRAVITY
@@ -55,7 +55,7 @@ typedef struct {
   #endif
  #endif
  #ifdef LB_TEMPERATURE
-  my_double tau_t, kappa;
+  my_double tau_t, kappa , kappa_add;
   my_double T_bot,T_top,T_ref,deltaT;
   my_double grad_T_bot,grad_T_top;
   #ifdef LB_TEMPERATURE_BUOYANCY
@@ -78,7 +78,7 @@ typedef struct {
   #endif
  #endif
  #ifdef LB_SCALAR
-  my_double tau_s, chi;
+  my_double tau_s, chi, chi_add;
   my_double S_bot,S_top,S_ref,deltaS;
   #ifdef LB_SCALAR_BUOYANCY
   my_double beta_s;

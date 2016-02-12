@@ -191,6 +191,14 @@ void assign_parameters(){
   fprintf(fout,"Reynolds (turbulent shear) %e\n", property.Amp_x * (property.SY/2.) /property.nu);
   fclose(fout); 
   #endif
+  #ifdef LB_FLUID_FORCING_LAPLACIAN
+  sprintf(name,"nu_add");
+  property.nu_add = read_parameter(name);
+  fprintf(stderr,"Total viscosity %e\n", property.nu_add + property.nu);
+  fout = fopen("numbers.dat","a");
+  fprintf(fout,"Total viscosity %e\n", property.nu_add + property.nu);
+  fclose(fout); 
+  #endif
  #endif
 #endif
 
