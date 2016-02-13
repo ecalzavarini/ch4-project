@@ -301,6 +301,14 @@ void assign_parameters(){
     #endif
    #endif
   #endif
+  #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN
+  sprintf(name,"kappa_add");
+  property.kappa_add = read_parameter(name);
+  fprintf(stderr,"Total thermal diffusivity %e\n", property.kappa_add + property.kappa);
+  fout = fopen("numbers.dat","a");
+  fprintf(fout,"Total thermal diffusivity %e\n", property.kappa_add + property.kappa);
+  fclose(fout); 
+  #endif
  #endif /* end of ifdef LB_TEMPERATURE_FORCING */
 #endif /* end of ifdef LB_TEMPERATURE */
 

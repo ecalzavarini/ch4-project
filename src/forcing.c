@@ -265,7 +265,15 @@ void build_forcing(){
  #endif
 #endif
 
+     /* Communication for laplacian computation */
+#ifdef LB_FLUID_FORCING_LAPLACIAN /* communicate boundaries for laplacian computation */
+     sendrecv_borders_vector(u);
+#endif
+#ifdef LB_TEMPERATURE_FORCING_LAPLACIAN /* communicate boundaries for laplacian computation */
+     sendrecv_borders_scalar(t);
+#endif
 
+     /* BEGIN LOOP on GRID */ 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
@@ -581,6 +589,11 @@ void build_forcing(){
   #ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
    if (center_V[IDX(i,j,k)].x > property.SX/2.) t_source[IDX(i,j,k)] = 0.0;
   #endif
+ #endif
+
+ #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN /* the forcing term has the form kappa_add*laplacian( t ), where kappa_add is an additional viscosity */
+	val = laplacian_scalar(t, i, j, k);
+        t_source[IDX(i,j,k)] += property.kappa_add * val; 
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING_RADIATION 
