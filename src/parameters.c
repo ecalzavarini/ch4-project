@@ -531,9 +531,16 @@ void assign_parameters(){
  /* Here we define the number of tracer types to add. Normally "fluid_tracer" is set to one */
       property.fluid_tracers = 0.0; 
  #ifdef LAGRANGE_ADD_TRACER
+  #ifdef LAGRANGE_ADD_TRACER_STATIC    
+      property.fluid_tracers = 2.0;
+      property.particle_types += property.fluid_tracers;
+      fprintf(stderr,"The first particle_type is an eulerian probe\n");
+      fprintf(stderr,"The second particle_type is a fluid tracer\n");
+  #else
       property.fluid_tracers = 1.0;
       property.particle_types += property.fluid_tracers;
       fprintf(stderr,"The first particle_type is a fluid tracer\n");
+  #endif    
  #endif
 
   /* total number of particles types */

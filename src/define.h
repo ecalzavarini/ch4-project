@@ -76,8 +76,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
@@ -239,11 +239,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-//#define LAGRANGE
+#define LAGRANGE
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LAGRANGE_ADD_TRACER
+#define LAGRANGE_ADD_TRACER
+#define LAGRANGE_ADD_TRACER_STATIC
 //#define LAGRANGE_RADIUSandDENSITY
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY

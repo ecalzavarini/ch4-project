@@ -179,6 +179,9 @@ void initial_conditions_particles(int restart){
  if(property.tau_drag_types > 1 )  step = pow(property.tau_drag_max/property.tau_drag_min, 1.0/(property.tau_drag_types-1.0)); else step = 0;
  #endif
  for (n=0; n<(int)property.fluid_tracers; n++) tau_drag[n] = 0.0; /* this is for the tracer */
+  #ifdef LAGRANGE_ADD_TRACER_STATIC
+    tau_drag[0] = -1.0; /* this is to identify the eulerian probe type */
+  #endif
  for (k=0; k<(int)(cycles/repetitions)  ; k++){
    for (i=0; i<(int)property.tau_drag_types; i++){
      for (j=0; j<(int)repetitions; j++){
@@ -1962,7 +1965,8 @@ void move_particles(){
    }/* end if on fluid tracer */
 
    /* With drag force */ 
-   if((tracer+ipart)->tau_drag != 0.0){
+   //   if((tracer+ipart)->tau_drag != 0.0){
+   if((tracer+ipart)->tau_drag > 0.0){    /* why >0 , because ==0 is a tracer and <0 is an eulerian probe */
   
    invtau = 1.0 / (tracer+ipart)->tau_drag;
    (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau;
