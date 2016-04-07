@@ -26,12 +26,13 @@ filenames = sorted(filenames, key=numericalSort)
 def acf(series):
     n = len(series)
     data = np.asarray(series)
-    mean = np.mean(data)
+    mean = 0.0 #np.mean(data)
     c0 = np.sum((data - mean) ** 2) / float(n)
 
     def r(h):
-        acf_lag = ((data[:n - h] - mean) * (data[h:] - mean)).sum() / float(n) / c0
-        return round(acf_lag, 3)
+        acf_lag = ((data[:n - h] - mean) * (data[h:] - mean)).sum() / float(n-h) 
+#        return round(acf_lag, 3)
+        return acf_lag
     x = np.arange(n) # Avoiding lag 0 calculation
     acf_coeffs = map(r, x)
     return acf_coeffs
@@ -42,8 +43,10 @@ acceleration_y = np.array([])
 acceleration_z = np.array([])
 
 ntype = int(sys.argv[5])
+totpart =  int(sys.argv[6])
+print("totpart"+str(totpart))
 n=0.0
-for j in xrange(0,2510000,ntype):
+for j in xrange(0,totpart,ntype):
     # loop on all files
     for i in xrange(int(dirnumstart),int(dirnumend)+1):
         for file in filenames:
@@ -76,6 +79,12 @@ for j in xrange(0,2510000,ntype):
     tmp_acorr_x = np.asarray(acf(acceleration_x))
     tmp_acorr_y = np.asarray(acf(acceleration_y))
     tmp_acorr_z = np.asarray(acf(acceleration_z))
+    print("len ",len(acceleration_x))
+    print("len ",len(acceleration_y))
+    print("len ",len(acceleration_z))
+    acceleration_x = np.delete(acceleration_x,range(len(acceleration_x)))
+    acceleration_y = np.delete(acceleration_y,range(len(acceleration_y)))
+    acceleration_z = np.delete(acceleration_z,range(len(acceleration_z)))
 
     if j==0:
         acorr_x = tmp_acorr_x
@@ -93,6 +102,6 @@ for j in xrange(0,2510000,ntype):
     foutname = 'acorr_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
     for k in xrange(0,len(acorr_x)):
-        print(k*10,acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,file=fout)
+        print(k*10,acorr_x[k]/acorr_x[0],acorr_y[k]/acorr_y[0],acorr_z[k]/acorr_z[0],file=fout)
     fout.close()
 
