@@ -1815,6 +1815,14 @@ void move_particles(){
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
+   /* First a trick for Eulerian probes */
+   if((tracer+ipart)->tau_drag < 0.0){  /* tau_drag < 0 here conventionally indicate an Eulerian probe */
+
+   (tracer+ipart)->vx = (tracer+ipart)->ux;
+   (tracer+ipart)->vy = (tracer+ipart)->uy;
+   (tracer+ipart)->vz = (tracer+ipart)->uz;
+   }
+
    /* if we just have tracers */
    if((tracer+ipart)->tau_drag == 0.0){
 
