@@ -3,21 +3,22 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 101
-NY 50
-NZ 1
+NX 127
+NY 64
+NZ 2
 
-SX 101
-SY 50
-SZ 1
+SX 127
+SY 64
+SZ 2
 
 time_dt 1.0
 time_start 0.0
-time_end 20000.
-time_dump_field 10000.
+time_end 5000.
+time_dump_field 100.
 time_dump_diagn 10.
 
 tau_u 1.0
+nu_add 0.4
 
 Amp_x 0.01
 Amp_y 0.000
@@ -28,6 +29,7 @@ tau_t 1.0
 T_bot  1.0
 T_top -1.0
 T_ref  0.0
+T_ref2 0.0
 grad_T_bot 0.0   -0.0078125
 grad_T_top 0.0   -0.0078125
 
@@ -66,9 +68,9 @@ particle_density_types 3
 particle_density_min 1
 particle_density_max 10
 
-tau_drag_types 1
+tau_drag_types 3
 tau_drag_min 1
-tau_drag_max 1
+tau_drag_max 5
 
 beta_coeff_types 1
 beta_coeff_min 3

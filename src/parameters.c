@@ -226,6 +226,10 @@ void assign_parameters(){
   property.T_top = read_parameter(name);
   sprintf(name,"T_ref");
   property.T_ref = read_parameter(name);
+   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF2
+    sprintf(name,"T_ref2");
+    property.T_ref2 = read_parameter(name);
+   #endif
   property.deltaT = property.T_bot-property.T_top;
   fprintf(stderr,"T_bot %g , T_top %g , deltaT %g\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
   /* wall temperature gradients */

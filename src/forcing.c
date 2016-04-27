@@ -441,6 +441,8 @@ void build_forcing(){
   /* subtract to the temperature the linear profile */
   temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_REF2)
+  temp = (t[IDX(i,j,k)] - property.T_ref2);
    #else
   /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
