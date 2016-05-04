@@ -445,8 +445,22 @@ sendrecv_borders_pop(rhs_h);
 #endif
 
 
+#ifdef LB_TEMPERATURE_MELTING_BOUNCEBACK
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
 
+     for(pp=0;pp<NPOP;pp++){
+          iii = i+(int)c[pp].x;
+	  jjj = j+(int)c[pp].y;
+	  kkk = k+(int)c[pp].z;
 
+	  if(liquid_frac[IDX(i, j, k)] == 1.0 && liquid_frac[IDX(iii, jjj, kkk)] < 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+     }/* pp */   
+      }/* i */
+   }/* j */
+ }/* k */
+#endif
 
 /************************************/
 	/* X direction */ 

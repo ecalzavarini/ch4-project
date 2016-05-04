@@ -48,12 +48,16 @@ void melting(){
       /* add melting term to the temperature field */
       t_source[IDX(i,j,k)] -= fac1*(liquid_frac[IDX(i,j,k)]-liquid_frac_old[IDX(i,j,k)]);
     
+
+#ifndef LB_TEMPERATURE_MELTING_BOUNCEBACK
+      /* If melting bounce-back conditions are not defined */
       /* add drag term to the force structure */
       fl = liquid_frac[IDX(i,j,k)]; 
       fac2 = (1.0 - fl*fl)/(eps + fl*fl*fl);
       force[IDX(i,j,k)].x -= fac2*u[IDX(i,j,k)].x;
       force[IDX(i,j,k)].y -= fac2*u[IDX(i,j,k)].y;  
       force[IDX(i,j,k)].z -= fac2*u[IDX(i,j,k)].z;  
+#endif
 
       }/* end of i,j,k for loop */
 
