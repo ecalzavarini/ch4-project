@@ -436,7 +436,7 @@ sendrecv_borders_pop(rhs_h);
           iii = i+(int)c[pp].x;
 	  jjj = j+(int)c[pp].y;
 	  kkk = k+(int)c[pp].z;
-
+	  /* landscape = 1 is a solid region ,  landscape = 0 is a fluid  region */
 	  if(landscape[IDX(i, j, k)] == 0.0 && landscape[IDX(iii, jjj, kkk)] == 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
      }/* pp */   
       }/* i */
@@ -444,8 +444,10 @@ sendrecv_borders_pop(rhs_h);
  }/* k */
 #endif
 
+ pop dummy_here, dummy_there;
 
 #ifdef LB_TEMPERATURE_MELTING_BOUNCEBACK
+ /* Results given by this bc are not yet satisfactory (total mass is not conserved). Penalization method works better */
  for(k=BRD;k<LNZ+BRD;k++){
    for(j=BRD;j<LNY+BRD;j++){
       for(i=BRD;i<LNX+BRD;i++){ 
@@ -455,7 +457,20 @@ sendrecv_borders_pop(rhs_h);
 	  jjj = j+(int)c[pp].y;
 	  kkk = k+(int)c[pp].z;
 
-	  if(liquid_frac[IDX(i, j, k)] == 1.0 && liquid_frac[IDX(iii, jjj, kkk)] < 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  /* in place bounce-back for solid boundary regions */
+	  if(liquid_frac[IDX(i, j, k)] < 0.5 && liquid_frac[IDX(iii, jjj, kkk)] >= 0.5 ){	 
+	    dummy_here.p[inv[pp]] = rhs_p[IDX(i,j,k)].p[inv[pp]];
+	    rhs_p[IDX(i,j,k)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	    rhs_p[IDX(i,j,k)].p[pp] = dummy_here.p[inv[pp]];
+	  }  	 
+	  
+	  /* liquid_frac = 0 is a solid region ,  liquid_frac = 1 is a fluid  region */
+	  // good
+	  //if(liquid_frac[IDX(i, j, k)] == 0.0 && liquid_frac[IDX(iii, jjj, kkk)] > 0.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  //if(liquid_frac[IDX(i, j, k)] < 0.5 && liquid_frac[IDX(iii, jjj, kkk)] >= 0.5 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  // bad
+	  //if(liquid_frac[IDX(i, j, k)] > 0.5 && liquid_frac[IDX(iii, jjj, kkk)] <= 0.5 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+	  //if(liquid_frac[IDX(i, j, k)] == 1.0 && liquid_frac[IDX(iii, jjj, kkk)] < 1.0 ) rhs_p[IDX(iii,jjj,kkk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
      }/* pp */   
       }/* i */
    }/* j */
