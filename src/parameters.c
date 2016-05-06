@@ -256,14 +256,14 @@ void assign_parameters(){
   fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
   */
   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF2
-   fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+   fprintf(stderr,"Rayleigh Number (based on T_ref2) is -> Ra = %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #else
    fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #endif
   fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
   fout = fopen("numbers.dat","a");
   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF2
-   fprintf(fout,"Rayleigh %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+   fprintf(fout,"Rayleigh (based on T_ref2) %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #else
    fprintf(fout,"Rayleigh %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #endif
