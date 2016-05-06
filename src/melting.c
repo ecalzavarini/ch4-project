@@ -53,7 +53,10 @@ void melting(){
       /* If melting bounce-back conditions are not defined */
       /* add drag term to the force structure */
       fl = liquid_frac[IDX(i,j,k)]; 
-      fac2 = (1.0 - fl*fl)/(eps + fl*fl*fl);
+      /* Here different penalization schemes */
+      //fac2 = (1.0 - fl*fl)/(eps + fl*fl*fl);
+      fac2 = (1.0 - fl*fl);
+      //if(fl<0.5) fac2 = 1.0; else fac2 = 0.0;
       force[IDX(i,j,k)].x -= fac2*u[IDX(i,j,k)].x;
       force[IDX(i,j,k)].y -= fac2*u[IDX(i,j,k)].y;  
       force[IDX(i,j,k)].z -= fac2*u[IDX(i,j,k)].z;  
