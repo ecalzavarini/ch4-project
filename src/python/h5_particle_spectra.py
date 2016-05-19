@@ -53,8 +53,9 @@ acceleration_y = np.array([])
 acceleration_z = np.array([])
 
 ntype = int(sys.argv[5])
+totpart =  int(sys.argv[6])
 n=0.0
-for j in xrange(0,2510000,ntype):
+for j in xrange(0,totpart,ntype):
     # loop on all files
     for i in xrange(int(dirnumstart),int(dirnumend)+1):
         for file in filenames:
@@ -87,6 +88,13 @@ for j in xrange(0,2510000,ntype):
     tmp_acorr_x = np.asarray(spt(acceleration_x))
     tmp_acorr_y = np.asarray(spt(acceleration_y))
     tmp_acorr_z = np.asarray(spt(acceleration_z))
+
+    print("len ",len(acceleration_x))
+    print("len ",len(acceleration_y))
+    print("len ",len(acceleration_z))
+    acceleration_x = np.delete(acceleration_x,range(len(acceleration_x)))
+    acceleration_y = np.delete(acceleration_y,range(len(acceleration_y)))
+    acceleration_z = np.delete(acceleration_z,range(len(acceleration_z)))
 
     if j==0:
         acorr_x = tmp_acorr_x
