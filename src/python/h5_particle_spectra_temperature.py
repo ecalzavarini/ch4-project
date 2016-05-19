@@ -31,6 +31,7 @@ def spt(series):
     ft_data = np.fft.rfft(data)
     spectrum  = (np.abs(ft_data))**2.
     return spectrum
+                            
 
 #autocorrelation function
 def acf(series):
@@ -47,13 +48,12 @@ def acf(series):
     return acf_coeffs
 
 # create array
-acceleration_x = np.array([])
-acceleration_y = np.array([])
-acceleration_z = np.array([])
+temperature = np.array([])
+
 
 ntype = int(sys.argv[5])
 totpart =  int(sys.argv[6])
-print("totpart"+str(totpart))
+print("totpart "+str(totpart))
 n=0.0
 for j in xrange(0,totpart,ntype):
     # loop on all files
@@ -70,48 +70,37 @@ for j in xrange(0,totpart,ntype):
                     labels = group.keys()
 #read the particle data
                     name=np.array( group['name'])
-                    ax=np.array( group['vx'])
-                    ay=np.array( group['vy'])
-                    az=np.array( group['vz'])
+                    temp=np.array( group['temperature'])
+
 
 #            npart = name.shape[0]
 #            print(ax[0])
                     which_part = int(sys.argv[4])+j           
 #                    print(which_part)
-                    acceleration_x = np.append(acceleration_x,ax[which_part])
-                    acceleration_y = np.append(acceleration_y,ay[which_part])
-                    acceleration_z = np.append(acceleration_z,az[which_part])
+                    temperature = np.append(temperature,temp[which_part])
                     fin.close()
 
- 
-#print(acceleration)
-    tmp_acorr_x = np.asarray(spt(acceleration_x))
-    tmp_acorr_y = np.asarray(spt(acceleration_y))
-    tmp_acorr_z = np.asarray(spt(acceleration_z))
-    length = len(acceleration_x)
-    print("len ",len(acceleration_x))
-    print("len ",len(acceleration_y))
-    print("len ",len(acceleration_z))            
-    acceleration_x = np.delete(acceleration_x,range(len(acceleration_x)))
-    acceleration_y = np.delete(acceleration_y,range(len(acceleration_y)))
-    acceleration_z = np.delete(acceleration_z,range(len(acceleration_z)))
+
+                    
+    print("len = ",len(temperature))
+    tmp_tcorr = np.asarray(spt(temperature))
+    length = len(temperature)
+    print("len ",len(temperature))
+    temperature = np.delete(temperature,range(len(temperature)))
     
     if j==0:
-        acorr_x = tmp_acorr_x
-        acorr_y = tmp_acorr_y
-        acorr_z = tmp_acorr_z
+        tcorr = tmp_tcorr
+
     else:
-        for k in xrange(0,len(acorr_x)):
-            acorr_x[k] += tmp_acorr_x[k]
-            acorr_y[k] += tmp_acorr_y[k]
-            acorr_z[k] += tmp_acorr_z[k]
+        for k in xrange(0,len(tcorr)):
+            tcorr[k] += tmp_tcorr[k]
 
     n=n+1.0
     print("n =",n)
 
-    foutname = 'vspectra_'+sys.argv[4]+'.txt'
+    foutname = 'tspectra_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
-    for k in xrange(0,len(acorr_x)):
-        print(2.*np.pi*k/length,acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,file=fout)
+    for k in xrange(0,len(tcorr)):
+        print(2.*np.pi*k/length,tcorr[k]/n,file=fout)
     fout.close()
 
