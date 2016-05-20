@@ -101,6 +101,6 @@ for j in xrange(0,totpart,ntype):
     foutname = 'tspectra_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
     for k in xrange(0,len(tcorr)):
-        print(2.*np.pi*k/length,tcorr[k]/n,file=fout)
+        print(k/(10.*length),tcorr[k]/n,file=fout)
     fout.close()
 

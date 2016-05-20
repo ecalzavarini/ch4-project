@@ -112,6 +112,6 @@ for j in xrange(0,totpart,ntype):
     foutname = 'vspectra_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
     for k in xrange(0,len(acorr_x)):
-        print(2.*np.pi*k/length,acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,file=fout)
+        print(k/(10.*length),acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,file=fout)
     fout.close()
 
