@@ -115,6 +115,7 @@ for j in xrange(0,totpart,ntype):
     foutname = 'vcorr_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
     for k in xrange(0,len(acorr_x)):
-        print(k*10,acorr_x[k]/acorr_x[0],acorr_y[k]/acorr_y[0],acorr_z[k]/acorr_z[0],amean_x/n,amean_y/n,amean_z/n,file=fout)
+#        print(k*10,acorr_x[k]/acorr_x[0],acorr_y[k]/acorr_y[0],acorr_z[k]/acorr_z[0],amean_x/n,amean_y/n,amean_z/n,file=fout)
+        print(k*10,(acorr_x[k]-amean_x**2.)/(acorr_x[0]-amean_x**2.),(acorr_y[k]-amean_y**2.)/(acorr_y[0]-amean_y**2.),(acorr_z[k]-amean_z**2.)/(acorr_z[0]-amean_z**2.),amean_x/n,amean_y/n,amean_z/n,file=fout)
     fout.close()
 
