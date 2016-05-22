@@ -105,9 +105,9 @@ for j in xrange(0,totpart,ntype):
             acorr_y[k] += tmp_acorr_y[k]
             acorr_z[k] += tmp_acorr_z[k]
 
-            amean_x += tmp_amean_x
-            amean_y += tmp_amean_y
-            amean_z += tmp_amean_z
+        amean_x += tmp_amean_x
+        amean_y += tmp_amean_y
+        amean_z += tmp_amean_z
 
     n=n+1.0
     print("analyzed trajectories -> n = ",n)
