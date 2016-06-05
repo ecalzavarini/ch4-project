@@ -581,8 +581,23 @@ void build_forcing(){
 
  #ifdef LB_TEMPERATURE_FORCING_REACTION
   /* make the field reactive */
-  t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)]*(property.T_bot-t[IDX(i,j,k)]);
+  #ifdef LB_TEMPERATURE_FORCING_REACTION_FKPP
+  /* implement Fisher-KPP */
+  /* we use property.Amp_t as reaction rate ,  and property.T_top as the carrying capacity */
+   #ifdef LB_TEMPERATURE_FORCING_REACTION_FKPP_FLUCTUATION
+    /* the field is inteded as a fluctuation respect to the global mean value "carrying capacity"/2 = property.T_top/2  */
+    t_source[IDX(i,j,k)] = property.Amp_t*(property.T_top/4.0 - (t[IDX(i,j,k)]*t[IDX(i,j,k)])/property.T_top );
+   #else
+    t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)]*(1.0 - t[IDX(i,j,k)]/property.T_top);
+   #endif
+  #endif 
+  #ifdef LB_TEMPERATURE_FORCING_REACTION_ORDER1
+    /* implement a first order chemical reaction (or Malthusian growth) */
+    /* NOTE : be careful that if other temperature forcings are activated the same parameter property.Amp_t might be in use also there */
+    t_source[IDX(i,j,k)] = property.Amp_t*t[IDX(i,j,k)];
+  #endif  
  #endif
+
 
  #ifdef LB_TEMPERATURE_FORCING_MONOD
   #ifdef LB_SCALAR
@@ -707,8 +722,23 @@ void build_forcing(){
 
  #ifdef LB_SCALAR_FORCING_REACTION
   /* make the field reactive */
-  s_source[IDX(i,j,k)] = property.Amp_s*s[IDX(i,j,k)]*(property.S_bot-s[IDX(i,j,k)]);
+  #ifdef LB_SCALAR_FORCING_REACTION_FKPP
+  /* implement Fisher-KPP */
+  /* we use property.Amp_s as reaction rate ,  and property.S_top as the carrying capacity */
+   #ifdef LB_SCALAR_FORCING_REACTION_FKPP_FLUCTUATION
+    /* the field is inteded as a fluctuation respect to the global mean value "carrying capacity"/2 = property.S_top/2  */
+    s_source[IDX(i,j,k)] = property.Amp_s*(property.S_top/4.0 - (s[IDX(i,j,k)]*s[IDX(i,j,k)])/property.S_top );
+   #else
+    s_source[IDX(i,j,k)] = property.Amp_s*s[IDX(i,j,k)]*(1.0 - s[IDX(i,j,k)]/property.S_top);
+   #endif
+  #endif 
+  #ifdef LB_SCALAR_FORCING_REACTION_ORDER1
+    /* implement a first order chemical reaction (or Malthusian growth) */
+    /* NOTE : be careful that if other temperature forcings are activated the same parameter property.Amp_t might be in use also there */
+    s_source[IDX(i,j,k)] = property.Amp_s*s[IDX(i,j,k)];
+  #endif  
  #endif
+
 
 #ifdef LB_SCALAR_FORCING_MONOD
   #ifdef LB_TEMPERATURE
