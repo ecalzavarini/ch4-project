@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv){
  
-        initialization_MPI(&argc, &argv);
+  /*        initialization_MPI(&argc, &argv); */
+        initialization_MPI(argc, argv);
 	assign_parameters();
 	processor_splitting();
 	allocate_fields();
