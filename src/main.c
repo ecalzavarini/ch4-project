@@ -22,6 +22,7 @@ int main(int argc, char **argv){
 	initial_conditions(resume); 
 	initialization_forcing();
 
+	/* first recontruction of hydrodynamic fields */
 #ifdef LB_FLUID
 	hydro_fields('p');
 #endif
@@ -31,6 +32,21 @@ int main(int argc, char **argv){
 #ifdef LB_SCALAR
         hydro_fields('h');
 #endif
+
+	/* second (more accurate ) reconstruction of hydrodynamic fields , taking into account the forcing terms */
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING )
+	  build_forcing();
+ #ifdef LB_FLUID
+	hydro_fields('p');
+ #endif
+ #ifdef LB_TEMPERATURE
+        hydro_fields('g');
+ #endif
+ #ifdef LB_SCALAR
+        hydro_fields('h');
+ #endif
+#endif
+
 	//	dump_averages();
 	//      exit(1);
 #ifdef LAGRANGE
