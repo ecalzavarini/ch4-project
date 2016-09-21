@@ -35,9 +35,13 @@ For more information please contact:
 
 Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
-*Contributors*: Kalyan Shrestha (Lille University)
+*Contributors*: Kalyan Shrestha (Lille University) , Babak Rabbanipour (Lille University)
 
 
 How to: 
 ======
 To be written
+
+Aknowledgments:
+======
+Partial support from French National Agency for Research (ANR) by the grant (SEAS: ANR-13-JS09-0010)
