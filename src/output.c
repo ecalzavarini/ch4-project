@@ -843,7 +843,11 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 #ifdef LB_TEMPERATURE_OUTPUT_BABAK
     sprintf(fname,"heat_flux.dat");
     fout = fopen(fname,"a");
-    fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",(double)ruler_y[0].y, (double)ruler_y[0].t, (double)ruler_y[0].t2, (double)ruler_y[0].epst, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    #ifdef LB_TEMPERATURE_MELTING
+    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.lf, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    #else
+    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)NY, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    #endif
     fclose(fout);
 #endif
 
