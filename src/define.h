@@ -27,9 +27,9 @@
 //#define GRID_IRREGULAR_RANDOM
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
-#define GRID_POP_D2Q9 
+//#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
-//#define GRID_POP_D3Q19
+#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -38,7 +38,7 @@
 /* FLUID */
 #define LB_FLUID 
 //#define LB_FLUID_PAST
-#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -49,12 +49,12 @@
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 #define LB_FLUID_INITIAL_UNIT_DENSITY
-#define LB_FLUID_FORCING  /* activate force on the fluid */
+//#define LB_FLUID_FORCING  /* activate force on the fluid */
 //#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
-#define LB_FLUID_FORCING_KOLMOGOROV
+//#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
@@ -68,7 +68,7 @@
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
-#define LB_FLUID_FORCING_LAPLACIAN
+//#define LB_FLUID_FORCING_LAPLACIAN
 
 /* Landscape definitions in the domain */
 //#define LB_FLUID_FORCING_LANDSCAPE
@@ -82,6 +82,8 @@
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
+#define LB_FLUID_BC_Y_M_VELOCITY
+#define LB_FLUID_BC_Y_P_VELOCITY
 
 //#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
@@ -132,7 +134,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
@@ -185,8 +187,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_FORCING_SOURCE
 //#define LB_TEMPERATURE_FORCING_ABSORB
 //#define LB_TEMPERATURE_FORCING_PROFILE
-#define LB_TEMPERATURE_FORCING_REACTION
-#define LB_TEMPERATURE_FORCING_REACTION_FKPP
+//#define LB_TEMPERATURE_FORCING_REACTION
+//#define LB_TEMPERATURE_FORCING_REACTION_FKPP
 //#define LB_TEMPERATURE_FORCING_REACTION_FKPP_FLUCTUATION
 //#define LB_TEMPERATURE_FORCING_REACTION_ORDER1
 //#define LB_TEMPERATURE_FORCING_MONOD 
@@ -247,12 +249,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-#define LAGRANGE
+//#define LAGRANGE
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-#define LAGRANGE_ADD_TRACER
-#define LAGRANGE_ADD_TRACER_STATIC
+//#define LAGRANGE_ADD_TRACER
+//#define LAGRANGE_ADD_TRACER_STATIC
 //#define LAGRANGE_RADIUSandDENSITY
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY

@@ -655,6 +655,10 @@ if(LNY_END == NY){
 #ifdef LB_FLUID_BC_Y_P_SLIP
 	/* SLIP */
           rhs_p[IDX(i,j+1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#elif defined(LB_FLUID_BC_Y_P_VELOCITY)
+	  // IMPOSED VELOCITY AT WALL SLIP //
+	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - 6.0*wgt[pp]*( c[pp].x*property.yp_wall_velocity_x  + c[pp].z*property.yp_wall_velocity_z );
 #else
 	  /* NO SLIP */
 	  if (ii>= 0 && ii< LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
@@ -669,6 +673,10 @@ if(LNY_START == 0){
 #ifdef LB_FLUID_BC_Y_M_SLIP
            // SLIP //
           rhs_p[IDX(i,j-1,k)].p[inv_y[pp]] = rhs_p[IDX(i,j,k)].p[pp];
+
+#elif defined(LB_FLUID_BC_Y_M_VELOCITY)
+	  // IMPOSED VELOCITY AT WALL SLIP //
+	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - 6.0*wgt[pp]*( c[pp].x*property.ym_wall_velocity_x  + c[pp].z*property.ym_wall_velocity_z );
 #else
 	  // NO SLIP //
 	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];

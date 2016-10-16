@@ -3,28 +3,33 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 127
-NY 64
-NZ 2
+NX 50
+NY 20
+NZ 20
 
-SX 127
-SY 64
-SZ 2
+SX 50
+SY 20
+SZ 20
 
 time_dt 1.0
 time_start 0.0
-time_end 5000.
-time_dump_field 100.
+time_end 100000.
+time_dump_field 10000.
 time_dump_diagn 10.
 
 tau_u 1.0
 nu_add 0.4
 
+ym_wall_velocity_x 0.01 
+ym_wall_velocity_z 0
+yp_wall_velocity_x -0.01
+yp_wall_velocity_z 0
+
 Amp_x 0.01
 Amp_y 0.000
 Amp_z 0.000
 
-tau_t 1.0
+tau_t 0.55
 
 T_bot  1.0
 T_top -1.0
@@ -33,14 +38,14 @@ T_ref2 0.0
 grad_T_bot 0.0   -0.0078125
 grad_T_top 0.0   -0.0078125
 
-beta_t   0.0016
+beta_t   0.000011   0.00003166813
 beta2_t  0.0
 
 gravity_x 0.0
 gravity_y 1.0
 gravity_z 0.0
 
-Amp_t 0.00130208333333333 
+Amp_t 0.0003  3.91971e-05   0.00005  0.00130208333333333 
 attenuation 0.0390625  
 
 T_solid 0.0

@@ -48,6 +48,16 @@ typedef struct {
   my_double time_dt, time_start, time_end, time_dump_field, time_dump_diagn;
 #ifdef LB_FLUID
   my_double tau_u , nu , nu_add;
+ #ifdef LB_FLUID_BC
+  #ifdef LB_FLUID_BC_Y
+   #ifdef LB_FLUID_BC_Y_M_VELOCITY
+    my_double ym_wall_velocity_x , ym_wall_velocity_z ;
+   #endif
+   #ifdef LB_FLUID_BC_Y_P_VELOCITY
+    my_double yp_wall_velocity_x , yp_wall_velocity_z ;
+   #endif
+  #endif
+ #endif
  #ifdef LB_FLUID_FORCING
   my_double Amp_x,Amp_y,Amp_z;
   #ifdef LB_FLUID_FORCING_GRAVITY

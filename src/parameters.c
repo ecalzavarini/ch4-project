@@ -157,6 +157,26 @@ void assign_parameters(){
   #endif
  #endif
   fprintf(stderr,"viscosity %g\n",(double)property.nu);
+ #ifdef LB_FLUID_BC
+  #ifdef LB_FLUID_BC_Y
+   #ifdef LB_FLUID_BC_Y_M_VELOCITY
+     /* YM wall velocity */
+     sprintf(name,"ym_wall_velocity_x");
+     property.ym_wall_velocity_x = read_parameter(name);
+     sprintf(name,"ym_wall_velocity_z");
+     property.ym_wall_velocity_z = read_parameter(name);
+     fprintf(stderr,"ym_wall_velocity_x %g , ym_wall_velocity_z %g\n",(double)property.ym_wall_velocity_x, (double)property.ym_wall_velocity_z);
+   #endif
+   #ifdef LB_FLUID_BC_Y_P_VELOCITY
+     /* YP wall velocity */
+     sprintf(name,"yp_wall_velocity_x");
+     property.yp_wall_velocity_x = read_parameter(name);
+     sprintf(name,"yp_wall_velocity_z");
+     property.yp_wall_velocity_z = read_parameter(name);
+     fprintf(stderr,"yp_wall_velocity_x %g , yp_wall_velocity_z %g\n",(double)property.yp_wall_velocity_x, (double)property.yp_wall_velocity_z);
+   #endif
+  #endif
+ #endif
  #ifdef LB_FLUID_FORCING
   /* forcing Amplitude */
   fprintf(stderr,"YES <- LB_FLUID_FORCING\n");
