@@ -48,6 +48,8 @@ void boundary_conditions_hydro();
 /* initial_conditions.c */
 void initial_conditions(int restart);
 void initialization_forcing();
+void turbulent_channel_profile();
+my_double compute_lambda_from_stefan(my_double);
 
 /* fluid.c */
 void add_collision(pop * f, pop *rhs_f,my_double tau,pop *f_eq,char which_pop);

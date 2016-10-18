@@ -23,6 +23,11 @@ void initial_conditions(int restart)
   /* initialize random seed: */
   //  srand( time(NULL) );
 
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+  my_double lambda = compute_lambda_from_stefan(property.deltaT*property.specific_heat/property.latent_heat);
+  fprintf(stderr, "Lambda = %e\n", lambda);
+#endif
+
 #ifdef LB_FLUID
 
   /* this is the loop to run over the bulk of all the vertices */
@@ -36,6 +41,28 @@ void initial_conditions(int restart)
 
 //#if (defined LB_TEMPERATURE_BUOYANCY && defined LB_INITIAL_BAROMETRIC)	
 #ifdef LB_TEMPERATURE_BUOYANCY
+ #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+   L=(my_double)property.SY; 
+   y = (my_double)center_V[IDX(i,j,k)].y;
+     /* the good one for linear temperature profile*/
+   if ( y <= property.layer_height )
+   {
+    my_double parameter = lambda*y/property.layer_height;
+    my_double int_y = y*(erf(parameter) + exp(-parameter*parameter))/(parameter*sqrt(one_pi)*erf(lambda));
+    for (pp = 0; pp < NPOP; pp++) 
+     //p[IDX(i,j,k)].p[pp] = wgt[pp]* (1-property.beta_t*property.deltaT*(1-erf(parameter)/erf(lambda)));
+     p[IDX(i,j,k)].p[pp] = wgt[pp] * exp( (property.beta_t*property.gravity_y/cs2) * ( property.deltaT*y - property.deltaT*int_y ) );
+   }
+   else
+   {
+    my_double parameter = lambda;
+    my_double int_y = property.layer_height*(erf(parameter) + exp(-parameter*parameter))/(parameter*sqrt(one_pi)*erf(lambda));
+    for (pp = 0; pp < NPOP; pp++) 
+     //p[IDX(i,j,k)].p[pp] = wgt[pp]* (1-property.beta_t*property.deltaT*(1-erf(parameter)/erf(lambda)));
+     p[IDX(i,j,k)].p[pp] = wgt[pp] * exp( (property.beta_t*property.gravity_y/cs2) * ( property.deltaT*property.layer_height - property.deltaT*int_y ) );
+
+   }
+ #endif
  #ifdef LB_INITIAL_BAROMETRIC
   /* hydrostatic density profile  (kind of barometric formula) :  
      if velocity is u = 0  ==>  0 = -\grad P + \rho \beta g T \hat{y}
@@ -277,6 +304,16 @@ void initial_conditions(int restart)
       t[IDX(i,j,k)] += val*2.0*(myrand()-1.0);
  #endif
 
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+  /* non-linear temperature gradient */
+  y = center_V[IDX(i, j, k)].y; 
+  L=(my_double)property.SY; //LY;
+  if ( y <= property.layer_height )
+    t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT*erf(lambda*y/property.layer_height)/erf(lambda)) );
+#endif  
+ 
+
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  g[IDX(i,j,k)].p[pp] = wgt[pp]*t[IDX(i,j,k)];
@@ -305,6 +342,10 @@ void initial_conditions(int restart)
       z = center_V[IDX(i, j, k)].z - property.SZ/2.0;
       val = sqrt(x*x + y*y + z*z);
       if( val > property.cavity_radius ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
+    #endif
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+      y = center_V[IDX(i, j, k)].y; 
+      if( y > property.layer_height ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
     #endif  
    #else
       liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
@@ -418,6 +459,25 @@ void initial_conditions(int restart)
 }
 
 
+
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+my_double compute_lambda_from_stefan(my_double St)
+{
+  my_double lambda_new,lambda_old=1;
+  my_double F,dF,error=1;
+  int count=0;
+  while (error>1e-6 && count<100)
+  {
+    F=sqrt(one_pi)*lambda_old*exp(lambda_old*lambda_old)*erf(lambda_old)-St;
+    dF=sqrt(one_pi)*exp(lambda_old*lambda_old)*(2*lambda_old*lambda_old+1)*erf(lambda_old)+2*lambda_old;
+    lambda_new=lambda_old - F/dF;
+    error=fabs(lambda_new - lambda_old);
+    count++;
+    lambda_old=lambda_new;
+  }
+  return lambda_new;
+}
+#endif
 
 
 void turbulent_channel_profile(){

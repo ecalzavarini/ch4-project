@@ -51,6 +51,8 @@ attenuation 0.0390625
 T_solid 0.0
 latent_heat 1
 specific_heat 10
+
+layer_height 40
 cavity_radius 20
 
 tau_s 0.8

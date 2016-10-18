@@ -331,6 +331,13 @@ void assign_parameters(){
     property.cavity_radius = read_parameter(name);
     fprintf(stderr,"The hemispherical pond has -> cavity_radius = %e\n", property.cavity_radius );
     #endif
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+     sprintf(name,"layer_height");
+     property.layer_height = read_parameter(name);
+     fout = fopen("numbers.dat","a");
+     fprintf(fout,"Initial Rayleigh %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.layer_height,3.0)/(property.nu*property.kappa) );
+     fclose(fout);
+    #endif
    #endif
   #endif
   #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN
