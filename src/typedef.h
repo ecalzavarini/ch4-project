@@ -165,7 +165,7 @@ typedef struct {
   my_double nux,nuy,nuz;
   my_double lb;
 #ifdef LB_TEMPERATURE_MELTING	
-  my_double lf, dtlf, enth;
+  my_double lf, lf2, dtlf, enth;
 #endif		
 #endif
 #ifdef LB_SCALAR
