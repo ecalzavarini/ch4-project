@@ -388,7 +388,7 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 			  ruler_z_local[k -BRD + LNZ_START].enth += enth*inv_lz;
 
 			  lf2 = liquid_frac[IDX(i, j, k)]*liquid_frac[IDX(i, j, k)]*vol;
-			  out_local.lf += lf;
+			  out_local.lf2 += lf2;
 			  ruler_x_local[i -BRD + LNX_START].lf2 += lf2*inv_lx;
 			  ruler_y_local[j -BRD + LNY_START].lf2 += lf2*inv_ly;
 			  ruler_z_local[k -BRD + LNZ_START].lf2 += lf2*inv_lz;
