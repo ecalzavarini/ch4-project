@@ -20,7 +20,7 @@ my_double read_parameter(char * variable){
 
   while(cmp!=0){  
     val=0.0;
-    fscanf(fin,"%s %lf",&name,&val);
+    fscanf(fin,"%s %lf",name,&val);
     cmp=strcmp(name,variable);
        if(cmp==0){
 	 fout = fopen(fnameout,"a");
@@ -587,10 +587,10 @@ void assign_parameters(){
 #endif /* LAGRANGE */
 
   /* size of types, just for a check */
-    fprintf(stderr,"Size of float %d\n",sizeof(float));
-    fprintf(stderr,"Size of double %d\n",sizeof(double));
-    fprintf(stderr,"Size of long double %d\n",sizeof(long double));
-    fprintf(stderr,"Size of my_double %d\n",sizeof(my_double));
+    fprintf(stderr,"Size of float %ld\n",sizeof(float));
+    fprintf(stderr,"Size of double %ld\n",sizeof(double));
+    fprintf(stderr,"Size of long double %ld\n",sizeof(long double));
+    fprintf(stderr,"Size of my_double %ld\n",sizeof(my_double));
     fprintf(stderr,"\n");
   }/* end of if ROOT*/
 
