@@ -853,9 +853,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
     sprintf(fname,"heat_flux.dat");
     fout = fopen(fname,"a");
     #ifdef LB_TEMPERATURE_MELTING
-    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.lf, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)out_all.lf, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].t);
     #else
-    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)NY, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].lb);
+    	fprintf(fout,"%e %e %e %e %e %e %e %e %e %e %e %e\n",time_now, (double)NY, (double)ruler_y[0].dxt, (double)ruler_y[0].dyt, (double)ruler_y[0].dzt , (double)ruler_y[0].uxt, (double)ruler_y[0].uyt,(double)ruler_y[0].uzt, (double)ruler_y[0].nux, (double)ruler_y[0].nuy, (double)ruler_y[0].nuz,(double)ruler_y[0].t);
     #endif
     fclose(fout);
 #endif
