@@ -43,6 +43,7 @@ for (i = 0; i < *length; i++) {
   (b+i)->lf   += (a+i)->lf;
   (b+i)->dtlf += (a+i)->dtlf;
   (b+i)->enth += (a+i)->enth;
+  (b+i)->lf2   += (a+i)->lf2;
  #endif
 #endif
 #ifdef LB_SCALAR
