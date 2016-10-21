@@ -661,7 +661,7 @@ if(LNY_END == NY){
 	  fac=1.0;
  #ifdef LB_TEMPERATURE_MELTING
 	  /* no moving wall if we are in the solid */
-	  if(liquid_frac[IDX(i, j, k)] < 0.5) fac = 0.0;
+	  if(liquid_frac[IDX(i, j, k)] < 1.0) fac = 0.0;
  #endif
 	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - fac*6.0*wgt[pp]*( c[pp].x*property.yp_wall_velocity_x  + c[pp].z*property.yp_wall_velocity_z );
 #else
@@ -684,7 +684,7 @@ if(LNY_START == 0){
 	  fac=1.0;
  #ifdef LB_TEMPERATURE_MELTING
 	  /* no moving wall if we are in the solid */
-	  if(liquid_frac[IDX(i, j, k)] < 0.5) fac = 0.0;
+	  if(liquid_frac[IDX(i, j, k)] < 1.0) fac = 0.0;
  #endif
 	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - fac*6.0*wgt[pp]*( c[pp].x*property.ym_wall_velocity_x  + c[pp].z*property.ym_wall_velocity_z );
 #else

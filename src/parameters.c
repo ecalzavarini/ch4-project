@@ -299,8 +299,8 @@ void assign_parameters(){
   fout = fopen("numbers.dat","a");
   fprintf(fout,"Internal Rayleigh %e\n",property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );
   fclose(fout);
-   #endif
-  #endif
+   #endif /* end of LB_TEMPERATURE_BUOYANCY */
+  #endif /* end of LB_TEMPERATURE_FORCING_BULK */
   #ifdef LB_TEMPERATURE_FORCING_RADIATION
   sprintf(name,"attenuation");
   property.attenuation = read_parameter(name);
@@ -313,7 +313,7 @@ void assign_parameters(){
   fprintf(fout,"Er Number is -> Er = %e\n", property.attenuation*property.SY ); 
   fprintf(fout,"Radiation Rayleigh Number (new definition) is -> Ra_{rad} = %e\n", property.attenuation*property.beta_t*property.gravity_y*property.Amp_t*pow(property.SY,5.0)/(property.nu*pow(property.kappa,2.0)) );  
   fclose(fout);
-  #endif
+  #endif /* end of LB_TEMPERATURE_FORCING_RADIATION */
   #ifdef LB_TEMPERATURE_MELTING
   sprintf(name,"T_solid");
   property.T_solid = read_parameter(name);
@@ -323,23 +323,42 @@ void assign_parameters(){
   property.latent_heat = read_parameter(name);
   fprintf(stderr,"Stefan Number is -> Ste = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
   fout = fopen("numbers.dat","a");
-  fprintf(fout,"Stefan = %e\n", property.deltaT*property.specific_heat/property.latent_heat);
+  fprintf(fout,"Stefan %e\n", property.deltaT*property.specific_heat/property.latent_heat);
   fclose(fout);
    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
     sprintf(name,"cavity_radius");
     property.cavity_radius = read_parameter(name);
     fprintf(stderr,"The hemispherical pond has -> cavity_radius = %e\n", property.cavity_radius );
-    #endif
+    #endif /* end of LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE */
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
      sprintf(name,"layer_height");
      property.layer_height = read_parameter(name);
      fout = fopen("numbers.dat","a");
      fprintf(fout,"Initial Rayleigh %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.layer_height,3.0)/(property.nu*property.kappa) );
      fclose(fout);
+    #endif /* end of LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER */
+   #endif /* end of LB_TEMPERATURE_MELTING_INITIAL_LIQUID */
+   #ifdef LB_TEMPERATURE_MELTING_SOLID_DIFFUSIVITY
+    sprintf(name,"tau_solid");
+    property.tau_solid = read_parameter(name);
+    fprintf(stderr,"tau_solid %g\n",(double)property.tau_solid);
+    #ifdef METHOD_STREAMING 
+     property.kappa_solid = (property.tau_solid-0.5*property.time_dt)/3.0;
+    #else
+     #ifdef METHOD_REDEFINED_POP
+      property.kappa_solid = (property.tau_solid-0.5*property.time_dt)/3.0;
+     #else
+      property.kappa_solid = property.tau_solid/3.0;
+     #endif
     #endif
-   #endif
-  #endif
+    fprintf(stderr,"solid thermal diffusivity %g\n",(double)property.kappa_solid);
+    fprintf(stderr,"Solid over fluid diffusivity ratio is -> kappa_ratio = kappa_solid / kappa = %e\n", property.kappa_solid/property.kappa);
+    fout = fopen("numbers.dat","a");
+    fprintf(fout,"kappa_ratio %e\n", property.kappa_solid/property.kappa);
+    fclose(fout);
+   #endif /* LB_TEMPERATURE_MELTING_SOLID_DIFFUSIVITY */
+  #endif /* end of LB_TEMPERATURE_MELTING */
   #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN
   sprintf(name,"kappa_add");
   property.kappa_add = read_parameter(name);

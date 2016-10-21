@@ -88,6 +88,9 @@ typedef struct {
      my_double layer_height;
     #endif
    #endif
+   #ifdef LB_TEMPERATURE_MELTING_SOLID_DIFFUSIVITY
+    my_double tau_solid, kappa_solid;
+   #endif
   #endif
  #endif
  #ifdef LB_SCALAR

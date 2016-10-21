@@ -1079,6 +1079,20 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #endif
 /* end of LES part */
 
+
+/* Melting */
+#ifdef  LB_TEMPERATURE_MELTING
+ #ifdef  LB_TEMPERATURE_MELTING_SOLID_DIFFUSIVITY
+  /* Here we implement the variable thermal diffusivity term */
+  /* Following "A one-dimensional enthalpy model of sea ice" by Dirk NOTZ, M. Grae WORSTER on Annals of Glaciology 44 (2006) */
+  /* see equation (3) : k_effective = lf * k_liquid + (1-lf) * k_solid */
+  if( which_pop == 'g' ){
+      invtau = 1./(liquid_frac[IDX(i,j,k)]*property.tau_t  + (1.-liquid_frac[IDX(i,j,k)])*property.tau_solid);
+  }
+ #endif
+#endif
+
+
 #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
 #else     
