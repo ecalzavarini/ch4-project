@@ -247,7 +247,7 @@ void processor_splitting()
 			//fprintf(stderr,"nxprocs %d , nyprocs %d , nzprocs %d\n",nxprocs,nyprocs,nzprocs);
 			if (LNX % prime != 0 && LNY % prime != 0 && LNZ % prime != 0){
 			  /************ take the next prime factor *****************/
-			  for(i=prime+1;;i++){
+			  for(i=prime+1;i++){
 			    if(check_prime(i)){
 			      prime=i;
 			      break;
