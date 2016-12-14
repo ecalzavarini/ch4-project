@@ -435,15 +435,26 @@ void initial_conditions(int restart)
   }
  #endif
 
-   //#define PERTURBATE
-#ifdef PERTURBATE
+#ifdef LB_FLUID
+ #ifdef LB_FLUID_AFTER_INIT_PERTURBATION 
    for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
-	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
-      }
+      } 
+ #endif
 #endif
+
+#ifdef LB_TEMPERATURE
+ #ifdef LB_TEMPERATURE_AFTER_INIT_PERTURBATION 
+   for(k=BRD;k<LNZ+BRD;k++)
+    for(j=BRD;j<LNY+BRD;j++)
+      for(i=BRD;i<LNX+BRD;i++){ 
+       	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
+      } 
+ #endif
+#endif
+
 
 #ifdef LB_FLUID
   sendrecv_borders_pop(p);
