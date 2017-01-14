@@ -9,6 +9,7 @@ void melting(){
   my_double Ts,Cp,Lf,enthalpy;
   my_double fac1, fac2;
   my_double eps = 1.0;
+  my_double L,y;
 
   Ts = (my_double) property.T_solid;
   Cp = (my_double) property.specific_heat;
@@ -27,6 +28,19 @@ void melting(){
 
 	/* store previous fluid fraction */
 	liquid_frac_old[IDX(i,j,k)] = liquid_frac[IDX(i,j,k)];
+
+	/* here we can define a SOLIDUS (or LIQUIDUS) slope */
+
+ #ifdef LB_TEMPERATURE_MELTING_SOLIDUS
+   #ifdef LB_TEMPERATURE_MELTING_SOLIDUS_LINEAR
+        /* linear gradient */
+     L=(my_double)property.SY; 
+     y = (my_double)center_V[IDX(i,j,k)].y;
+     Ts = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y );
+   #endif
+     hs = Cp*Ts;
+     hl = hs+Lf;
+ #endif
 
       /* subtract the freezing point depression */
       /*	
