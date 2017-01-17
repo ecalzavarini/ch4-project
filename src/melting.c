@@ -11,6 +11,11 @@ void melting(){
   my_double eps = 1.0;
   my_double L,y;
 
+ #ifdef LB_TEMPERATURE_MELTING_UNDEFORMABLE
+  my_double *mean_y , *mean_y_local;
+  my_double lx,lz,norm;
+ #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
+
   Ts = (my_double) property.T_solid;
   Cp = (my_double) property.specific_heat;
   Lf = (my_double) property.latent_heat;
@@ -20,6 +25,31 @@ void melting(){
   Tl = hl/Cp;
 
   fac1 = (Lf/Cp)/property.time_dt;
+
+ #ifdef LB_TEMPERATURE_MELTING_UNDEFORMABLE
+	/* alloc lf_y_local and lf_y and set them to zero */
+	mean_y  = (my_double*) malloc(sizeof(my_double)*NY);
+	mean_y_local  = (my_double*) malloc(sizeof(my_double)*NY);
+	set_to_zero_scalar(mean_y_local,NY);
+	set_to_zero_scalar(mean_y,NY);
+
+	for (i = BRD; i < LNX+BRD; i++)
+		for (j = BRD; j < LNY+BRD; j++)
+			for (k = BRD; k < LNZ+BRD; k++) {
+			  /* computing surface element from local from mesh */			  
+			  lx = (mesh[IDXG(i+1, j, k)].x - mesh[IDXG(i, j, k)].x);
+			  lz = (mesh[IDXG(i, j, k+1)].z - mesh[IDXG(i, j, k)].z);			  			  
+			  //mean_y_local[j - BRD + LNY_START] += liquid_frac[IDX(i, j, k)]*lx*lz;
+			  mean_y_local[j - BRD + LNY_START] += ( Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)] )*lx*lz;
+        }
+
+  	MPI_Allreduce(mean_y_local, mean_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+	
+	norm = 1.0/(my_double)(property.SX*property.SZ);
+	for (i = 0; i < NY; i++){
+		mean_y[i] *= norm;
+  	}
+ #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
 
 
    for(k=BRD;k<LNZ+BRD;k++)
@@ -51,8 +81,17 @@ void melting(){
       #endif
       */
 
-      /* compute Entalphy */
+ #ifndef LB_TEMPERATURE_MELTING_UNDEFORMABLE
+      /* This is the normal way, we compute the local Enthalpy*/
+      /* compute Enthalphy */
 	enthalpy = Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)];
+ #endif /* end of if not def LB_TEMPERATURE_MELTING_UNDEFORMABLE */
+
+ #ifdef LB_TEMPERATURE_MELTING_UNDEFORMABLE
+       /* This is for the flat interface case, we insert the x,z averaged enthalpy (or fluid fraction, first method) */
+        //enthalpy = Cp*t[IDX(i,j,k)] + Lf*mean_y[j - BRD + LNY_START];
+	enthalpy = mean_y[j - BRD + LNY_START];	
+ #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
 
       /* compute new fluid fraction */
       if(enthalpy < hs) liquid_frac[IDX(i,j,k)]=0.0;
@@ -83,6 +122,12 @@ void melting(){
 #endif
 
       }/* end of i,j,k for loop */
+
+ #ifdef LB_TEMPERATURE_MELTING_UNDEFORMABLE
+	/* free arrays */
+	free(mean_y);
+	free(mean_y_local);
+ #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
 
 }
 #endif
