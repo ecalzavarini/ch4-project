@@ -2,7 +2,7 @@
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
-#define H5FILE_NAME "RUN/field.h5"
+//#define H5FILE_NAME "RUN/field.h5"
 
 #define ARANK  1   /* Rank and dimension sizes of the first dataset attribute */
 
@@ -31,6 +31,10 @@ void output_h5(){
   
   FILE *fout;
 
+  sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
+  if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
+
+
   aux  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
 
@@ -44,7 +48,7 @@ void output_h5(){
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
-  file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+  file_id = H5Fcreate(NEW_H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
   group   = H5Gcreate (file_id, "/euler", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
   /*
   file_id = H5Fopen(H5FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT);
@@ -156,8 +160,8 @@ void output_h5(){
 
   /* we rename the file */
 
-  sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
-  if(ROOT) rename(H5FILE_NAME, NEW_H5FILE_NAME);
+  //sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
+  //if(ROOT) rename(H5FILE_NAME, NEW_H5FILE_NAME);
 
 
   /** Part 2: we now write the corresponding XDMF data format **/
@@ -306,6 +310,8 @@ void write_pop_h5(){
    hsize_t adim[] = {nk};  /* Dimensions of the first attribute  */
 #endif
 
+  sprintf(NEW_H5FILE_NAME,"pop.h5");
+  if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
   efile_3d[0] = NZ;  efile_3d[1] = NY;  efile_3d[2] = NX;
   efilespace = H5Screate_simple(RANK, efile_3d, NULL);
@@ -317,7 +323,7 @@ void write_pop_h5(){
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
-  file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+  file_id = H5Fcreate(NEW_H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
   group   = H5Gcreate (file_id, "/population", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
   /*
   file_id = H5Fopen(H5FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT);
@@ -452,8 +458,8 @@ void write_pop_h5(){
 
   /* we rename the file */
 
-  sprintf(NEW_H5FILE_NAME,"pop.h5");
-  rename (H5FILE_NAME, NEW_H5FILE_NAME);
+  //  sprintf(NEW_H5FILE_NAME,"pop.h5");
+  //  rename (H5FILE_NAME, NEW_H5FILE_NAME);
 
 }
 
@@ -675,6 +681,9 @@ void write_scalar_h5(my_double *field, char which_field[128]){
   
   FILE *fout;
 
+  sprintf(NEW_H5FILE_NAME,"%s.h5", which_field);
+  if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
+
   aux  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(aux == NULL){ fprintf(stderr,"Not enough memory to allocate aux field t\n"); exit(-1);}
 
@@ -688,7 +697,7 @@ void write_scalar_h5(my_double *field, char which_field[128]){
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
-  file_id = H5Fcreate(H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+  file_id = H5Fcreate(NEW_H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
   group   = H5Gcreate (file_id, "/euler", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
  
   H5Pclose(plist_id);
@@ -733,8 +742,8 @@ void write_scalar_h5(my_double *field, char which_field[128]){
 
   /* we rename the file */
 
-  sprintf(NEW_H5FILE_NAME,"%s.h5", which_field);
-  if(ROOT) rename(H5FILE_NAME, NEW_H5FILE_NAME);
+  //  sprintf(NEW_H5FILE_NAME,"%s.h5", which_field);
+  //  if(ROOT) rename(H5FILE_NAME, NEW_H5FILE_NAME);
 
   MPI_Barrier(MPI_COMM_WORLD);
 }

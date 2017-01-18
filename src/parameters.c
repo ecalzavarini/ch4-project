@@ -42,8 +42,8 @@ void assign_parameters(){
   int i;
   FILE *fout;
 
+  sprintf(OutDir,"RUN"); /* name defined for every processor */
   if(ROOT){
-    sprintf(OutDir,"RUN");
     mkdir(OutDir, S_IWUSR|S_IXUSR|S_IRUSR);
     fprintf(stderr,"OutDir is %s\n",OutDir);   
 
