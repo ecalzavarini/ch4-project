@@ -35,6 +35,7 @@ my_double read_parameter(char * variable){
        }    
   }
   fclose(fin);
+  return 0; /* just to avoid compiler warnings : not used anyhow */
 }
 
 void assign_parameters(){
