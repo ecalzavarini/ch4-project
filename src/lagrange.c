@@ -939,7 +939,7 @@ if(which_scalar == 's')  (tracer+ipart)->s = s;
 }/* end of interp scalar*/
 
 
-#define H5FILE_NAME_PARTICLE "particle.h5"
+//#define H5FILE_NAME_PARTICLE "particle.h5"
 
 /* general output function for particles */
 void output_particles(){
@@ -965,6 +965,9 @@ void output_particles(){
 
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
+
+    sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,itime);
+    if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
 #ifdef LAGRANGE_OUTPUT_DEBUG
     if(ROOT){
@@ -999,7 +1002,7 @@ void output_particles(){
 		plist_id = H5Pcreate(H5P_FILE_ACCESS);
 		hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);   
 		
-		file_id = H5Fcreate(H5FILE_NAME_PARTICLE, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+		file_id = H5Fcreate(NEW_H5FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 		group   = H5Gcreate (file_id, "/lagrange", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
 		H5Pclose(plist_id);
@@ -1285,10 +1288,10 @@ void output_particles(){
   free(aux);
 
  /* create the file names */
-  sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,itime);
+ // sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,itime);
 
   /* we rename the file */
-  if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
+  // if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
 
 
   /* Xml file */
