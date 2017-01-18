@@ -1547,6 +1547,7 @@ void output_particles(){
  #endif                
 #endif
                 
+		fprintf(fout,"<Time Value=\" %e\" />\n",time_now);
                 fprintf(fout,"</Grid>\n");
                 fprintf(fout,"</Domain>\n");
                 fprintf(fout,"</Xdmf>\n");
