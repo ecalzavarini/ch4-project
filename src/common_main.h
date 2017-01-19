@@ -45,6 +45,10 @@ long * idum;
 long initdum;
 #endif
 
+/* memory allocation size */
+my_double memory_local;
+my_double memory_all;
+
 /* resume */
 int resume;
 #ifdef LB_FLUID

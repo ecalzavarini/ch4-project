@@ -699,45 +699,80 @@ void set_to_zero_output(output  *f,int size){
 }
 
 
+void *my_malloc(size_t size){
+  my_double real_size;
+  void *ptr;
+  ptr = malloc(size);
+  real_size = malloc_size(ptr);
+  free(ptr);
+  memory_local += (my_double) real_size;
+  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#ifdef DEBUG_MEMORY
+  if(ROOT){
+    fprintf(stderr,"Malloc %lf MB. Present memory allocation %lf MB\n",(my_double)real_size/1.e+6, memory_all/1.e+6); 
+    fflush(stderr);
+  }
+#endif
+  return malloc(size);
+}
+
+
+void my_free(void *ptr){
+  size_t size = malloc_size(ptr);
+  memory_local -= (my_double)size;
+  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#ifdef DEBUG_MEMORY
+  if(ROOT){ 
+    fprintf(stderr,"Free %lf MB. Present memory allocation %lf MB\n", (my_double)size/1.e+6, memory_all/1.e+6);
+    fflush(stderr);
+  }
+#endif
+  free(ptr);
+}
+
+
 void allocate_fields(){
- mesh  = (vector*) malloc(sizeof(vector)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
+  /* set to zero counters for malloc */
+memory_local = memory_all = 0.0;
+
+ mesh  = (vector*) my_malloc(sizeof(vector)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(mesh == NULL){ fprintf(stderr,"Not enough memory to allocate mesh\n"); exit(-1);}
  set_to_zero_vector( mesh,(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
 
  /*
- mesh_flag  = (int*) malloc(sizeof(int)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
+ mesh_flag  = (int*) my_malloc(sizeof(int)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(mesh_flag == NULL){ fprintf(stderr,"Not enough memory to allocate mesh_flag\n"); exit(-1);}
  set_to_zero_int( mesh_flag,(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD));
  */
 
- center_V = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ center_V = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(center_V == NULL){ fprintf(stderr,"Not enough memory to allocate center_V\n"); exit(-1);}
  set_to_zero_vector( center_V,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
 
 #ifdef GRID_REFINED
- grid_ruler_x  = (my_double*) malloc(sizeof(my_double)*NXG);
- grid_ruler_y  = (my_double*) malloc(sizeof(my_double)*NYG);
- grid_ruler_z  = (my_double*) malloc(sizeof(my_double)*NZG);
+ grid_ruler_x  = (my_double*) my_malloc(sizeof(my_double)*NXG);
+ grid_ruler_y  = (my_double*) my_malloc(sizeof(my_double)*NYG);
+ grid_ruler_z  = (my_double*) my_malloc(sizeof(my_double)*NZG);
 #endif
 
 #ifdef LB
- coeff_xp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_xp = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_xp == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_xp\n"); exit(-1);}
  set_to_zero_pop( coeff_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- coeff_xm = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_xm = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_xm == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_xm\n"); exit(-1);}
  set_to_zero_pop( coeff_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- coeff_yp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_yp = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_yp == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_yp\n"); exit(-1);}
  set_to_zero_pop( coeff_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- coeff_ym = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_ym = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_ym == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_ym\n"); exit(-1);}
  set_to_zero_pop( coeff_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- coeff_zp = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_zp = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_zp == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_zp\n"); exit(-1);}
  set_to_zero_pop( coeff_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- coeff_zm = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ coeff_zm = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(coeff_zm == NULL){ fprintf(stderr,"Not enough memory to allocate coeff_zm\n"); exit(-1);}
  set_to_zero_pop( coeff_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
@@ -745,228 +780,228 @@ void allocate_fields(){
  
 #if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING || defined METHOD_UPWIND)
  /* note that the first block of fields here below is not necessary for upwind method*/
- interp_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_xp\n"); exit(-1);}
  set_to_zero_my_double( interp_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp_xm\n"); exit(-1);}
  set_to_zero_my_double( interp_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_yp\n"); exit(-1);}
  set_to_zero_my_double( interp_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp_ym\n"); exit(-1);}
  set_to_zero_my_double( interp_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp_zp\n"); exit(-1);}
  set_to_zero_my_double( interp_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp_zm\n"); exit(-1);}
  set_to_zero_my_double( interp_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
  /* borders my_double */
- xp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- xm_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ xp_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  if(xp_scalar == NULL || xm_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate x{p,m}_scalar\n"); exit(-1);}
- yp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
- ym_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ yp_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(yp_scalar == NULL || ym_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate y{p,m}_scalar\n"); exit(-1);}
- zp_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
- zm_scalar  = (my_double*) malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zp_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_scalar  = (my_double*) my_malloc(sizeof(my_double)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_scalar == NULL || zm_scalar == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_scalar\n"); exit(-1);}
 
 /* borders vector */
- xp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- xm_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ xp_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  if(xp_vector == NULL || xm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate x{p,m}_vector\n"); exit(-1);}
- yp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
- ym_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ yp_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(yp_vector == NULL || ym_vector == NULL){ fprintf(stderr,"Not enough memory to allocate y{p,m}_vector\n"); exit(-1);}
- zp_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
- zm_vector  = (vector*) malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zp_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_vector  = (vector*) my_malloc(sizeof(vector)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_vector == NULL || zm_vector == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_vector\n"); exit(-1);}
 #endif
  
  //#ifdef METHOD_MYQUICK
 #if (defined METHOD_MYQUICK || defined METHOD_UPWIND_SKEW)
- interp2_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_xp\n"); exit(-1);}
  set_to_zero_my_double( interp2_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp2_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_xm\n"); exit(-1);}
  set_to_zero_my_double( interp2_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp2_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_yp\n"); exit(-1);}
  set_to_zero_my_double( interp2_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp2_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_ym\n"); exit(-1);}
  set_to_zero_my_double( interp2_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp2_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_zp\n"); exit(-1);}
  set_to_zero_my_double( interp2_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp2_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp2_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp2_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp2_zm\n"); exit(-1);}
  set_to_zero_my_double( interp2_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- interp3_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_xp\n"); exit(-1);}
  set_to_zero_my_double( interp3_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp3_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_xm\n"); exit(-1);}
  set_to_zero_my_double( interp3_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp3_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_yp\n"); exit(-1);}
  set_to_zero_my_double( interp3_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp3_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_ym\n"); exit(-1);}
  set_to_zero_my_double( interp3_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp3_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zp\n"); exit(-1);}
  set_to_zero_my_double( interp3_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp3_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp3_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp3_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zm\n"); exit(-1);}
  set_to_zero_my_double( interp3_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- interp4_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_xp\n"); exit(-1);}
  set_to_zero_my_double( interp4_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp4_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_xm\n"); exit(-1);}
  set_to_zero_my_double( interp4_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp4_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_yp\n"); exit(-1);}
  set_to_zero_my_double( interp4_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp4_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_ym\n"); exit(-1);}
  set_to_zero_my_double( interp4_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp4_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_zp\n"); exit(-1);}
  set_to_zero_my_double( interp4_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp4_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp4_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp4_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp4_zm\n"); exit(-1);}
  set_to_zero_my_double( interp4_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #ifdef METHOD_UPWIND_LINEAR
-interp5_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+interp5_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp5_xp\n"); exit(-1);}
  set_to_zero_my_double( interp5_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp5_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp5_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp5_xm\n"); exit(-1);}
  set_to_zero_my_double( interp5_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp5_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp5_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_yp\n"); exit(-1);}
  set_to_zero_my_double( interp5_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp5_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp5_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_ym\n"); exit(-1);}
  set_to_zero_my_double( interp5_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp5_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp5_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zp\n"); exit(-1);}
  set_to_zero_my_double( interp5_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp5_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp5_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp5_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp3_zm\n"); exit(-1);}
  set_to_zero_my_double( interp5_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-interp6_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+interp6_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_xp == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_xp\n"); exit(-1);}
  set_to_zero_my_double( interp6_xp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp6_xm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp6_xm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_xm == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_xm\n"); exit(-1);}
  set_to_zero_my_double( interp6_xm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp6_yp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp6_yp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_yp == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_yp\n"); exit(-1);}
  set_to_zero_my_double( interp6_yp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp6_ym = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp6_ym = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_ym == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_ym\n"); exit(-1);}
  set_to_zero_my_double( interp6_ym,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp6_zp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp6_zp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_zp == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_zp\n"); exit(-1);}
  set_to_zero_my_double( interp6_zp,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
- interp6_zm = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ interp6_zm = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(interp6_zm == NULL){ fprintf(stderr,"Not enough memory to allocate interp6_zm\n"); exit(-1);}
  set_to_zero_my_double( interp6_zm,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 
 #ifdef LB_FLUID
- p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ p  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(p == NULL){ fprintf(stderr,"Not enough memory to allocate p\n"); exit(-1);}
  set_to_zero_pop( p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ rhs_p  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_p\n"); exit(-1);}
  set_to_zero_pop( rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
 #ifdef METHOD_REDEFINED_POP
  /* auxiliary population field for computing the advection term */
- f_aux  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ f_aux  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(f_aux == NULL){ fprintf(stderr,"Not enough memory to allocate f_aux\n"); exit(-1);}
  set_to_zero_pop( f_aux,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
- p_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ p_eq  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(p_eq == NULL){ fprintf(stderr,"Not enough memory to allocate p_eq\n"); exit(-1);}
  set_to_zero_pop( p_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
- old_rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_rhs_p  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_p\n"); exit(-1);}
  set_to_zero_pop( old_rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #ifdef METHOD_STEPPING_AB3
- old_old_rhs_p  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_old_rhs_p  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_old_rhs_p == NULL){ fprintf(stderr,"Not enough memory to allocate old_old_rhs_p\n"); exit(-1);}
  set_to_zero_pop(old_old_rhs_p,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
- u = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ u = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(u == NULL){ fprintf(stderr,"Not enough memory to allocate u\n"); exit(-1);}
  set_to_zero_vector( u,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- dens  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ dens  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(dens == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
  set_to_zero_my_double( dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
  #ifdef LB_FLUID_PAST
- old_u = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_u = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_u == NULL){ fprintf(stderr,"Not enough memory to allocate old_u\n"); exit(-1);}
  set_to_zero_vector( old_u,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- old_dens  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_dens  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_dens == NULL){ fprintf(stderr,"Not enough memory to allocate old_dens\n"); exit(-1);}
  set_to_zero_my_double( old_dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
 
  #ifdef LB_FLUID_LES
   #ifdef LB_FLUID_LES_SISM 
-  u_mean = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  u_mean = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   if(u_mean == NULL){ fprintf(stderr,"Not enough memory to allocate u_mean\n"); exit(-1);}
   set_to_zero_vector( u_mean,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    #ifdef LB_FLUID_LES_SISM_KALMAN
-   u_mean_kalman_pre = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   u_mean_kalman_pre = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(u_mean_kalman_pre == NULL){ fprintf(stderr,"Not enough memory to allocate  u_mean_kalman_pre\n"); exit(-1);}
    set_to_zero_vector( u_mean_kalman_pre,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-   sqr_var = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   sqr_var = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(sqr_var == NULL){ fprintf(stderr,"Not enough memory to allocate  sqr_var\n"); exit(-1);}
    set_to_zero_vector( sqr_var,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-   sqr_var_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   sqr_var_kalman = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(sqr_var_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate sqr_var_kalman\n"); exit(-1);}
    set_to_zero_vector( sqr_var_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-   K_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   K_kalman = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(K_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate  K_kalman\n"); exit(-1);}
    set_to_zero_vector( K_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-   P_kalman = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   P_kalman = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(P_kalman == NULL){ fprintf(stderr,"Not enough memory to allocate  P_kalman\n"); exit(-1);}
    set_to_zero_vector(P_kalman,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
-   P_kalman_pre = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+   P_kalman_pre = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    if(P_kalman_pre == NULL){ fprintf(stderr,"Not enough memory to allocate P_kalman_pre\n"); exit(-1);}
    set_to_zero_vector( P_kalman_pre,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
    #endif
@@ -974,108 +1009,108 @@ interp6_xp = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(
  #endif
 
 #ifdef LB_FLUID_FORCING
- force  = (vector*) malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ force  = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(force == NULL){ fprintf(stderr,"Not enough memory to allocate force\n"); exit(-1);}
  set_to_zero_vector( force,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #ifdef LB_FLUID_FORCING_LANDSCAPE
- landscape  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ landscape  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(landscape == NULL){ fprintf(stderr,"Not enough memory to allocate dens\n"); exit(-1);}
  set_to_zero_my_double( landscape,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
 #endif
 
  /* borders pop */
- xp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
- xm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ xp_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ xm_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  if(xp_pop == NULL || xm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate x{p,m}_pop\n"); exit(-1);}
- yp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
- ym_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ yp_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
+ ym_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(yp_pop == NULL || ym_pop == NULL){ fprintf(stderr,"Not enough memory to allocate y{p,m}_pop\n"); exit(-1);}
- zp_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
- zm_pop  = (pop*) malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zp_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
+ zm_pop  = (pop*) my_malloc(sizeof(pop)*BRD*(LNX+TWO_BRD)*(LNY+TWO_BRD)); 
  if(zp_pop == NULL || zm_pop == NULL){ fprintf(stderr,"Not enough memory to allocate z{p,m}_pop\n"); exit(-1);}
 
 
 #ifdef METHOD_EDGES_AND_CORNERS
 /* 8 corners */
- xp_yp_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xp_yp_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xp_ym_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xp_ym_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xm_yp_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xm_yp_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xm_ym_zp_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
- xm_ym_zm_corner_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_yp_zp_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_yp_zm_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_ym_zp_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xp_ym_zm_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_yp_zp_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_yp_zm_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_ym_zp_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
+ xm_ym_zm_corner_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*BRD);
 
 /* 12 edges */
-xp_yp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD)); 
-xp_ym_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
-xm_yp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
-xm_ym_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+xp_yp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD)); 
+xp_ym_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+xm_yp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
+xm_ym_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNZ+TWO_BRD));
 
-xp_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
-xp_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
-xm_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
-xm_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xp_zp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xp_zm_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xm_zp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
+xm_zm_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNY+TWO_BRD));
 
-yp_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
-yp_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
-ym_zp_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
-ym_zm_edge_pop = (pop*) malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+yp_zp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+yp_zm_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+ym_zp_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
+ym_zm_edge_pop = (pop*) my_malloc(sizeof(pop)*BRD*BRD*(LNX+TWO_BRD));
 
 /* and for vector */
 /* 8 corners */
- xp_yp_zp_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xp_yp_zm_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xp_ym_zp_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xp_ym_zm_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xm_yp_zp_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xm_yp_zm_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xm_ym_zp_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
- xm_ym_zm_corner_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*BRD);
+ xp_yp_zp_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xp_yp_zm_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xp_ym_zp_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xp_ym_zm_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xm_yp_zp_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xm_yp_zm_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xm_ym_zp_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
+ xm_ym_zm_corner_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*BRD);
 
 /* 12 edges */
-xp_yp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD)); 
-xp_ym_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
-xm_yp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
-xm_ym_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
+xp_yp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD)); 
+xp_ym_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
+xm_yp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
+xm_ym_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNZ+TWO_BRD));
 
-xp_zp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
-xp_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
-xm_zp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
-xm_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
+xp_zp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
+xp_zm_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
+xm_zp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
+xm_zm_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNY+TWO_BRD));
 
-yp_zp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
-yp_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
-ym_zp_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
-ym_zm_edge_vector = (vector*) malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
+yp_zp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
+yp_zm_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
+ym_zp_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
+ym_zm_edge_vector = (vector*) my_malloc(sizeof(vector)*BRD*BRD*(LNX+TWO_BRD));
 
 /* and for scalar */
 /* 8 corners */
- xp_yp_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xp_yp_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xp_ym_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xp_ym_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xm_yp_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xm_yp_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xm_ym_zp_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
- xm_ym_zm_corner_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_yp_zp_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_yp_zm_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_ym_zp_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xp_ym_zm_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_yp_zp_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_yp_zm_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_ym_zp_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
+ xm_ym_zm_corner_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*BRD);
 
 /* 12 edges */
-xp_yp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD)); 
-xp_ym_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
-xm_yp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
-xm_ym_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+xp_yp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD)); 
+xp_ym_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+xm_yp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
+xm_ym_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNZ+TWO_BRD));
 
-xp_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
-xp_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
-xm_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
-xm_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xp_zp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xp_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xm_zp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
+xm_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNY+TWO_BRD));
 
-yp_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
-yp_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
-ym_zp_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
-ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+yp_zp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+yp_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+ym_zp_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
+ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD));
 
 #endif
 
@@ -1083,15 +1118,15 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
 #endif
 
 #ifdef LB_FLUID
- ruler_x_local  = (output*) malloc(sizeof(output)*NX);
- ruler_y_local  = (output*) malloc(sizeof(output)*NY);
- ruler_z_local  = (output*) malloc(sizeof(output)*NZ);
- ruler_x  = (output*) malloc(sizeof(output)*NX);
- ruler_y  = (output*) malloc(sizeof(output)*NY);
- ruler_z  = (output*) malloc(sizeof(output)*NZ);
- ruler_x_running  = (output*) malloc(sizeof(output)*NX);
- ruler_y_running  = (output*) malloc(sizeof(output)*NY);
- ruler_z_running  = (output*) malloc(sizeof(output)*NZ);
+ ruler_x_local  = (output*) my_malloc(sizeof(output)*NX);
+ ruler_y_local  = (output*) my_malloc(sizeof(output)*NY);
+ ruler_z_local  = (output*) my_malloc(sizeof(output)*NZ);
+ ruler_x  = (output*) my_malloc(sizeof(output)*NX);
+ ruler_y  = (output*) my_malloc(sizeof(output)*NY);
+ ruler_z  = (output*) my_malloc(sizeof(output)*NZ);
+ ruler_x_running  = (output*) my_malloc(sizeof(output)*NX);
+ ruler_y_running  = (output*) my_malloc(sizeof(output)*NY);
+ ruler_z_running  = (output*) my_malloc(sizeof(output)*NZ);
  set_to_zero_output(ruler_x_local,NX);
  set_to_zero_output(ruler_y_local,NY);
  set_to_zero_output(ruler_z_local,NZ);
@@ -1104,61 +1139,61 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
 #endif
 
 #ifdef LB_TEMPERATURE
- g = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ g = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(g == NULL){ fprintf(stderr,"Not enough memory to allocate g\n"); exit(-1);}
  set_to_zero_pop( g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ rhs_g  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_g\n"); exit(-1);}
  set_to_zero_pop( rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
  //#ifdef METHOD_REDEFINED_POP
 #if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
- g_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ g_eq  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(g_eq == NULL){ fprintf(stderr,"Not enough memory to allocate g_eq\n"); exit(-1);}
  set_to_zero_pop( g_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
- old_rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_rhs_g  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_g\n"); exit(-1);}
  set_to_zero_pop( old_rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #ifdef METHOD_STEPPING_AB3
- old_old_rhs_g  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_old_rhs_g  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_old_rhs_g == NULL){ fprintf(stderr,"Not enough memory to allocate old_old_rhs_g\n"); exit(-1);}
  set_to_zero_pop( old_old_rhs_g,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
- t  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ t  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(t == NULL){ fprintf(stderr,"Not enough memory to allocate t\n"); exit(-1);}
  set_to_zero_my_double( t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
 #ifdef LB_TEMPERATURE_PAST
- old_t  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_t  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_t == NULL){ fprintf(stderr,"Not enough memory to allocate old_t\n"); exit(-1);}
  set_to_zero_my_double( old_t,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
  #ifdef LB_TEMPERATURE_FORCING
- t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ t_source  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(t_source == NULL){ fprintf(stderr,"Not enough memory to allocate source_t\n"); exit(-1);}
  set_to_zero_scalar( t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
   #ifdef LB_TEMPERATURE_FORCING_PAST
-  old_t_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  old_t_source  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(old_t_source == NULL){ fprintf(stderr,"Not enough memory to allocate old_source_t\n"); exit(-1);}
   set_to_zero_scalar( old_t_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   #endif 
   #ifdef LB_TEMPERATURE_MELTING
-  liquid_frac  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  liquid_frac  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(liquid_frac == NULL){ fprintf(stderr,"Not enough memory to allocate liquid_frac\n"); exit(-1);}
   set_to_zero_scalar( liquid_frac,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-  liquid_frac_old  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  liquid_frac_old  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   if(liquid_frac_old == NULL){ fprintf(stderr,"Not enough memory to allocate liquid_frac_old\n"); exit(-1);}
   set_to_zero_scalar( liquid_frac_old,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-  //enthalpy  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  //enthalpy  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
   //if(enthalpy == NULL){ fprintf(stderr,"Not enough memory to allocate enthalpy\n"); exit(-1);}
   //set_to_zero_scalar( enthalpy,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   #endif
@@ -1166,43 +1201,45 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
 #endif
 
 #ifdef LB_SCALAR
- h = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ h = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(h == NULL){ fprintf(stderr,"Not enough memory to allocate h\n"); exit(-1);}
  set_to_zero_pop( h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
- rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ rhs_h  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate rhs_h\n"); exit(-1);}
  set_to_zero_pop( rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
  //#ifdef METHOD_REDEFINED_POP
 #if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
- h_eq  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ h_eq  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(h_eq == NULL){ fprintf(stderr,"Not enough memory to allocate h_eq\n"); exit(-1);}
  set_to_zero_pop( h_eq,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif
 
 #if (defined METHOD_STEPPING_AB2 || defined METHOD_STEPPING_AB3 || defined METHOD_HEUN)
- old_rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_rhs_h  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate old_rhs_h\n"); exit(-1);}
  set_to_zero_pop( old_rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif 
 
 #ifdef METHOD_STEPPING_AB3
- old_old_rhs_h  = (pop*) malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ old_old_rhs_h  = (pop*) my_malloc(sizeof(pop)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_old_rhs_h == NULL){ fprintf(stderr,"Not enough memory to allocate old_old_rhs_h\n"); exit(-1);}
  set_to_zero_pop( old_old_rhs_h,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 #endif 
 
- s  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ s  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(s == NULL){ fprintf(stderr,"Not enough memory to allocate s\n"); exit(-1);}
  set_to_zero_my_double( s,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
 
  #ifdef LB_SCALAR_FORCING
- s_source  = (my_double*) malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ s_source  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(s_source == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
  set_to_zero_scalar( s_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
 #endif
+
+  if(ROOT) fprintf(stderr,"Total memory allocation %lf MB\n",(my_double)memory_all/1.e+6); 
 
 }
 
@@ -1211,193 +1248,273 @@ ym_zm_edge_scalar = (my_double*) malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BRD))
 /* Free fields */
 void free_fields(){
 
-  free(mesh);
+  my_free(mesh);
   /*
-  free(mesh_flag);
+  my_free(mesh_flag);
   */
-  free(center_V);
+  my_free(center_V);
 
 #ifdef GRID_REFINED
-  free(grid_ruler_x);  
-  free(grid_ruler_y);  
-  free(grid_ruler_z);  
+  my_free(grid_ruler_x);  
+  my_free(grid_ruler_y);  
+  my_free(grid_ruler_z);  
 #endif
 
 #ifdef LB
- free(coeff_xp); 
- free(coeff_xm); 
- free(coeff_yp); 
- free(coeff_ym); 
- free(coeff_zp); 
- free(coeff_zm); 
+ my_free(coeff_xp); 
+ my_free(coeff_xm); 
+ my_free(coeff_yp); 
+ my_free(coeff_ym); 
+ my_free(coeff_zp); 
+ my_free(coeff_zm); 
 #endif
 
 
 #if (defined METHOD_CENTERED || defined METHOD_MYQUICK || defined METHOD_STREAMING || defined METHOD_UPWIND)
- free(interp_xp); 
- free(interp_xm); 
- free(interp_yp); 
- free(interp_ym); 
- free(interp_zp); 
- free(interp_zm); 
+ my_free(interp_xp); 
+ my_free(interp_xm); 
+ my_free(interp_yp); 
+ my_free(interp_ym); 
+ my_free(interp_zp); 
+ my_free(interp_zm); 
  
  /* borders my_double */
- free(xp_scalar);  
- free(xm_scalar);  
- free(yp_scalar);  
- free(ym_scalar);  
- free(zp_scalar);  
- free(zm_scalar);  
+ my_free(xp_scalar);  
+ my_free(xm_scalar);  
+ my_free(yp_scalar);  
+ my_free(ym_scalar);  
+ my_free(zp_scalar);  
+ my_free(zm_scalar);  
 
 /* borders vector */
- free(xp_vector);  
- free(xm_vector);  
- free(yp_vector);  
- free(ym_vector);  
- free(zp_vector);  
- free(zm_vector);  
+ my_free(xp_vector);  
+ my_free(xm_vector);  
+ my_free(yp_vector);  
+ my_free(ym_vector);  
+ my_free(zp_vector);  
+ my_free(zm_vector);  
 #endif
  
 #ifdef METHOD_MYQUICK
- free(interp2_xp); 
- free(interp2_xm); 
- free(interp2_yp); 
- free(interp2_ym); 
- free(interp2_zp); 
- free(interp2_zm); 
+ my_free(interp2_xp); 
+ my_free(interp2_xm); 
+ my_free(interp2_yp); 
+ my_free(interp2_ym); 
+ my_free(interp2_zp); 
+ my_free(interp2_zm); 
 
- free(interp3_xp); 
- free(interp3_xm);
- free(interp3_yp);
- free(interp3_ym);
- free(interp3_zp); 
- free(interp3_zm); 
+ my_free(interp3_xp); 
+ my_free(interp3_xm);
+ my_free(interp3_yp);
+ my_free(interp3_ym);
+ my_free(interp3_zp); 
+ my_free(interp3_zm); 
 
- free(interp4_xp); 
- free(interp4_xm); 
- free(interp4_yp);
- free(interp4_ym); 
- free(interp4_zp); 
- free(interp4_zm); 
+ my_free(interp4_xp); 
+ my_free(interp4_xm); 
+ my_free(interp4_yp);
+ my_free(interp4_ym); 
+ my_free(interp4_zp); 
+ my_free(interp4_zm); 
 #endif
 
+#ifdef METHOD_UPWIND_LINEAR
+ my_free(interp5_xp); 
+ my_free(interp5_xm);
+ my_free(interp5_yp);
+ my_free(interp5_ym);
+ my_free(interp5_zp); 
+ my_free(interp5_zm); 
 
+ my_free(interp6_xp); 
+ my_free(interp6_xm); 
+ my_free(interp6_yp);
+ my_free(interp6_ym); 
+ my_free(interp6_zp); 
+ my_free(interp6_zm); 
+#endif
 
 #ifdef LB_FLUID
- free(p); 
- free(rhs_p); 
- free(old_rhs_p); 
- free(old_old_rhs_p); 
- free(u); 
- free(dens); 
+ my_free(p); 
+ my_free(rhs_p); 
+#ifdef METHOD_REDEFINED_POP
+ my_free(f_aux);
+#endif
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
+ my_free(p_eq);
+#endif
+ my_free(old_rhs_p); 
+ my_free(old_old_rhs_p); 
+ my_free(u); 
+ my_free(dens); 
  #ifdef LB_FLUID_PAST 
- free(old_u); 
- free(old_dens); 
+ my_free(old_u); 
+ my_free(old_dens); 
  #endif
  #ifdef LB_FLUID_LES_SISM 
- free(u_mean);
+ my_free(u_mean);
  #ifdef LB_FLUID_LES_SISM_KALMAN
-  free(u_mean_kalman_pre);
-  free(sqr_var);
-  free(sqr_var_kalman);
-  free(K_kalman);
-  free(P_kalman);
-  free(P_kalman_pre);
+  my_free(u_mean_kalman_pre);
+  my_free(sqr_var);
+  my_free(sqr_var_kalman);
+  my_free(K_kalman);
+  my_free(P_kalman);
+  my_free(P_kalman_pre);
   #endif
  #endif
 #ifdef LB_FLUID_FORCING
- free(force); 
+ my_free(force); 
 #ifdef LB_FLUID_FORCING_LANDSCAPE
- free(landscape);
+ my_free(landscape);
 #endif 
 #endif
 
  /* borders pop */
- free(xp_pop); 
- free(xm_pop);
- free(yp_pop); 
- free(ym_pop); 
- free(zp_pop); 
- free(zm_pop); 
+ my_free(xp_pop); 
+ my_free(xm_pop);
+ my_free(yp_pop); 
+ my_free(ym_pop); 
+ my_free(zp_pop); 
+ my_free(zm_pop); 
 
 #ifdef METHOD_EDGES_AND_CORNERS
 /* 8 corners */
- free(xp_yp_zp_corner_pop);
- free(xp_yp_zm_corner_pop);
- free(xp_ym_zp_corner_pop);
- free(xp_ym_zm_corner_pop);
- free(xm_yp_zp_corner_pop);
- free(xm_yp_zm_corner_pop);
- free(xm_ym_zp_corner_pop);
- free(xm_ym_zm_corner_pop);
+ my_free(xp_yp_zp_corner_pop);
+ my_free(xp_yp_zm_corner_pop);
+ my_free(xp_ym_zp_corner_pop);
+ my_free(xp_ym_zm_corner_pop);
+ my_free(xm_yp_zp_corner_pop);
+ my_free(xm_yp_zm_corner_pop);
+ my_free(xm_ym_zp_corner_pop);
+ my_free(xm_ym_zm_corner_pop);
 
 /* 12 edges */
-free(xp_yp_edge_pop); 
-free(xp_ym_edge_pop);
-free(xm_yp_edge_pop);
-free(xm_ym_edge_pop);
+my_free(xp_yp_edge_pop); 
+my_free(xp_ym_edge_pop);
+my_free(xm_yp_edge_pop);
+my_free(xm_ym_edge_pop);
 
-free(xp_zp_edge_pop);
-free(xp_zm_edge_pop);
-free(xm_zp_edge_pop);
-free(xm_zm_edge_pop);
+my_free(xp_zp_edge_pop);
+my_free(xp_zm_edge_pop);
+my_free(xm_zp_edge_pop);
+my_free(xm_zm_edge_pop);
 
-free(yp_zp_edge_pop);
-free(yp_zm_edge_pop);
-free(ym_zp_edge_pop);
-free(ym_zm_edge_pop);
+my_free(yp_zp_edge_pop);
+my_free(yp_zm_edge_pop);
+my_free(ym_zp_edge_pop);
+my_free(ym_zm_edge_pop);
+
+my_free(xp_yp_zp_corner_vector);
+my_free(xp_yp_zm_corner_vector);
+my_free(xp_ym_zp_corner_vector);
+my_free(xp_ym_zm_corner_vector);
+my_free(xm_yp_zp_corner_vector);
+my_free(xm_yp_zm_corner_vector);
+my_free(xm_ym_zp_corner_vector);
+my_free(xm_ym_zm_corner_vector);
+
+/* 12 edges */
+my_free(xp_yp_edge_vector);
+my_free(xp_ym_edge_vector);
+my_free(xm_yp_edge_vector);
+my_free(xm_ym_edge_vector);
+
+my_free(xp_zp_edge_vector);
+my_free(xp_zm_edge_vector);
+my_free(xm_zp_edge_vector);
+my_free(xm_zm_edge_vector);
+
+my_free(yp_zp_edge_vector);
+my_free(yp_zm_edge_vector);
+my_free(ym_zp_edge_vector);
+my_free(ym_zm_edge_vector);
+
+/* and for scalar */
+/* 8 corners */
+my_free(xp_yp_zp_corner_scalar);
+my_free(xp_yp_zm_corner_scalar);
+my_free(xp_ym_zp_corner_scalar);
+my_free(xp_ym_zm_corner_scalar);
+my_free(xm_yp_zp_corner_scalar);
+my_free(xm_yp_zm_corner_scalar);
+my_free(xm_ym_zp_corner_scalar);
+my_free(xm_ym_zm_corner_scalar);
+
+/* 12 edges */
+my_free(xp_yp_edge_scalar);
+my_free(xp_ym_edge_scalar);
+my_free(xm_yp_edge_scalar);
+my_free(xm_ym_edge_scalar);
+
+my_free(xp_zp_edge_scalar);
+my_free(xp_zm_edge_scalar);
+my_free(xm_zp_edge_scalar);
+my_free(xm_zm_edge_scalar);
+
+my_free(yp_zp_edge_scalar);
+my_free(yp_zm_edge_scalar);
+my_free(ym_zp_edge_scalar);
+my_free(ym_zm_edge_scalar);
 #endif
 
 
 #endif
 
 #ifdef LB_FLUID
- free(ruler_x_local);
- free(ruler_y_local);
- free(ruler_z_local);
- free(ruler_x);
- free(ruler_y);
- free(ruler_z);
- free(ruler_x_running);
- free(ruler_y_running);
- free(ruler_z_running);
+ my_free(ruler_x_local);
+ my_free(ruler_y_local);
+ my_free(ruler_z_local);
+ my_free(ruler_x);
+ my_free(ruler_y);
+ my_free(ruler_z);
+ my_free(ruler_x_running);
+ my_free(ruler_y_running);
+ my_free(ruler_z_running);
 
 #endif
 
 #ifdef LB_TEMPERATURE
- free(g);
- free(rhs_g);
- free(old_rhs_g);
- free(old_old_rhs_g);
- free(t);
+ my_free(g);
+ my_free(rhs_g);
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
+ my_free(g_eq);
+#endif
+ my_free(old_rhs_g);
+ my_free(old_old_rhs_g);
+ my_free(t);
  #ifdef LB_TEMPERATURE_PAST
-  free(old_t);
+  my_free(old_t);
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING
- free(t_source);
+ my_free(t_source);
   #ifdef LB_TEMPERATURE_FORCING_PAST
-   free(old_t_source);
+   my_free(old_t_source);
   #endif
   #ifdef LB_TEMPERATURE_MELTING
-  free(liquid_frac);  
-  free(liquid_frac_old);  
+  my_free(liquid_frac);  
+  my_free(liquid_frac_old);  
+  //my_free(enthalpy);
   #endif
  #endif
 #endif
 
 #ifdef LB_SCALAR
- free(h); 
- free(rhs_h);  
- free(old_rhs_h);  
- free(old_old_rhs_h);  
- free(s);  
+ my_free(h); 
+ my_free(rhs_h);  
+#if (defined METHOD_REDEFINED_POP || defined METHOD_COLLISION_IMPLICIT)
+ my_free(h_eq)
+#endif
+ my_free(old_rhs_h);  
+ my_free(old_old_rhs_h);  
+ my_free(s);  
 
  #ifdef LB_SCALAR_FORCING
- free(s_source);
+ my_free(s_source);
  #endif
 #endif
 
+ if(ROOT) fprintf(stderr,"Total unfree memory %lf MB\n",(my_double)memory_all/1.e+6); 
 }
 
 

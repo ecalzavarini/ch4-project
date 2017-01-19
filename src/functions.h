@@ -18,6 +18,8 @@ void processor_splitting();
 void allocate_fields();
 void free_fields();
 void set_to_zero_output(output  *f,int size);
+void *my_malloc(size_t size);
+void my_free(void *ptr);
 
 /* grid.c */
 void read_mesh();

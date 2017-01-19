@@ -1,5 +1,6 @@
 /* DEBUG */
 //#define DEBUG
+//#define DEBUG_MEMORY
 //#define DEBUG_HARD
 
 /* RANDOM NUMBERS */
@@ -256,7 +257,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-#define LAGRANGE
+//#define LAGRANGE
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
