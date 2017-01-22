@@ -48,6 +48,7 @@ long initdum;
 /* memory allocation size */
 my_double memory_local;
 my_double memory_all;
+my_double memory_max;
 
 /* resume */
 int resume;

@@ -707,9 +707,10 @@ void *my_malloc(size_t size){
   free(ptr);
   memory_local += (my_double) real_size;
   MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  if(memory_all > memory_max) memory_max=memory_all; 
 #ifdef DEBUG_MEMORY
   if(ROOT){
-    fprintf(stderr,"Malloc %lf MB. Present memory allocation %lf MB\n",(my_double)real_size/1.e+6, memory_all/1.e+6); 
+    fprintf(stderr,"Malloc %lf MB. Present memory allocation %lf MB, Maximal memory allocated %lf MB\n",(my_double)real_size/1.e+6, memory_all/1.e+6,memory_max/1.e+6); 
     fflush(stderr);
   }
 #endif
@@ -733,7 +734,7 @@ void my_free(void *ptr){
 
 void allocate_fields(){
   /* set to zero counters for malloc */
-memory_local = memory_all = 0.0;
+memory_local = memory_all = memory_max = 0.0;
 
  mesh  = (vector*) my_malloc(sizeof(vector)*(LNXG+TWO_BRD)*(LNYG+TWO_BRD)*(LNZG+TWO_BRD)); 
  if(mesh == NULL){ fprintf(stderr,"Not enough memory to allocate mesh\n"); exit(-1);}
@@ -1515,6 +1516,7 @@ my_free(ym_zm_edge_scalar);
 #endif
 
  if(ROOT) fprintf(stderr,"Total unfree memory %lf MB\n",(my_double)memory_all/1.e+6); 
+ if(ROOT) fprintf(stderr,"Maximal amount of memory allocated during the simulation (with my_malloc) %lf MB\n",(my_double)memory_max/1.e+6);
 }
 
 
