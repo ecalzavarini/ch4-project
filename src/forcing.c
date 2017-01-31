@@ -17,6 +17,7 @@ void build_forcing(){
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity,t0_coeff;
   my_double s0,s0_all,s0_coeff;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
+  my_double radiation_at_bottom1,radiation_at_bottom2,radiation_at_bottom3,radiation_at_bottom4;
   FILE *fout;
 
    LX = (my_double)(property.SX);
@@ -611,6 +612,10 @@ void build_forcing(){
   #ifdef LB_TEMPERATURE_FORCING_BULK_VARIABLE
    if (center_V[IDX(i,j,k)].x > property.SX/2.) t_source[IDX(i,j,k)] = 0.0;
   #endif
+  #ifdef LB_TEMPERATURE_MELTING
+   /* This way if we are in a solid the bulk source is not applied */
+   t_source[IDX(i,j,k)] = liquid_frac[IDX(i,j,k)]*property.Amp_t;
+  #endif
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN /* the forcing term has the form kappa_add*laplacian( t ), where kappa_add is an additional viscosity */
@@ -639,7 +644,7 @@ void build_forcing(){
   t_source[IDX(i,j,k)]  = 0.481 * property.Amp_t* 0.180 *exp(-0.180  * center_V[IDX(i,j,k)].y); 
   t_source[IDX(i,j,k)] += 0.194 * property.Amp_t* 3.250 *exp(-3.250  * center_V[IDX(i,j,k)].y); 
   t_source[IDX(i,j,k)] += 0.123 * property.Amp_t* 27.50 *exp(-27.50  * center_V[IDX(i,j,k)].y); 
-  t_source[IDX(i,j,k)] += 0.202 * property.Amp_t* 300.0 *exp(-300.0  * center_V[IDX(i,j,k)].y); 
+  t_source[IDX(i,j,k)] += 0.202 * property.Amp_t* 300.0 *exp(-300.0  * center_V[IDX(i,j,k)].y);  
   */
   t_source[IDX(i,j,k)]  =                 property.Amp_t*property.attenuation*                exp(-property.attenuation * center_V[IDX(i,j,k)].y); 
   t_source[IDX(i,j,k)] += (0.194/0.481) * property.Amp_t*property.attenuation* (3.250/0.180) *exp(-(3.250/0.180)  * center_V[IDX(i,j,k)].y); 
@@ -677,13 +682,31 @@ void build_forcing(){
     #else
    /* NO MELTING : in this case the depth of the fluid layer is = property.SY */
    /* the radiation is reflected, the transmitted one just goes out of the system */
-   local_depth = property.SY;  /* the depth of the fluid layer */
+     #ifdef LB_TEMPERATURE_FORCING_RADIATION_SOLAR
+     local_depth = property.SY;  /* the depth of the fluid layer */
 
-   radiation_at_bottom = property.Amp_t*property.attenuation*exp(-property.attenuation*local_depth); /* the radiation intensity at the bottom of the fluid layer */
+     reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
 
-   reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
+     /* the radiation intensity at the bottom of the fluid layer */
+     radiation_at_bottom1 =                 property.Amp_t*property.attenuation*                exp(-property.attenuation * local_depth); 
+     radiation_at_bottom2 = (0.194/0.481) * property.Amp_t*property.attenuation* (3.250/0.180) *exp(-(3.250/0.180)  * local_depth); 
+     radiation_at_bottom3 = (0.123/0.481) * property.Amp_t*property.attenuation* (27.50/0.180) *exp(-(27.50/0.180)  * local_depth); 
+     radiation_at_bottom4 = (0.202/0.481) * property.Amp_t*property.attenuation* (300.0/0.180) *exp(-(300.0/0.180)  * local_depth); 
 
-   t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom1*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom2*exp(-(3.250/0.180)       *(local_depth - center_V[IDX(i,j,k)].y)); 
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom3*exp(-(27.50/0.180)       *(local_depth - center_V[IDX(i,j,k)].y)); 
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom4*exp(-(300.0/0.180)       *(local_depth - center_V[IDX(i,j,k)].y)); 
+
+     #else
+     local_depth = property.SY;  /* the depth of the fluid layer */
+
+     radiation_at_bottom = property.Amp_t*property.attenuation*exp(-property.attenuation*local_depth); /* the radiation intensity at the bottom of the fluid layer */
+
+     reflection_ceff = 1.0; /* determines the albedo , it shall be given as an external parameter */
+
+     t_source[IDX(i,j,k)] += reflection_ceff*radiation_at_bottom*exp(-property.attenuation*(local_depth - center_V[IDX(i,j,k)].y)); 
+     #endif
     #endif
   #endif
  #endif 
