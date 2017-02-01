@@ -5,14 +5,21 @@ LFLAGS= -lm -lhdf5
 SOURCES= parallel.c grid.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c forcing.c output.c output_h5.c melting.c lagrange.c random.c les.c gradients.c
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS= common_object.h common_main.h typedef.h functions.h define.h
-MYFLAGS= -DNO_XMLHEADERS
+MYFLAGS= -DNO_XMLHEADERS 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+     OSFLAGS = -D SYSTEM_LINUX
+endif
+ifeq ($(UNAME_S),Darwin)
+     OSFLAGS = -D SYSTEM_OSX
+endif
 EXECUTABLE= ch4
 
 %.o: %.c $(HEADERS) 
-	$(CC) -c $(CFLAGS) $(MYFLAGS) $< -o $@ 
+	$(CC) -c $(CFLAGS) $(MYFLAGS) $(OSFLAGS) $< -o $@ 
 
 $(EXECUTABLE):  main.c $(OBJECTS) $(HEADERS)
-	$(CC) $(CFLAGS) $(MYFLAGS) -o $(EXECUTABLE) main.c $(OBJECTS) $(LFLAGS)
+	$(CC) $(CFLAGS) $(MYFLAGS) $(OSFLAGS) -o $(EXECUTABLE) main.c $(OBJECTS) $(LFLAGS)
 
 clean:
 	rm -rf ./*.o ./*~ $(EXECUTABLE) ./*.dat ./*.out ./RUN  ./*.h5

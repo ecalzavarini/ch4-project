@@ -701,12 +701,16 @@ void set_to_zero_output(output  *f,int size){
 
 void *my_malloc(size_t size){
   my_double real_size;
-  //void *ptr;
-  //ptr = malloc(size);
-  //  real_size = malloc_size(ptr);
-  //  real_size = malloc_usable_size(ptr);
-  //free(ptr);
-  real_size = (my_double) size; // just a temporary inaccurate solution.
+  void *ptr;
+  ptr = malloc(size);
+#ifdef SYSTEM_OSX
+  real_size = malloc_size(ptr);
+#endif
+#ifdef SYSTEM_LINUX
+  real_size = malloc_usable_size(ptr);
+#endif
+  free(ptr);
+  //  real_size = (my_double) size; // just a temporary inaccurate solution.
   memory_local += (my_double) real_size;
   MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   if(memory_all > memory_max) memory_max=memory_all; 
@@ -721,7 +725,13 @@ void *my_malloc(size_t size){
 
 
 void my_free(void *ptr){
-  size_t size = malloc_size(ptr);
+  size_t size;
+#ifdef SYSTEM_OSX
+  size = malloc_size(ptr);
+#endif
+#ifdef SYSTEM_LINUX
+  size = malloc_usable_size(ptr);
+#endif
   memory_local -= (my_double)size;
   MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 #ifdef DEBUG_MEMORY
