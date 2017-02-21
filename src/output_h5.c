@@ -31,6 +31,9 @@ void output_h5(){
   
   FILE *fout;
 
+  // hsize_t     family_size = 2; // family
+  //#define FAMIGLIA "%d"
+  //sprintf(NEW_H5FILE_NAME,"%s/field_%d_%s.h5",OutDir,itime,FAMIGLIA); //family
   sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
   if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
@@ -45,6 +48,9 @@ void output_h5(){
   ememspace = H5Screate_simple(RANK, edimens_3d, NULL);
 
   plist_id = H5Pcreate(H5P_FILE_ACCESS);
+
+  //status = H5Pset_fapl_family(plist_id, family_size, H5P_DEFAULT);//family
+  //if(ROOT) printf ("H5Pset_fapl_family returns: %i\n", status); // family
 
   hdf5_status  = H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD,  MPI_INFO_NULL);
 
@@ -84,6 +90,7 @@ void output_h5(){
   xfer_plist = H5Pcreate(H5P_DATASET_XFER);
   ret = H5Pset_dxpl_mpio(xfer_plist,H5FD_MPIO_COLLECTIVE);
 
+#ifdef OUTPUT_H5_GRID
   /* Writing mesh <- the stupid way */
   edataset = H5Dcreate(group, "position_x", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
  for (i=0; i<size; i++) aux[i]=center_V[i].x;
@@ -99,6 +106,7 @@ void output_h5(){
  for (i=0; i<size; i++) aux[i]=center_V[i].z;
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, aux);
  H5Dclose(edataset);
+#endif
 
 #ifdef LB_FLUID
   edataset = H5Dcreate(group, "velocity_x", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
@@ -177,6 +185,8 @@ void output_h5(){
   fprintf(fout,"<Xdmf Version=\"2.0\">\n");
   fprintf(fout,"<Domain>\n");
   fprintf(fout,"<Grid Name=\"FiniteVolumeLB\" GridType=\"Uniform\">\n");
+#ifdef OUTPUT_H5_GRID
+  /* we write the grid coordinates - useful for the finite volume approach */ 
   fprintf(fout,"<Topology TopologyType=\"3DSMesh\" NumberOfElements=\"%d %d %d\"/>\n",NZ,NY,NX);
   fprintf(fout,"<Geometry GeometryType=\"X_Y_Z\">\n");
   fprintf(fout,"<DataItem Name=\"X\" Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
@@ -189,6 +199,17 @@ void output_h5(){
   fprintf(fout,"%s:/euler/position_z\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Geometry>\n");
+#else
+  fprintf(fout,"<Topology TopologyType=\"3DCoRectMesh\" NumberOfElements=\"%d %d %d\"/>\n",NZ,NY,NX);
+  fprintf(fout,"<Geometry GeometryType=\"ORIGIN_DXDYDZ\">\n");
+  fprintf(fout,"<DataItem Name=\"Z_Y_X\" Dimensions=\"3\" DataType=\"Float\" Format=\"XML\">\n");
+  fprintf(fout,"0.5 0.5 0.5\n");
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"<DataItem Name=\"DZ_DY_DX\" Dimensions=\"3\" DataType=\"Float\" Format=\"XML\">\n");
+  fprintf(fout,"1.0 1.0 1.0\n");
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Geometry>\n");
+#endif
 
 #ifdef LB_FLUID
   fprintf(fout,"<Attribute Name=\"velocity_x\" AttributeType=\"Scalar\" Center=\"Node\">\n");
