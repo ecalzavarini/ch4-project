@@ -16,6 +16,8 @@ void melting(){
   my_double lx,lz,norm;
  #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
 
+  my_double liquid_frac_status , liquid_frac_status_all;
+
   Ts = (my_double) property.T_solid;
   Cp = (my_double) property.specific_heat;
   Lf = (my_double) property.latent_heat;
@@ -128,6 +130,32 @@ void melting(){
 	free(mean_y);
 	free(mean_y_local);
  #endif /* end of LB_TEMPERATURE_MELTING_UNDEFORMABLE */
+
+
+ #ifdef LB_TEMPERATURE_MELTING_CHECK_REACH_YP
+	liquid_frac_status = liquid_frac_status_all = 0.0; 
+	j = LNY+BRD-1;
+
+	for (i = BRD; i < LNX+BRD; i++)
+	  for (k = BRD; k < LNZ+BRD; k++) {
+	    if(LNY_END == NY){
+	     if( liquid_frac[IDX(i,j,k)] == 1.0 ){ liquid_frac_status = 1.0;
+	      //	      fprintf(stderr,"i j k lf %d %d %d %e\n",i,j,k,liquid_frac[IDX(i,j,k)]);	
+	     }
+	    }
+        }
+
+  	MPI_Allreduce(&liquid_frac_status, &liquid_frac_status_all, 1 , MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+	// if(ROOT) fprintf(stderr,"status %e\n",liquid_frac_status_all);	
+	if(liquid_frac_status_all != 0.0){
+	  if(ROOT) fprintf(stderr,"Liquid melt has reach the y top wall! Exit.\n");
+	  MPI_Finalize();
+	  exit(-2);
+	}
+   
+ #endif /* end of LB_TEMPERATURE_MELTING_CHECK_YP */
+
 
 }
 #endif
