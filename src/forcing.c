@@ -453,12 +453,13 @@ void build_forcing(){
   fac = property.beta_t*temp; 
   if(property.beta2_t != 0.0) fac += property.beta2_t*temp*temp;
   //fac = property.beta_t;
-
-   #ifdef LB_TEMPERATURE_MELTING
-   /* This way if we are in a solid the force is not applied */
-   fac *= liquid_frac[IDX(i,j,k)]; 
-   #endif
-
+  
+     /* This way if we are in a solid the force is not applied */
+  /*  Unnecessary , this is done already in melting.c
+     #ifdef LB_TEMPERATURE_MELTING
+       fac *= liquid_frac[IDX(i,j,k)]; 
+     #endif
+  */
       force[IDX(i,j,k)].x += fac*property.gravity_x;
       force[IDX(i,j,k)].y += fac*property.gravity_y;
       force[IDX(i,j,k)].z += fac*property.gravity_z;
