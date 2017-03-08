@@ -10,6 +10,7 @@
 #define NEW_SENDRECV  /* does not use itermediate transfer buffers */
 
 /* OUTPUT */
+//#define OUTPUT_DIAGN_APPEND
 //#define OUTPUT_ASCII
 #define OUTPUT_H5
 #define OUTPUT_H5_GRID
@@ -88,7 +89,7 @@
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 
-//#define LB_FLUID_BC_X                                                     
+#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -168,11 +169,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Y_M_FLUX 
 //#define LB_TEMPERATURE_BC_Y_M_VARIABLE
 
-//#define LB_TEMPERATURE_BC_X
+#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_P_OUTLET
 //#define LB_TEMPERATURE_BC_X_M_OUTLET
-//#define LB_TEMPERATURE_BC_X_P_NOFLUX
-//#define LB_TEMPERATURE_BC_X_M_NOFLUX
+#define LB_TEMPERATURE_BC_X_P_NOFLUX
+#define LB_TEMPERATURE_BC_X_M_NOFLUX
 
 //#define LB_TEMPERATURE_BC_Z
 //#define LB_TEMPERATURE_BC_Z_P_OUTLET
@@ -213,7 +214,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_MELTING_SOLIDUS
 //#define LB_TEMPERATURE_MELTING_SOLIDUS_LINEAR
 //#define LB_TEMPERATURE_MELTING_UNDEFORMABLE
-#define LB_TEMPERATURE_MELTING_CHECK_REACH_YP
+//#define LB_TEMPERATURE_MELTING_CHECK_REACH_YP
 //#define LB_TEMPERATURE_FORCING_DIRECT
 //#define LB_FLUID_TEMPERATURE_NOZEROMODE
 //#define LB_TEMPERATURE_FORCING_CONSTANT_POWER
