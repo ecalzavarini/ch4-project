@@ -318,4 +318,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define METHOD_FORCING_GUO                                              
 #endif
 
-
+#ifdef LB_TEMPERATURE_BUOYANCY
+#ifndef LB_FLUID_FORCING_GRAVITY
+#define LB_FLUID_FORCING_GRAVITY
+#endif
+#endif
