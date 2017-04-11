@@ -53,7 +53,24 @@ void assign_parameters(){
 
     /* write the active define flags  */
     /* Note works only if the executable is where the code is */
-    system("cat define.h | grep '#def' | grep -v '//#def' > define.dat");
+    char s[] = {
+    #include "define.dat"
+    };
+    for (i=0 ; s[i] ; i++){
+      fprintf(stderr, "%c\n", s[i]);
+      if (s[i] == '-')
+        s[i] = '\n';
+    }
+    if ((fout = fopen("define.dat","w")) == NULL)
+      fprintf(stderr,"Error in creating define.dat\n");
+    else
+    {
+      fprintf(fout,s);
+      fclose(fout);
+    }
+
+
+    //system("cat define.h | grep '#def' | grep -v '//#def' > define.dat");
 
     /* From here on we read parameters from file */
 
