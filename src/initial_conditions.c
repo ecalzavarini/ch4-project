@@ -300,7 +300,7 @@ void initial_conditions(int restart)
       }
  #endif
  #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
-      val = 1.e-3;
+      val = property.noise_t;
       t[IDX(i,j,k)] += val*(2.0*myrand()-1.0);
  #endif
 

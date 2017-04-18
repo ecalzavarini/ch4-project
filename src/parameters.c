@@ -308,7 +308,12 @@ void assign_parameters(){
   #endif
   fprintf(fout,"Prandtl %e\n", property.nu/property.kappa);
   fclose(fout);
- #endif 
+ #endif
+ #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
+ /* Intensity of noise perturbation on the temperature field */
+   sprintf(name,"noise_t");
+   property.noise_t = (double)read_parameter(name);
+ #endif
  #ifdef LB_TEMPERATURE_FORCING
   sprintf(name,"Amp_t");
   property.Amp_t = read_parameter(name);

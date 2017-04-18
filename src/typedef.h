@@ -19,6 +19,13 @@ typedef struct {
   my_double zx,zy,zz;
 } tensor;
 
+/* Useful structures */
+typedef struct {
+  my_double xx,xy,xz;
+  my_double yy,yz;
+  my_double zz;
+} sym_tensor;
+
 #ifdef GRID_POP_D2Q9
 #define NPOP 9
 #endif
@@ -71,6 +78,9 @@ typedef struct {
   #ifdef LB_TEMPERATURE_BUOYANCY
   my_double beta_t,beta2_t;
   //  my_double gravity_x,gravity_y,gravity_z;
+  #endif
+  #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
+  my_double noise_t;
   #endif
   #ifdef LB_TEMPERATURE_FORCING
   my_double Amp_t;
