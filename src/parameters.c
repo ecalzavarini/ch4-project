@@ -51,13 +51,14 @@ void assign_parameters(){
     remove("param.dat");
     remove("numbers.dat");
 
-    /* write the active define flags  */
-    /* Note works only if the executable is where the code is */
+    /* Write the active define flags  */
     char s[] = {
     #include "define.dat"
     };
     for (i=0 ; s[i] ; i++){
+#ifdef DEBUG
       fprintf(stderr, "%c\n", s[i]);
+#endif
       if (s[i] == '-')
         s[i] = '\n';
     }
@@ -69,7 +70,7 @@ void assign_parameters(){
       fclose(fout);
     }
 
-
+    /* Old version: Note works only if the executable is where the source code is */
     //system("cat define.h | grep '#def' | grep -v '//#def' > define.dat");
 
     /* From here on we read parameters from file */
