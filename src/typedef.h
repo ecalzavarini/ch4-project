@@ -151,9 +151,12 @@ typedef struct {
     my_double critical_shear_rate_types, critical_shear_rate_min, critical_shear_rate_max;
     #endif
    #endif
-  #endif
- #endif
-#endif
+  #endif /* LAGRANGE_ORIENTATION */ 
+  #ifdef LAGRANGE_POLYMER
+   my_double tau_polymer, nu_polymer;
+  #endif /* LAGRANGE_POLYMER */
+ #endif /* LAGRANGE_GRADIENT */
+#endif /* LAGRANGE */
 } prop;
 
 
@@ -345,6 +348,10 @@ typedef struct {
     my_double px_jump,py_jump,pz_jump;
     #endif
    #endif
+  #endif
+  #ifdef LAGRANGE_POLYMER
+  my_double cxx,cyy,czz,cxy,cyz,cxz;
+  my_double dt_cxx,dt_cyy,dt_czz,dt_cxy,dt_cyz,dt_cxz;
   #endif
  #endif
 #endif

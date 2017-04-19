@@ -140,3 +140,12 @@ my_double tau_t_les(int i , int j , int k);
 #ifdef LB_SCALAR_LES
 my_double tau_s_les(int i , int j , int k);
 #endif
+
+
+/* polymer.c */
+#ifdef LAGRANGE_POLYMER
+ #ifdef LAGRANGE_POLYMER_FEEDBACK
+  void add_lagrangian_polymer_feedback_on_the_flow();
+ #endif
+  void evolve_lagrangian_polymer_conformation_tensor(int ipart);
+#endif
