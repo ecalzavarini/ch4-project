@@ -41,7 +41,7 @@
 /* FLUID */
 #define LB_FLUID 
 //#define LB_FLUID_PAST
-//#define LB_FLUID_INITIAL_KOLMOGOROV 
+#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -58,7 +58,7 @@
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
-//#define LB_FLUID_FORCING_KOLMOGOROV
+#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_DIRECT
@@ -80,8 +80,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
@@ -89,7 +89,7 @@
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 
-#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -138,14 +138,14 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE
-#define LB_TEMPERATURE_INITIAL_CONSTANT
-#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
+//#define LB_TEMPERATURE_INITIAL_CONSTANT
+//#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_BOT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_TOP
 //#define LB_TEMPERATURE_INITIAL_SPOT
@@ -158,8 +158,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BUOYANCY_T0_BOT
 //#define LB_TEMPERATURE_BUOYANCY_T0_TOP
 //#define LB_TEMPERATURE_BUOYANCY_T0_GRAD
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_FLUX
@@ -169,11 +169,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Y_M_FLUX 
 //#define LB_TEMPERATURE_BC_Y_M_VARIABLE
 
-#define LB_TEMPERATURE_BC_X
+//#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_P_OUTLET
 //#define LB_TEMPERATURE_BC_X_M_OUTLET
-#define LB_TEMPERATURE_BC_X_P_NOFLUX
-#define LB_TEMPERATURE_BC_X_M_NOFLUX
+//#define LB_TEMPERATURE_BC_X_P_NOFLUX
+//#define LB_TEMPERATURE_BC_X_M_NOFLUX
 
 //#define LB_TEMPERATURE_BC_Z
 //#define LB_TEMPERATURE_BC_Z_P_OUTLET
@@ -260,9 +260,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_GRAD
 
 /* Lagragian parts */
-//#define LAGRANGE
+#define LAGRANGE
 //#define LAGRANGE_DEBUG
-//#define LAGRANGE_WRAP
+#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
 //#define LAGRANGE_ADD_TRACER
 //#define LAGRANGE_ADD_TRACER_STATIC
@@ -270,7 +270,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
 //#define LAGRANGE_TAUDRAG_INCREMENT_LOG
-//#define LAGRANGE_GRADIENT 
+#define LAGRANGE_GRADIENT 
 //#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_ADDEDMASS_INCREMENT_LOG
 //#define LAGRANGE_ADDEDMASS_LIFT
@@ -289,6 +289,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_ORIENTATION_ACTIVE_JUMP_HIGHPASS  // the default is LOWPASS
 //#define LAGRANGE_ORIENTATION_ACTIVE_JUMP_TEMPERATURE
 //#define LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC
+#define LAGRANGE_POLYMER
+#define LAGRANGE_POLYMER_FEEDBACK
 
 /* LES */
 //#define LB_FLUID_LES

@@ -2,7 +2,6 @@
 
 #ifdef LAGRANGE
 
-
 /* allocate particle containers */
 void allocate_particles(){        
 
@@ -576,6 +575,26 @@ phi = two_pi*myrand();
   #endif
  #endif
 #endif
+#ifdef LAGRANGE_POLYMER
+ vec = random_vector();
+ #ifdef GRID_POP_D2Q9
+ /* generate a random vector in the x,y plane */
+ vec = random_vector_2d();
+ #endif
+ (tracer+i)->cxx = vec.x;
+ (tracer+i)->cyy = vec.y;
+ (tracer+i)->czz = vec.z;
+ (tracer+i)->cxy = 0.0;
+ (tracer+i)->cyz = 0.0;
+ (tracer+i)->cxz = 0.0;
+ /* should be not-necessary */
+ (tracer+i)->dt_cxx = 0.0;
+ (tracer+i)->dt_cyy = 0.0;
+ (tracer+i)->dt_czz = 0.0;
+ (tracer+i)->dt_cxy = 0.0;
+ (tracer+i)->dt_cyz = 0.0;
+ (tracer+i)->dt_cxz = 0.0;
+#endif
  }/* end of  loop on particles */
 
 /*
@@ -967,7 +986,7 @@ void output_particles(){
     char XMF_FILE_NAME[128];
 
     sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,itime);
-    if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
+    //if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
 #ifdef LAGRANGE_OUTPUT_DEBUG
     if(ROOT){
@@ -981,6 +1000,8 @@ void output_particles(){
     if(itime%((int)(property.time_dump_lagr/property.time_dt))==0){
 
 #ifdef OUTPUT_H5
+   if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
+
     /* First check how many particles in each processor and compute offset */
     rcounts = (int *)malloc(nprocs*sizeof(int)); 
 
@@ -1225,6 +1246,41 @@ void output_particles(){
  #endif
 #endif
 
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_POLYMER		
+		/* CONFORMATION TENSOR */
+		dataset_id = H5Dcreate(group, "cxx", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->cxx;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "cyy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->cyy;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "czz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->czz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "cxy", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->cxy;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "cyz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->cyz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "cxz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->cxz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+ #endif
+#endif
+
 #ifdef LB_TEMPERATURE
 		/* WRITE PARTICLE TEMPERATURE */		
 		dataset_id = H5Dcreate(group, "temperature", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
@@ -1294,7 +1350,7 @@ void output_particles(){
   // if(ROOT) rename(H5FILE_NAME_PARTICLE, NEW_H5FILE_NAME);
 
 
-  /* Xml file */
+  /* Xml file see http://www.xdmf.org */
   if(ROOT){
   sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
   sprintf(NEW_H5FILE_NAME,"particle_%d.h5",itime);
@@ -1495,6 +1551,34 @@ void output_particles(){
    #endif
   #endif
  #endif       
+#endif
+
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_POLYMER
+		/* conformation tensor */
+                fprintf(fout,"<Attribute Name=\"polymer conformation tensor\" AttributeType=\"Tensor6\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 6\" \n   Function=\"JOIN($0,$1,$2,$3,$4,$5)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/cxx\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/cxy\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/cxz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/cyy\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/cyz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/czz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n"); 
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -2322,7 +2406,11 @@ void move_particles(){
  #endif
 
 #endif
-   
+#ifdef LAGRANGE_GRADIENT
+ #ifdef LAGRANGE_POLYMER
+  evolve_lagrangian_polymer_conformation_tensor(ipart);
+ #endif
+#endif   
 
 }/* end of loop on particles */
 

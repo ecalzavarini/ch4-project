@@ -25,7 +25,7 @@ ym_wall_velocity_z 0
 yp_wall_velocity_x -0.01
 yp_wall_velocity_z 0
 
-Amp_x 0.000
+Amp_x 0.0001
 Amp_y 0.000
 Amp_z 0.000
 
@@ -67,7 +67,7 @@ beta_s 0.001897778
 Amp_s 0.01
 
 time_dump_lagr 100
-particle_number 16000
+particle_number 4000
 
 particle_radius_types 4
 particle_radius_min 1
@@ -112,3 +112,6 @@ jump_time_max 10.0
 critical_shear_rate_types 1
 critical_shear_rate_min 0.0
 critical_shear_rate_max 100.
+
+tau_polymer 5
+nu_polymer 0.5

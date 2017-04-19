@@ -1,7 +1,12 @@
+#include "common_object.h"
+
+#ifdef LAGRANGE_POLYMER
+ #ifdef LAGRANGE_POLYMER_FEEDBACK
 /* Extrapolation, for the moment only with regular grid of unit spacing */
-void add_extra_stress_divergence_extrapolated_from_particles(my_double *f){
+void add_lagrangian_polymer_feedback_on_the_flow(){
  point_particle part;
- mydouble cxx,cyy,czz,cxy,cyz,cxz;
+ my_double fac;
+ my_double cxx,cyy,czz,cxy,cyz,cxz;
 
  int ipart,im,jm,km,ip,jp,kp;
  double dxm,dxp,dym,dyp,dzm,dzp;
@@ -10,8 +15,8 @@ void add_extra_stress_divergence_extrapolated_from_particles(my_double *f){
  double f_im_jm_km , f_ip_jm_km , f_im_jp_km , f_im_jm_kp , f_ip_jp_km , f_im_jp_kp , f_ip_jm_kp , f_ip_jp_kp; 
 
  double dx_jm_km , dx_jp_kp , dx_jp_km , dx_jm_kp; 
- double dy_im_km , dy_im_km , dy_im_km , dy_im_km; 
- double dz_im_jm , dz_im_jm , dz_im_jm , dz_im_jm; 
+ double dy_im_km , dy_ip_kp , dy_ip_km , dy_im_kp; 
+ double dz_im_jm , dz_ip_jp , dz_ip_jm , dz_im_jp; 
 
  for (ipart=0;ipart<npart;ipart++) {
 
@@ -29,7 +34,7 @@ void add_extra_stress_divergence_extrapolated_from_particles(my_double *f){
   cyy = cyy -1;
   czz = czz -1;
 
-  fac = nu_polym / tau_polym;
+  fac = property.nu_polymer / property.tau_polymer;
 
    /* get coordinates in the domain */
   part.x = wrap( (tracer+ipart)->x ,  property.SX);
@@ -104,46 +109,48 @@ kp =  km + 1;
      (2) dx cxy + dy cyy + dz cyz
      (3) dx cxz + dy cyz + dz czz
   */
+
+  // fprintf(stderr,"%d %d %d %d %d %d\n",im,ip,jm,jp,km,kp);
  
   /* divergence x */
-  f[IDX(im, jm, km)].x +=  fac*( cxx * dx_jm_km + cxy * dy_im_km + cxz * dz_im_jm ); 
-  f[IDX(ip, jm, km)].x +=  fac*( cxx * dx_jm_km + cxy * dy_ip_km + cxz * dz_ip_jm); 
-  f[IDX(im, jp, km)].x +=  fac*( cxx * dx_jp_km + cxy * dy_im_km + cxz * dz_im_jp); 
-  f[IDX(im, jm, kp)].x +=  fac*( cxx * dx_jm_kp + cxy * dy_im_kp + cxz * dz_im_jm); 
-  f[IDX(ip, jp, km)].x +=  fac*( cxx * dx_jp_km + cxy * dy_ip_km + cxz * dz_ip_jp); 
-  f[IDX(im, jp, kp)].x +=  fac*( cxx * dx_jp_kp + cxy * dy_im_kp + cxz * dz_im_jp); 
-  f[IDX(ip, jm, kp)].x +=  fac*( cxx * dx_jm_kp + cxy * dy_ip_kp + cxz * dz_ip_jm); 
-  f[IDX(ip, jp, kp)].x +=  fac*( cxx * dx_jp_kp + cxy * dy_ip_kp + cxz * dz_ip_jp); 
+  force[IDX(im, jm, km)].x +=  fac*( cxx * dx_jm_km + cxy * dy_im_km + cxz * dz_im_jm); 
+  force[IDX(ip, jm, km)].x +=  fac*( cxx * dx_jm_km + cxy * dy_ip_km + cxz * dz_ip_jm); 
+  force[IDX(im, jp, km)].x +=  fac*( cxx * dx_jp_km + cxy * dy_im_km + cxz * dz_im_jp); 
+  force[IDX(im, jm, kp)].x +=  fac*( cxx * dx_jm_kp + cxy * dy_im_kp + cxz * dz_im_jm); 
+  force[IDX(ip, jp, km)].x +=  fac*( cxx * dx_jp_km + cxy * dy_ip_km + cxz * dz_ip_jp); 
+  force[IDX(im, jp, kp)].x +=  fac*( cxx * dx_jp_kp + cxy * dy_im_kp + cxz * dz_im_jp); 
+  force[IDX(ip, jm, kp)].x +=  fac*( cxx * dx_jm_kp + cxy * dy_ip_kp + cxz * dz_ip_jm); 
+  force[IDX(ip, jp, kp)].x +=  fac*( cxx * dx_jp_kp + cxy * dy_ip_kp + cxz * dz_ip_jp); 
 
   /* divergence y */
-  f[IDX(im, jm, km)].y +=  fac*( cxy * dx_jm_km + cyy * dy_im_km + cyz * dz_im_jm ); 
-  f[IDX(ip, jm, km)].y +=  fac*( cxy * dx_jm_km + cyy * dy_ip_km + cyz * dz_ip_jm); 
-  f[IDX(im, jp, km)].y +=  fac*( cxy * dx_jp_km + cyy * dy_im_km + cyz * dz_im_jp); 
-  f[IDX(im, jm, kp)].y +=  fac*( cxy * dx_jm_kp + cyy * dy_im_kp + cyz * dz_im_jm); 
-  f[IDX(ip, jp, km)].y +=  fac*( cxy * dx_jp_km + cyy * dy_ip_km + cyz * dz_ip_jp); 
-  f[IDX(im, jp, kp)].y +=  fac*( cxy * dx_jp_kp + cyy * dy_im_kp + cyz * dz_im_jp); 
-  f[IDX(ip, jm, kp)].y +=  fac*( cxy * dx_jm_kp + cyy * dy_ip_kp + cyz * dz_ip_jm); 
-  f[IDX(ip, jp, kp)].y +=  fac*( cxy * dx_jp_kp + cyy * dy_ip_kp + cyz * dz_ip_jp); 
+  force[IDX(im, jm, km)].y +=  fac*( cxy * dx_jm_km + cyy * dy_im_km + cyz * dz_im_jm); 
+  force[IDX(ip, jm, km)].y +=  fac*( cxy * dx_jm_km + cyy * dy_ip_km + cyz * dz_ip_jm); 
+  force[IDX(im, jp, km)].y +=  fac*( cxy * dx_jp_km + cyy * dy_im_km + cyz * dz_im_jp); 
+  force[IDX(im, jm, kp)].y +=  fac*( cxy * dx_jm_kp + cyy * dy_im_kp + cyz * dz_im_jm); 
+  force[IDX(ip, jp, km)].y +=  fac*( cxy * dx_jp_km + cyy * dy_ip_km + cyz * dz_ip_jp); 
+  force[IDX(im, jp, kp)].y +=  fac*( cxy * dx_jp_kp + cyy * dy_im_kp + cyz * dz_im_jp); 
+  force[IDX(ip, jm, kp)].y +=  fac*( cxy * dx_jm_kp + cyy * dy_ip_kp + cyz * dz_ip_jm); 
+  force[IDX(ip, jp, kp)].y +=  fac*( cxy * dx_jp_kp + cyy * dy_ip_kp + cyz * dz_ip_jp); 
 
   /* divergence z */
-  f[IDX(im, jm, km)].z +=  fac*( cxz * dx_jm_km + cyz * dy_im_km + czz * dz_im_jm); 
-  f[IDX(ip, jm, km)].z +=  fac*( cxz * dx_jm_km + cyz * dy_ip_km + czz * dz_ip_jm); 
-  f[IDX(im, jp, km)].z +=  fac*( cxz * dx_jp_km + cyz * dy_im_km + czz * dz_im_jp); 
-  f[IDX(im, jm, kp)].z +=  fac*( cxz * dx_jm_kp + cyz * dy_im_kp + czz * dz_im_jm); 
-  f[IDX(ip, jp, km)].z +=  fac*( cxz * dx_jp_km + cyz * dy_ip_km + czz * dz_ip_jp); 
-  f[IDX(im, jp, kp)].z +=  fac*( cxz * dx_jp_kp + cyz * dy_im_kp + czz * dz_im_jp); 
-  f[IDX(ip, jm, kp)].z +=  fac*( cxz * dx_jm_kp + cyz * dy_ip_kp + czz * dz_ip_jm); 
-  f[IDX(ip, jp, kp)].z +=  fac*( cxz * dx_jp_kp + cyz * dy_ip_kp + czz * dz_ip_jp); 
-
+  force[IDX(im, jm, km)].z +=  fac*( cxz * dx_jm_km + cyz * dy_im_km + czz * dz_im_jm); 
+  force[IDX(ip, jm, km)].z +=  fac*( cxz * dx_jm_km + cyz * dy_ip_km + czz * dz_ip_jm); 
+  force[IDX(im, jp, km)].z +=  fac*( cxz * dx_jp_km + cyz * dy_im_km + czz * dz_im_jp); 
+  force[IDX(im, jm, kp)].z +=  fac*( cxz * dx_jm_kp + cyz * dy_im_kp + czz * dz_im_jm); 
+  force[IDX(ip, jp, km)].z +=  fac*( cxz * dx_jp_km + cyz * dy_ip_km + czz * dz_ip_jp); 
+  force[IDX(im, jp, kp)].z +=  fac*( cxz * dx_jp_kp + cyz * dy_im_kp + czz * dz_im_jp); 
+  force[IDX(ip, jm, kp)].z +=  fac*( cxz * dx_jm_kp + cyz * dy_ip_kp + czz * dz_ip_jm); 
+  force[IDX(ip, jp, kp)].z +=  fac*( cxz * dx_jp_kp + cyz * dy_ip_kp + czz * dz_ip_jp); 
 
  }/* end of loop on ipart */
 
-}/* end of interp scalar*/
+}/* end of add_... function */
+ #endif /* LAGRANGE_POLYMER_FEEDBACK */
 
-
-void evolve_lagrangian_conformation_tensor(int ipart){
+void evolve_lagrangian_polymer_conformation_tensor(int ipart){
 
   int i,j,k;
+  my_double invtau;
   my_double matI[3][3];
   my_double matC[3][3];
   my_double matF[3][3];
@@ -151,7 +158,7 @@ void evolve_lagrangian_conformation_tensor(int ipart){
   my_double matA[3][3];
 
               /* polymer relaxation time */
-              invtau = property.tau_polym;
+              invtau = property.tau_polymer;
 
               /* Define the identity matrix */
               matI[0][0] = matI[1][1] = matI[2][2] = 1.0;
@@ -179,9 +186,9 @@ void evolve_lagrangian_conformation_tensor(int ipart){
                 for (j=0; j<3; j++){
 		  matF[i][j] = 0.0;
 		  for (k=0; k<3; k++){
-		   matF[i][j] +=  matA[i][k]*matC[k][j] + matC[i][k]*matA[j][k]; 
+		   matF[i][j] +=  matA[k][i]*matC[k][j] + matC[i][k]*matA[k][j]; 
 		  }
-		  matF[i][j] += (matI[i][j] - matC[i][j])*invtau
+		  matF[i][j] += (matI[i][j] - matC[i][j])*invtau;
 		}
 
 
@@ -200,7 +207,7 @@ void evolve_lagrangian_conformation_tensor(int ipart){
 		for (i=0; i<=j; i++){
                   matC[i][j] =  matC[i][j] + 0.5*property.time_dt*( 3.*matF[i][j] -  matFold[i][j] );
                   /* copy the old term */
-                  matFold[i][j]  = tensF[i][j];
+                  matFold[i][j]  = matF[i][j];
                 }
 	      }
 
@@ -222,3 +229,5 @@ void evolve_lagrangian_conformation_tensor(int ipart){
 
 
 }/* end of evolve_lagrangian_conformation_tensor */
+
+#endif /* LAGRANGE_POLYMER */

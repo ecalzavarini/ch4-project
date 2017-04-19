@@ -144,15 +144,20 @@ int main(int argc, char **argv){
 #ifdef LAGRANGE       
 	boundary_conditions_hydro();
         interpolate_vector_at_particles(u,'u');
-#ifdef LB_TEMPERATURE
+ #ifdef LB_TEMPERATURE
         interpolate_scalar_at_particles(t,'t');
-#endif
-#ifdef LB_SCALAR
+ #endif
+ #ifdef LB_SCALAR
         interpolate_scalar_at_particles(s,'s');
-#endif
+ #endif
 	move_particles();
         output_particles();       /* binary */
 	dump_particle_averages(); /* ascii diagnostic averages */
+ #ifdef LAGRANGE_POLYMER
+  #ifdef LAGRANGE_POLYMER_FEEDBACK
+	add_lagrangian_polymer_feedback_on_the_flow(); /* divergence of extra stress */
+  #endif
+ #endif
 #endif
 	}/* loop on time: time_now */
 
