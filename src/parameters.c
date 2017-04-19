@@ -609,6 +609,19 @@ void assign_parameters(){
    #endif /* LAGRANGE_ORIENTATION_ACTIVE */
   #endif /* LAGRANGE_ORIENTATION */
  #endif /* LAGRANGE_GRADIENT */
+ 
+ #ifdef LAGRANGE_GRADIENT 
+  #ifdef LAGRANGE_POLYMER
+   /* polymer relaxtion time */
+   sprintf(name,"tau_polymer");
+   property.tau_polymer = read_parameter(name); 
+   #ifdef LAGRANGE_POLYMER_FEEDBACK
+    /* polymer viscosity */
+    sprintf(name,"nu_polymer");
+    property.nu_polymer = read_parameter(name); 
+   #endif /* LAGRANGE_POLYMER_FEEDBACK */
+  #endif /* LAGRANGE_POLYMER */
+ #endif /* LAGRANGE_GRADIENT */
 
  /* Here we define the number of tracer types to add. Normally "fluid_tracer" is set to one */
       property.fluid_tracers = 0.0; 
