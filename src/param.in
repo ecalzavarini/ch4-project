@@ -17,7 +17,7 @@ time_end 20000.
 time_dump_field 100.
 time_dump_diagn 10.
 
-tau_u 1.0
+tau_u 1.1
 nu_add 0.0
 
 ym_wall_velocity_x 0.1 
@@ -113,5 +113,5 @@ critical_shear_rate_types 1
 critical_shear_rate_min 0.0
 critical_shear_rate_max 100.
 
-tau_polymer 5
-nu_polymer 0.5
+tau_polymer 1000
+nu_polymer  0.14

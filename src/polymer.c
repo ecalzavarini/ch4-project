@@ -30,9 +30,9 @@ void add_lagrangian_polymer_feedback_on_the_flow(){
 
   /* C_ij - \delta_ij  */
 
-  cxx = cxx -1;
-  cyy = cyy -1;
-  czz = czz -1;
+  cxx = cxx -1.0;
+  cyy = cyy -1.0;
+  czz = czz -1.0;
 
   fac = property.nu_polymer / property.tau_polymer;
 
@@ -157,8 +157,12 @@ void evolve_lagrangian_polymer_conformation_tensor(int ipart){
   my_double matFold[3][3];
   my_double matA[3][3];
 
+  int dim = 3;  /* grid dimension */
+#ifdef GRID_POP_D2Q9
+  dim = 2;
+#endif
               /* polymer relaxation time */
-              invtau = property.tau_polymer;
+              invtau = 1./property.tau_polymer;
 
               /* Define the identity matrix */
               matI[0][0] = matI[1][1] = matI[2][2] = 1.0;
@@ -169,6 +173,11 @@ void evolve_lagrangian_polymer_conformation_tensor(int ipart){
               matA[0][0]=(tracer+ipart)->dx_ux ; matA[0][1]=(tracer+ipart)->dy_ux; matA[0][2]=(tracer+ipart)->dz_ux;
               matA[1][0]=(tracer+ipart)->dx_uy ; matA[1][1]=(tracer+ipart)->dy_uy; matA[1][2]=(tracer+ipart)->dz_uy;
               matA[2][0]=(tracer+ipart)->dx_uz ; matA[2][1]=(tracer+ipart)->dy_uz; matA[2][2]=(tracer+ipart)->dz_uz;   
+
+#ifdef DEBUG
+	      if( (tracer+ipart)->name ==0)fprintf(stdout,"before %e %e %e %e %e %e\n", (tracer+ipart)->cxx, (tracer+ipart)->cyy, (tracer+ipart)->czz ,
+						                                 (tracer+ipart)->cxy, (tracer+ipart)->cyz, (tracer+ipart)->cxz );
+#endif
 
               /* conformation */
               matC[0][0]=(tracer+ipart)->cxx ; matC[0][1]=(tracer+ipart)->cxy; matC[0][2]=(tracer+ipart)->cxz;
@@ -182,11 +191,11 @@ void evolve_lagrangian_polymer_conformation_tensor(int ipart){
 
 	      /* Can be optimized by taking into account symmetry , but be careful! */
 	      /* compute ( grad_u * c + c * grad_u^T) + (1-c)/\tau_polym */
-              for (i=0; i<3; i++)
-                for (j=0; j<3; j++){
+              for (i=0; i<dim; i++)
+                for (j=0; j<dim; j++){
 		  matF[i][j] = 0.0;
-		  for (k=0; k<3; k++){
-		   matF[i][j] +=  matA[k][i]*matC[k][j] + matC[i][k]*matA[k][j]; 
+		  for (k=0; k<dim; k++){
+		  matF[i][j] +=  matA[k][i]*matC[k][j] + matC[i][k]*matA[k][j]; 
 		  }
 		  matF[i][j] += (matI[i][j] - matC[i][j])*invtau;
 		}
@@ -195,19 +204,15 @@ void evolve_lagrangian_polymer_conformation_tensor(int ipart){
 	      /* NOTE THAT the loop here below are only on i<=j indexes due to the symmetry */
 	      /* if restart Euler 1st order C = C0 + (DT)*F  */
 	      if(itime==0 && resume==0){
-              for (j=0; j<3; j++)
+              for (j=0; j<dim; j++)
 		for (i=0; i<=j; i++){              
                     matC[i][j] =  matC[i][j] + property.time_dt*matF[i][j];        
-                    /* copy the old term */
-                    matFold[i][j]  = matF[i][j];
                 }
 	      }else{
 		/* AB 2nd order C = C0 + (DT/2)*(3*F - Fold)  */
-              for (j=0; j<3; j++)
+              for (j=0; j<dim; j++)
 		for (i=0; i<=j; i++){
                   matC[i][j] =  matC[i][j] + 0.5*property.time_dt*( 3.*matF[i][j] -  matFold[i][j] );
-                  /* copy the old term */
-                  matFold[i][j]  = matF[i][j];
                 }
 	      }
 
@@ -227,6 +232,10 @@ void evolve_lagrangian_polymer_conformation_tensor(int ipart){
 	      (tracer+ipart)->dt_cyz = matF[1][2];
 	      (tracer+ipart)->dt_cxz = matF[0][2]; 
 
+#ifdef DEBUG
+	      if( (tracer+ipart)->name ==0)fprintf(stdout,"after %e %e %e %e %e %e\n", (tracer+ipart)->cxx, (tracer+ipart)->cyy, (tracer+ipart)->czz ,
+						                                 (tracer+ipart)->cxy, (tracer+ipart)->cyz, (tracer+ipart)->cxz );
+#endif
 
 }/* end of evolve_lagrangian_conformation_tensor */
 
