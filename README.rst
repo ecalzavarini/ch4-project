@@ -45,3 +45,14 @@ To be written
 Aknowledgments:
 ======
 Partial support from French National Agency for Research (ANR) by the grant (SEAS: ANR-13-JS09-0010)
+
+Bibliography:
+======
+This code has been employed in the following studies:
+
+1) Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A on\
+e-to-one accuracy and performance study, K.Shrestha, G.Mompean and E.Calzavarini, Phys. Rev. E 93, 023306\
+ (2016).
+
+2) Micro-bubbles and micro-particles are not faithful tracers of turbulent acceleration, Varghese Mathai, Enrico Calzavarini,  Jon Brons, Chao Sun and Detlef Lohse, Phys. Rev. Lett. 117, 024501 (2016).
+
