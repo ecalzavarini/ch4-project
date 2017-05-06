@@ -179,6 +179,17 @@ void initial_conditions(int restart)
 	  p[IDX(i,j,k)].p[pp] += 3.0*fn*wgt[pp]*( (2.0*myrand()-1.0)*c[pp].x + (2.0*myrand()-1.0)*c[pp].y + (2.0*myrand()-1.0)*c[pp].z );  
 #endif 
 
+#ifdef LB_FLUID_INITIAL_ADD_NOISE
+	/* add random noise of amplitude +noise_u or -noise_u only on the x velocity component */ 
+    val = 2.0*myrand()-1.0;
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
+        y = center_V[IDX(i, j, k)].y;
+        if ( y <= property.layer_height )
+    #endif
+    for (pp = 0; pp < NPOP; pp++)
+        p[IDX(i,j,k)].p[pp] += 6.0*wgt[pp]*property.noise_u*c[pp].x*((val > 0) - (val < 0));
+#endif
+
    
 #ifdef LB_FLUID_INITIAL_LANDSCAPE
 	/* assigning density value 1 in solid regions (landscape = 1) */  
@@ -290,7 +301,7 @@ void initial_conditions(int restart)
  #endif
 
  #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
-      val = 1.e-3;
+      val = 1.e-3; 
       if(NZ==1){ 
         if(center_V[IDX(i, j, k)].x<property.SX/2){ t[IDX(i,j,k)] += val; }else{ t[IDX(i,j,k)] -= val; }
       }else{
