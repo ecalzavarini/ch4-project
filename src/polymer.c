@@ -29,7 +29,6 @@ void add_lagrangian_polymer_feedback_on_the_flow(){
   cxz = (tracer+ipart)->cxz;
 
   /* C_ij - \delta_ij  */
-
   cxx = cxx -1.0;
   cyy = cyy -1.0;
   czz = czz -1.0;
