@@ -196,6 +196,11 @@ void assign_parameters(){
    #endif
   #endif
  #endif
+ #ifdef LB_FLUID_INITIAL_ADD_NOISE
+     /* Intensity of noise perturbation on the velocity field */
+     sprintf(name,"noise_u");
+     property.noise_u = (double)read_parameter(name);
+ #endif
  #ifdef LB_FLUID_FORCING
   /* forcing Amplitude */
   fprintf(stderr,"YES <- LB_FLUID_FORCING\n");

@@ -65,6 +65,9 @@ typedef struct {
    #endif
   #endif
  #endif
+ #ifdef LB_FLUID_INITIAL_ADD_NOISE
+  my_double noise_u;
+ #endif
  #ifdef LB_FLUID_FORCING
   my_double Amp_x,Amp_y,Amp_z;
   #ifdef LB_FLUID_FORCING_GRAVITY
