@@ -360,6 +360,15 @@ void assign_parameters(){
     property.cavity_radius = read_parameter(name);
     fprintf(stderr,"The hemispherical pond has -> cavity_radius = %e\n", property.cavity_radius );
     #endif /* end of LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE */
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY
+    sprintf(name,"cavity_SX");
+    property.cavity_SX = read_parameter(name);
+    sprintf(name,"cavity_SY");
+    property.cavity_SY = read_parameter(name);
+    sprintf(name,"cavity_SZ");
+    property.cavity_SZ = read_parameter(name);
+    fprintf(stderr,"The cavity size ->  %e x %e x %e\n", property.cavity_SX, property.cavity_SY, property.cavity_SZ);
+    #endif /* end of LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY */
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
      sprintf(name,"layer_height");
      property.layer_height = read_parameter(name);

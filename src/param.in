@@ -5,17 +5,17 @@ resume_s 0
 
 NX 100
 NY 100
-NZ 1
+NZ 100
 
 SX 100
 SY 100
-SZ 1
+SZ 100
 
 time_dt 1.0
 time_start 0.0
-time_end 60000.
-time_dump_field 1000.
-time_dump_diagn 10.
+time_end 1.
+time_dump_field 1.
+time_dump_diagn 1.
 
 tau_u 1.0
 nu_add 0.0
@@ -40,7 +40,7 @@ T_ref2 0.0
 grad_T_bot 0.0   -0.0078125
 grad_T_top 0.0   -0.0078125
 
-beta_t  0.002  0.00006944444444444
+beta_t  0.0001  0.00006944444444444
 beta2_t 0.0
 
 noise_t 0.0 3.e-17
@@ -49,7 +49,7 @@ gravity_x 0.0
 gravity_y 1.0  
 gravity_z 0.0
 
-Amp_t 0.0  0.0003  3.91971e-05   0.00005  0.00130208333333333 
+Amp_t 0.0  0.0016  3.91971e-05   0.00005  0.00130208333333333 
 attenuation 0.0390625  
 
 T_solid -0.5
@@ -57,7 +57,10 @@ latent_heat 1
 specific_heat 1
 tau_solid 1.1
 layer_height 20
-cavity_radius 80
+cavity_radius 40
+cavity_SX 50
+cavity_SY 25
+cavity_SZ 50
 
 tau_s 0.8
 S_bot 1.

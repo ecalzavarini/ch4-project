@@ -323,6 +323,55 @@ void initial_conditions(int restart)
     t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT*erf(lambda*y/property.layer_height)/erf(lambda)) );
 #endif  
  
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY_TEMPERATURE
+  x = abs(center_V[IDX(i, j, k)].x - property.SX/2.0);
+  y = center_V[IDX(i, j, k)].y; 
+  z = abs(center_V[IDX(i, j, k)].z - property.SZ/2.0);
+ #ifdef GRID_POP_D2Q9  /* 2D simulations */
+  if( x < property.cavity_SX/2 && y < property.cavity_SY )
+  {
+    my_double DT,A,mpx;
+    DT = property.T_bot - property.T_top;
+    for (int m=1;m<100;m++)
+    {
+    	mpx = m*one_pi/property.cavity_SX;
+    	A = 2*DT*(1-cos(m*one_pi))/(m*one_pi*sinh(mpx*property.cavity_SY));
+    	t[IDX(i,j,k)] += A*sin(mpx*(x+property.cavity_SX/2))*sinh(mpx*(property.cavity_SY-y));
+    }
+  }
+ #endif
+ #ifdef GRID_POP_D3Q19 /* 3D simulations */
+  if( x < property.cavity_SX/2 && y < property.cavity_SY && z < property.cavity_SZ/2)
+  {
+    my_double DT,mpx,npz,K,A;
+    DT = property.T_bot - property.T_top;
+    for (int m=1;m<10;m++)
+    	for (int n=1;n<10;n++){
+    		mpx = m*one_pi/property.cavity_SX;
+    		npz = n*one_pi/property.cavity_SZ;
+    		K = sqrt(mpx*mpx + npz*npz);
+    		A = 4*DT*(1-cos(n*one_pi))*(1-cos(m*one_pi))/(m*n*one_pi*one_pi*sinh(K*property.cavity_SY));
+    		t[IDX(i,j,k)] += A*sin(mpx*(x+property.cavity_SX/2))*sin(npz*(z+property.cavity_SZ/2))*sinh(K*(property.cavity_SY-y));
+    	}
+  }
+ #endif
+#endif //LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY
+
+#ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE_TEMPERATURE   
+  x = center_V[IDX(i, j, k)].x - property.SX/2.0;
+  y = center_V[IDX(i, j, k)].y; 
+  z = center_V[IDX(i, j, k)].z - property.SZ/2.0;
+  val = sqrt(x*x + y*y + z*z);
+  if( val < property.cavity_radius ){
+    my_double DT,radius;
+    DT = property.T_bot - property.T_top;
+    radius = val / property.cavity_radius;
+    t[IDX(i,j,k)] = property.T_bot;
+    for (int m=1;m<100;m++)
+    	t[IDX(i,j,k)] += (4*DT/one_pi)*( pow(radius,2*m-1) * sin( (2*m-1) * atan2(-y,sqrt(x*x+z*z)) ) ) / (2*m-1);
+  }
+#endif //LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
+
 
 
 	/* on the populations */
@@ -353,7 +402,20 @@ void initial_conditions(int restart)
       z = center_V[IDX(i, j, k)].z - property.SZ/2.0;
       val = sqrt(x*x + y*y + z*z);
       if( val > property.cavity_radius ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;
-    #endif
+    #endif //LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY      
+      x = abs(center_V[IDX(i, j, k)].x - property.SX/2.0);
+      y = center_V[IDX(i, j, k)].y;
+      z = abs(center_V[IDX(i, j, k)].z - property.SZ/2.0);
+      #ifdef GRID_POP_D2Q9
+      if( x > property.cavity_SX/2 || y > property.cavity_SY )
+        liquid_frac[IDX(i, j, k)] = liquid_frac_old[IDX(i, j, k)] = 0.0;
+      #endif
+      #ifdef GRID_POP_D3Q19
+      if( x > property.cavity_SX/2 || y > property.cavity_SY ||  z > property.cavity_SZ/2)
+        liquid_frac[IDX(i, j, k)] = liquid_frac_old[IDX(i, j, k)] = 0.0;
+      #endif
+    #endif //LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
       y = center_V[IDX(i, j, k)].y; 
       if( y > property.layer_height ) liquid_frac[IDX(i, j, k)]=liquid_frac_old[IDX(i, j, k)]=0.0;

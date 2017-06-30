@@ -97,6 +97,9 @@ typedef struct {
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
      my_double cavity_radius; 
     #endif
+    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_CAVITY
+     my_double cavity_SX,cavity_SY,cavity_SZ; 
+    #endif
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
      my_double layer_height;
     #endif
