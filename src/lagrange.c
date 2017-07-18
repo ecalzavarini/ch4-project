@@ -539,6 +539,13 @@ kp =  km + 1;
 (tracer+i)->vy = 0.0;
 (tracer+i)->vz = 0.0;
 
+#ifdef LB_TEMPERATURE
+ (tracer+i)->t = (tracer+i)->t_old = (tracer+i)->dt_t = 0.0;
+#endif
+#ifdef LB_SCALAR
+ (tracer+i)->s = (tracer+i)->s_old = (tracer+i)->dt_s = 0.0;
+#endif
+
 #ifdef LAGRANGE_ORIENTATION
 /*
 (tracer+i)->px = 0.0;
@@ -886,12 +893,12 @@ kp =  km + 1;
 
 #ifdef LB_TEMPERATURE
    /* if it is temperature */
-if(which_scalar == 't')  (tracer+ipart)->t = s;
+   if(which_scalar == 't')  (tracer+ipart)->t = s;
 #endif
 
 #ifdef LB_SCALAR
   /* if it is a scalar */
-if(which_scalar == 's')  (tracer+ipart)->s = s;
+   if(which_scalar == 's')  (tracer+ipart)->s = s;
 #endif
 
 
@@ -1287,6 +1294,11 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->t;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+		/* WRITE PARTICLE TEMPERATURE TIME DERIVATIVE*/		
+		dataset_id = H5Dcreate(group, "dt_t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_t;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
  #ifdef LAGRANGE_GRADIENT
 		/* TEMPERATURE GRADIENT */
 		dataset_id = H5Dcreate(group, "dx_t", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
@@ -1588,6 +1600,12 @@ void output_particles(){
                 fprintf(fout,"%s:/lagrange/temperature\n",NEW_H5FILE_NAME);
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");   
+		/* temperature time derivative at particle position */
+                fprintf(fout,"<Attribute Name=\"dt_t\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dt_t\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");   
  #ifdef LAGRANGE_GRADIENT
 		/* temperature gradient at particle position */
                 fprintf(fout,"<Attribute Name=\"temperature gradient\" AttributeType=\"Vector\" Center=\"Node\"> \n");
@@ -1709,6 +1727,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
    out_particle_local[type].t = out_particle_all[type].t = 0.0;
    out_particle_local[type].t2 = out_particle_all[type].t2 = 0.0;
    out_particle_local[type].t4 = out_particle_all[type].t4 = 0.0;
+
+   out_particle_local[type].dt_t = out_particle_all[type].dt_t = 0.0;
+   out_particle_local[type].dt_t2 = out_particle_all[type].dt_t2 = 0.0;
  #endif
 
  }   
@@ -1763,6 +1784,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  out_particle_local[type].t += (tracer+ipart)->t;
  out_particle_local[type].t2 += (tracer+ipart)->t * (tracer+ipart)->t;
  out_particle_local[type].t4 += pow((tracer+ipart)->t,4.0); 
+
+ out_particle_local[type].dt_t += (tracer+ipart)->dt_t;
+ out_particle_local[type].dt_t2 += (tracer+ipart)->dt_t * (tracer+ipart)->dt_t;
  #endif
  
  }/* end of for on ipart */
@@ -1822,6 +1846,9 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
   out_particle_all[type].t *= norm;
   out_particle_all[type].t2 *= norm;
   out_particle_all[type].t4 *= norm;
+
+  out_particle_all[type].dt_t *= norm;
+  out_particle_all[type].dt_t2 *= norm;
  #endif  
  }
 
@@ -1846,8 +1873,9 @@ if(ROOT){
   #endif 
  #endif
  #ifdef LB_TEMPERATURE
-   fprintf(fout,"%e %e %e ",
-           (double)out_particle_all[type].t ,(double)out_particle_all[type].t2 ,(double)out_particle_all[type].t4);
+   fprintf(fout,"%e %e %e %e %e ",
+           (double)out_particle_all[type].t ,(double)out_particle_all[type].t2 ,(double)out_particle_all[type].t4,
+	   (double)out_particle_all[type].dt_t ,(double)out_particle_all[type].dt_t2 );
  #endif  
    fprintf(fout,"\n");
  }
@@ -1888,6 +1916,7 @@ void move_particles(){
   my_double shear_rate,jump_time_duration ,velocity_amplitude;
   #endif
 #endif
+  my_double reactivity;
 
 #ifdef LAGRANGE_ORIENTATION
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -1903,7 +1932,25 @@ void move_particles(){
 /* Begin loop on particles */
  for (ipart=0;ipart<npart;ipart++) {
 
-   /* First a trick for Eulerian probes */
+   /* We take care of of computing scalar derivatives at particle position */
+#ifdef LB_TEMPERATURE
+   if(itime==0 && resume==0){ 
+     (tracer+ipart)->t_old =  (tracer+ipart)->t;
+   }else{
+     (tracer+ipart)->dt_t  = ((tracer+ipart)->t - (tracer+ipart)->t_old )/property.time_dt; 
+     (tracer+ipart)->t_old =  (tracer+ipart)->t;
+   }
+#endif
+#ifdef LB_SCALAR
+   if(itime==0 && resume==0){ 
+     (tracer+ipart)->s_old =  (tracer+ipart)->s;
+   }else{
+     (tracer+ipart)->dt_s  = ((tracer+ipart)->s - (tracer+ipart)->s_old )/property.time_dt; 
+     (tracer+ipart)->s_old =  (tracer+ipart)->s;
+   }
+#endif
+
+   /* This is a trick for Eulerian probes i.e. fixed probes */
    if((tracer+ipart)->tau_drag < 0.0){  /* tau_drag < 0 here conventionally indicate an Eulerian probe */
 
    (tracer+ipart)->vx = (tracer+ipart)->ux;
@@ -1958,7 +2005,7 @@ void move_particles(){
 	/* avoids high shear rate values */	
       if( shear_rate  > (tracer+ipart)->critical_shear_rate )
     #endif
-	{ /* begins one of the  if above /	
+	{ /* begins one of the  if above */	
 
 	/* reset the time from jump */ 	
 	(tracer+ipart)->time_from_jump = 0.0;
@@ -2014,6 +2061,16 @@ void move_particles(){
    (tracer+ipart)->vy = ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
    (tracer+ipart)->vz = ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
    //#endif /* LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC */
+  #elif defined(LAGRANGE_ORIENTATION_ACTIVE_TEMPERATURE)
+   /* Kemotactic behaviour, take into account the temperature time increments to adjust swim velocity */
+   if( (tracer+ipart)->dt_t>0.0 ){ 
+     reactivity = 1.0; 
+   }else{ 
+     reactivity = 0.0;
+   }
+   (tracer+ipart)->vx = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
+   (tracer+ipart)->vy = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
+   (tracer+ipart)->vz = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
   #else
    /* Default behaviour for LAGRANGE_ORIENTATION_ACTIVE : fluid velocity + swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
@@ -2344,7 +2401,6 @@ void move_particles(){
      
 #endif /* end of lagrange orientation */
 
-
    /* In case of BC we use elastic bouncing rule for the particle */
   
 #ifdef LB_FLUID_BC
@@ -2405,7 +2461,7 @@ void move_particles(){
    }
  #endif
 
-#endif
+#endif /* endof  LB_FLUID_BC */
 #ifdef LAGRANGE_GRADIENT
  #ifdef LAGRANGE_POLYMER
   evolve_lagrangian_polymer_conformation_tensor(ipart);

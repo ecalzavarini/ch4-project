@@ -363,12 +363,16 @@ typedef struct {
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
+  my_double t_old;
+  my_double dt_t;
  #ifdef LAGRANGE_GRADIENT
   my_double dx_t,dy_t,dz_t;
  #endif
 #endif
 #ifdef LB_SCALAR
   my_double s;  /*scalar value */
+  my_double s_old;
+  my_double dt_s;
  #ifdef LAGRANGE_GRADIENT
   my_double dx_s,dy_s,dz_s;
  #endif
@@ -394,6 +398,7 @@ typedef struct {
  #endif
  #ifdef LB_TEMPERATURE
   my_double t,t2,t4; 
+  my_double dt_t,dt_t2;
  #endif
 } output_particle;
 

@@ -119,6 +119,13 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->dt_pz4 += (a+i)->dt_pz4;
   #endif
  #endif
+#ifdef LB_TEMPERATURE
+    (b+i)->t  +=  (a+i)->t;
+    (b+i)->t2 += (a+i)->t2;
+    (b+i)->t4 += (a+i)->t4;
+    (b+i)->dt_t += (a+i)->dt_t;
+    (b+i)->dt_t2 += (a+i)->dt_t2;
+#endif
   }
 }
 #endif
