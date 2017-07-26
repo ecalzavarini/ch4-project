@@ -2063,14 +2063,15 @@ void move_particles(){
    //#endif /* LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC */
   #elif defined(LAGRANGE_ORIENTATION_ACTIVE_TEMPERATURE)
    /* Kemotactic behaviour, take into account the temperature time increments to adjust swim velocity */
+   /* add swimming velocity to fluid velocity */
    if( (tracer+ipart)->dt_t>0.0 ){ 
      reactivity = 1.0; 
    }else{ 
      reactivity = 0.0;
    }
-   (tracer+ipart)->vx = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
-   (tracer+ipart)->vy = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
-   (tracer+ipart)->vz = reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
+   (tracer+ipart)->vx += reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
+   (tracer+ipart)->vy += reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
+   (tracer+ipart)->vz += reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
   #else
    /* Default behaviour for LAGRANGE_ORIENTATION_ACTIVE : fluid velocity + swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
