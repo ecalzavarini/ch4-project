@@ -615,7 +615,11 @@ void build_forcing(){
   #endif
   #ifdef LB_TEMPERATURE_MELTING
    /* This way if we are in a solid the bulk source is not applied */
-   t_source[IDX(i,j,k)] = liquid_frac[IDX(i,j,k)]*property.Amp_t;
+   if (liquid_frac[IDX(i,j,k)]>0.1){
+     t_source[IDX(i,j,k)] = liquid_frac[IDX(i,j,k)]*property.Amp_t;
+   }else{
+     t_source[IDX(i,j,k)] = 0.0;
+   }
   #endif
  #endif
 
