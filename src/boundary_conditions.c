@@ -477,6 +477,21 @@ sendrecv_borders_pop(rhs_h);
  }/* k */
 #endif
 
+ //#define LB_TEMPERATURE_MELTING_FIXNEGATIVE
+#ifdef LB_TEMPERATURE_MELTING_FIXNEGATIVE
+ /*  A rather ad-hoc way to fix the negative temperature generation problem */
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+	/* if the temperature has been decreased below the inital value then raise it up to that minimal value */
+	  if(t[IDX(i,j,k)] < property.T_solid)
+	    for(pp=0;pp<NPOP;pp++) rhs_g[IDX(i,j,k)].p[pp] *= property.T_solid/m(rhs_g[IDX(i,j,k)]);
+	  //}/* pp */   
+      }/* i */
+   }/* j */
+ }/* k */
+#endif
+
 /************************************/
 	/* X direction */ 
 #ifdef LB_FLUID_BC_X
