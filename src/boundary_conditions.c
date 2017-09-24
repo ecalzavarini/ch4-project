@@ -846,8 +846,10 @@ if(LNZ_START == 0){
 #ifdef LB_TEMPERATURE_BC_Y
 
 
-  for (i = BRD; i < LNX + BRD; i++)                     
-  for (k = BRD; k < LNZ + BRD; k++){
+   for (i = BRD; i < LNX + BRD; i++)                     
+    for (k = BRD; k < LNZ + BRD; k++){
+  //for (i = 0; i < LNX + TWO_BRD; i++)                     
+  // for (k = 0; k < LNZ + TWO_BRD; k++){
 
 if(LNY_END == NY){
 
@@ -908,7 +910,7 @@ if(LNY_START == 0){
 	  //if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/3.158), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 2.0) T_wall = property.T_bot; else T_wall = property.T_top; 
 	  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = 0.0;  
 	  /* half fixed temperature, half  fixed-flux */
-	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
+	  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_bot; else T_wall = -0.5*property.grad_T_bot + t[IDX(i,j,k)] + property.T_ref;
 #endif
 
 #else
@@ -950,8 +952,11 @@ if(LNY_START == 0){
 	/* X direction */
 #ifdef LB_TEMPERATURE_BC_X
 
-  for (j = BRD; j < LNY + BRD; j++) 			
-    for (k = BRD; k < LNZ + BRD; k++){
+    for (j = BRD; j < LNY + BRD; j++) 			
+     for (k = BRD; k < LNZ + BRD; k++){
+       // for (j = 0; j < LNY + TWO_BRD; j++) 			
+       //    for (k = 0; k < LNZ + TWO_BRD; k++){
+
 
 if(LNX_END == NX){
 
@@ -979,7 +984,8 @@ if(LNX_END == NX){
 	          #ifdef LB_TEMPERATURE_BC_X_P_OUTLET
 		    if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
 	 	  #endif
-	  rhs_g[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	//rhs_g[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	  rhs_g[IDX(i+1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[inv[pp]]*fac;
 	    }
 	  }
  }
@@ -1011,7 +1017,8 @@ if(LNX_START == 0){
 	          #ifdef LB_TEMPERATURE_BC_X_M_OUTLET	
 	 	    if (jj==LNY+TWO_BRD-1 || kk==LNZ+TWO_BRD-1 || jj==0 || kk==0) fac=0.0;
 	          #endif
-	  rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	// rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac;
+	 rhs_g[IDX(i-1,jj,kk)].p[inv[pp]] =  rhs_g[IDX(i,j,k)].p[pp] + wgt[inv[pp]]*fac;
 	    }
 	  }
  }
@@ -1023,8 +1030,11 @@ if(LNX_START == 0){
 	/* Z direction */
 #ifdef LB_TEMPERATURE_BC_Z
 
-  for (i = BRD; i < LNX + BRD; i++) 			
-    for (j = BRD; j < LNY + BRD; j++){
+
+    for (i = BRD; i < LNX + BRD; i++) 			
+     for (j = BRD; j < LNY + BRD; j++){
+       // for (i = 0; i < LNX + TWO_BRD; i++) 			
+       //for (j = 0; j < LNY + TWO_BRD; j++){
 
 
 if(LNZ_END == NZ){
