@@ -1,6 +1,6 @@
 #CC=mpicc 
 CC=h5pcc 
-CFLAGS= -Wall -O3 -g -std=c11 # -Warray-bounds -pg #-g  
+CFLAGS= -Wall -O3 -g -std=c99 # -Warray-bounds -pg #-g  
 LFLAGS= -lm -lhdf5 
 SOURCES= parallel.c grid.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c forcing.c output.c output_h5.c melting.c lagrange.c random.c les.c gradients.c polymer.c 
 OBJECTS=$(SOURCES:.c=.o)
