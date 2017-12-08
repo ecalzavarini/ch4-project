@@ -61,6 +61,11 @@ void initial_conditions_particles(int restart){
   vector vec;
   double *type_counter_local,*type_counter_all;
 
+#ifdef LAGRANGE_INITIAL_PAIRS
+  vector pair_direction; 
+  my_double pair_distance;
+#endif
+
     rcounts = (int*)malloc(nprocs*sizeof(int)); 
 
     MPI_Allgather(&npart, 1 , MPI_INT, rcounts, 1 , MPI_INT, MPI_COMM_WORLD);
@@ -499,9 +504,28 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
 #endif
 
 /* position: randomly distributed particles */
-(tracer+i)->x = LNX_START + myrand()*LNX;
-(tracer+i)->y = LNY_START + myrand()*LNY;
-(tracer+i)->z = LNZ_START + myrand()*LNZ;
+ (tracer+i)->x = LNX_START + myrand()*LNX;
+ (tracer+i)->y = LNY_START + myrand()*LNY;
+ (tracer+i)->z = LNZ_START + myrand()*LNZ;
+#ifdef LAGRANGE_INITIAL_PAIRS
+ if(i%2==0 && i>0){
+ pair_direction = random_vector();
+ pair_distance = 1.0;
+ (tracer+i-1)->x = (tracer+i)->x + pair_direction.x*pair_distance;
+ (tracer+i-1)->y = (tracer+i)->y + pair_direction.y*pair_distance;
+ (tracer+i-1)->z = (tracer+i)->z + pair_direction.z*pair_distance;
+
+ if( (tracer+i-1)->x < LNX_START || (tracer+i-1)->x >= LNX_START+LNX ) 
+   (tracer+i-1)->x = (tracer+i)->x - pair_direction.x*pair_distance;
+
+ if( (tracer+i-1)->y < LNY_START || (tracer+i-1)->y >= LNX_START+LNY ) 
+   (tracer+i-1)->y = (tracer+i)->y - pair_direction.y*pair_distance;
+
+ if( (tracer+i-1)->z < LNZ_START || (tracer+i-1)->z >= LNX_START+LNZ ) 
+   (tracer+i-1)->z = (tracer+i)->z - pair_direction.z*pair_distance;
+ }
+#endif
+
 /* if in 2d */
 #ifdef GRID_POP_D2Q9
 (tracer+i)->z = LNZ_START + 0.5*LNZ;
