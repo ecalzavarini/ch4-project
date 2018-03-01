@@ -1133,14 +1133,17 @@ invtau_s = 1.0/property.tau_s;
 
  #else
       /* The forcing is as in Malaspinas PhD pag. 93 (bottom) , with a correction factor 2 (found empirically)*/	    
-        ux = u[IDX(i, j, k)].x;
-        uy = u[IDX(i, j, k)].y;
-        uz = u[IDX(i, j, k)].z;                         
-        u2 = (ux * ux + uy * uy + uz * uz);
-        cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
-	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	//rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
-	rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+      //ux = u[IDX(i, j, k)].x;
+      //uy = u[IDX(i, j, k)].y;
+      //uz = u[IDX(i, j, k)].z;                         
+      //u2 = (ux * ux + uy * uy + uz * uz);
+      //cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+      //wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+      ////rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+      //rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
+
+	/* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
+	rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt[pp]*t_source[IDX(i,j,k)];
  #endif
 
 
@@ -1158,14 +1161,17 @@ invtau_s = 1.0/property.tau_s;
        /* not Guo here  */
 	    rhs_h[IDX(i,j,k)].p[pp] += wgt[pp]*s_source[IDX(i,j,k)];
 #else
-        ux = u[IDX(i, j, k)].x;
-        uy = u[IDX(i, j, k)].y;
-        uz = u[IDX(i, j, k)].z;                         
-        u2 = (ux * ux + uy * uy + uz * uz);
-        cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
-	wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-	//rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
-	rhs_h[IDX(i,j,k)].p[pp] += 2.0*fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+      //ux = u[IDX(i, j, k)].x;
+      //uy = u[IDX(i, j, k)].y;
+      //uz = u[IDX(i, j, k)].z;                         
+      //u2 = (ux * ux + uy * uy + uz * uz);
+      //cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+      //wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
+      ////rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+      //rhs_h[IDX(i,j,k)].p[pp] += 2.0*fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
+
+	/* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
+	rhs_h[IDX(i,j,k)].p[pp] += fac_t*wgt[pp]*s_source[IDX(i,j,k)];
 #endif
 #endif
 
