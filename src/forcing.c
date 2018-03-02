@@ -1141,8 +1141,9 @@ invtau_s = 1.0/property.tau_s;
       //wgt2=(1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
       ////rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
       //rhs_g[IDX(i,j,k)].p[pp] += 2.0*fac_t*wgt2*wgt[pp]*t_source[IDX(i,j,k)];
-
-	/* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
+			         
+      /* not as in eq (8.40) , pp. 310 of Timm Krueger at al. book ---> there is an error */
+      /* now as in Takeshi Seta, PHYSICAL REVIEW E 87, 063304 (2013) eq (22)  */ 
 	rhs_g[IDX(i,j,k)].p[pp] += fac_t*wgt[pp]*t_source[IDX(i,j,k)];
  #endif
 
@@ -1170,7 +1171,8 @@ invtau_s = 1.0/property.tau_s;
       ////rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
       //rhs_h[IDX(i,j,k)].p[pp] += 2.0*fac_s*wgt[pp]*wgt2*s_source[IDX(i,j,k)];
 
-	/* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
+     /* not as in eq (8.40) , pp. 310 of Timm Krueger at al. book ---> there is an error */
+     /* now as in Takeshi Seta, PHYSICAL REVIEW E 87, 063304 (2013) eq (22)  */ 
 	rhs_h[IDX(i,j,k)].p[pp] += fac_t*wgt[pp]*s_source[IDX(i,j,k)];
 #endif
 #endif

@@ -476,10 +476,10 @@ void hydro_fields(char which_pop){
                        	/* to be used only with METHOD_STREAMING */
                                 #ifndef LB_TEMPERATURE_FORCING
 	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]);
-                                #else
-	                         //t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)];
-				 /* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
-	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*(1.0 - 0.5/property.tau_t)*t_source[IDX(i, j, k)];
+                                #else	                         
+				 /* not as in eq (8.40) , pp. 310 of Timm Krueger at al. book ---> there is an error */
+				 /* now as in Takeshi Seta, PHYSICAL REVIEW E 87, 063304 (2013) eq (22)  */ 
+	                         t[IDX(i, j, k)] = m(g[IDX(i, j, k)]) + 0.5*property.time_dt*t_source[IDX(i, j, k)];
                                 #endif
                                #endif
 			  }
@@ -494,10 +494,10 @@ void hydro_fields(char which_pop){
                        	/* to be used only with METHOD_STREAMING */
                                 #ifndef LB_SCALAR_FORCING
 	                         s[IDX(i, j, k)] = m(h[IDX(i, j, k)]);
-                                #else
-	                         //s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*s_source[IDX(i, j, k)]; 
-				 /* as in eq (8.40) , pp. 310 of Timm Krueger at al. book */
-				 s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*(1.0 - 0.5/property.tau_s)*s_source[IDX(i, j, k)]; 
+                                #else	              
+				 /* not as in eq (8.40) , pp. 310 of Timm Krueger at al. book ---> there is an error */
+				 /* now as in Takeshi Seta, PHYSICAL REVIEW E 87, 063304 (2013) eq (22)  */ 			        
+				 s[IDX(i, j, k)] = m(h[IDX(i, j, k)]) + 0.5*property.time_dt*s_source[IDX(i, j, k)]; 
                                 #endif
                                #endif
 			  }                           
