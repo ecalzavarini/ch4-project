@@ -56,3 +56,4 @@ This code has been employed in the following studies:
 
 3) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, arXiv:1801.03694 (2018).
 
+4) *Propelled micro-probes in turbulence*, E. Calzavarini, Y.  X. Huang, F. G. Schmitt and L. Wang, arXiv:1802.00189 (2018).
