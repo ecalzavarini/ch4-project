@@ -485,10 +485,12 @@ void build_forcing(){
  #endif
 
 
- #ifdef  LB_FLUID_FORCING_PENALIZATION
+ #ifdef LB_FLUID_FORCING_PENALIZATION
       my_double mask;
+
+  #ifdef LB_FLUID_FORCING_PENALIZATION_CUBE
       /* penalization of a cube */
-      /*  
+      
       if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
 	  fabs(center_V[IDX(i,j,k)].y) < 10 && 
 	  fabs(center_V[IDX(i,j,k)].z-property.SZ/2.0) < 10  ) 
@@ -501,7 +503,18 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
-      */
+  #endif
+
+  #ifdef LB_FLUID_FORCING_PENALIZATION_CIRCLE    
+      /* small central circular spot penalization */
+        
+      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( mask < 10.0 ){       
+	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
+	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
+	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
+      } 
+  #endif  
 
   #ifdef LB_FLUID_FORCING_LANDSCAPE
        if(landscape[IDX(i, j, k)]>0.0){
@@ -509,15 +522,12 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
       }    
-  #else
-      /* small central spot penalization */
-      mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( mask < 10.0 ){       
-	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
-	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
-	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
-      }     
   #endif
+
+  #ifdef LB_FLUID_FORCING_PENALIZATION_DIRECTION_X
+	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;
+  #endif 
+ 
  #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
 
 
@@ -1173,7 +1183,7 @@ invtau_s = 1.0/property.tau_s;
 
      /* not as in eq (8.40) , pp. 310 of Timm Krueger at al. book ---> there is an error */
      /* now as in Takeshi Seta, PHYSICAL REVIEW E 87, 063304 (2013) eq (22)  */ 
-	rhs_h[IDX(i,j,k)].p[pp] += fac_t*wgt[pp]*s_source[IDX(i,j,k)];
+	rhs_h[IDX(i,j,k)].p[pp] += fac_s*wgt[pp]*s_source[IDX(i,j,k)];
 #endif
 #endif
 
