@@ -59,6 +59,7 @@ void initial_conditions_particles(int restart){
   my_double *gravity_coeff;
   my_double *critical_shear_rate, *jump_time;
   vector vec;
+  my_double val;
   double *type_counter_local,*type_counter_all;
 
 #ifdef LAGRANGE_INITIAL_PAIRS
@@ -593,9 +594,33 @@ phi = two_pi*myrand();
  (tracer+i)->py = vec.y;
  (tracer+i)->pz = vec.z;
 
-(tracer+i)->dt_px = 0.0;
-(tracer+i)->dt_py = 0.0;
-(tracer+i)->dt_pz = 0.0;
+ (tracer+i)->dt_px = 0.0;
+ (tracer+i)->dt_py = 0.0;
+ (tracer+i)->dt_pz = 0.0;
+
+ #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+ /* the second orientation vector N is by definition perpendicular to P (if in 2D it should stay in the same plane) */
+ /* generate a second random vector */ 
+ vec = random_vector();
+ /* vectorial product n = p x vec */
+ (tracer+i)->nx =  (tracer+i)->py * vec.z - (tracer+i)->pz * vec.y;
+ (tracer+i)->ny = -(tracer+i)->px * vec.z + (tracer+i)->pz * vec.x; 
+ (tracer+i)->nz =  (tracer+i)->px * vec.y - (tracer+i)->py * vec.x;
+ /* normalization*/
+ val=sqrt(  (tracer+i)->nx*(tracer+i)->nx + (tracer+i)->ny*(tracer+i)->ny + (tracer+i)->nz*(tracer+i)->nz );
+ (tracer+i)->nx /= val;
+ (tracer+i)->ny /= val;
+ (tracer+i)->nz /= val;
+  #ifdef GRID_POP_D2Q9 /* if the simulation is two dimensional, we just rotate it */
+ (tracer+i)->nx = -(tracer+i)->py;
+ (tracer+i)->ny =  (tracer+i)->px;
+ (tracer+i)->nz =  (tracer+i)->pz;
+  #endif
+ (tracer+i)->dt_nx = 0.0;
+ (tracer+i)->dt_ny = 0.0;
+ (tracer+i)->dt_nz = 0.0;
+ #endif
+
  #ifdef LAGRANGE_ORIENTATION_ACTIVE
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
 /* time from jump is initialized in a arbitrary range between 0 and 10 jump_times */
@@ -1238,6 +1263,38 @@ void output_particles(){
 		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_pz;
                 ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
                 status = H5Dclose(dataset_id);
+  #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+		/* SECOND ORIENTATION VECTOR */
+		dataset_id = H5Dcreate(group, "nx", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->nx;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "ny", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->ny;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "nz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->nz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+		/* VELOCITY ROTATION VECTOR */
+		dataset_id = H5Dcreate(group, "dt_nx", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_nx;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dt_ny", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_ny;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+
+		dataset_id = H5Dcreate(group, "dt_nz", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+		for(i=0;i<npart;i++) aux[i]=(tracer + i)->dt_nz;
+                ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+                status = H5Dclose(dataset_id);
+  #endif
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
 		/* PARTICLE ASPECT RATIO */
 		dataset_id = H5Dcreate(group, "aspect_ratio", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
@@ -1542,6 +1599,36 @@ void output_particles(){
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</DataItem>\n");
                 fprintf(fout,"</Attribute>\n");
+  #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+		/* second orientation vector */
+                fprintf(fout,"<Attribute Name=\"second orientation\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/nx\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/ny\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/nz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");
+  		/* orientation velocity vector */
+                fprintf(fout,"<Attribute Name=\"second angular velocity\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+                fprintf(fout,"<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n",np);
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dt_nx\n",NEW_H5FILE_NAME); 
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dt_ny\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+                fprintf(fout,"%s:/lagrange/dt_nz\n",NEW_H5FILE_NAME);
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</DataItem>\n");
+                fprintf(fout,"</Attribute>\n");
+  #endif
   #ifdef LAGRANGE_ORIENTATION_JEFFREY
 		/* aspect ratio */
                 fprintf(fout,"<Attribute Name=\"aspect_ratio\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
@@ -1745,6 +1832,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
    out_particle_local[type].dt_px4 = out_particle_all[type].dt_px4 = 0.0;
    out_particle_local[type].dt_py4 = out_particle_all[type].dt_py4 = 0.0;
    out_particle_local[type].dt_pz4 = out_particle_all[type].dt_pz4 = 0.0;
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+   out_particle_local[type].dt_nx = out_particle_all[type].dt_nx = 0.0;
+   out_particle_local[type].dt_ny = out_particle_all[type].dt_ny = 0.0;
+   out_particle_local[type].dt_nz = out_particle_all[type].dt_nz = 0.0;
+
+   out_particle_local[type].dt_nx2 = out_particle_all[type].dt_nx2 = 0.0;
+   out_particle_local[type].dt_ny2 = out_particle_all[type].dt_ny2 = 0.0;
+   out_particle_local[type].dt_nz2 = out_particle_all[type].dt_nz2 = 0.0;
+
+   out_particle_local[type].dt_nx4 = out_particle_all[type].dt_nx4 = 0.0;
+   out_particle_local[type].dt_ny4 = out_particle_all[type].dt_ny4 = 0.0;
+   out_particle_local[type].dt_nz4 = out_particle_all[type].dt_nz4 = 0.0;
+   #endif
   #endif 
  #endif
  #ifdef LB_TEMPERATURE
@@ -1802,6 +1902,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
  out_particle_local[type].dt_px4 += pow((tracer+ipart)->dt_px,4.0);
  out_particle_local[type].dt_py4 += pow((tracer+ipart)->dt_py,4.0);
  out_particle_local[type].dt_pz4 += pow((tracer+ipart)->dt_pz,4.0);
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+ out_particle_local[type].dt_nx += (tracer+ipart)->dt_nx;
+ out_particle_local[type].dt_ny += (tracer+ipart)->dt_ny;
+ out_particle_local[type].dt_nz += (tracer+ipart)->dt_nz;
+
+ out_particle_local[type].dt_nx2 += (tracer+ipart)->dt_nx * (tracer+ipart)->dt_nx;
+ out_particle_local[type].dt_ny2 += (tracer+ipart)->dt_ny * (tracer+ipart)->dt_ny;
+ out_particle_local[type].dt_nz2 += (tracer+ipart)->dt_nz * (tracer+ipart)->dt_nz;
+
+ out_particle_local[type].dt_nx4 += pow((tracer+ipart)->dt_nx,4.0);
+ out_particle_local[type].dt_ny4 += pow((tracer+ipart)->dt_ny,4.0);
+ out_particle_local[type].dt_nz4 += pow((tracer+ipart)->dt_nz,4.0);
+   #endif
   #endif
  #endif
  #ifdef LB_TEMPERATURE
@@ -1864,6 +1977,19 @@ if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
    out_particle_all[type].dt_px4 *= norm;
    out_particle_all[type].dt_py4 *= norm;
    out_particle_all[type].dt_pz4 *= norm;
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+   out_particle_all[type].dt_nx *= norm;
+   out_particle_all[type].dt_ny *= norm;
+   out_particle_all[type].dt_nz *= norm;
+
+   out_particle_all[type].dt_nx2 *= norm;
+   out_particle_all[type].dt_ny2 *= norm;
+   out_particle_all[type].dt_nz2 *= norm;
+
+   out_particle_all[type].dt_nx4 *= norm;
+   out_particle_all[type].dt_ny4 *= norm;
+   out_particle_all[type].dt_nz4 *= norm;
+   #endif 
   #endif 
  #endif
  #ifdef LB_TEMPERATURE
@@ -1894,6 +2020,12 @@ if(ROOT){
 	   (double)out_particle_all[type].dt_px ,(double)out_particle_all[type].dt_py  ,(double)out_particle_all[type].dt_pz,
 	   (double)out_particle_all[type].dt_px2,(double)out_particle_all[type].dt_py2 ,(double)out_particle_all[type].dt_pz2,
 	   (double)out_particle_all[type].dt_px4, (double)out_particle_all[type].dt_py4,(double)out_particle_all[type].dt_pz4);
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+   fprintf(fout,"%e %e %e %e %e %e %e %e %e ",
+	   (double)out_particle_all[type].dt_nx ,(double)out_particle_all[type].dt_ny  ,(double)out_particle_all[type].dt_nz,
+	   (double)out_particle_all[type].dt_nx2,(double)out_particle_all[type].dt_ny2 ,(double)out_particle_all[type].dt_nz2,
+	   (double)out_particle_all[type].dt_nx4, (double)out_particle_all[type].dt_ny4,(double)out_particle_all[type].dt_nz4);
+   #endif 
   #endif 
  #endif
  #ifdef LB_TEMPERATURE
@@ -1931,6 +2063,9 @@ void move_particles(){
   my_double matA[3][3],matS[3][3],matW[3][3];
   my_double scalOSO, f_alpha, alpha,norm , gyro;
   my_double vecF[3],vecFold[3],vecP[3],vecTMP[3],vecA[3];
+ #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+  my_double vecFN[3],vecFNold[3],vecN[3];
+ #endif
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   my_double vec_xi[3];
   my_double two_d_r;
@@ -2274,6 +2409,17 @@ void move_particles(){
      vecFold[1] = (tracer+ipart)->dt_py;
      vecFold[2] = (tracer+ipart)->dt_pz;
 
+ #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+	      /* assign N normal vector */
+     vecN[0] = (tracer+ipart)->nx;
+     vecN[1] = (tracer+ipart)->ny;
+     vecN[2] = (tracer+ipart)->nz;
+              /* assign the last dN /dt  vector */
+     vecFNold[0] = (tracer+ipart)->dt_nx;
+     vecFNold[1] = (tracer+ipart)->dt_ny;
+     vecFNold[2] = (tracer+ipart)->dt_nz;
+ #endif
+
  #ifdef LAGRANGE_ORIENTATION_JEFFREY
  /* Here we implement Jeffrey equation */
 
@@ -2357,6 +2503,31 @@ void move_particles(){
 		}
 		  vecF[i] -=  vecP[i]*scalOSO;
 	      }
+
+ #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+ 	      /* Now we compute RHS of the Jeffrey equation for N (it is the vector normal to P) */
+	      /* first product TMP[i] = S[i][j]*N[j] */
+	      vecTMP[0]=vecTMP[1]=vecTMP[2]=0;
+	      for (i=0; i<3; i++)
+		for (j=0; j<3; j++){
+                  vecTMP[i] += matS[i][j]*vecN[j];  /* <----- NOTE differently from before here we have the N vector */
+		}
+	      /* then the product of the two vectors P[i]*TMP[i] to form a scalar */
+	      scalOSO = 0.0;	      
+	      for (i=0; i<3; i++){
+		  scalOSO += vecP[i]*vecTMP[i];
+		}
+
+	    /* here I add on all the contributions */
+	      for (i=0; i<3; i++){
+		  vecFN[i] = 0.0; 
+		for (j=0; j<3; j++){	
+		  vecFN[i] += matW[i][j]*vecN[j];
+		}
+		  vecFN[i] -=  vecP[i]*scalOSO;
+	      }
+
+ #endif
 	     	      
    /* if restart Euler 1st order G = G0 + (DT)*F  */
  if(itime==0 && resume==0){
@@ -2373,6 +2544,26 @@ void move_particles(){
 		  vecFold[i]  = vecF[i];
 		}
  }
+
+ #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+
+   /* if restart Euler 1st order G = G0 + (DT)*F  */
+ if(itime==0 && resume==0){
+		  for (i=0; i<3; i++){	
+		    vecN[i] =  vecN[i] + property.time_dt*vecFN[i];	  
+		    /* copy the old term */
+		    vecFNold[i]  = vecFN[i];
+		}
+ }else{
+   /* AB 2nd order G = G0 + (DT/2)*(3*F - Fold)  */
+	      for (i=0; i<3; i++){		 
+		  vecN[i] =  vecN[i] + 0.5*property.time_dt*( 3.*vecFN[i] -  vecFNold[i] );
+		  /* copy the old term */
+		  vecFNold[i]  = vecFN[i];
+		}
+ }
+
+ #endif
 
  #endif /*LAGRANGE_ORIENTATION_JEFFREY */
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -2423,6 +2614,24 @@ void move_particles(){
      (tracer+ipart)->dt_px = vecFold[0];
      (tracer+ipart)->dt_py = vecFold[1];
      (tracer+ipart)->dt_pz = vecFold[2];
+
+  #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+
+	      /* normalize N vector */
+	      norm=0.0;
+	      for (i=0; i<3; i++) norm += vecN[i]*vecN[i];
+	      for (i=0; i<3; i++) vecN[i]/=sqrt(norm);
+
+	      /* assign N vector */
+     (tracer+ipart)->nx = vecN[0];
+     (tracer+ipart)->ny = vecN[1];
+     (tracer+ipart)->nz = vecN[2];
+
+              /* assign the just computed dN /dt  vector */     
+     (tracer+ipart)->dt_nx = vecFNold[0];
+     (tracer+ipart)->dt_ny = vecFNold[1];
+     (tracer+ipart)->dt_nz = vecFNold[2];
+  #endif
      
 #endif /* end of lagrange orientation */
 
@@ -2821,6 +3030,20 @@ void write_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+    sprintf(label,"nx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ny");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_DOUBLE);
+    sprintf(label,"nz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_nx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_ny");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_nz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_DOUBLE);
+   #endif
    #ifdef LAGRANGE_ORIENTATION_JEFFREY
     sprintf(label,"aspect_ratio");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
@@ -3107,6 +3330,20 @@ void read_point_particle_h5(){
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
     sprintf(label,"dt_pz");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+    sprintf(label,"nx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"ny");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_DOUBLE);
+    sprintf(label,"nz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_nx");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_ny");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_DOUBLE);
+    sprintf(label,"dt_nz");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_DOUBLE);
+   #endif
    #ifdef LAGRANGE_ORIENTATION_JEFFREY
     sprintf(label,"aspect_ratio");
     H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);

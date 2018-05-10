@@ -337,6 +337,10 @@ typedef struct {
   #ifdef LAGRANGE_ORIENTATION
   my_double px,py,pz;
   my_double dt_px,dt_py,dt_pz;
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+   my_double nx,ny,nz;
+   my_double dt_nx,dt_ny,dt_nz;
+   #endif
    #ifdef LAGRANGE_ORIENTATION_JEFFREY
    my_double aspect_ratio;
     #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
@@ -394,6 +398,11 @@ typedef struct {
   my_double dt_px,dt_py,dt_pz;
   my_double dt_px2,dt_py2,dt_pz2;
   my_double dt_px4,dt_py4,dt_pz4;
+   #ifdef LAGRANGE_ORIENTATION
+  my_double dt_nx,dt_ny,dt_nz;
+  my_double dt_nx2,dt_ny2,dt_nz2;
+  my_double dt_nx4,dt_ny4,dt_nz4;
+   #endif
   #endif
  #endif
  #ifdef LB_TEMPERATURE
