@@ -27,7 +27,7 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 
 Contact
 =======
-This project is based at Mechanics Laboratory of Lille (LML) France. 
+This project is based at Unite' de Mecanique de Lille (UML EA 7512) France. 
 
 Info: 
 
@@ -35,7 +35,7 @@ For more information please contact:
 
 Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
-*Contributors*: Kalyan Shrestha (Lille University) , Babak Rabbanipour (Lille University)
+*Contributors*: Kalyan Shrestha (Lille University) , Babak Rabbanipour Esfahani (Lille University)
 
 
 How to: 
@@ -44,17 +44,17 @@ To be written
 
 Aknowledgments:
 ======
-Partial support from French National Agency for Research (ANR) by the grant (SEAS: ANR-13-JS09-0010)
+This project received support from the INNOCOLD consortium (innocold.fr) and by the French National Agency for Research (ANR) by the grant (SEAS: ANR-13-JS09-0010).
 
 Bibliography:
 ======
-This code has been employed in the following studies:
+This code has been employed in the following published studies:
 
 1) *Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A one-to-one accuracy and performance study*, K.Shrestha, G.Mompean and E.Calzavarini, Phys. Rev. E **93**, 023306 (2016).
 
 2) *Micro-bubbles and micro-particles are not faithful tracers of turbulent acceleration*, Varghese Mathai, Enrico Calzavarini,  Jon Brons, Chao Sun and Detlef Lohse, Phys. Rev. Lett. **117**, 024501 (2016).
 
-3) *Propelled micro-probes in turbulence*, E. Calzavarini, Y.  X. Huang, F. G. Schmitt and L. Wang, arXiv:1802.00189, Phys. Rev. Fluids [in press] (2018).
+3) *Propelled microprobes in turbulence*, Enrico Calzavarini, Yongxiang X. Huang, Francois G. Schmitt and Lipo Wang, Phys. Rev. Fluids **3**, 054604 (2018).
 
 4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, arXiv:1801.03694, Phys. Rev. Fluids [in press] (2018).
 
