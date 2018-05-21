@@ -56,6 +56,6 @@ This code has been employed in the following published studies:
 
 3) *Propelled microprobes in turbulence*, Enrico Calzavarini, Yongxiang X. Huang, Francois G. Schmitt and Lipo Wang, Phys. Rev. Fluids **3**, 054604 (2018).
 
-4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, arXiv:1801.03694, Phys. Rev. Fluids [in press] (2018).
+4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, Phys. Rev. Fluids **3**, 053501 (2018).
 
 
