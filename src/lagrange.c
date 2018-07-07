@@ -2061,7 +2061,7 @@ void move_particles(){
   vector omega,lift_coeff;
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
-  my_double scalOSO, f_alpha, alpha,norm , gyro;
+  my_double scalOSO, f_alpha, alpha, norm , gyro;
   my_double vecF[3],vecFold[3],vecP[3],vecTMP[3],vecA[3];
  #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
   my_double vecFN[3],vecFNold[3],vecN[3];
@@ -2074,6 +2074,11 @@ void move_particles(){
   #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
   my_double shear_rate,jump_time_duration ,velocity_amplitude;
   #endif
+ #ifdef LAGRANGE_ORIENTATION_DRAG
+   my_double beta,c_perp,c_par;
+   my_double uvx,uvy,uvz;
+   my_double matM[3][3];
+ #endif
 #endif
   my_double reactivity;
 
@@ -2281,10 +2286,44 @@ void move_particles(){
    //   if((tracer+ipart)->tau_drag != 0.0){
    if((tracer+ipart)->tau_drag > 0.0){    /* why >0 , because ==0 is a tracer and <0 is an eulerian probe */
   
-   invtau = 1.0 / (tracer+ipart)->tau_drag;
+#ifndef LAGRANGE_ORIENTATION_DRAG
+   /* Stokes drag acceleration on a sphere */
+   invtau = 1.0 / (tracer+ipart)->tau_drag; 
    (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau;
    (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
+#else
+   /* Stokes drag force on a NON spherical (axisymmetric ellipsoidal) particle */
+   /* same notation as in PRL 119, 254501 (2017) see also its supplementary materials */
+   invtau = 1.0 / (tracer+ipart)->tau_drag; 
+   alpha = (tracer+ipart)->aspect_ratio; 
+   /*compute prefactors*/
+   if (alpha == 1)  beta = 1.0; 
+   if (alpha >  1)  beta = log(alpha + sqrt(alpha*alpha - 1.0)) / ( alpha*sqrt(alpha*alpha - 1.0) );
+   if (alpha <  1)  beta = acos(alpha) / ( alpha*sqrt(1.0 - alpha*alpha) );
+   //fprintf(stderr,"%e %e\n",alpha,beta);
+   c_perp = 8.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 3.0)*beta + 1.0)  );
+   c_par  = 4.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 1.0)*beta - 1.0)  );
+   /* assign P vector */
+   vecP[0] = (tracer+ipart)->px;
+   vecP[1] = (tracer+ipart)->py;
+   vecP[2] = (tracer+ipart)->pz;
+   /* build drag tensor*/
+   matM[0][0] =     c_perp + (c_par - c_perp)*vecP[0]*vecP[0];
+   matM[1][1] =     c_perp + (c_par - c_perp)*vecP[1]*vecP[1];
+   matM[2][2] =     c_perp + (c_par - c_perp)*vecP[2]*vecP[2];
+   matM[0][1] = matM[1][0] = (c_par - c_perp)*vecP[0]*vecP[1];
+   matM[0][2] = matM[2][0] = (c_par - c_perp)*vecP[0]*vecP[2];
+   matM[1][2] = matM[2][1] = (c_par - c_perp)*vecP[1]*vecP[2];
+   /* velocity difference */
+   uvx = (tracer+ipart)->ux - (tracer+ipart)->vx;
+   uvy = (tracer+ipart)->uy - (tracer+ipart)->vy;
+   uvz = (tracer+ipart)->uz - (tracer+ipart)->vz;
+   /* acceleration */
+   (tracer+ipart)->ax = (matM[0][0]*uvx +  matM[0][1]*uvy +  matM[0][2]*uvz)*invtau;
+   (tracer+ipart)->ay = (matM[1][0]*uvx +  matM[1][1]*uvy +  matM[1][2]*uvz)*invtau;
+   (tracer+ipart)->az = (matM[2][0]*uvx +  matM[2][1]*uvy +  matM[2][2]*uvz)*invtau;    
+#endif
 
 
 #ifdef LAGRANGE_GRAVITY /* note that works only if LB_FORCING_GRAVITY is defined */
