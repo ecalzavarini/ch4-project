@@ -2298,12 +2298,15 @@ void move_particles(){
    invtau = 1.0 / (tracer+ipart)->tau_drag; 
    alpha = (tracer+ipart)->aspect_ratio; 
    /*compute prefactors*/
-   if (alpha == 1)  beta = 1.0; 
-   if (alpha >  1)  beta = log(alpha + sqrt(alpha*alpha - 1.0)) / ( alpha*sqrt(alpha*alpha - 1.0) );
-   if (alpha <  1)  beta = acos(alpha) / ( alpha*sqrt(1.0 - alpha*alpha) );
-   //fprintf(stderr,"%e %e\n",alpha,beta);
-   c_perp = 8.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 3.0)*beta + 1.0)  );
-   c_par  = 4.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 1.0)*beta - 1.0)  );
+   if (alpha == 1){ 
+     beta = c_perp = c_par  = 1.0;
+   }else{
+    if (alpha >  1)  beta = log(alpha + sqrt(alpha*alpha - 1.0)) / ( alpha*sqrt(alpha*alpha - 1.0) );
+    if (alpha <  1)  beta = acos(alpha) / ( alpha*sqrt(1.0 - alpha*alpha) );
+    c_perp = 8.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 3.0)*beta + 1.0)  );
+    c_par  = 4.0*(alpha*alpha - 1.) / ( 3.0*alpha*((2.0*alpha*alpha - 1.0)*beta - 1.0)  );
+   }
+   //fprintf(stderr,"%e %e %e %e\n",alpha,beta,c_perp,c_par);
    /* assign P vector */
    vecP[0] = (tracer+ipart)->px;
    vecP[1] = (tracer+ipart)->py;
