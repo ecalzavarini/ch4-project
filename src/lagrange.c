@@ -2295,8 +2295,11 @@ void move_particles(){
 #else
    /* Stokes drag force on a NON spherical (axisymmetric ellipsoidal) particle */
    /* same notation as in PRL 119, 254501 (2017) see also its supplementary materials */
-   invtau = 1.0 / (tracer+ipart)->tau_drag; 
-   alpha = (tracer+ipart)->aspect_ratio; 
+   /* The aspect ratio is a_par / a_perp */ 
+    alpha = (tracer+ipart)->aspect_ratio; 
+   /* Note that the meaning of the parameter tau_drag in our code is  ( \rho_p 2 a_perp^2 ) / (9 \nu \rho_f )  */
+   /* The particle relaxation time however is ~ ( \rho_p 2 a_perp a_par ) / (9 \nu \rho_f ) = tau_drag * alpha */
+    invtau = 1.0 / ( (tracer+ipart)->tau_drag * alpha );  
    /*compute prefactors*/
    if (alpha == 1){ 
      beta = c_perp = c_par  = 1.0;
