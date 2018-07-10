@@ -340,7 +340,7 @@ void build_forcing(){
  
   #else
     kn=0.5;
-    omega_t = two_pi*property.time_dt*(0.1/LX);
+    omega_t = two_pi*property.time_dt*(0.01/LX);
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
 	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
@@ -525,7 +525,7 @@ void build_forcing(){
   #endif
 
   #ifdef LB_FLUID_FORCING_PENALIZATION_DIRECTION_X
-	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;
+	force[IDX(i,j,k)].x = -0.1*u[IDX(i,j,k)].x;
   #endif 
  
  #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
