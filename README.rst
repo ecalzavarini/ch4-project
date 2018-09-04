@@ -58,4 +58,4 @@ This code has been employed in the following published studies:
 
 4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, Phys. Rev. Fluids **3**, 053501 (2018).
 
-
+5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini [preprint on ArXiv](2018). 
