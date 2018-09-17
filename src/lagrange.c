@@ -2059,6 +2059,9 @@ void move_particles(){
   vector Dt_u;
   vector vec, v_old;
   vector omega,lift_coeff;
+#ifdef LAGRANGE_ADDEDMASS_WAKEDRAG
+  my_double diameter_p,re_p;
+#endif 
 #ifdef LAGRANGE_ORIENTATION
   my_double matA[3][3],matS[3][3],matW[3][3];
   my_double scalOSO, f_alpha, alpha, norm , gyro;
@@ -2292,6 +2295,31 @@ void move_particles(){
    (tracer+ipart)->ax = ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau;
    (tracer+ipart)->ay = ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
    (tracer+ipart)->az = ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;
+
+ #ifdef LAGRANGE_ADDEDMASS
+  #ifdef LAGRANGE_ADDEDMASS_WAKEDRAG
+   /* this ADDs the Shiller-Naumann drag correction as in  E.Calzavarini et al. Physica D 241 (2012) 237-244  */
+   /*  It has the form 0.15*re_p^0.687/tau with re_p the particle raynolds number re_p = |velocity difference|*diameter/viscosity */
+
+   /* compute  the particle diameter from \tau = r^2/(3*\beta*\nu)  */
+   diameter_p = 2.0 * sqrt( (tracer+ipart)->tau_drag * 3.0 * (tracer+ipart)->beta_coeff * property.nu  );
+ 
+   /* compute the particle Reynolds number */
+   re_p = sqrt( ((tracer+ipart)->ux - (tracer+ipart)->vx) * ((tracer+ipart)->ux - (tracer+ipart)->vx) +
+               ((tracer+ipart)->uy - (tracer+ipart)->vy) * ((tracer+ipart)->uy - (tracer+ipart)->vy) +
+               ((tracer+ipart)->uz - (tracer+ipart)->vz) * ((tracer+ipart)->uz - (tracer+ipart)->vz) ) 
+          * diameter_p / property.nu;
+
+   /* compute corrected relaxation time */
+   invtau = 0.15*pow(re_p,0.687)/(tracer+ipart)->tau_drag; 
+
+   /* add wake drag force */
+   (tracer+ipart)->ax += ((tracer+ipart)->ux - (tracer+ipart)->vx)*invtau;
+   (tracer+ipart)->ay += ((tracer+ipart)->uy - (tracer+ipart)->vy)*invtau;
+   (tracer+ipart)->az += ((tracer+ipart)->uz - (tracer+ipart)->vz)*invtau;  
+  #endif
+ #endif
+
 #else
    /* Stokes drag force on a NON spherical (axisymmetric ellipsoidal) particle */
    /* same notation as in PRL 119, 254501 (2017) see also its supplementary materials */
