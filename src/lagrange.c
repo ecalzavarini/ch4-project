@@ -2241,12 +2241,26 @@ void move_particles(){
    (tracer+ipart)->vz += reactivity * ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
   #elif defined(LAGRANGE_ORIENTATION_ACTIVE_SECONDORIENTATION)
    /* second orientation should be defined! */
+   //fprintf(stderr,"swimming velocity along n\n");
    /* fluid velocity + swim with direction n evolved by jeffrey */
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->nx);
    (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->ny);
    (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->nz);
+  #elif defined(LAGRANGE_ORIENTATION_ACTIVE_SELECTIVEORIENTATION)
+   if((tracer+ipart)->aspect_ratio >= 1.0){
+     /* rods */  
+   (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
+   (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
+   (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
+   }else{
+     /* disks */
+   (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->nx);
+   (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->ny);
+   (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->nz);
+   }
   #else
    /* Default behaviour for LAGRANGE_ORIENTATION_ACTIVE : fluid velocity + swim with direction p evolved by jeffrey,random, etc. (if they are activated) */
+   //fprintf(stderr,"swimming velocity along p\n");
    (tracer+ipart)->vx += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->px);
    (tracer+ipart)->vy += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->py);
    (tracer+ipart)->vz += ((tracer+ipart)->swim_velocity)*((tracer+ipart)->pz);
