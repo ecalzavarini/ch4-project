@@ -117,6 +117,19 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->dt_px4 += (a+i)->dt_px4;
     (b+i)->dt_py4 += (a+i)->dt_py4;
     (b+i)->dt_pz4 += (a+i)->dt_pz4;
+   #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
+    (b+i)->dt_nx += (a+i)->dt_nx;
+    (b+i)->dt_ny += (a+i)->dt_ny;
+    (b+i)->dt_nz += (a+i)->dt_nz;
+
+    (b+i)->dt_nx2 += (a+i)->dt_nx2;
+    (b+i)->dt_ny2 += (a+i)->dt_ny2;
+    (b+i)->dt_nz2 += (a+i)->dt_nz2;
+
+    (b+i)->dt_nx4 += (a+i)->dt_nx4;
+    (b+i)->dt_ny4 += (a+i)->dt_ny4;
+    (b+i)->dt_nz4 += (a+i)->dt_nz4;
+   #endif
   #endif
  #endif
 #ifdef LB_TEMPERATURE
