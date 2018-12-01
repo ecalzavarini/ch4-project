@@ -2058,8 +2058,10 @@ void move_particles(){
   my_double invtau;
   vector Dt_u;
   vector vec, v_old;
+#ifdef LAGRANGE_ADDEDMASS_LIFT
   vector omega;
   my_double lift_coeff;
+#endif
 #ifdef LAGRANGE_ADDEDMASS_WAKEDRAG
   my_double diameter_p,re_p;
 #endif 
@@ -2450,9 +2452,9 @@ void move_particles(){
    /*  - beta/3 (u - v) x omega */
    lift_coeff = ( (tracer+ipart)->beta_coeff )/3.0;
 
-   (tracer+ipart)->ax += -lift_coeff*( ((tracer+ipart)->uy - (tracer+ipart)->vy))*omega.z - ((tracer+ipart)->uz - (tracer+ipart)->vz))*omega.y );
-   (tracer+ipart)->ay += -lift_coeff*( ((tracer+ipart)->uz - (tracer+ipart)->vz))*omega.x - ((tracer+ipart)->ux - (tracer+ipart)->vx))*omega.z );
-   (tracer+ipart)->az += -lift_coeff*( ((tracer+ipart)->ux - (tracer+ipart)->vx))*omega.y - ((tracer+ipart)->uy - (tracer+ipart)->vy))*omega.x );
+   (tracer+ipart)->ax += -lift_coeff*( ( (tracer+ipart)->uy - (tracer+ipart)->vy )*omega.z - ( (tracer+ipart)->uz - (tracer+ipart)->vz )*omega.y );
+   (tracer+ipart)->ay += -lift_coeff*( ( (tracer+ipart)->uz - (tracer+ipart)->vz )*omega.x - ( (tracer+ipart)->ux - (tracer+ipart)->vx )*omega.z );
+   (tracer+ipart)->az += -lift_coeff*( ( (tracer+ipart)->ux - (tracer+ipart)->vx )*omega.y - ( (tracer+ipart)->uy - (tracer+ipart)->vy )*omega.x );
 
  #endif /* end of lift */
 
