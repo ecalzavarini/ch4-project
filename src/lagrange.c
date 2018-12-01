@@ -2058,7 +2058,8 @@ void move_particles(){
   my_double invtau;
   vector Dt_u;
   vector vec, v_old;
-  vector omega,lift_coeff;
+  vector omega;
+  my_double lift_coeff;
 #ifdef LAGRANGE_ADDEDMASS_WAKEDRAG
   my_double diameter_p,re_p;
 #endif 
