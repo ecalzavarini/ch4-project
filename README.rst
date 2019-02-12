@@ -27,7 +27,7 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 
 Contact
 =======
-This project is based at Unité de Mecanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
+This project is based at Unité de Mécanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
 
 Info: 
 
@@ -40,7 +40,7 @@ Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.inf
 
 How to: 
 ======
-Se wiki pages
+See wiki pages https://github.com/ecalzavarini/ch4-project/wiki (very incomplete)
 
 Aknowledgments:
 ======
