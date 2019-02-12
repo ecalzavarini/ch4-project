@@ -51,11 +51,16 @@ Bibliography:
 This code has been employed in the following published studies:
 
 1) *Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A one-to-one accuracy and performance study*, K.Shrestha, G.Mompean and E.Calzavarini, Phys. Rev. E **93**, 023306 (2016).
+   https://link.aps.org/pdf/10.1103/PhysRevE.93.023306
 
 2) *Micro-bubbles and micro-particles are not faithful tracers of turbulent acceleration*, Varghese Mathai, Enrico Calzavarini,  Jon Brons, Chao Sun and Detlef Lohse, Phys. Rev. Lett. **117**, 024501 (2016).
-
+   https://link.aps.org/doi/10.1103/PhysRevLett.117.024501
+   
 3) *Propelled microprobes in turbulence*, Enrico Calzavarini, Yongxiang X. Huang, Francois G. Schmitt and Lipo Wang, Phys. Rev. Fluids **3**, 054604 (2018).
+   https://link.aps.org/doi/10.1103/PhysRevFluids.3.054604
 
 4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, Phys. Rev. Fluids **3**, 053501 (2018).
+   https://link.aps.org/doi/10.1103/PhysRevFluids.3.053501
 
 5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini, Phys. Rev. E **99**, 013108 (2019). 
+   https://link.aps.org/doi/10.1103/PhysRevE.99.013108
