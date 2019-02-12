@@ -475,8 +475,8 @@ vector gradient_scalar(my_double *t, int i, int j, int k){
   /* particles can be nasty */
   /* in the bulk , centered 2nd order finite difference */
   if( i > 0 && i < LNX+TWO_BRD-1 )   grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
-  if( j > 0 && i < LNY+TWO_BRD-1 )   grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
-  if( k > 0 && i < LNZ+TWO_BRD-1 )   grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
+  if( j > 0 && j < LNY+TWO_BRD-1 )   grad.y = ( t[IDX(i, j+1, k)] - t[IDX(i, j-1, k)] )/( center_V[IDX(i, j+1, k)].y - center_V[IDX(i, j-1, k)].y );
+  if( k > 0 && k < LNZ+TWO_BRD-1 )   grad.z = ( t[IDX(i, j, k+1)] - t[IDX(i, j, k-1)] )/( center_V[IDX(i, j, k+1)].z - center_V[IDX(i, j, k-1)].z );
 #else
   /* in the bulk , centered 2nd order finite difference */
    grad.x = ( t[IDX(i+1, j, k)] - t[IDX(i-1, j, k)] )/( center_V[IDX(i+1, j, k)].x - center_V[IDX(i-1, j, k)].x );
@@ -1180,3 +1180,57 @@ vector laplacian_vector(vector *t, int i, int j, int k){
  return lap;
 
 }
+
+
+
+/* Second order accuracy finite-difference derivatives for non uniform (cartesian) grids */
+/* Ref. Sanmiguel-Rojas et al. Journal of Computational Physics 204 (2005) 302–318       */
+
+my_double partial_derivative_x_centered_scalar(my_double *t, int i, int j, int k){
+   my_double mi,si,ni;
+   my_double hip,him;
+   my_double val;
+
+   hip = center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+   him = center_V[IDX(i-1, j, k)].x - center_V[IDX(i, j, k)].x;
+   
+   mi = -hip/(-hip*him + him*him);
+   ni = -him/(-hip*him + hip*hip);
+   si = -(mi + ni);
+
+   val = mi*t[IDX(i-1, j, k)] + si*t[IDX(i, j, k)] + ni*t[IDX(i+1, j, k)];
+   return val;
+ }
+
+
+my_double partial_derivative_x_forward_scalar(my_double *t, int i, int j, int k){
+  my_double ni,si,pi;
+   my_double hip,hip2;
+   my_double val;
+
+   hip2 = center_V[IDX(i+2, j, k)].x - center_V[IDX(i, j, k)].x;
+   hip =  center_V[IDX(i+1, j, k)].x - center_V[IDX(i, j, k)].x;
+   
+   ni = -hip2/(hip *hip - hip *hip2);
+   pi = -hip /(hip2*hip - hip2*hip2);
+   si = -(ni + pi);
+
+   val = si*t[IDX(i, j, k)] + ni*t[IDX(i+1, j, k)] + pi*t[IDX(i+2, j, k)];
+   return val;
+ }
+
+my_double partial_derivative_x_backward_scalar(my_double *t, int i, int j, int k){
+  my_double mi,pi,si;
+   my_double him,him2;
+   my_double val;
+
+   him2 = center_V[IDX(i-2, j, k)].x - center_V[IDX(i, j, k)].x;
+   him =  center_V[IDX(i-1, j, k)].x - center_V[IDX(i, j, k)].x;
+   
+   mi = -him2/(him*him - him*him2);
+   pi = -him/(him2*him - him2*him2);
+   si = -(mi + pi);
+
+   val = si*t[IDX(i-1, j, k)] + mi*t[IDX(i-1, j, k)] + pi*t[IDX(i-2, j, k)];
+   return val;
+ }
