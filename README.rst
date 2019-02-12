@@ -11,7 +11,7 @@ A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It in
 - **temperature dynamics** (advection, diffusion , sink/source or reaction terms)
 - **phase change** (enthalpy formulation for solid/liquid systems)
 - **scalar transport** (same functionalities as temperature)
-- **lagrangian dynamics** (tracers, heavy/light & active  point-like particles; non-shperical Jeffrey rotation, gyrotaxis)
+- **lagrangian dynamics** (tracers, heavy/light & active  point-like particles; non-shperical Jeffery rotation, gyrotaxis)
 - **large eddy simulation** (Smagorinsky, Shear Improved Samgorinsky with Kalman Filter)
 
 Requirements:
@@ -27,7 +27,7 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 
 Contact
 =======
-This project is based at Unite' de Mecanique de Lille (UML EA 7512) France. 
+This project is based at Unité de Mecanique de Lille (UML EA 7512, https://uml.univ-lille.fr ) France. 
 
 Info: 
 
@@ -40,7 +40,7 @@ Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.inf
 
 How to: 
 ======
-To be written
+Se wiki pages
 
 Aknowledgments:
 ======
