@@ -1,23 +1,23 @@
-resume 0
-resume_u 0
-resume_t 0
+resume 1
+resume_u 1
+resume_t 1
 resume_s 0
 
-NX 100
+NX 202
 NY 100
-NZ 100
+NZ 1
 
-SX 100
+SX 202
 SY 100
-SZ 100
+SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 1.
-time_dump_field 1.
-time_dump_diagn 1.
+time_end 2000.
+time_dump_field 100.
+time_dump_diagn 100.
 
-tau_u 1.0
+tau_u 0.8
 nu_add 0.0
 
 ym_wall_velocity_x 0.1 
@@ -25,25 +25,25 @@ ym_wall_velocity_z 0
 yp_wall_velocity_x -0.01
 yp_wall_velocity_z 0
 
-Amp_x 0.000
-Amp_y 0.000
-Amp_z 0.000
+Amp_x 0.0001
+Amp_y 0.00
+Amp_z 0.00
 
 noise_u 1.e-6
 
-tau_t 0.55
+tau_t 0.8
 
 T_bot  0.5
 T_top -0.5
 T_ref  0.0
 T_ref2 0.0
-grad_T_bot 0.0   -0.0078125
+grad_T_bot -0.05   -0.0078125
 grad_T_top 0.0   -0.0078125
 
-beta_t  0.0001  0.00006944444444444
+beta_t  0.0004  0.00006944444444444
 beta2_t 0.0
 
-noise_t 0.0 3.e-17
+noise_t 3.e-5
 
 gravity_x 0.0  
 gravity_y 1.0  
@@ -72,7 +72,7 @@ beta_s 0.001897778
 Amp_s 0.01
 
 time_dump_lagr 100
-particle_number 4000
+particle_number 2000
 
 particle_radius_types 4
 particle_radius_min 1
@@ -82,9 +82,9 @@ particle_density_types 3
 particle_density_min 1
 particle_density_max 10
 
-tau_drag_types 3
-tau_drag_min 1
-tau_drag_max 5
+tau_drag_types 1
+tau_drag_min 0
+tau_drag_max 0
 
 beta_coeff_types 1
 beta_coeff_min 3
@@ -94,21 +94,21 @@ gravity_coeff_types 10
 gravity_coeff_min 0.1
 gravity_coeff_max 10
 
-aspect_ratio_types 10
-aspect_ratio_min 1.
-aspect_ratio_max 10.
+aspect_ratio_types 1
+aspect_ratio_min 100.0
+aspect_ratio_max 100.0
 
 gyrotaxis_velocity_types 1
-gyrotaxis_velocity_min 0.001
-gyrotaxis_velocity_max 0.002
+gyrotaxis_velocity_min 0.03
+gyrotaxis_velocity_max 0.03
 
 rotational_diffusion_types 1
 rotational_diffusion_min 0.001
 rotational_diffusion_max 0.001
 
 swim_velocity_types 1
-swim_velocity_min 1.0
-swim_velocity_max 1.0
+swim_velocity_min 0.01
+swim_velocity_max 0.01
 
 jump_time_types 1
 jump_time_min 10.0
