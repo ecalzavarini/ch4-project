@@ -109,9 +109,13 @@ int main(int argc, char **argv){
 
 #if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING )
 	  build_forcing();
-#ifdef LB_TEMPERATURE_MELTING
+ #ifdef LB_TEMPERATURE_MELTING
 	  melting();
-#endif
+ #endif
+ #ifdef LAGRANGE_POLYMER_FEEDBACK
+	/* Add the divergence of the extra stress tensor */
+        add_lagrangian_polymer_feedback_on_the_flow(); 
+ #endif
 	  add_forcing();
 #endif
 
@@ -152,12 +156,7 @@ int main(int argc, char **argv){
  #endif
 	move_particles();
         output_particles();       /* binary */
-	dump_particle_averages(); /* ascii diagnostic averages */
- #ifdef LAGRANGE_POLYMER
-  #ifdef LAGRANGE_POLYMER_FEEDBACK
-	add_lagrangian_polymer_feedback_on_the_flow(); /* divergence of extra stress */
-  #endif
- #endif
+	dump_particle_averages(); /* ascii diagnostic averages */ 
 #endif
 	}/* loop on time: time_now */
 
