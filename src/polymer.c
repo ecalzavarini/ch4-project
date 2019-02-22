@@ -34,6 +34,7 @@ void add_lagrangian_polymer_feedback_on_the_flow(){
   czz = czz -1.0;
 
   fac = property.nu_polymer / property.tau_polymer;
+  fac *= (property.SX*property.SY*property.SZ)/property.particle_number;   
 
    /* get coordinates in the domain */
   part.x = wrap( (tracer+ipart)->x ,  property.SX);
