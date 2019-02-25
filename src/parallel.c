@@ -335,10 +335,10 @@ void processor_splitting()
 	LNZ_START = LNZ * mez;
 	LNZ_END = LNZ * (mez + 1);
 
-	#ifdef DEBUG
+#ifdef DEBUG
 	fprintf(stderr, "me %d LNX_START %d , LNY_START %d  LNZ_START %d\n", me, LNX_START ,LNY_START, LNZ_START);
 	fprintf(stderr, "me %d LNX_END %d , LNY_END %d  LNZ_END %d\n", me, LNX_END ,LNY_END, LNZ_END);
-	#endif
+#endif
 
 	/* processor rulers for the grid */
 	NXG=NX+1;
