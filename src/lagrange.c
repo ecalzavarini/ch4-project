@@ -909,7 +909,11 @@ for (k=0; k<LNZ+TWO_BRD-1; k++) if(center_V[IDX(BRD, BRD, k)].z <= part.z && par
 kp =  km + 1;
 
 //fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
-
+/* check */
+// if (im<0 || ip>LNX+TWO_BRD-1){ fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp); fflush; exit(0);}
+// if (jm<0 || jp>LNY+TWO_BRD-1){ fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp); fflush; exit(0);}
+// if (km<0 || kp>LNZ+TWO_BRD-1){ fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp); fflush; exit(0);}
+ 
 //for (j=0;j<10;j++) fprintf(stderr,"%d center_V %e\n",j,center_V[IDX(im, j, km)].y);
 
   dxm = part.x - center_V[IDX(im, BRD, BRD)].x;
@@ -2842,9 +2846,9 @@ for (ipart=0;ipart<npart;ipart++) {
       part.y >= center_V[IDX(BRD, 0, BRD)].y && part.y < center_V[IDX(BRD,LNY+TWO_BRD-1, BRD)].y &&
       part.z >= center_V[IDX(BRD, BRD, 0)].z && part.z < center_V[IDX(BRD, BRD,LNZ+TWO_BRD-1)].z ){
   */
-if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD, BRD)].x &&
-     part.y >= mesh[IDXG(BRD, BRD, BRD)].y && part.y < mesh[IDXG(BRD,LNYG+BRD-1, BRD)].y &&
-     part.z >= mesh[IDXG(BRD, BRD, BRD)].z && part.z < mesh[IDXG(BRD, BRD,LNZG+BRD-1)].z ){
+ if(  part.x >= mesh[IDXG(BRD, BRD, BRD)].x && part.x < mesh[IDXG(LNXG+BRD-1,BRD, BRD)].x &&
+      part.y >= mesh[IDXG(BRD, BRD, BRD)].y && part.y < mesh[IDXG(BRD,LNYG+BRD-1, BRD)].y &&
+      part.z >= mesh[IDXG(BRD, BRD, BRD)].z && part.z < mesh[IDXG(BRD, BRD,LNZG+BRD-1)].z ){
 
       npart_here += 1;
 
