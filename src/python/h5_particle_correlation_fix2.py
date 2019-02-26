@@ -30,7 +30,8 @@ def acf(series):
     c0 = np.sum((data - mean) ** 2) / float(n)
 
     def r(h):
-        acf_lag = ((data[:n - h] - mean) * (data[h:] - mean)).sum() / float(n-h)
+        acf_lag = ((data[:n - h] - mean) * (data[h:] - mean)).sum() / float(n-h) 
+#        return round(acf_lag, 3)
         return acf_lag
     x = np.arange(n) # Avoiding lag 0 calculation
     acf_coeffs = map(r, x)
@@ -42,8 +43,10 @@ acceleration_y = np.array([])
 acceleration_z = np.array([])
 
 ntype = int(sys.argv[5])
+totpart =  int(sys.argv[6])
+print("totpart"+str(totpart))
 n=0.0
-for j in xrange(0,22000,ntype):
+for j in xrange(0,totpart,ntype):
     # loop on all files
     for i in xrange(int(dirnumstart),int(dirnumend)+1):
         for file in filenames:
@@ -58,9 +61,9 @@ for j in xrange(0,22000,ntype):
                     labels = group.keys()
 #read the particle data
                     name=np.array( group['name'])
-                    ax=np.array( group['vx'])
-                    ay=np.array( group['vy'])
-                    az=np.array( group['vz'])
+                    ax=np.array( group['ax'])
+                    ay=np.array( group['ay'])
+                    az=np.array( group['az'])
 
 #            npart = name.shape[0]
 #            print(ax[0])
@@ -96,7 +99,7 @@ for j in xrange(0,22000,ntype):
     n=n+1.0
     print("n =",n)
 
-    foutname = 'vcorr_'+sys.argv[4]+'.txt'
+    foutname = 'acorr_'+sys.argv[4]+'.txt'
     fout = open(foutname,'w')
     for k in xrange(0,len(acorr_x)):
         print(k*10,acorr_x[k]/acorr_x[0],acorr_y[k]/acorr_y[0],acorr_z[k]/acorr_z[0],file=fout)

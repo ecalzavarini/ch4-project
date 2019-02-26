@@ -9,7 +9,7 @@ import re
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):
     parts = numbers.split(value)
-    parts[1::2] = map(int, parts[1::2])
+    parts[1::2] = list(map(int, parts[1::2]))
     return parts
 
 
@@ -22,12 +22,17 @@ filenames = sorted(filenames, key=numericalSort)
 # Compute structure function of order 2 for a given variable
 def structure_function_order2(series):
     n = len(series)
+#    print("n ",n)
     data = np.asarray(series)
+#    print("data ", data)
     def r(h):
         acf_lag = ((data[:n - h] - data[h:])**2.).sum() / float(n-h)
         return acf_lag
+#    print("n after",n)
     x = np.arange(n) 
-    acf_coeffs = map(r, x)
+#    print("n after",x)
+    acf_coeffs = list(map(r, x))
+#    print("acf_coeffs ",np.asarray(acf_coeffs))
     return acf_coeffs
 
 # Create array
@@ -88,17 +93,6 @@ for j in range(0,totpart,ntype):
                     temperature = np.append(temperature,tt[which_part])
                     fin.close()
 
- 
-#print(acceleration)
-# first we pad with 0 , because our signal is not periodic                    
-    position_x = np.append(position_x,np.zeros(len(position_x)))
-    position_y = np.append(position_y,np.zeros(len(position_y)))
-    position_z = np.append(position_z,np.zeros(len(position_z)))
-    acceleration_x = np.append(acceleration_x,np.zeros(len(acceleration_x)))
-    acceleration_y = np.append(acceleration_y,np.zeros(len(acceleration_y)))
-    acceleration_z = np.append(acceleration_z,np.zeros(len(acceleration_z)))
-    acceleration_m = np.append(acceleration_m,np.zeros(len(acceleration_m)))
-    temperature = np.append(temperature,np.zeros(len(temperature)))
 
     tmp_acorr_posx = np.asarray(structure_function_order2(position_x))
     tmp_acorr_posy = np.asarray(structure_function_order2(position_y))

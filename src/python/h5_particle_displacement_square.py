@@ -9,32 +9,36 @@ import re
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):
     parts = numbers.split(value)
-    parts[1::2] = map(int, parts[1::2])
+    parts[1::2] = list(map(int, parts[1::2]))
     return parts
 
-
+order = 2
 dirname = sys.argv[1]
 dirnumstart = sys.argv[2]
 dirnumend = sys.argv[3]
-#dirnames = []
-#filenames = []
 filenames= os.listdir(dirname+str(dirnumstart))
 filenames = sorted(filenames, key=numericalSort)
-#print(filenames)
 
-#spectra
-def spt(series):
+# Compute structure function of order 2 for a given variable
+def structure_function_orderN(series,order):
     n = len(series)
-    data = np.asarray(series,dtype=np.float64)
-    ft_data = np.array(n,dtype=np.complex128)
-    spectrum = np.array(n,dtype=np.float64)
-    ft_data = np.fft.rfft(data)
-#    spectrum  = (np.abs(ft_data))**2.
-    spectrum = np.real(ft_data*np.conjugate(ft_data))
-    return spectrum
+#    print("n ",n)
+    data = np.asarray(series)
+#    print("data ", data)
+    def r(h):
+        acf_lag = ((data[:n - h] - data[h:])**order).sum() / float(n-h)
+        return acf_lag
+#    print("n after",n)
+    x = np.arange(n) 
+#    print("n after",x)
+    acf_coeffs = list(map(r, x))
+#    print("acf_coeffs ",np.asarray(acf_coeffs))
+    return acf_coeffs
 
-
-# create array
+# Create array
+position_x = np.array([])
+position_y = np.array([])
+position_z = np.array([])
 acceleration_x = np.array([])
 acceleration_y = np.array([])
 acceleration_z = np.array([])
@@ -60,6 +64,9 @@ for j in range(0,totpart,ntype):
                     labels = group.keys()
 #read the particle data
                     name=np.array( group['name'])
+                    posx=np.array( group['x'])
+                    posy=np.array( group['y'])
+                    posz=np.array( group['z'])
                     ax=np.array( group['vx'])
                     ay=np.array( group['vy'])
                     az=np.array( group['vz'])
@@ -71,17 +78,14 @@ for j in range(0,totpart,ntype):
                     if 'temperature' in labels: 
                         tt=np.array( group['temperature'])
 
-# remove man value
-                    ax=ax-np.mean(ax)
-                    ay=ay-np.mean(ay)
-                    az=az-np.mean(az)
-                    am=am-np.mean(am)
-                    tt=tt-np.mean(tt)
                     
 #            npart = name.shape[0]
 #            print(ax[0])
                     which_part = int(sys.argv[4])+j           
 #                    print(which_part)
+                    position_x = np.append(position_x,posx[which_part])
+                    position_y = np.append(position_y,posy[which_part])
+                    position_z = np.append(position_z,posz[which_part])
                     acceleration_x = np.append(acceleration_x,ax[which_part])
                     acceleration_y = np.append(acceleration_y,ay[which_part])
                     acceleration_z = np.append(acceleration_z,az[which_part])
@@ -89,30 +93,31 @@ for j in range(0,totpart,ntype):
                     temperature = np.append(temperature,tt[which_part])
                     fin.close()
 
- 
-#print(acceleration)
-# first we pad with 0 , because our signal is not periodic                    
-    acceleration_x = np.append(acceleration_x,np.zeros(len(acceleration_x)))
-    acceleration_y = np.append(acceleration_y,np.zeros(len(acceleration_y)))
-    acceleration_z = np.append(acceleration_z,np.zeros(len(acceleration_z)))
-    acceleration_m = np.append(acceleration_m,np.zeros(len(acceleration_m)))
-    temperature = np.append(temperature,np.zeros(len(temperature)))
 
-    tmp_acorr_x = np.asarray(spt(acceleration_x))
-    tmp_acorr_y = np.asarray(spt(acceleration_y))
-    tmp_acorr_z = np.asarray(spt(acceleration_z))
-    tmp_acorr_m = np.asarray(spt(acceleration_m))
-    tmp_acorr_t = np.asarray(spt(temperature))
+    tmp_acorr_posx = np.asarray(structure_function_orderN(position_x,order))
+    tmp_acorr_posy = np.asarray(structure_function_orderN(position_y,order))
+    tmp_acorr_posz = np.asarray(structure_function_orderN(position_z,order))
+    tmp_acorr_x = np.asarray(structure_function_orderN(acceleration_x,order))
+    tmp_acorr_y = np.asarray(structure_function_orderN(acceleration_y,order))
+    tmp_acorr_z = np.asarray(structure_function_orderN(acceleration_z,order))
+    tmp_acorr_m = np.asarray(structure_function_orderN(acceleration_m,order))
+    tmp_acorr_t = np.asarray(structure_function_orderN(temperature,order))
     length = len(acceleration_x)
     print("len ",len(acceleration_x))
     print("len ",len(acceleration_y))
     print("len ",len(acceleration_z))            
+    position_x = np.delete(position_x,range(len(position_x)))
+    position_y = np.delete(position_y,range(len(position_y)))
+    position_z = np.delete(position_z,range(len(position_z)))
     acceleration_x = np.delete(acceleration_x,range(len(acceleration_x)))
     acceleration_y = np.delete(acceleration_y,range(len(acceleration_y)))
     acceleration_z = np.delete(acceleration_z,range(len(acceleration_z)))
     acceleration_m = np.delete(acceleration_m,range(len(acceleration_m)))
     temperature = np.delete(temperature,range(len(temperature)))
     if j==0:
+        acorr_posx = tmp_acorr_posx
+        acorr_posy = tmp_acorr_posy
+        acorr_posz = tmp_acorr_posz        
         acorr_x = tmp_acorr_x
         acorr_y = tmp_acorr_y
         acorr_z = tmp_acorr_z
@@ -120,6 +125,9 @@ for j in range(0,totpart,ntype):
         acorr_t = tmp_acorr_t
     else:
         for k in range(0,len(acorr_x)):
+            acorr_posx[k] += tmp_acorr_posx[k]
+            acorr_posy[k] += tmp_acorr_posy[k]
+            acorr_posz[k] += tmp_acorr_posz[k]
             acorr_x[k] += tmp_acorr_x[k]
             acorr_y[k] += tmp_acorr_y[k]
             acorr_z[k] += tmp_acorr_z[k]
@@ -129,34 +137,11 @@ for j in range(0,totpart,ntype):
     n=n+1.0
     print("n =",n)
 
-    foutname = 'spectra_particle_'+sys.argv[4]+'.txt'
+    foutname = 'displacement_particle_'+sys.argv[4]+'_'+str(order)+'.txt'
     fout = open(foutname,'w')
     for k in range(0,len(acorr_x)):
-        print(k/(10.*length),acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,acorr_t[k]/n,acorr_m[k]/n,file=fout)
+        print(k*10.,acorr_posx[k]/n,acorr_posy[k]/n,acorr_posz[k]/n, acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,acorr_t[k]/n,acorr_m[k]/n,file=fout)
     fout.close()
 
-    foutname = 'acorr_particle_'+sys.argv[4]+'.txt'
-    fout = open(foutname,'w')
-    acorr_x_nozero = acorr_x
-    acorr_y_nozero = acorr_y
-    acorr_z_nozero = acorr_z
-    acorr_m_nozero = acorr_m
-    acorr_t_nozero = acorr_t
-
-#    acorr_x_nozero[0] = 0.0;
-#    acorr_y_nozero[0] = 0.0;
-#    acorr_z_nozero[0] = 0.0;
-#    acorr_m_nozero[0] = 0.0;
-#    acorr_t_nozero[0] = 0.0;
-
-    real_acorr_x = np.fft.irfft(acorr_x_nozero)
-    real_acorr_y = np.fft.irfft(acorr_y_nozero)
-    real_acorr_z = np.fft.irfft(acorr_z_nozero)
-    real_acorr_m = np.fft.irfft(acorr_m_nozero)
-    real_acorr_t = np.fft.irfft(acorr_t_nozero)
-
-    for k in range(0,int(len(real_acorr_x)/2)):
-        print(k*10., real_acorr_x[k]/real_acorr_x[0], real_acorr_y[k]/real_acorr_y[0], real_acorr_z[k]/real_acorr_z[0],real_acorr_t[k]/real_acorr_t[0],real_acorr_m[k]/real_acorr_m[0],file=fout)
-    fout.close()
 
 

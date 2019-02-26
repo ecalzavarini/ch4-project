@@ -92,11 +92,11 @@ for j in range(0,totpart,ntype):
  
 #print(acceleration)
 # first we pad with 0 , because our signal is not periodic                    
-    acceleration_x = np.append(acceleration_x,np.zeros(len(acceleration_x)))
-    acceleration_y = np.append(acceleration_y,np.zeros(len(acceleration_y)))
-    acceleration_z = np.append(acceleration_z,np.zeros(len(acceleration_z)))
-    acceleration_m = np.append(acceleration_m,np.zeros(len(acceleration_m)))
-    temperature = np.append(temperature,np.zeros(len(temperature)))
+#    acceleration_x = np.append(acceleration_x,np.zeros(len(acceleration_x)))
+#    acceleration_y = np.append(acceleration_y,np.zeros(len(acceleration_y)))
+#    acceleration_z = np.append(acceleration_z,np.zeros(len(acceleration_z)))
+#    acceleration_m = np.append(acceleration_m,np.zeros(len(acceleration_m)))
+#    temperature = np.append(temperature,np.zeros(len(temperature)))
 
     tmp_acorr_x = np.asarray(spt(acceleration_x))
     tmp_acorr_y = np.asarray(spt(acceleration_y))
@@ -129,34 +129,12 @@ for j in range(0,totpart,ntype):
     n=n+1.0
     print("n =",n)
 
-    foutname = 'spectra_particle_'+sys.argv[4]+'.txt'
+    foutname = 'spectra_particle_'+sys.argv[4]+'_nopad.txt'
     fout = open(foutname,'w')
     for k in range(0,len(acorr_x)):
         print(k/(10.*length),acorr_x[k]/n,acorr_y[k]/n,acorr_z[k]/n,acorr_t[k]/n,acorr_m[k]/n,file=fout)
     fout.close()
 
-    foutname = 'acorr_particle_'+sys.argv[4]+'.txt'
-    fout = open(foutname,'w')
-    acorr_x_nozero = acorr_x
-    acorr_y_nozero = acorr_y
-    acorr_z_nozero = acorr_z
-    acorr_m_nozero = acorr_m
-    acorr_t_nozero = acorr_t
 
-#    acorr_x_nozero[0] = 0.0;
-#    acorr_y_nozero[0] = 0.0;
-#    acorr_z_nozero[0] = 0.0;
-#    acorr_m_nozero[0] = 0.0;
-#    acorr_t_nozero[0] = 0.0;
-
-    real_acorr_x = np.fft.irfft(acorr_x_nozero)
-    real_acorr_y = np.fft.irfft(acorr_y_nozero)
-    real_acorr_z = np.fft.irfft(acorr_z_nozero)
-    real_acorr_m = np.fft.irfft(acorr_m_nozero)
-    real_acorr_t = np.fft.irfft(acorr_t_nozero)
-
-    for k in range(0,int(len(real_acorr_x)/2)):
-        print(k*10., real_acorr_x[k]/real_acorr_x[0], real_acorr_y[k]/real_acorr_y[0], real_acorr_z[k]/real_acorr_z[0],real_acorr_t[k]/real_acorr_t[0],real_acorr_m[k]/real_acorr_m[0],file=fout)
-    fout.close()
 
 
