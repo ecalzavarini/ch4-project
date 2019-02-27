@@ -519,10 +519,10 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
  if( (tracer+i-1)->x < LNX_START || (tracer+i-1)->x >= LNX_START+LNX ) 
    (tracer+i-1)->x = (tracer+i)->x - pair_direction.x*pair_distance;
 
- if( (tracer+i-1)->y < LNY_START || (tracer+i-1)->y >= LNX_START+LNY ) 
+ if( (tracer+i-1)->y < LNY_START || (tracer+i-1)->y >= LNY_START+LNY ) 
    (tracer+i-1)->y = (tracer+i)->y - pair_direction.y*pair_distance;
 
- if( (tracer+i-1)->z < LNZ_START || (tracer+i-1)->z >= LNX_START+LNZ ) 
+ if( (tracer+i-1)->z < LNZ_START || (tracer+i-1)->z >= LNZ_START+LNZ ) 
    (tracer+i-1)->z = (tracer+i)->z - pair_direction.z*pair_distance;
  }
 #endif
@@ -2804,7 +2804,7 @@ void move_particles(){
 
 }/* end of loop on particles */
 
-  sendrecv_particles();
+ sendrecv_particles();
 
 }/* end of move_particles */
 
