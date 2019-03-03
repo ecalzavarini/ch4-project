@@ -2,6 +2,8 @@
 //#define DEBUG
 //#define DEBUG_MEMORY
 //#define DEBUG_HARD
+//#define DEBUG_MESH
+//#define DEBUG_CENTERS
 
 /* RANDOM NUMBERS */
 #define RANDOM48  /* does enable drand48 , default is our random number generator */
@@ -48,7 +50,7 @@
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 //#define LB_FLUID_INITIAL_ADD_NOISE
