@@ -188,7 +188,7 @@ void initialization_MPI(int argc, char **argv){
 
  /* Initialize random seeds */
 #ifdef RANDOM48
-  seed = time(NULL); 
+  seed = time(NULL);
   srand48(me+seed);
 #else
   initdum = -time(NULL); /* the minus sign is very important */

@@ -167,13 +167,22 @@ void read_mesh(){
 		 make_grid_rulers(stretch);
 #endif
 
+
+#ifdef		 METHOD_STREAMING
+		 /* moving everywhere */
+		 for (k = 0; k < LNZG+TWO_BRD; k++)
+			for (j = 0; j < LNYG+TWO_BRD; j++)
+			       for (i = 0; i < LNXG+TWO_BRD; i++) {
+#else				 
 		/* moving on the bulk only */
 		for (k = BRD; k < LNZG+BRD; k++)
 			for (j = BRD; j < LNYG+BRD; j++)
 				for (i = BRD; i < LNXG+BRD; i++) {
+#endif
+				 
 				        mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD)*property.SX/property.NX;
 					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-BRD)*property.SY/property.NY;
-					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD)*property.SZ/property.NZ;
+					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD)*property.SZ/property.NZ;					
 					/*
 					 * flag: 1 is bulk , 0 is wall , -1
 					 * is dormient
@@ -208,20 +217,20 @@ void read_mesh(){
 	/* here we copy the borders from the neighbors */
 	//	sendrecv_borders_mesh(mesh , mesh_flag);
 
-#ifdef DEBUG
+#ifdef DEBUG_MESH
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.out", me);
 	fout = fopen(fnamein, "w");
-	
+	/*
 	for (k = BRD; k < LNZG+BRD; k++){
 	  for (j = BRD; j < LNYG+BRD; j++){
 	    for (i = BRD; i < LNXG+BRD; i++){ 
-				  /*			  
-	for (k = 0; k < LNZG + TWO_BRD; k++)
-	  for (j = 0; j < LNYG + TWO_BRD; j++)
-	    for (i = 0; i < LNXG + TWO_BRD; i++)
-				  */
-     //fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+	 */			  
+	for (k = 0; k < LNZG + TWO_BRD; k++){
+	  for (j = 0; j < LNYG + TWO_BRD; j++){
+	    for (i = 0; i < LNXG + TWO_BRD; i++){
+				  
+
        fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z );
 	    }
 	    fprintf(fout,"\n");
@@ -234,16 +243,15 @@ void read_mesh(){
 	/* Each processor prints its mesh */
 	sprintf(fnamein, "mesh.%d.swap.out", me);
 	fout = fopen(fnamein, "w");
-	
+        /*
 	for (k = BRD; k < LNZG+BRD; k++){
 	    for (i = BRD; i < LNXG+BRD; i++){ 
 	      for (j = BRD; j < LNYG+BRD; j++){
-				  /*			  
-	for (k = 0; k < LNZG + TWO_BRD; k++)
-	  for (j = 0; j < LNYG + TWO_BRD; j++)
-	    for (i = 0; i < LNXG + TWO_BRD; i++)
-				  */
-      //fprintf(fout, "%d %d %d %e %e %e %d\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z , mesh_flag[IDXG(i, j, k)]);
+	*/			  
+	for (k = 0; k < LNZG + TWO_BRD; k++){
+	  for (j = 0; j < LNYG + TWO_BRD; j++){
+	    for (i = 0; i < LNXG + TWO_BRD; i++){				  
+
 	fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, mesh[IDXG(i, j, k)].x, mesh[IDXG(i, j, k)].y, mesh[IDXG(i, j, k)].z);
 	    }
 	    fprintf(fout,"\n");
@@ -251,7 +259,6 @@ void read_mesh(){
 	  fprintf(fout,"\n");
 	} /* ijk */
 	fclose(fout);
-
 #endif
 }/* end of read mesh */
 
@@ -340,10 +347,18 @@ void compute_volumes(){
 	my_double       V, V1, V2, V3;
 
 
+
+	
+#ifdef		 METHOD_STREAMING	
+	/* moving everywhere */
+	for (i = 0; i < LNXG + TWO_BRD - 1 ; i++) 
+		for (j = 0; j < LNYG + TWO_BRD - 1; j++) 
+			for (k = 0; k < LNZG + TWO_BRD - 1; k++) {
+#else
 	for (i = BRD; i < LNXG + BRD - 1 ; i++) 
 		for (j = BRD; j < LNYG + BRD - 1; j++) 
 			for (k = BRD; k < LNZG + BRD - 1; k++) {
-
+#endif			  
 
 /* points definition */
 /*    
@@ -483,6 +498,7 @@ void compute_volumes(){
 
 				center_V[IDX(i, j, k)] = P8;
 			    //if(P8.x==0.5)fprintf(stdout, "WWW me %d , %d %d %d , %g %g %g\n",me, i,j,k,center_V[IDX(i, j, k)].x,center_V[IDX(i, j, k)].y,center_V[IDX(i, j, k)].z);
+			    //fprintf(stdout, "WWW me %d , %d %d %d , %g %g %g\n",me, i,j,k,center_V[IDX(i, j, k)].x,center_V[IDX(i, j, k)].y,center_V[IDX(i, j, k)].z);
 
 
 	for(pp=0;pp<NPOP;pp++){	
@@ -526,6 +542,63 @@ void compute_volumes(){
 	  */
  			}/* for pp */	
 	}  /* for i , j , k */
+
+#ifdef DEBUG_CENTERS
+	/* Each processor prints its mesh */
+	sprintf(fnamein, "centers.%d.out", me);
+	fout = fopen(fnamein, "w");
+	/*
+	for (k = BRD; k < LNZ+BRD; k++){
+	  for (j = BRD; j < LNY+BRD; j++){
+	    for (i = BRD; i < LNX+BRD; i++){ 
+	 */			  
+	for (k = 0; k < LNZ + TWO_BRD; k++){
+	  for (j = 0; j < LNY + TWO_BRD; j++){
+	    for (i = 0; i < LNX + TWO_BRD; i++){
+				  
+
+       fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, center_V[IDX(i, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i, j, k)].z );
+	    }
+	    fprintf(fout,"\n");
+	  }
+	  fprintf(fout,"\n");
+	} /* ijk */
+	fclose(fout);
+
+	/*  I rewrite it swapping x with y for gnuplot use */
+	/* Each processor prints its mesh */
+	sprintf(fnamein, "centers.%d.swap.out", me);
+	fout = fopen(fnamein, "w");
+        /*
+	for (k = BRD; k < LNZ+BRD; k++){
+	    for (i = BRD; i < LNX+BRD; i++){ 
+	      for (j = BRD; j < LNY+BRD; j++){
+	*/			  
+	for (k = 0; k < LNZ + TWO_BRD; k++){
+	  for (j = 0; j < LNY + TWO_BRD; j++){
+	    for (i = 0; i < LNX + TWO_BRD; i++){				  
+
+	fprintf(fout, "%d %d %d %e %e %e\n", i, j, k, center_V[IDX(i, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i, j, k)].z);
+	    }
+	    fprintf(fout,"\n");
+	  }
+	  fprintf(fout,"\n");
+	} /* ijk */
+	fclose(fout);
+
+
+	/* print on screen */
+  for (i=0; i<LNX+TWO_BRD; i++){
+    fprintf(stderr,"center_V[IDX(%d, BRD, BRD)].x %lf\n", i, center_V[IDX(i, BRD, BRD)].x); 
+  }
+   for (j=0; j<LNY+TWO_BRD; j++){
+     fprintf(stderr,"center_V[IDX(BRD, %d, BRD)].y %lf\n", j, center_V[IDX(BRD, j, BRD)].y); 
+  }
+   for (k=0; k<LNZ+TWO_BRD; k++){
+     fprintf(stderr,"center_V[IDX(BRD, BRD, %d)].z %lf\n", k, center_V[IDX(BRD, BRD, k)].z); 
+  }
+#endif
+	
 
 }
 
@@ -1110,7 +1183,7 @@ void sendrecv_borders_vector(vector *f){
 
 void compute_interpolation_coefficients(){
 
-  int i,j,k;
+  int i,j,k,n;
   vector xp,xm,yp,ym,zp,zm;
   vector w_xp,w_xm,w_yp,w_ym,w_zp,w_zm;
   vector dxp,dxm,dyp,dym,dzp,dzm;
@@ -1122,16 +1195,13 @@ void compute_interpolation_coefficients(){
   vector YPF1, YPF2, YPB1, YPB2, YMF1, YMF2, YMB1, YMB2;   
   vector ZPF1, ZPF2, ZPB1, ZPB2, ZMF1, ZMF2, ZMB1, ZMB2;
 
-#if (defined METHOD_STREAMING || defined METHOD_UPWIND)
+  //#if (defined METHOD_STREAMING || defined METHOD_UPWIND)
   //#ifdef METHOD_STREAMING
-  //#ifdef METHOD_UPWIND
+#ifdef METHOD_UPWIND
 	/* exchange centers */
 	sendrecv_borders_vector(center_V);
 
-        /*
-	for (j = BRD; j < LNY + BRD ; j++) 
-	for (k = BRD; k < LNZ + BRD ; k++){
-        */
+	/* x */
 	for (j = 0; j < LNY + TWO_BRD ; j++) 
 	for (k = 0; k < LNZ + TWO_BRD ; k++){
 	if(LNX_START == 0){
@@ -1142,10 +1212,7 @@ void compute_interpolation_coefficients(){
 	}
 	}
 	
-	/*
-       	for (i = BRD; i < LNX + BRD; i++) 
-	for (k = BRD; k < LNZ + BRD; k++) {
-	*/
+	/* y */
        	for (i = 0; i < LNX + TWO_BRD; i++) 
 	for (k = 0; k < LNZ + TWO_BRD; k++) {
 	if(LNY_START == 0){
@@ -1156,22 +1223,18 @@ void compute_interpolation_coefficients(){
 	}
 	}
 
-	/*
-	for (i = BRD; i < LNX + BRD ; i++) 
-	for (j = BRD; j < LNY + BRD ; j++){ 
-	*/
+	/* z */	
 	for (i = 0; i < LNX + TWO_BRD ; i++) 
 	for (j = 0; j < LNY + TWO_BRD ; j++){ 
 	if(LNZ_START == 0){
-	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;
+	  center_V[IDX(i, j, 0)].z = - center_V[IDX(i, j, 1)].z;	  
 	}	
 	if(LNZ_END == NZ){
 	  center_V[IDX(i, j, LNZ+TWO_BRD-1)].z =  (property.SZ - center_V[IDX(i, j, LNZ+BRD-1)].z)+property.SZ;
 	}
 	}
 
-#ifdef DEBUG_HARD
-	
+#ifdef DEBUG_HARD	
 	fprintf(stderr,"\n TWO_BRD %d LNX %d , LNY %d LNZ %d\n", TWO_BRD, LNX+TWO_BRD, LNY+TWO_BRD, LNZ+TWO_BRD);
 	/*	
 	for (i = 0; i < LNX + TWO_BRD; i++) 
