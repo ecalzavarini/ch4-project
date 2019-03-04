@@ -101,8 +101,9 @@ void assign_parameters(){
     sprintf(name,"NZ");
     property.NZ = (double)read_parameter(name);
     NZ = (int)property.NZ;
-    fprintf(stderr,"System Size:\nNX %d \nNY %d \nNZ %d\n", NX , NY, NZ);
+    fprintf(stderr,"Grid Size:\nNX %d \nNY %d \nNZ %d\n", NX , NY, NZ);
 
+    fprintf(stderr,"Border size:\nBRD %d\n",(int)BRD);
 
     /* Size of simulation domain */
     sprintf(name,"SX");
