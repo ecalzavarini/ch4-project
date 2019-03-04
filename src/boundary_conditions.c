@@ -1010,7 +1010,7 @@ if(LNX_START == 0){
 	  i = BRD; 
 
 #ifndef LB_TEMPERATURE_FLUCTUATION 
-	  T_wall = property.T_bot;
+	  T_wall = property.T_top; //property.T_bot;
 #else
 	  T_wall = 0.0;
 #endif

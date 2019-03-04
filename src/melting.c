@@ -101,8 +101,8 @@ void melting(){
       else liquid_frac[IDX(i,j,k)]= (enthalpy - hs)/(hl - hs);
 
       /* add melting term to the temperature field */
-      t_source[IDX(i,j,k)] -= fac1*(liquid_frac[IDX(i,j,k)]-liquid_frac_old[IDX(i,j,k)]);
-    
+      t_source[IDX(i,j,k)] -= fac1*(liquid_frac[IDX(i,j,k)]-liquid_frac_old[IDX(i,j,k)]);      
+ 
 
 #ifndef LB_TEMPERATURE_MELTING_BOUNCEBACK
       /* If melting bounce-back conditions are not defined */

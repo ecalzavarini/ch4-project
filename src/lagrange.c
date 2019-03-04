@@ -504,7 +504,7 @@ type = ((int)(tracer+i)->name)%(int)property.particle_types;
  #endif
 #endif
 
-/* position: randomly distributed particles */
+/* position: randomly distributed particles */  
  (tracer+i)->x = LNX_START + myrand()*LNX;
  (tracer+i)->y = LNY_START + myrand()*LNY;
  (tracer+i)->z = LNZ_START + myrand()*LNZ;
@@ -694,16 +694,35 @@ void interpolate_vector_at_particles(vector *f,char which_vector){
   part.y = wrap( (tracer+ipart)->y ,  property.SY);
   part.z = wrap( (tracer+ipart)->z ,  property.SZ); 
 
-  //fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
-
-for (i=0; i<LNX+TWO_BRD-1; i++) if(center_V[IDX(i, BRD, BRD)].x <= part.x && part.x < center_V[IDX(i+1,BRD, BRD)].x) im = i; 
-ip =  im + 1;
+  // fprintf(stderr,"\n part %g %g %g\n",part.x,part.y,part.z);
+#ifdef DEBUG_LAGRANGE_INTERPOLATE  
+  for (i=0; i<LNX+TWO_BRD; i++){
+    fprintf(stderr,"center_V[IDX(%d, BRD, BRD)].x %lf\n", i, center_V[IDX(i, BRD, BRD)].x); 
+  }
+   for (j=0; j<LNY+TWO_BRD; j++){
+     fprintf(stderr,"center_V[IDX(BRD, %d, BRD)].y %lf\n", j, center_V[IDX(BRD, j, BRD)].y); 
+  }
+   for (k=0; k<LNZ+TWO_BRD; k++){
+     fprintf(stderr,"center_V[IDX(BRD, BRD, %d)].z %lf\n", k, center_V[IDX(BRD, BRD, k)].z); 
+  }
+#endif
+   
+//im=jm=km=0; //not necessary  
+for (i=0; i<LNX+TWO_BRD-1; i++) if(center_V[IDX(i, BRD, BRD)].x <= part.x && part.x < center_V[IDX(i+1, BRD, BRD)].x) im = i;
+ip =  im + 1; 
 for (j=0; j<LNY+TWO_BRD-1; j++) if(center_V[IDX(BRD, j, BRD)].y <= part.y && part.y < center_V[IDX(BRD, j+1, BRD)].y) jm = j;
 jp =  jm + 1;
 for (k=0; k<LNZ+TWO_BRD-1; k++) if(center_V[IDX(BRD, BRD, k)].z <= part.z && part.z < center_V[IDX(BRD, BRD, k+1)].z) km = k;
 kp =  km + 1;
 
-//fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
+
+#ifdef DEBUG_LAGRANGE_INTERPOLATE
+ fprintf(stderr,"me %d, im %d, ip %d, part.x %lf, center_V[im] %lf, center_V[ip] %lf\n",me, im, ip, part.x, center_V[IDX(im, BRD, BRD)].x, center_V[IDX(ip, BRD, BRD)].x);
+ fprintf(stderr,"me %d, jm %d, jp %d, part.y %lf, center_V[jm] %lf, center_V[jp] %lf\n",me, jm, jp, part.y, center_V[IDX(BRD, jm, BRD)].y, center_V[IDX(BRD, jp, BRD)].y);
+ fprintf(stderr,"me %d, km %d, kp %d, part.z %lf, center_V[km] %lf, center_V[kp] %lf\n",me, km, kp, part.z, center_V[IDX(BRD, BRD, km)].z, center_V[IDX(BRD, BRD, kp)].z);
+ //if(ipart==0)exit(0);
+ #endif
+    // fprintf(stderr,"index %d %d %d %d %d %d\n", im,ip,jm,jp,km,kp);
 
 //for (j=0;j<10;j++) fprintf(stderr,"%d center_V %e\n",j,center_V[IDX(im, j, km)].y);
 

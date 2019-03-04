@@ -38,9 +38,9 @@ void build_forcing(){
       }
  #else
    /* the phases make a random walk */
-      //fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
-      t_turnover = (property.SY/0.1);
-      phi_diffusivity = 0.01/t_turnover;
+      //fac = sqrt(property.time_dt * 2.0 * (property.SX/0.1)/pow(two_pi,2.0) ); 
+      t_turnover = (property.SX/0.1); // X size chosen as reference
+      phi_diffusivity = 0.01/t_turnover;  // this is just an arbitrary choice that seemed to work well
       fac1 = property.time_dt/t_turnover;
       fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
       if(ROOT){ 
@@ -155,9 +155,9 @@ void build_forcing(){
  #else
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_t);
-      //      fac = sqrt(property.time_dt * 2.0 * (property.SY/0.1)/pow(two_pi,2.0) ); 
-      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
-      t_turnover = (property.SY/0.1);
+      //      fac = sqrt(property.time_dt * 2.0 * (property.SX/0.1)/pow(two_pi,2.0) ); 
+      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SX) );
+      t_turnover = (property.SX/0.1);  // X size chosen as reference
       phi_diffusivity = 0.01/t_turnover;
       fac1 = property.time_dt/t_turnover;
       fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
@@ -217,9 +217,9 @@ void build_forcing(){
  #else
       /* the phases do random walk */
       //fac = sqrt(1.0/(my_double)randomization_itime_s);
-      //fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SY) ); 
-      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SY) );
-      t_turnover = (property.SY/0.1);
+      //fac = sqrt(property.time_dt * 2.0 * (0.1 *property.SX) ); 
+      //fac = sqrt(property.time_dt * 2.0  * (0.1/property.SX) );
+      t_turnover = (property.SX/0.1);
       phi_diffusivity = 0.01/t_turnover;
       fac1 = property.time_dt/t_turnover;
       fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
@@ -332,7 +332,8 @@ void build_forcing(){
 
  #ifdef LB_FLUID_FORCING_CELLULAR
   #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
-    kn=0.5;
+        kn=0.5; /* one cell */
+   //  	kn=1.0; /* two cells */
 	/* along x */  
         force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
@@ -388,8 +389,8 @@ void build_forcing(){
      /* Force at large scale, for a rectangular box of size LX x LX x multiple of LX, this makes HIT in a parallelepipedal container */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-2./6.);
-      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LX + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LX + phi_u[ii].z)) );
-      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LX + phi_u[ii].z)) );
+      force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LX + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
+      force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LX + phi_u[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
     }
     #else
