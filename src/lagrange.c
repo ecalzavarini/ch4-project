@@ -2142,7 +2142,15 @@ void move_particles(){
      (tracer+ipart)->s_old =  (tracer+ipart)->s;
    }
 #endif
-
+#ifdef LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+   if(itime==0 && resume==0){   
+   /* copy just interpoaled fluid velocity into particle velocity */
+   (tracer+ipart)->vx = (tracer+ipart)->ux;
+   (tracer+ipart)->vy = (tracer+ipart)->uy;
+   (tracer+ipart)->vz = (tracer+ipart)->uz;
+   }
+#endif
+   
    /* This is a trick for Eulerian probes i.e. fixed probes */
    if((tracer+ipart)->tau_drag < 0.0){  /* tau_drag < 0 here conventionally indicate an Eulerian probe */
 
