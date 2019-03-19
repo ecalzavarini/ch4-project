@@ -11,7 +11,7 @@
 #endif
 #include "typedef.h"
 #include "functions.h"
-
+#include <float.h>
 #include <hdf5.h>
 
 /* MPI variables */

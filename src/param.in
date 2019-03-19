@@ -13,7 +13,7 @@ SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 20000.
+time_end 1000.
 time_dump_field 100.
 time_dump_diagn 100.
 
@@ -71,7 +71,7 @@ beta_s 0.001897778
 
 Amp_s 0.01
 
-time_dump_lagr 100
+time_dump_lagr 10
 particle_number 2000
 
 particle_radius_types 4
@@ -82,17 +82,17 @@ particle_density_types 3
 particle_density_min 1
 particle_density_max 10
 
-tau_drag_types 1
+tau_drag_types 3
 tau_drag_min 0
-tau_drag_max 0
+tau_drag_max 100
 
-beta_coeff_types 1
-beta_coeff_min 3
+beta_coeff_types 3
+beta_coeff_min 0
 beta_coeff_max 3
 
-gravity_coeff_types 10
-gravity_coeff_min 0.1
-gravity_coeff_max 10
+gravity_coeff_types 1
+gravity_coeff_min 0.01
+gravity_coeff_max 0.01
 
 aspect_ratio_types 1
 aspect_ratio_min 100.0

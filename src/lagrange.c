@@ -2110,6 +2110,7 @@ void move_particles(){
  #endif
 #endif
   my_double reactivity;
+  my_double fac1,fac2; /* used to implement BC for particles */
 
 #ifdef LAGRANGE_ORIENTATION
  #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -2765,60 +2766,88 @@ void move_particles(){
    /* In case of BC we use elastic bouncing rule for the particle */
   
 #ifdef LB_FLUID_BC
- #ifdef LB_FLUID_BC_Y
 
+     //fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
+     
+#ifdef LB_LAGRANGE_BC_INELASTIC
+     /* 1) the position is set exactly on the boundary */
+     /* 2) the velocity is set to zero */
+     fac1 = 0.0; /* velocity component is set to zero */
+     fac2 = 0.0; /* velocity component is set to zero */
+#else
+     /* default is the elastic case */
+     /* 1) the position is mirrored with respect to the boundary */
+     /* 2)  the velocity is reversed in the cartesian component perpendicualr to the wall */
+     fac1 = -1.0;  /* velocity component is reversed    */
+     fac2 =  1.0;  /* velocity component stays the same */    
+#endif     
+     
+ #ifdef LB_FLUID_BC_Y
    if( (tracer+ipart)->y < 0.0 ){
-     (tracer+ipart)->y *= -1.0; 
-     //(tracer+ipart)->vx *= -1.0;
-     if( (tracer+ipart)->vy < 0.0 ) (tracer+ipart)->vy *= -1.0;
-     //(tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->y *= fac1; 
+     /* velocity */
+     (tracer+ipart)->vx *= fac2;
+     if( (tracer+ipart)->vy < 0.0 ) (tracer+ipart)->vy *= fac1;
+     (tracer+ipart)->vz *= fac2;
   #ifdef LAGRANGE_ORIENTATION_BC
+     /* orientation */
      if( (tracer+ipart)->py < 0.0 ) (tracer+ipart)->py *= -1.0;
-  #endif 
+  #endif
    }
 
    if( (tracer+ipart)->y >= property.SY ){
-     (tracer+ipart)->y = property.SY- ( (tracer+ipart)->y-property.SY ); 
-     //(tracer+ipart)->vx *= -1.0;
-     if( (tracer+ipart)->vy > 0.0 ) (tracer+ipart)->vy *= -1.0;
-     //(tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->y = property.SY -fac2*( (tracer+ipart)->y-property.SY ) -(1.0-fac2)*property.SY*FLT_EPSILON;
+     //fprintf(stderr,"(tracer+ipart)->y %e\n",(tracer+ipart)->y);
+     /* velocity */
+     (tracer+ipart)->vx *= fac2;
+     if( (tracer+ipart)->vy > 0.0 ) (tracer+ipart)->vy *= fac1;
+     (tracer+ipart)->vz *= fac2;
   #ifdef LAGRANGE_ORIENTATION_BC
+     /* orientation */
      if( (tracer+ipart)->py > 0.0 ) (tracer+ipart)->py *= -1.0;
   #endif 
    }
  #endif
 
  #ifdef LB_FLUID_BC_X
-
    if( (tracer+ipart)->x < 0.0 ){
-     (tracer+ipart)->x *= -1.0; 
-     (tracer+ipart)->vx *= -1.0;
-     //(tracer+ipart)->vy *= -1.0;
-     //(tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->x *= fac1;
+     /* velocity */
+     if( (tracer+ipart)->vx < 0.0 ) (tracer+ipart)->vx *= fac1;
+     (tracer+ipart)->vy *= fac2;
+     (tracer+ipart)->vz *= fac2;
    }
 
    if( (tracer+ipart)->x >= property.SX ){
-     (tracer+ipart)->x = property.SX- ( (tracer+ipart)->x-property.SX ); 
-     (tracer+ipart)->vx *= -1.0;
-     //(tracer+ipart)->vy *= -1.0;
-     //(tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->x = property.SX -fac2*( (tracer+ipart)->x-property.SX ) -(1.0-fac2)*property.SX*FLT_EPSILON;
+     /* velocity */
+     if( (tracer+ipart)->vx > 0.0 ) (tracer+ipart)->vx *= fac1;
+     (tracer+ipart)->vy *= fac2;
+     (tracer+ipart)->vz *= fac2;
    }
  #endif
 
  #ifdef LB_FLUID_BC_Z
-
    if( (tracer+ipart)->z < 0.0 ){
-     (tracer+ipart)->z *= -1.0; 
-     //(tracer+ipart)->vx *= -1.0;
-     //(tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->z *= fac1;
+     /* velocity */
+     (tracer+ipart)->vx *= fac2;
+     (tracer+ipart)->vy *= fac2;
+     if( (tracer+ipart)->vz < 0.0 ) (tracer+ipart)->vz *= fac1;
    }
 
    if( (tracer+ipart)->z >= property.SZ ){
-     (tracer+ipart)->z = property.SZ- ( (tracer+ipart)->z-property.SZ ); 
-     //(tracer+ipart)->vx *= -1.0;
-     //(tracer+ipart)->vy *= -1.0;
-     (tracer+ipart)->vz *= -1.0;
+     /* position */
+     (tracer+ipart)->z = property.SZ -fac2*( (tracer+ipart)->z-property.SZ ) -(1.0-fac2)*property.SZ*FLT_EPSILON;
+     /* velocity */
+     (tracer+ipart)->vx *= fac2;
+     (tracer+ipart)->vy *= fac2;
+     if( (tracer+ipart)->vz > 0.0 ) (tracer+ipart)->vz *= fac1;
    }
  #endif
 

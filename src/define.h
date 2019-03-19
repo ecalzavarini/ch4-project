@@ -10,7 +10,7 @@
 #define RANDOM48  /* does enable drand48 , default is our random number generator */
 
 /* PARALLEL*/
-#define NEW_SENDRECV  /* does not use itermediate transfer buffers */
+#define NEW_SENDRECV  /* improve speed: does not use itermediate transfer buffers */
 
 /* OUTPUT */
 //#define OUTPUT_DIAGN_APPEND
@@ -285,17 +285,17 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_TAUDRAG_INCREMENT_LOG
 #define LAGRANGE_GRADIENT 
 //#define LAGRANGE_GRADIENT_BRD2
-//#define LAGRANGE_ADDEDMASS
+#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_ADDEDMASS_INCREMENT_LOG
 //#define LAGRANGE_ADDEDMASS_LIFT
 //#define LAGRANGE_ADDEDMASS_WAKEDRAG
-
-//#define LAGRANGE_GRAVITY
-//#define LAGRANGE_GRAVITY_VARIABLE
+#define LAGRANGE_GRAVITY
+#define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-#define LAGRANGE_ORIENTATION
+//#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+//#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
-#define LAGRANGE_ORIENTATION_JEFFREY
+//#define LAGRANGE_ORIENTATION_JEFFREY
 //#define LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
 //#define LAGRANGE_ORIENTATION_BC
 //#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
