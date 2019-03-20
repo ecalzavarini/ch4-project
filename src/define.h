@@ -17,6 +17,7 @@
 //#define OUTPUT_ASCII
 #define OUTPUT_H5
 #define OUTPUT_H5_GRID
+#define OUTPUT_AT_START
 #define TIMING 
 
 /* GRID */

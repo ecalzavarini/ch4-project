@@ -47,12 +47,8 @@ int main(int argc, char **argv){
  #endif
 #endif
 
-	//	dump_averages();
-	//      exit(1);
 #ifdef LAGRANGE
         initial_conditions_particles(resume);
-	//output_particles();
-	//exit(-1);
 #endif
 
 #ifdef TIMING
@@ -60,6 +56,13 @@ int main(int argc, char **argv){
 #endif
 
 	itime=0;
+	
+#ifdef OUTPUT_AT_START
+	dump_averages();
+  #ifdef LAGRANGE
+	output_particles();	
+  #endif	
+#endif	
 	for (time_now=property.time_start; time_now <= property.time_end; time_now += property.time_dt){
 	  itime++;
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
