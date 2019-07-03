@@ -48,6 +48,10 @@ This project received support from the INNOCOLD consortium (innocold.fr) and by 
 
 Bibliography:
 ======
+This code can be cited as:
+0)  *Eulerian-Lagrangian fluid dynamics platform: The ch4-project* E.Calzavarini, Software Impacts (2019).
+   https://doi.org/10.1016/j.simpa.2019.100002
+
 This code has been employed in the following published studies:
 
 1) *Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A one-to-one accuracy and performance study*, K.Shrestha, G.Mompean and E.Calzavarini, Phys. Rev. E **93**, 023306 (2016).
