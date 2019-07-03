@@ -1,5 +1,5 @@
 =================
-General purpose Lattice-Boltzmann code
+Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
 =================
 
 Introduction
@@ -50,7 +50,7 @@ Bibliography:
 ======
 This code can be cited as:
 
-0) *Eulerian-Lagrangian fluid dynamics platform: The ch4-project* E.Calzavarini, Software Impacts (2019).
+) *Eulerian-Lagrangian fluid dynamics platform: The ch4-project* E.Calzavarini, Software Impacts (2019).
    https://doi.org/10.1016/j.simpa.2019.100002
 
 This code has been employed in the following published studies:
