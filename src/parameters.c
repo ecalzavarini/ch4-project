@@ -66,7 +66,7 @@ void assign_parameters(){
       fprintf(stderr,"Error in creating define.dat\n");
     else
     {
-      fprintf(fout,s);
+      fprintf(fout,"%s\n",s);
       fclose(fout);
     }
 
