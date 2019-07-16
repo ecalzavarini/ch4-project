@@ -1,5 +1,5 @@
 =================
-General purpose Lattice-Boltzmann code
+Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
 =================
 
 Introduction
