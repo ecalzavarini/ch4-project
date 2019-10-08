@@ -71,3 +71,4 @@ This code has been employed in the following published studies:
    https://link.aps.org/doi/10.1103/PhysRevE.99.013108
 
 6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and ChaoSun, (2019)
+   https://arxiv.org/abs/1910.02882
