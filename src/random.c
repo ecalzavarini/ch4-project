@@ -140,8 +140,8 @@ vector random_vector(){
   vector vec;
   double theta, phi;
 
-  theta = acos(2.0*myrand()-1.0);
-  phi = two_pi*myrand();
+  theta = acos(2.0*myrand()-1.0); /* cos(theta) is uniformly distributed in the interval [-1,1] */
+  phi = two_pi*myrand();          /* phi is uniformly ditributed in the interval [0,2*pi]  */
   vec.x = sin(theta)*sin(phi);
   vec.y = sin(theta)*cos(phi);
   vec.z = cos(theta);
