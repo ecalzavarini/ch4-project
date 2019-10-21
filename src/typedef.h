@@ -90,9 +90,15 @@ typedef struct {
    #ifdef LB_TEMPERATURE_FORCING_RADIATION
   my_double attenuation; 
    #endif
+   #ifdef LB_TEMPERATURE_FORCING_VISCOUS
+  my_double specific_heat;
+   #endif
   #endif
   #ifdef LB_TEMPERATURE_MELTING
-  my_double T_solid,latent_heat,specific_heat;
+  my_double T_solid,latent_heat;
+  #ifndef LB_TEMPERATURE_FORCING_VISCOUS /* if not defined! */
+  my_double specific_heat;
+  #endif
    #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID
     #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_SEMISPHERE
      my_double cavity_radius; 

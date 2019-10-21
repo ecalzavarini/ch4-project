@@ -398,6 +398,13 @@ void assign_parameters(){
     fclose(fout);
    #endif /* LB_TEMPERATURE_MELTING_SOLID_DIFFUSIVITY */
   #endif /* end of LB_TEMPERATURE_MELTING */
+  #ifndef LB_TEMPERATURE_MELTING  /* IF NOT DEFINED! */
+   #ifdef LB_TEMPERATURE_FORCING_VISCOUS
+   sprintf(name,"specific_heat");
+   property.specific_heat = read_parameter(name);
+   fprintf(stderr,"specific heat %g\n",(double)property.specific_heat);
+   #endif 
+  #endif  
   #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN
   sprintf(name,"kappa_add");
   property.kappa_add = read_parameter(name);

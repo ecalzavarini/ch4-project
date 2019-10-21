@@ -19,6 +19,10 @@ void build_forcing(){
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
   my_double radiation_at_bottom1,radiation_at_bottom2,radiation_at_bottom3,radiation_at_bottom4;
   FILE *fout;
+ #ifdef LB_TEMPERATURE_FORCING_VISCOUS
+  my_double  eps,eps_all;
+  tensor grad_u;
+ #endif 
 
    LX = (my_double)(property.SX);
    LY = (my_double)(property.SY);
@@ -273,6 +277,35 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN /* communicate boundaries for laplacian computation */
      sendrecv_borders_scalar(t);
 #endif
+#ifdef LB_TEMPERATURE_FORCING_VISCOUS /* communicate boundaries for computing the viscous heating term , we need to compute epsilon */
+     sendrecv_borders_vector(u);
+
+ #ifdef LB_TEMPERATURE_FORCING_VISCOUS_FLUCTUATION
+    /* compute the mean global energy dissipation rate (assumes a uniform unit-spaced grid) */
+    eps = eps_all = 0.0;
+
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+	for(i=BRD;i<LNX+BRD;i++){
+           grad_u = gradient_vector(u,i,j,k);
+	   eps += ( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+                    (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
+                    (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
+                    (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
+                    (grad_u.yy + grad_u.yy)*(grad_u.yy + grad_u.yy) +
+                    (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
+                    (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
+                    (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
+                    (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu;
+	}
+
+    MPI_Allreduce(&eps, &eps_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+    norm = (my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0) eps_all /= norm;
+ #endif   
+#endif     
+          
 
      /* BEGIN LOOP on GRID */ 
  for(k=BRD;k<LNZ+BRD;k++)
@@ -646,6 +679,24 @@ void build_forcing(){
 	val = laplacian_scalar(t, i, j, k);
         t_source[IDX(i,j,k)] += property.kappa_add * val; 
  #endif
+
+ #ifdef LB_TEMPERATURE_FORCING_VISCOUS /* add viscous heating source to the temperature field (we assume that the grid is uniform)*/
+        grad_u = gradient_vector(u,i,j,k);
+	eps = ( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
+                (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
+                (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
+                (grad_u.yx + grad_u.xy)*(grad_u.yx + grad_u.xy) + 
+                (grad_u.yy + grad_u.yy)*(grad_u.yy + grad_u.yy) +
+                (grad_u.yz + grad_u.zy)*(grad_u.yz + grad_u.zy) +
+                (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
+                (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
+                (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu;
+  #ifdef LB_TEMPERATURE_FORCING_VISCOUS_FLUCTUATION
+	//fprintf(stderr,"eps %e eps_all %e\n",eps, eps_all);
+	eps -=eps_all;
+  #endif	
+        t_source[IDX(i,j,k)] += eps/property.specific_heat; 
+ #endif	
 
  #ifdef LB_TEMPERATURE_FORCING_RADIATION 
   #ifdef LB_TEMPERATURE_FORCING_RADIATION_SOLAR

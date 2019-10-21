@@ -13,8 +13,8 @@ SZ 1
 
 time_dt 1.0
 time_start 0.0
-time_end 1000.
-time_dump_field 100.
+time_end 30000.
+time_dump_field 3000.
 time_dump_diagn 100.
 
 tau_u 0.8
@@ -25,13 +25,13 @@ ym_wall_velocity_z 0
 yp_wall_velocity_x -0.01
 yp_wall_velocity_z 0
 
-Amp_x 0.0001
+Amp_x 0.01
 Amp_y 0.00
 Amp_z 0.00
 
 noise_u 1.e-6
 
-tau_t 0.8
+tau_t 0.7
 
 T_bot  0.5
 T_top -0.5
