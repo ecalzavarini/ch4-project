@@ -50,12 +50,12 @@ Bibliography:
 ======
 This code can be cited as:
 
-0) *Eulerian-Lagrangian fluid dynamics platform: The ch4-project* E.Calzavarini, Software Impacts (2019).
+0) *Eulerian-Lagrangian fluid dynamics platform: The ch4-project* Enrico Calzavarini, Software Impacts **1**, 100002 (2019).
    https://doi.org/10.1016/j.simpa.2019.100002
 
 This code has been employed in the following published studies:
 
-1) *Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A one-to-one accuracy and performance study*, K.Shrestha, G.Mompean and E.Calzavarini, Phys. Rev. E **93**, 023306 (2016).
+1) *Finite volume versus streaming-based lattice Boltzmann algorithm for fluid-dynamics simulations: A one-to-one accuracy and performance study*, Kalyan Shrestha, Gilmar Mompean and Enrico Calzavarini, Phys. Rev. E **93**, 023306 (2016).
    https://link.aps.org/pdf/10.1103/PhysRevE.93.023306
 
 2) *Micro-bubbles and micro-particles are not faithful tracers of turbulent acceleration*, Varghese Mathai, Enrico Calzavarini,  Jon Brons, Chao Sun and Detlef Lohse, Phys. Rev. Lett. **117**, 024501 (2016).
@@ -69,7 +69,9 @@ This code has been employed in the following published studies:
 
 5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini, Phys. Rev. E **99**, 013108 (2019). 
    https://link.aps.org/doi/10.1103/PhysRevE.99.013108
-   
+
+Preprints:
+
 6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, (2019).
    preprint https://arxiv.org/abs/1910.02882
 
