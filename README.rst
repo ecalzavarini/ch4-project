@@ -72,3 +72,5 @@ This code has been employed in the following published studies:
 
 6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, (2019)
     preprint https://arxiv.org/abs/1910.02882
+
+7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019) preprint (soon on arxiv) 
