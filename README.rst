@@ -69,8 +69,9 @@ This code has been employed in the following published studies:
 
 5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini, Phys. Rev. E **99**, 013108 (2019). 
    https://link.aps.org/doi/10.1103/PhysRevE.99.013108
+   
+6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, (2019).
+   preprint https://arxiv.org/abs/1910.02882
 
-6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, (2019)
-    preprint https://arxiv.org/abs/1910.02882
-
-7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019) preprint (soon on arxiv) 
+7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019).
+   preprint (soon on arxiv) 
