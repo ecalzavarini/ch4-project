@@ -76,4 +76,4 @@ Preprints:
    preprint https://arxiv.org/abs/1910.02882
 
 7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019).
-   preprint (soon on arxiv) 
+   preprint https://arxiv.org/abs/1912.00229 
