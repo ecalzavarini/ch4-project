@@ -369,9 +369,9 @@ void build_forcing(){
 	*/	
 #ifdef LB_FLUID_FORCING_CORIOLIS
 	/* Add the Coriolis force F = -2\Omega x u  */	
-	force[IDX(i,j,k)].x -=   property.Omega_y * u[IDX(i,j,k)].z - property.Omega_z * u[IDX(i,j,k)].y;
-	force[IDX(i,j,k)].y -= - property.Omega_x * u[IDX(i,j,k)].z + property.Omega_z * u[IDX(i,j,k)].x;
-	force[IDX(i,j,k)].z -=   property.Omega_x * u[IDX(i,j,k)].y - property.Omega_y * u[IDX(i,j,k)].x; 
+	force[IDX(i,j,k)].x -=  2.0*( property.Omega_y * u[IDX(i,j,k)].z - property.Omega_z * u[IDX(i,j,k)].y);
+	force[IDX(i,j,k)].y -=  2.0*( property.Omega_z * u[IDX(i,j,k)].x - property.Omega_x * u[IDX(i,j,k)].z);
+	force[IDX(i,j,k)].z -=  2.0*( property.Omega_x * u[IDX(i,j,k)].y - property.Omega_y * u[IDX(i,j,k)].x); 
 #endif	
 
 	
