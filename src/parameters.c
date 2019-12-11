@@ -244,6 +244,17 @@ void assign_parameters(){
   fprintf(fout,"Total viscosity %e\n", property.nu_add + property.nu);
   fclose(fout); 
   #endif
+  #ifdef LB_FLUID_FORCING_CORIOLIS
+  sprintf(name,"Omega_x");
+  property.Omega_x = read_parameter(name);
+  sprintf(name,"Omega_y");
+  property.Omega_y = read_parameter(name);
+  sprintf(name,"Omega_z");
+  property.Omega_z = read_parameter(name);
+  fprintf(stderr,"Properties: Omega_x %g\n",(double)property.Omega_x);
+  fprintf(stderr,"Properties: Omega_y %g\n",(double)property.Omega_y);
+  fprintf(stderr,"Properties: Omega_z %g\n",(double)property.Omega_z);
+  #endif
  #endif
 #endif
 

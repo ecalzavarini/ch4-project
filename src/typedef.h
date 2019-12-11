@@ -73,6 +73,9 @@ typedef struct {
   #ifdef LB_FLUID_FORCING_GRAVITY
    my_double gravity_x,gravity_y,gravity_z;
   #endif
+  #ifdef LB_FLUID_FORCING_CORIOLIS
+   my_double Omega_x,Omega_y,Omega_z;
+  #endif
  #endif
  #ifdef LB_TEMPERATURE
   my_double tau_t, kappa , kappa_add;

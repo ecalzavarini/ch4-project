@@ -29,6 +29,10 @@ Amp_x 0.01
 Amp_y 0.00
 Amp_z 0.00
 
+Omega_x 0.00
+Omega_y 0.01
+Omega_z 0.00
+
 noise_u 1.e-6
 
 tau_t 0.7

@@ -362,7 +362,19 @@ void build_forcing(){
 	//  exit(1);
  #endif  
 
+	/* untested	
+ #ifdef LB_FLUID_FORCING_SHEAR_HOMOGENEOUS
+        force[IDX(i,j,k)].x += property.Amp_x*(y/LY - 0.5);
+ #endif
+	*/	
+#ifdef LB_FLUID_FORCING_CORIOLIS
+	/* Add the Coriolis force F = -2\Omega x u  */	
+	force[IDX(i,j,k)].x -=   property.Omega_y * u[IDX(i,j,k)].z - property.Omega_z * u[IDX(i,j,k)].y;
+	force[IDX(i,j,k)].y -= - property.Omega_x * u[IDX(i,j,k)].z + property.Omega_z * u[IDX(i,j,k)].x;
+	force[IDX(i,j,k)].z -=   property.Omega_x * u[IDX(i,j,k)].y - property.Omega_y * u[IDX(i,j,k)].x; 
+#endif	
 
+	
  #ifdef LB_FLUID_FORCING_CELLULAR
   #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
         kn=0.5; /* one cell */
