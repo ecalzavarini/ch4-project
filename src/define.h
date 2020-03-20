@@ -63,7 +63,8 @@
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
-#define LB_FLUID_FORCING_KOLMOGOROV
+//#define LB_FLUID_FORCING_KOLMOGOROV
+#define LB_FLUID_FORCING_SHEAR_LINEAR
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_PENALIZATION_DIRECTION_X
@@ -80,7 +81,7 @@
 //#define LB_FLUID_FORCING_NOZEROMODE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
 //#define LB_FLUID_FORCING_LAPLACIAN
-//#define LB_FLUID_FORCING_CORIOLIS
+#define LB_FLUID_FORCING_CORIOLIS
  
 /* Landscape definitions in the domain */
 //#define LB_FLUID_FORCING_LANDSCAPE

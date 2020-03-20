@@ -362,11 +362,11 @@ void build_forcing(){
 	//  exit(1);
  #endif  
 
-	/* untested	
- #ifdef LB_FLUID_FORCING_SHEAR_HOMOGENEOUS
+	/* plane constant shear flow  of the form F_x = A*y centered in the computational domain */	
+ #ifdef LB_FLUID_FORCING_SHEAR_LINEAR
         force[IDX(i,j,k)].x += property.Amp_x*(y/LY - 0.5);
  #endif
-	*/	
+		
 #ifdef LB_FLUID_FORCING_CORIOLIS
 	/* Add the Coriolis force F = -2\Omega x u  */	
 	force[IDX(i,j,k)].x -=  2.0*( property.Omega_y * u[IDX(i,j,k)].z - property.Omega_z * u[IDX(i,j,k)].y);
