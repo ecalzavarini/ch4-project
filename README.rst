@@ -79,5 +79,5 @@ Preprints:
 7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019).
    preprint https://arxiv.org/abs/1912.00229 
 
-8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, (2020). in preparation
+8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, (2020). preprint https://arxiv.org/abs/2005.05448
    
