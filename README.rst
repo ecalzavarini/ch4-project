@@ -1,6 +1,8 @@
 =================
 Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
 =================
+.. image:: figs/passive-scalar.jpg
+  :width: 400
 
 Introduction
 ============
@@ -28,8 +30,6 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 Contact
 =======
 This project is based at Unité de Mécanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
-
-Info: 
 
 For more information please contact:
 
