@@ -2,7 +2,7 @@
 Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
 =================
 .. image:: figs/passive-scalar.jpg
-  :width: 400
+  :width: 300
 
 Introduction
 ============
