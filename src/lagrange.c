@@ -661,6 +661,18 @@ phi = two_pi*myrand();
  free(rotational_diffusion);
  free(swim_velocity);
 */
+ 
+#ifdef LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+ boundary_conditions_hydro();
+ interpolate_vector_at_particles(u,'u');
+ if(ROOT) fprintf(stderr,"Injecting particles with fluid velocity\n");
+ for (i=0;i<npart;i++) {       
+   /* copy just interpoaled fluid velocity into particle velocity */
+   (tracer+i)->vx = (tracer+i)->ux;
+   (tracer+i)->vy = (tracer+i)->uy;
+   (tracer+i)->vz = (tracer+i)->uz;               
+  }
+#endif
 
  }/* end of if /else on restart */
 
@@ -2141,14 +2153,6 @@ void move_particles(){
    }else{
      (tracer+ipart)->dt_s  = ((tracer+ipart)->s - (tracer+ipart)->s_old )/property.time_dt; 
      (tracer+ipart)->s_old =  (tracer+ipart)->s;
-   }
-#endif
-#ifdef LB_LAGRANGE_INITIAL_VELOCITY_FLUID
-   if(itime==0 && resume==0){   
-   /* copy just interpoaled fluid velocity into particle velocity */
-   (tracer+ipart)->vx = (tracer+ipart)->ux;
-   (tracer+ipart)->vy = (tracer+ipart)->uy;
-   (tracer+ipart)->vz = (tracer+ipart)->uz;
    }
 #endif
    
