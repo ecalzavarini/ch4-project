@@ -56,6 +56,7 @@ int main(int argc, char **argv){
 #endif
 
 	itime=0;
+	time_now=property.time_start-property.time_dt;
 	
 #ifdef OUTPUT_AT_START
 	dump_averages();
