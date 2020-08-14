@@ -1075,8 +1075,12 @@ void output_particles(){
 
     char NEW_H5FILE_NAME[128];
     char XMF_FILE_NAME[128];
-
+    
+#ifdef OUTPUT_H5_TIMESTAMP_REAL
+    sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,(int)time_now); 
+#else
     sprintf(NEW_H5FILE_NAME,"%s/particle_%d.h5",OutDir,itime);
+#endif 
     //if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
 #ifdef LAGRANGE_OUTPUT_DEBUG
@@ -1480,8 +1484,15 @@ void output_particles(){
 
   /* Xml file see http://www.xdmf.org */
   if(ROOT){
-  sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
-  sprintf(NEW_H5FILE_NAME,"particle_%d.h5",itime);
+#ifdef OUTPUT_H5_TIMESTAMP_REAL
+    sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,(int)time_now);
+    sprintf(NEW_H5FILE_NAME,"particle_%d.h5",(int)time_now);
+#else
+    sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
+    sprintf(NEW_H5FILE_NAME,"particle_%d.h5",itime);    
+#endif 
+    //sprintf(XMF_FILE_NAME,"%s/particle_%d.xmf" ,OutDir,itime);
+    //sprintf(NEW_H5FILE_NAME,"particle_%d.h5",itime);
   size=sizeof(my_double);
   
 

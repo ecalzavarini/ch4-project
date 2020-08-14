@@ -34,7 +34,11 @@ void output_h5(){
   // hsize_t     family_size = 2; // family
   //#define FAMIGLIA "%d"
   //sprintf(NEW_H5FILE_NAME,"%s/field_%d_%s.h5",OutDir,itime,FAMIGLIA); //family
+#ifdef OUTPUT_H5_TIMESTAMP_REAL
+  sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,(int)time_now);
+#else  
   sprintf(NEW_H5FILE_NAME,"%s/field_%d.h5",OutDir,itime);
+#endif  
   if(ROOT) fprintf(stderr,"Writing file %s\n",NEW_H5FILE_NAME);
 
 
@@ -175,8 +179,15 @@ void output_h5(){
   /** Part 2: we now write the corresponding XDMF data format **/
 
   if(ROOT){
+#ifdef OUTPUT_H5_TIMESTAMP_REAL
+   sprintf(XMF_FILE_NAME,"%s/field_%d.xmf",OutDir,(int)time_now);
+   sprintf(NEW_H5FILE_NAME,"field_%d.h5",(int)time_now);
+#else
   sprintf(XMF_FILE_NAME,"%s/field_%d.xmf",OutDir,itime);
   sprintf(NEW_H5FILE_NAME,"field_%d.h5",itime);
+#endif  
+  //sprintf(XMF_FILE_NAME,"%s/field_%d.xmf",OutDir,itime);
+  //sprintf(NEW_H5FILE_NAME,"field_%d.h5",itime); /* local path */
   size=sizeof(my_double);
   fout = fopen(XMF_FILE_NAME,"w");
  
