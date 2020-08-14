@@ -2140,7 +2140,7 @@ void move_particles(){
 
    /* We take care of of computing scalar derivatives at particle position */
 #ifdef LB_TEMPERATURE
-   if(itime==0 && resume==0){ 
+   if(itime==1 && resume==0){ 
      (tracer+ipart)->t_old =  (tracer+ipart)->t;
    }else{
      (tracer+ipart)->dt_t  = ((tracer+ipart)->t - (tracer+ipart)->t_old )/property.time_dt; 
@@ -2148,7 +2148,7 @@ void move_particles(){
    }
 #endif
 #ifdef LB_SCALAR
-   if(itime==0 && resume==0){ 
+   if(itime==1 && resume==0){ 
      (tracer+ipart)->s_old =  (tracer+ipart)->s;
    }else{
      (tracer+ipart)->dt_s  = ((tracer+ipart)->s - (tracer+ipart)->s_old )/property.time_dt; 
@@ -2310,7 +2310,7 @@ void move_particles(){
  #endif /* LAGRANGE_ORIENTATION_ACTIVE */
 #endif /* LAGRANGE_ORIENTATION */
 
-  if(itime==0 && resume==0){ 
+  if(itime==1 && resume==0){ 
     (tracer+ipart)->vx_old = (tracer+ipart)->vx;
     (tracer+ipart)->vy_old = (tracer+ipart)->vy;
     (tracer+ipart)->vz_old = (tracer+ipart)->vz;
@@ -2321,7 +2321,7 @@ void move_particles(){
   (tracer+ipart)->az = ((tracer+ipart)->vz - (tracer+ipart)->vz_old )/property.time_dt;
 
 
-   if(itime==0 && resume==0){
+   if(itime==1 && resume==0){
    /* Explicit Euler 1st order */
    (tracer+ipart)->x += property.time_dt*(tracer+ipart)->vx;
    (tracer+ipart)->y += property.time_dt*(tracer+ipart)->vy;
@@ -2449,7 +2449,7 @@ void move_particles(){
  #endif    
 #endif
 
-  if(itime==0 && resume==0){ 
+  if(itime==1 && resume==0){ 
     (tracer+ipart)->ux_old = (tracer+ipart)->ux;
     (tracer+ipart)->uy_old = (tracer+ipart)->uy;
     (tracer+ipart)->uz_old = (tracer+ipart)->uz;
@@ -2497,7 +2497,7 @@ void move_particles(){
    }/* end of if on addedd mass */
 #endif
 
-   if(itime==0 && resume==0){
+   if(itime==1 && resume==0){
      (tracer+ipart)->vx += property.time_dt*(tracer+ipart)->ax;
      (tracer+ipart)->vy += property.time_dt*(tracer+ipart)->ay;
      (tracer+ipart)->vz += property.time_dt*(tracer+ipart)->az;
@@ -2511,7 +2511,7 @@ void move_particles(){
    (tracer+ipart)->ay_old = (tracer+ipart)->ay; 
    (tracer+ipart)->az_old = (tracer+ipart)->az; 
 
-   if(itime==0 && resume==0){
+   if(itime==1 && resume==0){
      (tracer+ipart)->x += property.time_dt*(tracer+ipart)->vx; 
      (tracer+ipart)->y += property.time_dt*(tracer+ipart)->vy;
      (tracer+ipart)->z += property.time_dt*(tracer+ipart)->vz;
@@ -2662,7 +2662,7 @@ void move_particles(){
  #endif
 	     	      
    /* if restart Euler 1st order G = G0 + (DT)*F  */
- if(itime==0 && resume==0){
+ if(itime==1 && resume==0){
 		  for (i=0; i<3; i++){	
 		    vecP[i] =  vecP[i] + property.time_dt*vecF[i];	  
 		    /* copy the old term */
@@ -2680,7 +2680,7 @@ void move_particles(){
  #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
 
    /* if restart Euler 1st order G = G0 + (DT)*F  */
- if(itime==0 && resume==0){
+ if(itime==1 && resume==0){
 		  for (i=0; i<3; i++){	
 		    vecN[i] =  vecN[i] + property.time_dt*vecFN[i];	  
 		    /* copy the old term */
