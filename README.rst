@@ -36,7 +36,7 @@ For more information please contact:
 
 Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
-*Contributors*: Kalyan Shrestha (Lille University) , Babak Rabbanipour Esfahani (Lille University)
+*Contributors*: Kalyan Shrestha, Babak Rabbanipour Esfahani (Lille University, FR), Vojtech Patocka (Charles University, Prague CZ)
 
 
 How to: 
