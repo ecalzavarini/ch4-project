@@ -30,13 +30,13 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 
 Contact
 =======
-This project is based at Unité de Mécanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
+This project is based at Unite de Mecanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
 
 For more information please contact:
 
 Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.info
 
-*Contributors*: Kalyan Shrestha, Babak Rabbanipour Esfahani (Lille University, FR), Vojtech Patocka (Charles University, Prague CZ)
+*Contributors*: Kalyan Shrestha, Babak Rabbanipour Esfahani (Lille University, FR), Vojtech Patocka (Charles University, Prague CZ), Linfeng Jiang, Ziqi Wang (Tsinghua University, Beijing CHINA)
 
 
 How to: 
@@ -73,12 +73,13 @@ This code has been employed in the following published studies:
 
 6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, Phys. Fluids **32**, 023305 (2020).
    https://doi.org/10.1063/1.5141798
+   
+7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, J. Fluid Mech. **901**, A8 (2020).
+   http://dx.doi.org/10.1017/jfm.2020.539
 
 
 Preprints:
-   
-7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, (2019).
-   preprint https://arxiv.org/abs/1912.00229 
 
+   
 8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, (2020). preprint https://arxiv.org/abs/2005.05448
    
