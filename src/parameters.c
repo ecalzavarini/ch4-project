@@ -312,14 +312,16 @@ void assign_parameters(){
   fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
   */
   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF2
-   fprintf(stderr,"Rayleigh Number (based on T_ref2) is -> Ra = %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
-  #else
+  //fprintf(stderr,"Rayleigh Number (based on T_ref2) is -> Ra = %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+   fprintf(stderr,"Rayleigh Number (based on T_ref2) is -> Ra = %e\n", property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+ #else
    fprintf(stderr,"Rayleigh Number is -> Ra = %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #endif
   fprintf(stderr,"Prandtl Number is -> Pr = %e\n", property.nu/property.kappa);
   fout = fopen("numbers.dat","a");
   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF2
-   fprintf(fout,"Rayleigh (based on T_ref2) %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+  //fprintf(fout,"Rayleigh (based on T_ref2) %e\n", 2*property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
+   fprintf(fout,"Rayleigh (based on T_ref2) %e\n", property.beta2_t*property.gravity_y*pow(property.T_bot-property.T_ref2,2.0)*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #else
    fprintf(fout,"Rayleigh %e\n", property.beta_t*property.gravity_y*property.deltaT*pow(property.SY,3.0)/(property.nu*property.kappa) );
   #endif
@@ -360,6 +362,12 @@ void assign_parameters(){
   property.T_solid = read_parameter(name);
   sprintf(name,"specific_heat");
   property.specific_heat = read_parameter(name);
+  
+  #ifdef LB_TEMPERATURE_ZIQI
+  sprintf(name,"specific_heat_ice");//ZIQI
+  property.specific_heat_ice = read_parameter(name);//ZIQI
+  #endif
+  
   sprintf(name,"latent_heat");
   property.latent_heat = read_parameter(name);
   fprintf(stderr,"Stefan Number is -> Ste = %e\n", property.deltaT*property.specific_heat/property.latent_heat);

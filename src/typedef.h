@@ -3,7 +3,7 @@
 #endif
 
 //#define my_double long double 
-#define my_double double
+#define my_double double /* give nickname for the type 'double', #define nickname type */
 
 /* Useful structures */
 typedef struct {
@@ -79,22 +79,22 @@ typedef struct {
  #endif
  #ifdef LB_TEMPERATURE
   my_double tau_t, kappa , kappa_add;
-  my_double T_bot,T_top,T_ref,T_ref2,deltaT;
+  my_double T_bot,T_top,T_ref,T_ref2,deltaT; /* property.deltaT = property.T_bot-property.T_top; */
   my_double grad_T_bot,grad_T_top;
   #ifdef LB_TEMPERATURE_BUOYANCY
   my_double beta_t,beta2_t;
   //  my_double gravity_x,gravity_y,gravity_z;
   #endif
   #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
-  my_double noise_t;
+   my_double noise_t;
   #endif
   #ifdef LB_TEMPERATURE_FORCING
-  my_double Amp_t;
+   my_double Amp_t;
    #ifdef LB_TEMPERATURE_FORCING_RADIATION
-  my_double attenuation; 
+    my_double attenuation; 
    #endif
-   #ifdef LB_TEMPERATURE_FORCING_VISCOUS
-  my_double specific_heat;
+   #ifdef LB_TEMPERATURE_FORCING_VISCOUS /* in forcing.c */
+    my_double specific_heat;
    #endif
   #endif
   #ifdef LB_TEMPERATURE_MELTING
@@ -117,7 +117,11 @@ typedef struct {
     my_double tau_solid, kappa_solid;
    #endif
   #endif
- #endif
+  #ifdef LB_TEMPERATURE_ZIQI
+     my_double specific_heat_ice;  //ZIQI added
+  #endif
+ #endif /* end of LB_TEMPERATURE */
+  
  #ifdef LB_SCALAR
   my_double tau_s, chi, chi_add;
   my_double S_bot,S_top,S_ref,deltaS;
@@ -127,8 +131,8 @@ typedef struct {
   #ifdef LB_SCALAR_FORCING
   my_double Amp_s;
   #endif
- #endif
-#endif
+ #endif/* end of LB_SCALAR */
+#endif /* end of LB_FLUID */
 
 #ifdef LAGRANGE
   my_double time_dump_lagr;

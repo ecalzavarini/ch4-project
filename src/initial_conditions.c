@@ -24,7 +24,7 @@ void initial_conditions(int restart)
   //  srand( time(NULL) );
 
 #ifdef LB_TEMPERATURE_MELTING_INITIAL_LIQUID_LAYER
-  my_double lambda = compute_lambda_from_stefan(property.deltaT*property.specific_heat/property.latent_heat);
+  my_double lambda = compute_lambda_from_stefan(property.deltaT*property.specific_heat/property.latent_heat);//property.deltaT = property.T_bot-property.T_top;
   fprintf(stderr, "Lambda = %e\n", lambda);
 #endif
 
@@ -253,9 +253,16 @@ void initial_conditions(int restart)
 	/* linear temperature gradient */
 	L=(my_double)property.SY; //LY;
 	y = (my_double)center_V[IDX(i,j,k)].y;
-	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y );
+	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y ); //Tb to Tt, linear temp prof; property.deltaT = property.T_bot-property.T_top;
  #endif 
 
+#ifdef LB_TEMPERATURE_INITIAL_LINEAR_ZERO_TO_TBOT_ZIQI
+	/* linear temperature gradient */
+	L=(my_double)property.SY; //LY;
+	y = (my_double)center_V[IDX(i,j,k)].y;
+	t[IDX(i,j,k)] = ( (property.T_bot) - ((property.T_bot-0)/L)*y ); //Tb to 0, linear temp prof； property.deltaT = property.T_bot-property.T_top;
+#endif 
+	
  #ifdef LB_TEMPERATURE_INITIAL_CONSTANT
   #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
         /* constant mean temperature */
@@ -268,6 +275,10 @@ void initial_conditions(int restart)
   #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_TOP
         /* constant top temperature */
          t[IDX(i,j,k)] = property.T_top;
+  #endif
+  #ifdef LB_TEMPERATURE_INITIAL_CONSTANT_HALFBOT_ZIQI
+		 /* constant bot/2 temperature */
+         t[IDX(i,j,k)] = property.T_bot * 0.5;
   #endif
  #endif
 

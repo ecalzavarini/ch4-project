@@ -96,6 +96,10 @@ void build_forcing();
  #endif
 #endif
 
+#ifdef LB_TEMPERATURE_CHT_ZIQI
+void temperature_cht(pop *g1, my_double *liquid_frac, vector * U_vec, my_double * rho);
+#endif
+
 /* output.c */
 void dump_averages();
 
