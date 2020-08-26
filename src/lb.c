@@ -2,12 +2,24 @@
 
 void design_lb(){
 
-  /* 4 lines below, to be removed */
-  //NPOP = 19;
-  /* commit pop type */
-  //MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
-  //MPI_Type_commit(&MPI_pop_type);
+#ifdef GRID_POP_D1Q3
+	wgt[0] = 2. / 3.;
+	wgt[1] = 1. / 6.;
+	wgt[2] = 1. / 6.;
 
+	c[0].x = 0.;	c[0].y = 0.;   c[0].z=0.;
+	c[1].x = 1.;	c[1].y = 0.;   c[1].z=0.;
+	c[2].x = -1.;	c[2].y = 0.;   c[2].z=0.;
+
+	inv[0] = 0;
+	inv[1] = 2;
+	inv[2] = 1;
+	
+	inv_x[0] = 0;	       inv_y[0] = 0;   inv_z[0] = 0;
+	inv_x[1] = 2;	       inv_y[1] = 1;   inv_z[1] = 1;
+	inv_x[2] = 1;	       inv_y[2] = 2;   inv_z[2] = 2;
+#endif  
+  
 #ifdef GRID_POP_D2Q9
 	wgt[0] = 4. / 9.;
 	wgt[1] = 1. / 36.;

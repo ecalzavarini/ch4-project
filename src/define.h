@@ -35,6 +35,7 @@
 //#define GRID_IRREGULAR_RANDOM
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
+//#define GRID_POP_D1Q3
 #define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
 //#define GRID_POP_D3Q19
