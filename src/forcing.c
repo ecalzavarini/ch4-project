@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING)
+#if (defined LB_FLUID_FORCING || defined LB_TEMPERATURE_FORCING || defined LB_SCALAR_FORCING) //below is the whole function for build force
 void build_forcing(){
   int i, j, k , ii,jj;
   my_double fnx,fny,fnz,kn,omega_t;
@@ -17,15 +17,17 @@ void build_forcing(){
   my_double norm, k_turb, k0_turb , k_ratio;
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity,t0_coeff;
   my_double s0,s0_all,s0_coeff;
-  my_double local_depth, radiation_at_bottom, reflection_ceff,lf;
+  my_double local_depth, radiation_at_bottom, reflection_ceff,lf; 
+  //local_depth = property.SY: the depth of the fluid layer; 
+  //reflection_ceff: determines the albedo,it shall be given as an external parameter;
   my_double radiation_at_bottom1,radiation_at_bottom2,radiation_at_bottom3,radiation_at_bottom4;
-  FILE *fout;
- #ifdef LB_TEMPERATURE_FORCING_VISCOUS
+  FILE *fout; //pointer
+ #ifdef LB_TEMPERATURE_FORCING_VISCOUS //define some variables
   my_double  eps,eps_all;
   tensor grad_u;
  #endif 
 
-   LX = (my_double)(property.SX);
+   LX = (my_double)(property.SX);//X size
    LY = (my_double)(property.SY);
    LZ = (my_double)(property.SZ);
 
@@ -34,22 +36,22 @@ void build_forcing(){
 #ifdef LB_FLUID_FORCING_HIT  /* useful for HOMOGENEOUS ISOTROPIC TURBULENCE */
  #ifdef LB_FLUID_FORCING_HIT_RANDOM
    /* the phases are random */
-      if(ROOT){ 
-	for (ii=0; ii<nk; ii++){
+      if(ROOT){ //begin of if
+	for (ii=0; ii<nk; ii++){//begin of for
 	  phi_u[ii].x = myrand();
 	  phi_u[ii].y = myrand();
 	  phi_u[ii].z = myrand();
-	}
-      }
+	}//end of for
+      }//end of if
  #else
    /* the phases make a random walk */
       //fac = sqrt(property.time_dt * 2.0 * (property.SX/0.1)/pow(two_pi,2.0) ); 
-      t_turnover = (property.SX/0.1); // X size chosen as reference
-      phi_diffusivity = 0.01/t_turnover;  // this is just an arbitrary choice that seemed to work well
+      t_turnover = (property.SX/0.1); // X size chosen as reference; ZIQI:0.1 seems to be a characteristic velocity
+      phi_diffusivity = 0.01/t_turnover; // this is just an arbitrary choice that seemed to work well; ZIQI:0.01 seems to be a characteristic area
       fac1 = property.time_dt/t_turnover;
-      fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
-      if(ROOT){ 
-	for (ii=0; ii<nk; ii++){
+      fac2 = sqrt(2.0*property.time_dt*phi_diffusivity); 
+      if(ROOT){//begin of if
+	for (ii=0; ii<nk; ii++){//begin of for.
 	  /*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
 	  phi_u[ii].x += val*fac;
@@ -64,17 +66,17 @@ void build_forcing(){
 	  phi_u[ii].y += -phi_u[ii].y*fac1 + val*fac2;
 	  val=random_gauss(0.0,1.0);
 	  phi_u[ii].z += -phi_u[ii].z*fac1 + val*fac2;
-	}
+	}//end of for
 	/* OUTPUT PHASES */ 
   #ifdef LB_FLUID_FORCING_HIT_DEBUG
 	fout = fopen("phases.dat","a");
 	fprintf(fout," %e %e %e %e\n", time_now, phi_u[0].x, phi_u[0].y ,phi_u[0].z);
 	fclose(fout); 
   #endif	
-      }
+      }//end of if
  #endif
     /* the phases are broadcasted */
-   MPI_Bcast(phi_u, nk, MPI_vector_type, 0, MPI_COMM_WORLD);
+   MPI_Bcast(phi_u, nk, MPI_vector_type, 0, MPI_COMM_WORLD);//MPI_BCAST(buffer,count,datatype,root,comm) 
 
  #ifdef LB_FLUID_FORCING_HIT_ZEROMODE 
     /* compute the zero mode intensity (the mean velocity) */
@@ -82,18 +84,18 @@ void build_forcing(){
     u0.y = u0_all.y = 0.0;
     u0.z = u0_all.z = 0.0;
 
-    for(k=BRD;k<LNZ+BRD;k++)
+    for(k=BRD;k<LNZ+BRD;k++)//accumulation of three direction's velocity
       for(j=BRD;j<LNY+BRD;j++)
-	for(i=BRD;i<LNX+BRD;i++){ 
+	for(i=BRD;i<LNX+BRD;i++){//begin of inner for 
 	    u0.x += u[IDX(i,j,k)].x;
             u0.y += u[IDX(i,j,k)].y;
             u0.z += u[IDX(i,j,k)].z;
-	  }
+	  }//end of inner for
 
-    MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );
+    MPI_Allreduce(&u0, &u0_all, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );//MPI_Reduce + MPI_Bcast
 
-    norm = sqrt(u0_all.x*u0_all.x + u0_all.y*u0_all.y + u0_all.z*u0_all.z);
-    if(norm !=0.0){
+    norm = sqrt(u0_all.x*u0_all.x + u0_all.y*u0_all.y + u0_all.z*u0_all.z);//total velocity
+    if(norm !=0.0){//calculate normalized velocities in three directions
       u0_all.x /= norm;
       u0_all.y /= norm;
       u0_all.z /= norm;
@@ -101,12 +103,11 @@ void build_forcing(){
  #endif
  #ifdef LB_FLUID_FORCING_HIT_LINEAR 
     /* compute the total turbulent kinetic energy */
-
     u0.x = u0_all.x = 0.0;
     u0.y = u0_all.y = 0.0;
-    u0.z = u0_all.z = 0.0;
+    u0.z = u0_all.z = 0.0;//same as above
 
-    for(k=BRD;k<LNZ+BRD;k++)
+    for(k=BRD;k<LNZ+BRD;k++)//same as above
       for(j=BRD;j<LNY+BRD;j++)
 	for(i=BRD;i<LNX+BRD;i++){ 
 	    u0.x += u[IDX(i,j,k)].x;
@@ -126,7 +127,7 @@ void build_forcing(){
     u2.y = u2_all.y = 0.0;
     u2.z = u2_all.z = 0.0;
 
-    for(k=BRD;k<LNZ+BRD;k++)
+    for(k=BRD;k<LNZ+BRD;k++)//accumulation of u2.x,y,z
       for(j=BRD;j<LNY+BRD;j++)
 	for(i=BRD;i<LNX+BRD;i++){ 
 
@@ -142,7 +143,7 @@ void build_forcing(){
       u2_all.z *= norm;
 
     k_turb =  0.5*( u2_all.x + u2_all.y + u2_all.z );
-    k0_turb = 0.5*0.01;  /* assuming a velocity of 0.1 per grid point */
+    k0_turb = 0.5*0.01;  /* assuming a velocity of 0.1 per grid point */ //1/2*velocty^2
     if(k_turb != 0.0) k_ratio = k0_turb/k_turb; else k_ratio = 1.0;
  #endif
 #endif
@@ -166,8 +167,8 @@ void build_forcing(){
       phi_diffusivity = 0.01/t_turnover;
       fac1 = property.time_dt/t_turnover;
       fac2 = sqrt(2.0*property.time_dt*phi_diffusivity);
-      if(ROOT){ 	
-	for (ii=0; ii<nk_t; ii++){
+      if(ROOT){ //begin of if	
+	for (ii=0; ii<nk_t; ii++){//begin of for
 	/*
 	  val=(2.0*(myrand()-0.5) > 0.0)?1.0:-1.0;
           phi_t[ii].x += val*fac;
@@ -182,8 +183,8 @@ void build_forcing(){
 	  phi_t[ii].y += -phi_t[ii].y*fac1 + val*fac2; 
 	  val=random_gauss(0.0,1.0);
 	  phi_t[ii].z += -phi_t[ii].z*fac1 + val*fac2; 
-	}
-      }
+	}//end of for
+      }//end of if
 #endif
       /* phases are boradcasted */
     MPI_Bcast(phi_t, nk_t, MPI_vector_type, 0, MPI_COMM_WORLD);
@@ -210,7 +211,7 @@ void build_forcing(){
 #endif
 
 #ifdef LB_SCALAR_FORCING_HIT
-  #ifdef LB_SCALAR_FORCING_HIT_RANDOM
+ #ifdef LB_SCALAR_FORCING_HIT_RANDOM
    /* the phases are random */
       if(ROOT){ 
 	for (ii=0; ii<nk; ii++){
@@ -246,7 +247,7 @@ void build_forcing(){
 	  phi_s[ii].z += -phi_s[ii].z*fac1 + val*fac2; 
 	}
       }
-#endif
+ #endif
       /* phases are boradcasted */
     MPI_Bcast(phi_s, nk_s, MPI_vector_type, 0, MPI_COMM_WORLD);
 
@@ -281,7 +282,7 @@ void build_forcing(){
 #ifdef LB_TEMPERATURE_FORCING_VISCOUS /* communicate boundaries for computing the viscous heating term , we need to compute epsilon */
      sendrecv_borders_vector(u);
 
- #ifdef LB_TEMPERATURE_FORCING_VISCOUS_FLUCTUATION
+ #ifdef LB_TEMPERATURE_FORCING_VISCOUS_FLUCTUATION //compute the mean global energy dissipation rate (assumes a uniform unit-spaced grid)
     /* compute the mean global energy dissipation rate (assumes a uniform unit-spaced grid) */
     eps = eps_all = 0.0;
 
@@ -306,8 +307,48 @@ void build_forcing(){
     if(norm !=0.0) eps_all /= norm;
  #endif   
 #endif     
-          
+  	#ifdef LB_TEMPERATURE_BUOYANCY_WATER_ZIQI //ZIQI
+	  vector avg_buoyancy;
+	  avg_buoyancy.x = 0.0;
+	  avg_buoyancy.y = 0.0;
+	  avg_buoyancy.z = 0.0;
+	  double avg_volume = 0.0;
+	  vector avg_buoyancy_sum;//linfeng
+	  avg_buoyancy_sum.x = 0.0;
+	  avg_buoyancy_sum.y = 0.0;
+	  avg_buoyancy_sum.z = 0.0;
+	  double avg_volume_sum = 0.0;//linfeng
+	  for(k=BRD;k<LNZ+BRD;k++)
+	  {
+		  for(j=BRD;j<LNY+BRD;j++)
+		  {
+			  for(i=BRD;i<LNX+BRD;i++)
+			  {
+				  fac = property.beta2_t*pow(fabs(t[IDX(i,j,k)] - 4.0),1.895);
+		#ifdef LB_TEMPERATURE_BUOYANCY_WATER_NOMEANBUOYANCY_ZIQI
+				  avg_buoyancy.x += liquid_frac[IDX(i,j,k)]*fac*property.gravity_x;
+				  avg_buoyancy.y += liquid_frac[IDX(i,j,k)]*fac*property.gravity_y;
+				  avg_buoyancy.z += liquid_frac[IDX(i,j,k)]*fac*property.gravity_z;
+				  avg_volume += liquid_frac[IDX(i,j,k)];
+		#else
+				  avg_buoyancy.x += fac*property.gravity_x;
+				  avg_buoyancy.y += fac*property.gravity_y;
+				  avg_buoyancy.z += fac*property.gravity_z;
+				  avg_volume += 1;
+		#endif
+			  }
+		  }
+	  }
+	  //MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+	  //MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+	  MPI_Allreduce(&avg_buoyancy, &avg_buoyancy_sum, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );//linfeng
+	  MPI_Allreduce(&avg_volume, &avg_volume_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );//linfeng
 
+	  avg_buoyancy_sum.x = avg_buoyancy_sum.x / avg_volume_sum;//linfeng
+	  avg_buoyancy_sum.y = avg_buoyancy_sum.y / avg_volume_sum;//linfeng
+	  avg_buoyancy_sum.z = avg_buoyancy_sum.z / avg_volume_sum;//linfeng
+
+	#endif	
      /* BEGIN LOOP on GRID */ 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -317,12 +358,12 @@ void build_forcing(){
    y = (my_double)center_V[IDX(i,j,k)].y;
    z = (my_double)center_V[IDX(i,j,k)].z;
 
-#ifdef LB_FLUID_FORCING
+#ifdef LB_FLUID_FORCING /* activate force on the fluid */
 	force[IDX(i,j,k)].x = 0.0;
 	force[IDX(i,j,k)].y = 0.0;
 	force[IDX(i,j,k)].z = 0.0;
 
- #ifdef LB_FLUID_FORCING_POISEUILLE 
+ #ifdef LB_FLUID_FORCING_POISEUILLE /* Constant forcing for flow along x direction */ 
 	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
 	/* Here Amp indicates the maximal velocity at the center of the channel , note that in poiseuille flow U_max = Force * L^2/(8 \nu)  */
 	force[IDX(i,j,k)].x += 2.0*property.Amp_x*((4.*nu)*pow(LY,-2.0));  
@@ -330,7 +371,7 @@ void build_forcing(){
 	force[IDX(i,j,k)].z += 2.0*property.Amp_z*((4.*nu)*pow(LY,-2.0));  
  #endif
 
- #ifdef LB_FLUID_FORCING_CHANNEL
+ #ifdef LB_FLUID_FORCING_CHANNEL /* Constant forcing for turbulent Channnel flow along x */ 
 	/* note that the LX,LY,LZ dependence (i.e. the non-homogeneous direction) is here just an arbitrary choice */
 	/* Here Amp indicates the maximal velocity at the center of the turbulent channel , note that in this case we write U_max = sqrt(Force*L/2)  */
 	force[IDX(i,j,k)].x += 2.0*pow(property.Amp_x,2.0)/LY;
@@ -338,7 +379,7 @@ void build_forcing(){
 	force[IDX(i,j,k)].z += 2.0*pow(property.Amp_z,2.0)/LY;
  #endif
 
- #ifdef LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER
+ #ifdef LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER /* Constant power forcing for turbulent Channnel flow along x */  
 	/* Here Amp indicates the power Force*velocity  */
 	/* note that out_all.uxt is computed only when we dumpe the averages */	
 	if(out_all.ux != 0) force[IDX(i,j,k)].x += property.Amp_x/out_all.ux; 
@@ -363,8 +404,8 @@ void build_forcing(){
 	//  exit(1);
  #endif  
 
-	/* plane constant shear flow  of the form F_x = A*y centered in the computational domain */	
- #ifdef LB_FLUID_FORCING_SHEAR_LINEAR
+	/* plane constant shear flow of the form F_x = A*y centered in the computational domain */	
+ #ifdef LB_FLUID_FORCING_SHEAR_LINEAR 
         force[IDX(i,j,k)].x += property.Amp_x*(y/LY - 0.5);
  #endif
 		
@@ -396,7 +437,7 @@ void build_forcing(){
   #endif
  #endif  
 
- #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form nu_add*laplacian( u ), where nu_add is an additional viscosity */
+ #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form nu_add*laplacian( u ), where nu_add is an additional viscosity */ 
 	vec = laplacian_vector(u, i, j, k);
         force[IDX(i,j,k)].x += property.nu_add * vec.x; 
 	force[IDX(i,j,k)].y += property.nu_add * vec.y; 
@@ -404,7 +445,7 @@ void build_forcing(){
  #endif
 
  #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
-  #ifdef LB_FLUID_FORCING_HIT_LINEAR
+  #ifdef LB_FLUID_FORCING_HIT_LINEAR 
    /* As in Phares L. Carroll and G. Blanquart PHYSICS OF FLUIDS 25, 105114 (2013) */
 	//fac = 0.5*((out_all.ux2 - out_all.ux*out_all.ux) + (out_all.uy2 - out_all.uy*out_all.uy) + (out_all.uz2 - out_all.uz*out_all.uz));	
 	//if(fac != 0.0) fac = 1.0/fac; else fac = 1.0;	
@@ -457,15 +498,15 @@ void build_forcing(){
     #endif
 
   #endif  
- #endif
+ #endif //end of #ifdef LB_FLUID_FORCING_HIT 
 
- #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */
+ #ifdef LB_FLUID_FORCING_ABSORB  /* attempt to implement an absorbing layer */ 
     fac = 0.8;
     dist.x = (x/LX - fac)/(1.0-fac);
     dist.y = (y/LY - fac)/(1.0-fac);
     dist.z = (z/LZ - fac)/(1.0-fac);
 
-    if(dist.y>0 ){
+    if(dist.y>0 ){//begin of if
 
     vel.x = 0.0; //out_all.ux;
     vel.y = out_all.uy;
@@ -482,32 +523,38 @@ void build_forcing(){
     //force[IDX(i,j,k)].y += -u[IDX(i,j,k)].y;  // dist.y*(vel.y  -u[IDX(i,j,k)].y);
     //force[IDX(i,j,k)].z += -dist.y*(vel.z  -u[IDX(i,j,k)].z);
     
-     }
- #endif
+     }//end of if
+ #endif //end of #ifdef LB_FLUID_FORCING_ABSORB 
 
- #ifdef LB_TEMPERATURE
+ #ifdef LB_TEMPERATURE //related to temp field
   #ifdef LB_TEMPERATURE_BUOYANCY
 	//my_double temp, fac;
-   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF
+   #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF  
   temp = (t[IDX(i,j,k)] - property.T_ref);
-   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_TOP)   
   temp = (t[IDX(i,j,k)] - property.T_top);
-   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_BOT)   
   temp = (t[IDX(i,j,k)] - property.T_bot);
-   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)   
   /* subtract to the temperature the linear profile */
   temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
-   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_REF2)
+   #elif defined(LB_TEMPERATURE_BUOYANCY_T0_REF2)   
   temp = (t[IDX(i,j,k)] - property.T_ref2);
    #else
   /* the good one for RB , T0 = T_mean*/  
   temp =  t[IDX(i,j,k)] - 0.5*(property.T_bot + property.T_top);
-   #endif
+   #endif //end of #ifdef LB_TEMPERATURE_BUOYANCY_T0_REF 
 
   //temp =  t[IDX(i,j,k)] - (-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + property.T_bot) ;
-  fac = property.beta_t*temp; 
-  if(property.beta2_t != 0.0) fac += property.beta2_t*temp*temp;
+  fac = property.beta_t*temp; //property.beta_t: linear volume expansion coefficient
+  if(property.beta2_t != 0.0) fac += property.beta2_t*temp*temp; //quadratic volume expansion coefficient, expansion coeff based on T_ref2
+  
+	#ifdef LB_TEMPERATURE_BUOYANCY_WATER_ZIQI //ZIQI
+	//fac = 9.3e-06*pow(fabs(t[IDX(i,j,k)] - 4.0),1.895);//fac/t[IDX(i,j,k)] is water_alpha
+    //fac = (my_double) property.alpha_star*pow(fabs(t[IDX(i,j,k)] - 4.0),1.895);//fac/t[IDX(i,j,k)] is water_alpha
+	fac = property.beta2_t*pow(fabs(t[IDX(i,j,k)] - 4.0),1.895);
+	#endif
   //fac = property.beta_t;
   
      /* This way if we are in a solid the force is not applied */
@@ -516,18 +563,49 @@ void build_forcing(){
        fac *= liquid_frac[IDX(i,j,k)]; 
      #endif
   */
-      force[IDX(i,j,k)].x += fac*property.gravity_x;
-      force[IDX(i,j,k)].y += fac*property.gravity_y;
+
+
+#ifdef LB_TEMPERATURE_BUOYANCY_WATER_NOMEANBUOYANCY_ZIQI
+		force[IDX(i,j,k)].x += fac*property.gravity_x-liquid_frac[IDX(i,j,k)]*avg_buoyancy_sum.x;//linfeng
+		force[IDX(i,j,k)].y += fac*property.gravity_y-liquid_frac[IDX(i,j,k)]*avg_buoyancy_sum.y;//linfeng
+		force[IDX(i,j,k)].z += fac*property.gravity_z-liquid_frac[IDX(i,j,k)]*avg_buoyancy_sum.z;//linfeng
+#else
+      force[IDX(i,j,k)].x += fac*property.gravity_x;//fac: unit=[1],alpha*deltaT
+      force[IDX(i,j,k)].y += fac*property.gravity_y;//vertical direction
       force[IDX(i,j,k)].z += fac*property.gravity_z;
+#endif
+
+	  
+	  
+	
+	/*
+	#ifdef LB_TEMPERATURE_MELTING
+	double avg_buoyancy = 0.0;
+	double avg_volume = 0.0;
+	for(k=BRD;k<LNZ+BRD;k++)
+		for(j=BRD;j<LNY+BRD;j++)
+			for(i=BRD;i<LNX+BRD;i++){
+				temp=(t[IDX(i,j,k)] - property.T_ref);
+				fac = property.beta2_t*(temp-1.0)*(temp-1.0);
+				avg_buoyancy += liquid_frac[IDX(i,j,k)]*fac*property.gravity_y;
+				avg_volume += liquid_frac[IDX(i,j,k)];
+			}
+			MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+			MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+			avg_buoyancy = sum_buoyancy / sum_volume;
+	#endif //ZIQI 
+	*/
+	  
+	  
 
       //fprintf(stderr, "fy %e\n",property.gravity_y);
   #endif /* LB_TEMPERATURE_BUOYANCY */
- #endif /* LB_TEMPERATURE */
+ #endif /* LB_TEMPERATURE */ 
 
- #ifdef LB_SCALAR_BUOYANCY
+ #ifdef LB_SCALAR_BUOYANCY 
       //my_double temp, fac;
-  #ifdef LB_SCALAR_BUOYANCY_SREF
-      temp = (s[IDX(i,j,k)] - property.S_top);
+  #ifdef LB_SCALAR_BUOYANCY_SREF //only occur once which is in here
+      temp = (s[IDX(i,j,k)] - property.S_top);//here temp is another scalar
   #else
       temp =  s[IDX(i,j,k)] - 0.5*(property.S_bot + property.S_top);
   #endif
@@ -538,13 +616,13 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.gravity_y;
       force[IDX(i,j,k)].z += fac*property.gravity_z;
 
- #endif
+ #endif //end of LB_SCALAR_BUOYANCY
 
 
- #ifdef LB_FLUID_FORCING_PENALIZATION
+ #ifdef LB_FLUID_FORCING_PENALIZATION 
       my_double mask;
 
-  #ifdef LB_FLUID_FORCING_PENALIZATION_CUBE
+  #ifdef LB_FLUID_FORCING_PENALIZATION_CUBE //only occur once which is in here
       /* penalization of a cube */
       
       if( fabs(center_V[IDX(i,j,k)].x-property.SX/2.0) < 10 &&
@@ -559,9 +637,9 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;
 	  }
-  #endif
+  #endif //end of LB_FLUID_FORCING_PENALIZATION_CUBE
 
-  #ifdef LB_FLUID_FORCING_PENALIZATION_CIRCLE    
+  #ifdef LB_FLUID_FORCING_PENALIZATION_CIRCLE //only occur once which is in here   
       /* small central circular spot penalization */
         
       mask = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
@@ -570,17 +648,17 @@ void build_forcing(){
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
       } 
-  #endif  
+  #endif  //end of LB_FLUID_FORCING_PENALIZATION_CIRCLE
 
-  #ifdef LB_FLUID_FORCING_LANDSCAPE
+  #ifdef LB_FLUID_FORCING_LANDSCAPE //is there any topography ? 
        if(landscape[IDX(i, j, k)]>0.0){
 	force[IDX(i,j,k)].x = -u[IDX(i,j,k)].x;  
 	force[IDX(i,j,k)].y = -u[IDX(i,j,k)].y;
 	force[IDX(i,j,k)].z = -u[IDX(i,j,k)].z;	
       }    
-  #endif
+  #endif //end of LB_FLUID_FORCING_LANDSCAPE
 
-  #ifdef LB_FLUID_FORCING_PENALIZATION_DIRECTION_X
+  #ifdef LB_FLUID_FORCING_PENALIZATION_DIRECTION_X 
 	force[IDX(i,j,k)].x = -0.1*u[IDX(i,j,k)].x;
   #endif 
  
@@ -887,7 +965,7 @@ void build_forcing(){
       }/* i,j,k */
 
 
-#ifdef LB_FLUID_FORCING_NOZEROMODE
+#ifdef LB_FLUID_FORCING_NOZEROMODE 
     /* compute the mean forcing value */
     f0.x = f0_all.x = 0.0;
     f0.y = f0_all.y = 0.0;
@@ -916,9 +994,9 @@ void build_forcing(){
 	   force[IDX(i, j, k)].y -= f0_all.y;
 	   force[IDX(i, j, k)].z -= f0_all.z;
 	 }/* for i,j,k */
-#endif
+#endif //end of LB_FLUID_FORCING_NOZEROMODE
 
-#ifdef LB_FLUID_FORCING_CONSTANT_POWER
+#ifdef LB_FLUID_FORCING_CONSTANT_POWER 
      /* compute the total mean power value per unit volume, <F*u>_V / L^3  */
     f0.x = f0_all.x = 0.0;
     f0.y = f0_all.y = 0.0;
@@ -954,7 +1032,7 @@ void build_forcing(){
 	   force[IDX(i, j, k)].y *= coeff.y;
 	   force[IDX(i, j, k)].z *= coeff.z;
 	 }/* for i,j,k */
-#endif
+#endif //end of LB_FLUID_FORCING_CONSTANT_POWER 
 
 #ifdef LB_TEMPERATURE
  #ifdef LB_FLUID_TEMPERATURE_NOZEROMODE
@@ -1051,7 +1129,10 @@ invtau = 1.0/property.tau_u;
 
 #ifdef LB_TEMPERATURE
 invtau_t = 1.0/property.tau_t;
-
+/*tau_t: the relaxation time for the BGK equation for dynamics of the temperature. 
+It is related to the thermal diffusivity kappa as kappa = (tau_t - 0.5)/3 
+therefore {val}>0.5 the suggested upper bound is {val}<2
+*/
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
         magic_gamma = 0.25;
@@ -1071,9 +1152,8 @@ invtau_t = 1.0/property.tau_t;
 #endif
 #endif /* LB_TEMPERATURE */
 
-
-#ifdef LB_SCALAR
-invtau_s = 1.0/property.tau_s;
+#ifdef LB_SCALAR 
+invtau_s = 1.0/property.tau_s;//tau_s: Parameters for the scalar field
 
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
@@ -1107,7 +1187,7 @@ invtau_s = 1.0/property.tau_s;
       vel.y = 0.0;
       vel.z = 0.0;
       rho = 1.0;
-      p_eq = equilibrium_given_velocity(vel,rho);
+      p_eq = equilibrium_given_velocity(vel,rho); 
 #endif      
 
 #ifdef  LB_TEMPERATURE_FORCING_DIRECT
@@ -1178,7 +1258,7 @@ invtau_s = 1.0/property.tau_s;
 
 #ifdef  LB_FLUID_FORCING_DIRECT
 
-#ifdef LB_FLUID_FORCING_LANDSCAPE
+#ifdef LB_FLUID_FORCING_LANDSCAPE //is there any topography ?
        if(landscape[IDX(i, j, k)]>0.0){
 #else
       if( sqrt(mask) < 10.0 ){
@@ -1186,7 +1266,7 @@ invtau_s = 1.0/property.tau_s;
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_p[IDX(i,j,k)].p[pp] =  (p_eq.p[pp] - p[IDX(i,j,k)].p[pp] )/property.time_dt;
 	  }      
-#endif
+#endif //end of LB_FLUID_FORCING_LANDSCAPE 
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -1213,7 +1293,7 @@ invtau_s = 1.0/property.tau_s;
        /* Not Guo here */
        /* This is the simplest method and the one that should normally be used */
       rhs_g[IDX(i,j,k)].p[pp] += wgt[pp]*t_source[IDX(i,j,k)];      
-  #endif
+  #endif //METHOD_FORCING_MALASPINAS
 
  #else
       /* The forcing is as in Malaspinas PhD pag. 93 (bottom) , with a correction factor 2 (found empirically)*/	    
@@ -1237,9 +1317,11 @@ invtau_s = 1.0/property.tau_s;
 	/* this implementation works only when METHOD_EULER is used */
 	rhs_g[IDX(i,j,k)].p[pp] =  (g_eq.p[pp] - g[IDX(i,j,k)].p[pp] )/property.time_dt;
 	  }      
- #endif
-#endif
+ #endif //LB_TEMPERATURE_FORCING_DIRECT
+#endif /* LB_TEMPERATURE_FORCING */
 #endif /* LB_TEMPERATURE */
+	  
+
 
 #ifdef LB_SCALAR_FORCING
 #ifndef METHOD_FORCING_MALASPINAS
@@ -1265,6 +1347,117 @@ invtau_s = 1.0/property.tau_s;
 	}/* pp */
       }/* i,j,k */
 }
+
+
+//begin of ZIQI
+#ifdef LB_TEMPERATURE_CHT_ZIQI  
+#define my_heat_capacity(x) (property.specific_heat * x + property.specific_heat_ice * (1.-x))
+#define my_beta(x)  (property.tau_t * x + property.tau_solid * (1.-x))//(temperature_beta_1*x+melting_beta_1*(1.-x))
+	  
+void set_boundary(my_double *lf) //lf: liquid_frac; poptype=double
+{
+  int idx;
+  int i,j;
+for (j = 0; j < LNY + TWO_BRD; j++) /* in fede: for (i=0; i<NXP2; i++) { 
+the total number of nodes in X direction `NXP2`
+(which equals the number of lattice points in X direction `NX` 
+plus 2 additional ghost nodes on both sides of the domain)
+*/
+  {
+	for (i = 0; i < LNX + TWO_BRD; i++) // for (j=0; j<NYP2; j++) {
+	{
+
+      if (mez==0) //mez:
+	  {
+       idx = IDX(i,j,0);//idx = IDX(i,j,0);
+	   lf[idx]=1.0;
+      }
+     
+	  if (mez == nzprocs-1) //if (mez==NPZ-1) 
+	  {
+	   idx = IDX(i,j,LNZ+1);//idx = IDX(i,j,NZ+1);
+	   lf[idx]=0.0;
+      }
+    }
+  }
+}
+
+/* Based on equation (8) and equation (16) in paper: S. Chen, Y.Y. Yan, and W. Gong, 
+International Journal of Heat and Mass Transfer 107 (2017) 862–870,
+A simple lattice Boltzmann model for conjugate heat transfer research*/
+void temperature_cht(pop *g1, my_double *liquid_frac, vector * U_vec, my_double * rho){
+	
+  int i, j, k, pp;
+  int idx0, idx;
+  double S=0.0;
+
+  double fact;
+  double c1, c2;
+  double c2x, c2y, c2z, c2t;
+  double c1x, c1y, c1z, c1t;
+  double c3x, c3y, c3z;
+  double u, v, w;
+  pop geq;
+
+  sendrecv_borders_scalar(liquid_frac);
+  //void sendrecv_borders_scalar(my_double *f)；in fede: pbc(liquid_frac);/*pbc: serves for the bulk blocks */
+  set_boundary(liquid_frac);
+
+  for(k=BRD;k<LNZ+BRD;k++){ 
+	  for(j=BRD;j<LNY+BRD;j++){
+		  for(i=BRD;i<LNX+BRD;i++){  
+		idx0 = IDX (i, j, k);
+		geq=equilibrium(g,i,j,k);
+		u=U_vec[idx0].x;
+		v=U_vec[idx0].y;
+		w=U_vec[idx0].z;
+
+		fact = (1.0-0.5/my_beta(liquid_frac[idx0]));
+		  
+		c1 = invcs2*my_heat_capacity(liquid_frac[idx0])*fact;
+		c2 = - invcs2*t[idx0]/my_heat_capacity(liquid_frac[idx0]);
+
+		c1x = c1y = c1z = 0.0;
+		c2x = c2y = c2z = 0.0;
+		c3x = c3y = c3z = 0.0;
+
+		for (pp = 0; pp < NPOP; pp++) 
+		{
+		  idx = IDX (i+c[pp].x, j+c[pp].y, k+c[pp].z);
+		  
+		  c1x += (g[idx0].p[pp]-geq.p[pp])*c[pp].x; 
+		  c1y += (g[idx0].p[pp]-geq.p[pp])*c[pp].y; 
+		  c1z += (g[idx0].p[pp]-geq.p[pp])*c[pp].z; 
+		  
+		  c2x += wgt[pp]*my_heat_capacity(liquid_frac[idx])*c[pp].x; 
+		  c2y += wgt[pp]*my_heat_capacity(liquid_frac[idx])*c[pp].y;  
+		  c2z += wgt[pp]*my_heat_capacity(liquid_frac[idx])*c[pp].z;  
+			
+		  c3x += (wgt[pp]/my_heat_capacity(liquid_frac[idx]))*c[pp].x; 
+		  c3y += (wgt[pp]/my_heat_capacity(liquid_frac[idx]))*c[pp].y; 
+		  c3z += (wgt[pp]/my_heat_capacity(liquid_frac[idx]))*c[pp].z; 
+			
+		}
+		  
+		c2t = c2*(u*c2x+v*c2y+w*c2z);
+		
+		c1t = c1*(c1x*c3x + c1y*c3y + c1z*c3z);
+		
+		S = c1t + c2t;//the CHT(conjugate heat transfer) source term
+		
+		for (pp = 0; pp < NPOP; pp++) 
+		{
+		  g1[idx0].p[pp] +=  S*wgt[pp];
+		}	
+      }
+    }
+  }
+}
+#endif /* TEMPERATURE_CHT_ZIQI */
+
+ //end of ZIQI	  
+	  
+
 #endif
 
 

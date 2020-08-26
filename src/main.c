@@ -101,6 +101,10 @@ int main(int argc, char **argv){
 	  copy_pop(rhs_g,old_rhs_g);
 #endif
 	  add_collision(g,rhs_g,property.tau_t,g_eq,'g');
+
+ #ifdef LB_TEMPERATURE_CHT_ZIQI  /* correction for Conjugate Heat Transfer (CHT) */ 
+          temperature_cht(rhs_g, liquid_frac, u, dens); /* Added after collision */
+ #endif 
 #endif
 
 #ifdef LB_SCALAR
