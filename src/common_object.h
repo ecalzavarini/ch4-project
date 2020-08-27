@@ -38,7 +38,7 @@ extern MPI_Op MPI_SUM_output_particle;
 #endif
 
 /* random seed */
-#ifdef RANDOM48
+#ifdef SYSTEM_RANDOM48
 extern unsigned int seed;
 #else
 extern long * idum;

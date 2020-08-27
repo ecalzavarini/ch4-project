@@ -26,6 +26,9 @@ typedef struct {
   my_double zz;
 } sym_tensor;
 
+#ifdef GRID_POP_D1Q3
+#define NPOP 3
+#endif
 #ifdef GRID_POP_D2Q9
 #define NPOP 9
 #endif
@@ -216,6 +219,13 @@ typedef struct {
 
 #ifndef METHOD_LOG
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
+
+#ifdef GRID_POP_D1Q3
+#define mvx(a) 0.0
+#define mvy(a) (a.p[1] -a.p[2])
+#define mvz(a) 0.0
+#define m(a) (a.p[0]+a.p[1]+a.p[2])
+#endif
 
 #ifdef GRID_POP_D2Q9
 #define mvx(a) (a.p[7] +a.p[6] +a.p[5] -a.p[1] -a.p[2] -a.p[3])
