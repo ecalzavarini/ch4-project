@@ -51,7 +51,7 @@ int main(int argc, char **argv){
         initial_conditions_particles(resume);
 #endif
 
-#ifdef TIMING
+#ifdef SYSTEM_TIMING
 	t1 = MPI_Wtime();
 #endif
 
@@ -168,7 +168,7 @@ int main(int argc, char **argv){
 #endif
 	}/* loop on time: time_now */
 
-#ifdef TIMING
+#ifdef SYSTEM_TIMING
 	t2 = MPI_Wtime();
 	measure_time();
 #endif

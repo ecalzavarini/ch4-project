@@ -8,8 +8,9 @@
 
 /* SYSTEM RELATED */
 #define SYSTEM_RANDOM48  /* does enable drand48 , default is our random number generator */
+#define SYSTEM_TIMING /* measure computetion time */
 
-/* PARALLEL*/
+/* PARALLEL (MPI related) */
 #define NEW_SENDRECV  /* improve speed: does not use itermediate transfer buffers */
 
 /* OUTPUT */
@@ -19,7 +20,7 @@
 #define OUTPUT_H5_GRID
 #define OUTPUT_H5_TIMESTAMP_REAL /* Enable time_now as time stamp on the name of .h5 files instead of itime */
 #define OUTPUT_AT_START
-#define TIMING 
+
 
 /* GRID */
 #define GRID_REGULAR

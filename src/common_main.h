@@ -298,7 +298,7 @@ int itime;
 my_double time_now;
 char OutDir[256];
 
-#ifdef TIMING
+#ifdef SYSTEM_TIMING
 my_double t1,t2,tick;
 #endif
 
