@@ -187,7 +187,7 @@ void initialization_MPI(int argc, char **argv){
 #endif
 
  /* Initialize random seeds */
-#ifdef RANDOM48
+#ifdef SYSTEM_RANDOM48
   seed = time(NULL);
   srand48(me+seed);
 #else

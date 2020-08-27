@@ -126,7 +126,7 @@ void dump_particle_averages();
 
 /* random.c */
 double myrand();
-#ifndef RANDOM48
+#ifndef SYSTEM_RANDOM48
 double ran1();
 #endif
 double random_gauss(double mu, double sigma);

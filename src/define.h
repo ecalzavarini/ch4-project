@@ -6,8 +6,8 @@
 //#define DEBUG_CENTERS
 //#define DEBUG_LAGRANGE_INTERPOLATE
 
-/* RANDOM NUMBERS */
-#define RANDOM48  /* does enable drand48 , default is our random number generator */
+/* SYSTEM RELATED */
+#define SYSTEM_RANDOM48  /* does enable drand48 , default is our random number generator */
 
 /* PARALLEL*/
 #define NEW_SENDRECV  /* improve speed: does not use itermediate transfer buffers */
