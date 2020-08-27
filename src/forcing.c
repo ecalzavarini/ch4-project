@@ -722,7 +722,7 @@ void build_forcing(){
 
  #ifdef LB_TEMPERATURE_FORCING_PROFILE
   /* impose a mean linear temperature profile , note that bc for temp shall be set to 0 */
-  t_source[IDX(i,j,k)] = (property.deltaT/property.SY)*u[IDX(i,j,k)].y;
+    t_source[IDX(i,j,k)] = (property.deltaT/property.SY)*u[IDX(i,j,k)].y; // y direction
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING_REACTION
