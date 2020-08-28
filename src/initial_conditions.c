@@ -482,6 +482,13 @@ void initial_conditions(int restart)
 	  if( abs(center_V[IDX(i,j,k)].x - property.SX/2.0)<10   ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
 #endif
 
+#ifdef LB_SCALAR_INITIAL_SPOT
+  /* impose a mean temperature profile? , note that bc for temp shall be set to 0 */
+      my_double spot;
+      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( spot < 10.0 ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
+#endif	  
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];

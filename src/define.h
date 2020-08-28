@@ -17,9 +17,9 @@
 //#define OUTPUT_DIAGN_APPEND
 //#define OUTPUT_ASCII
 #define OUTPUT_H5
-#define OUTPUT_H5_GRID
-#define OUTPUT_H5_TIMESTAMP_REAL /* Enable time_now as time stamp on the name of .h5 files instead of itime */
-#define OUTPUT_AT_START
+#define OUTPUT_H5_GRID /* write the grid in every h5 file, not essential but useful for VisIt visualizations */
+#define OUTPUT_H5_TIMESTAMP_REAL /* enable "time_now" as time stamp on the name of .h5 files instead of itime */
+#define OUTPUT_AT_START /* write down the complete intial state */
 
 
 /* GRID */
@@ -55,14 +55,14 @@
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 //#define LB_FLUID_INITIAL_ADD_NOISE
 #define LB_FLUID_INITIAL_UNIT_DENSITY
 //#define LB_FLUID_AFTER_INIT_PERTURBATION
-#define LB_FLUID_FORCING  /* activate force on the fluid */
-#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
+//#define LB_FLUID_FORCING  /* activate force on the fluid */
+//#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
@@ -92,8 +92,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
@@ -150,11 +150,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
-#define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_LINEAR
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
@@ -164,15 +164,15 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_INITIAL_BL
 //#define LB_TEMPERATURE_INITIAL_BULK
 //#define LB_TEMPERATURE_AFTER_INIT_PERTURBATION 
-#define LB_TEMPERATURE_BUOYANCY
-#define LB_TEMPERATURE_BUOYANCY_T0_REF
+//#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BUOYANCY_T0_REF
 //#define LB_TEMPERATURE_BUOYANCY_T0_REF2  
 //#define LB_TEMPERATURE_BUOYANCY_T0_BOT
 //#define LB_TEMPERATURE_BUOYANCY_T0_TOP
 //#define LB_TEMPERATURE_BUOYANCY_T0_GRAD
 //#define LB_TEMPERATURE_BUOYANCY_WATER
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_FLUX
@@ -251,17 +251,18 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-//#define LB_SCALAR
+#define LB_SCALAR
 //#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
 //#define LB_SCALAR_INITIAL_BULK
-//#define LB_SCALAR_INITIAL_CONSTANT
-//#define LB_SCALAR_INITIAL_CONSTANT_MEAN                                                                                                      
-//#define LB_SCALAR_INITIAL_CONSTANT_BOT                                                                                                              
+#define LB_SCALAR_INITIAL_CONSTANT
+#define LB_SCALAR_INITIAL_CONSTANT_MEAN
+//#define LB_SCALAR_INITIAL_CONSTANT_BOT
 //#define LB_SCALAR_INITIAL_CONSTANT_TOP
+//#define LB_SCALAR_INITIAL_SPOT
 //#define LB_SCALAR_BUOYANCY
-//#define LB_SCALAR_BC
-//#define LB_SCALAR_BC_Y
+#define LB_SCALAR_BC
+#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_BC_Y_P_OUTLET
 //#define LB_SCALAR_BC_Y_M_OUTLET
 //#define LB_SCALAR_BC_Y_P_NOFLUX
@@ -277,17 +278,23 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_BC_Z_P_NOFLUX
 //#define LB_SCALAR_BC_Z_M_NOFLUX
 //#define LB_SCALAR_FLUCTUATION  
-//#define LB_SCALAR_FORCING
+#define LB_SCALAR_FORCING
 //#define LB_SCALAR_FORCING_REACTION
 //#define LB_SCALAR_FORCING_REACTION_FKPP
 //#define LB_SCALAR_FORCING_REACTION_FKPP_FLUCTUATION
 //#define LB_SCALAR_FORCING_REACTION_ORDER1
 //#define LB_SCALAR_FORCING_MONOD
 //#define LB_SCALAR_FORCING_HIT   
-//#define LB_SCALAR_FORCING_HIT_RANDOM                                                                                                                                           
-//#define LB_SCALAR_FORCING_HIT_ZEROMODE                                                                                                        
+//#define LB_SCALAR_FORCING_HIT_RANDOM
+//#define LB_SCALAR_FORCING_HIT_ZEROMODE
 //#define LB_SCALAR_FORCING_HIT_LINEAR  
 //#define LB_SCALAR_FORCING_GRAD
+
+#define LB_SCALAR_SETTLING_HUISMAN
+#define LB_SCALAR_FORCING_HUISMAN
+#define LB_SCALAR_BC_Y_P_HUISMAN
+#define LB_SCALAR_BC_Y_M_HUISMAN
+
 
 /* Lagragian parts */
 //#define LAGRANGE

@@ -1096,9 +1096,22 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
 #else     
-	ff_eq=equilibrium(f,i,j,k);
+	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
 #endif
 
+#ifdef LB_SCALAR_SETTLING_HUISMAN
+  if( which_pop == 'h' ){
+    vector auxiliary_velocity;
+    my_double auxiliary_scalar;
+    my_double settling_velocity = 0.00333;
+    auxiliary_scalar =  s[IDX(i,j,k)];
+    auxiliary_velocity.x = u[IDX(i,j,k)].x;
+    auxiliary_velocity.y = u[IDX(i,j,k)].y - settling_velocity;
+    auxiliary_velocity.z = u[IDX(i,j,k)].z;   
+    ff_eq =  equilibrium_given_velocity(auxiliary_velocity , auxiliary_scalar);
+  }  
+#endif	
+	
 
 #ifndef METHOD_EXPONENTIAL
   #ifdef METHOD_TRT

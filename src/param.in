@@ -3,19 +3,19 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 202
+NX 1
 NY 100
 NZ 1
 
-SX 202
+SX 1
 SY 100
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 40000.
-time_dump_field 1000.
-time_dump_diagn 1000.
+time_end 200000.
+time_dump_field 2000.
+time_dump_diagn 50.
 
 tau_u 0.8
 nu_add 0.0
@@ -67,9 +67,9 @@ cavity_SX 50
 cavity_SY 25
 cavity_SZ 50
 
-tau_s 0.8
+tau_s 0.545  0.725
 S_bot 1.
-S_top 0.
+S_top 1.
 S_ref 0.0
 
 beta_s 0.001897778

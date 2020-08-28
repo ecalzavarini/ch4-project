@@ -1149,6 +1149,35 @@ if(LNY_END == NY){
 #ifdef LB_SCALAR_BC_Y_P_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j-1,k)]);
 #endif
+
+#ifdef LB_SCALAR_BC_Y_P_FLUX
+	  /* we fix the scalar gradient at the wall */
+	  S_wall = 0.5*property.grad_S_top + s[IDX(i,j,k)] + property.S_ref;
+#endif
+
+#ifdef LB_SCALAR_BC_Y_P_MIXED /* incomplete and not tested */
+	  my_double r1,r2,r3;
+	  vector vec_grad_S_top;
+          /* mixed or Robin bc  of the form r1*S - r2*dS/dy = r3 at the wall with a, b constants */
+          /* see https://en.wikipedia.org/wiki/Robin_boundary_condition */
+	  vec_grad_S_top = gradient_scalar(s,i,j,k); /* compute wall gradient */
+	  r1 = -property.huisman_v;
+	  r2 = property.chi;
+	  r3 = 0.0;
+	  vec_grad_S_top.y = (r3 + r2*vec_grad_S_top.y)/r1;  /* change the gradient intensity (b/a)*dS/dy*/
+          S_wall = 0.5*vec_grad_S_top.y + s[IDX(i,j,k)] + property.S_ref;
+#endif
+	  
+#ifdef LB_SCALAR_BC_Y_P_HUISMAN
+          vector vec_grad_S_top;
+	  my_double settling_velocity = 0.00333; /* m/hour */  
+	  /* it is a no-net flux boundary condition, in the presence of sinking */
+	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
+	  //vec_grad_S_top = gradient_scalar(s,i,j,k);	
+	  //S_wall = - (property.chi/settling_velocity) * vec_grad_S_top.y; /* the minus sign is because of the settling */
+	  S_wall = (2*property.chi /(settling_velocity+2*property.chi))* s[IDX(i,j,k)];
+#endif	  
+	  
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
 #ifdef LB_SCALAR_BC_Y_P_NOFLUX
@@ -1185,6 +1214,36 @@ if(LNY_START == 0){
 #ifdef LB_SCALAR_BC_Y_M_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j+1,k)]);
 #endif
+
+#ifdef LB_SCALAR_BC_Y_M_FLUX
+          /* we fix the scalar gradient at the wall */
+          S_wall = -0.5*property.grad_S_bot + s[IDX(i,j,k)] + property.S_ref;
+#endif
+
+#ifdef LB_SCALAR_BC_Y_M_MIXED /* incomplete and not tested */
+          my_double r1,r2,r3;
+          vector vec_grad_S_bot;
+          /* mixed or Robin bc  of the form r1*S - r2*dS/dy = r3 at the wall with a, b constants */
+          /* see https://en.wikipedia.org/wiki/Robin_boundary_condition */
+          vec_grad_S_bot = gradient_scalar(s,i,j,k); /* compute wall gradient */
+          r1 = -property.huisman_v;
+          r2 = property.chi;
+          r3 = 0.0;
+          vec_grad_S_bot.y = (r3 + r2*vec_grad_S_bot.y)/r1;  /* change the gradient intensity (b/a)*dS/dy*/
+          S_wall = -0.5*vec_grad_S_bot.y + s[IDX(i,j,k)] + property.S_ref;
+#endif	  
+
+#ifdef LB_SCALAR_BC_Y_M_HUISMAN
+	  vector vec_grad_S_bot;
+	  my_double settling_velocity = 0.00333; /* m/hour */  
+	  /* it is a no-net flux boundary condition, in the presence of sinking */
+	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
+          //vec_grad_S_bot = gradient_scalar(s,i,j,k);
+	  //S_wall = - (property.chi/settling_velocity) * vec_grad_S_bot.y; /* the minus sign is because of the settling */
+	  S_wall = (2*property.chi /(-settling_velocity+2*property.chi))* s[IDX(i,j,k)];
+#endif	  
+
+	  
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
 
 #ifdef LB_SCALAR_BC_Y_M_NOFLUX
