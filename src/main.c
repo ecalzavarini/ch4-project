@@ -56,7 +56,7 @@ int main(int argc, char **argv){
 #endif
 
 	itime=0;
-	time_now=property.time_start-property.time_dt;
+	time_now=property.time_start;
 	
 #ifdef OUTPUT_AT_START
 	dump_averages();
@@ -64,7 +64,7 @@ int main(int argc, char **argv){
 	output_particles();	
   #endif	
 #endif	
-	for (time_now=property.time_start; time_now <= property.time_end; time_now += property.time_dt){
+	for (time_now=property.time_start+property.time_dt; time_now <= property.time_end; time_now += property.time_dt){
 	  itime++;
 	  if(itime%10==0 && ROOT) fprintf(stderr,"time step %d\n",itime);
 
