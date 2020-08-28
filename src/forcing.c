@@ -956,9 +956,51 @@ void build_forcing(){
  #endif
 #endif
 
-#ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */
+ #ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */
     s_source[IDX(i,j,k)] += -property.Amp_s*u[IDX(i,j,k)].y;
-#endif
+ #endif
+
+ #ifdef LB_SCALAR_FORCING_HUISMAN /* implement phytoplankton J. Husiman et al. vol. 159, no. 3, The American Naturalist, march 2002 */
+
+   /* variables that need to be defined */
+    /* used for the calculations */
+    my_double cumulative_scalar, light_intensity, growth_rate;
+    /* parameters and physical constants */
+    my_double incident_light_intensity = 0.233333333333333; /* micro-mole photons m^{-2} s^{-1} */
+    my_double phytoplankton_specific_lght_attenuation = 0.000000000375; /* m^2 / cell */
+    my_double background_turbidity = 0.04; /* m^{-1} */
+    my_double half_saturation_constant = 0.02; /* micro-mole photons m^{-2} s^{-1} */
+    my_double max_production_rate = 0.00066666666666; /* hours^{-1} */ 
+    my_double loss_rate = 0.000166666666666667; /* hours^{-1} */;
+
+    /* accumulate data */
+    set_to_zero_output(ruler_y,NY);
+    set_to_zero_output(ruler_y_local,NY);
+    for (jj = BRD; jj < LNY+BRD; jj++){
+      ruler_y_local[jj -BRD + LNY_START].y = center_V[IDX(i, jj, k)].y;
+      ruler_y_local[jj -BRD + LNY_START].s = s[IDX(i, jj, k)];
+    }
+    MPI_Allreduce(ruler_y_local, ruler_y, NY, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
+    /* compute the integral of scalar from top of the system (SY) to position y for the given (x,z) position */
+    cumulative_scalar = 0.0; 
+    for (jj = 0; jj < NY; jj++){
+      fac=(ruler_y[jj].y >center_V[IDX(i,j,k)].y)?1.0:0.0;
+      cumulative_scalar += ruler_y[jj].s*fac;
+      // for (jj = BRD; jj < LNY+BRD; jj++){
+      //fac  = (center_V[IDX(i,jj,k)].y > center_V[IDX(i,j,k)].y)?1.0:0.0;
+      //local_cumulative_scalar += s[IDX(i, jj, k)]*fac;
+    }
+    //MPI_Allreduce(&local_cumulative_scalar, &cumulative_scalar, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+
+   /* compute the loccal light intensity */
+   light_intensity = incident_light_intensity * exp( - phytoplankton_specific_lght_attenuation * cumulative_scalar - background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
+
+   /* compute the growth rate Eq. (3) and (4) in the paper */
+   growth_rate = (max_production_rate * light_intensity / (half_saturation_constant + light_intensity)) - loss_rate;
+
+   /* add the forcing */
+   s_source[IDX(i,j,k)] += growth_rate * s[IDX(i, j, k)];
+ #endif /* end of LB_SCALAR_FORCING_HUISMAN */  
 
 #endif
 
