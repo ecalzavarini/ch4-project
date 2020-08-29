@@ -1046,6 +1046,9 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  my_double invtau_minus;
  pop ff_eq_plus, ff_eq_minus, ff_plus, ff_minus;
 #endif
+#ifdef LB_SCALAR_SETTLING_HUISMAN
+    vector auxiliary_velocity;
+#endif    
 
  /* Inverse of the relaxation time */ 
  invtau = 1.0/tau;
@@ -1098,17 +1101,16 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #else     
 	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
 #endif
+	
 
 #ifdef LB_SCALAR_SETTLING_HUISMAN
+	/* compute eq. function for scalar on the sum of two velocities u + settling_velocity */
+	/* still not optimized because the old eq function (see above) is also computed */
   if( which_pop == 'h' ){
-    vector auxiliary_velocity;
-    my_double auxiliary_scalar;
-    //my_double settling_velocity = 0.0133333333333333; //0.00333333333333333;
-    auxiliary_scalar =  s[IDX(i,j,k)];
     auxiliary_velocity.x = u[IDX(i,j,k)].x;
     auxiliary_velocity.y = u[IDX(i,j,k)].y - property.settling_velocity;
     auxiliary_velocity.z = u[IDX(i,j,k)].z;   
-    ff_eq =  equilibrium_given_velocity(auxiliary_velocity , auxiliary_scalar);
+    ff_eq =  equilibrium_given_velocity(auxiliary_velocity , s[IDX(i,j,k)] );
   }  
 #endif	
 	

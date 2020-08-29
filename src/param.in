@@ -4,18 +4,18 @@ resume_t 0
 resume_s 0
 
 NX 1
-NY 200
+NY 100
 NZ 1
 
 SX 1
-SY 200
+SY 100
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 200000.
-time_dump_field 20000.
-time_dump_diagn 100.
+time_end 260000.
+time_dump_field 200000.
+time_dump_diagn 2000.
 
 tau_u 0.8
 nu_add 0.0
@@ -67,20 +67,21 @@ cavity_SX 50
 cavity_SY 25
 cavity_SZ 50
 
-tau_s 0.86 0.545  0.725
+#tau_s 0.68
 S_bot 1.
 S_top 1.
 S_ref 0.0
 beta_s 0.001897778
 Amp_s 0.01
 
-incident_light_intensity 0.0291666666666667
-phytoplankton_specific_lght_attenuation 0.0000000015
-background_turbidity 0.02
-half_saturation_constant 0.0025
-max_production_rate 0.00133333333333333
-loss_rate 0.000333333333333334
-settling_velocity 0.0133333333333333
+tau_s	0.725
+settling_velocity	0.00166666666666666
+loss_rate	0.0000833333333333334
+max_production_rate	0.000333333333333333
+half_saturation_constant	0.04
+background_turbidity	0.04
+phytoplankton_specific_lght_attenuation	0.000000000375
+incident_light_intensity	0.466666666666667
 
 time_dump_lagr 1000
 particle_number 2000

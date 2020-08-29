@@ -981,16 +981,13 @@ void build_forcing(){
       ruler_y_local[jj -BRD + LNY_START].s = s[IDX(i, jj, k)];
     }
     MPI_Allreduce(ruler_y_local, ruler_y, NY, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
+
     /* compute the integral of scalar from top of the system (SY) to position y for the given (x,z) position */
     cumulative_scalar = 0.0; 
     for (jj = 0; jj < NY; jj++){
       fac=(ruler_y[jj].y >center_V[IDX(i,j,k)].y)?1.0:0.0;
       cumulative_scalar += ruler_y[jj].s*fac;
-      // for (jj = BRD; jj < LNY+BRD; jj++){
-      //fac  = (center_V[IDX(i,jj,k)].y > center_V[IDX(i,j,k)].y)?1.0:0.0;
-      //local_cumulative_scalar += s[IDX(i, jj, k)]*fac;
     }
-    //MPI_Allreduce(&local_cumulative_scalar, &cumulative_scalar, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
    /* compute the loccal light intensity */
    light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );

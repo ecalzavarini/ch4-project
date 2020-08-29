@@ -1169,13 +1169,9 @@ if(LNY_END == NY){
 #endif
 	  
 #ifdef LB_SCALAR_BC_Y_P_HUISMAN
-          vector vec_grad_S_top;
-	  //my_double settling_velocity = 0.0133333333333333;//0.00333333333333333; /* m/hour */  
 	  /* it is a no-net flux boundary condition, in the presence of sinking */
 	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
-	  //vec_grad_S_top = gradient_scalar(s,i,j,k);	
-	  //S_wall = - (property.chi/settling_velocity) * vec_grad_S_top.y; /* the minus sign is because of the settling */
-	  S_wall = (2*property.chi /(property.settling_velocity+2*property.chi))* s[IDX(i,j,k)];
+	  S_wall = (2*property.chi /(property.settling_velocity+2*property.chi))* s[IDX(i,j,k)] + property.S_ref;
 #endif	  
 	  
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
@@ -1234,13 +1230,9 @@ if(LNY_START == 0){
 #endif	  
 
 #ifdef LB_SCALAR_BC_Y_M_HUISMAN
-	  vector vec_grad_S_bot;
-	  //my_double settling_velocity = 0.0133333333333333;//0.00333333333333333; /* m/hour */  
 	  /* it is a no-net flux boundary condition, in the presence of sinking */
 	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
-          //vec_grad_S_bot = gradient_scalar(s,i,j,k);
-	  //S_wall = - (property.chi/settling_velocity) * vec_grad_S_bot.y; /* the minus sign is because of the settling */
-	  S_wall = (2*property.chi /(-property.settling_velocity+2*property.chi))* s[IDX(i,j,k)];
+	  S_wall = (2*property.chi /(-property.settling_velocity+2*property.chi))* s[IDX(i,j,k)] + property.S_ref;
 #endif	  
 
 	  
