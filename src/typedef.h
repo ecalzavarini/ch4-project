@@ -134,6 +134,15 @@ typedef struct {
   #ifdef LB_SCALAR_FORCING
   my_double Amp_s;
   #endif
+  #ifdef LB_SCALAR_HUISMAN /* properties for J.Huisman phytoplankton model */
+   my_double incident_light_intensity; /* micro-mole photons m^{-2} s^{-1} */
+   my_double phytoplankton_specific_lght_attenuation;/* m^2 / cell */
+   my_double background_turbidity; /* m^{-1} */
+   my_double half_saturation_constant; /* micro-mole photons m^{-2} s^{-1} */
+   my_double max_production_rate; /* hours^{-1} */ 
+   my_double loss_rate; /* hours^{-1} */;
+   my_double settling_velocity; /* m/hours */
+  #endif
  #endif/* end of LB_SCALAR */
 #endif /* end of LB_FLUID */
 

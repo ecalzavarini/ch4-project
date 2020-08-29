@@ -966,12 +966,12 @@ void build_forcing(){
     /* used for the calculations */
     my_double cumulative_scalar, light_intensity, growth_rate;
     /* parameters and physical constants */
-    my_double incident_light_intensity = 0.233333333333333; /* micro-mole photons m^{-2} s^{-1} */
-    my_double phytoplankton_specific_lght_attenuation = 0.000000000375; /* m^2 / cell */
-    my_double background_turbidity = 0.04; /* m^{-1} */
-    my_double half_saturation_constant = 0.02; /* micro-mole photons m^{-2} s^{-1} */
-    my_double max_production_rate = 0.00066666666666; /* hours^{-1} */ 
-    my_double loss_rate = 0.000166666666666667; /* hours^{-1} */;
+    //my_double incident_light_intensity = 0.0291666666666667; //0.233333333333333; /* micro-mole photons m^{-2} s^{-1} */
+    //my_double phytoplankton_specific_lght_attenuation = 0.0000000015; //0.000000000375; /* m^2 / cell */
+    //my_double background_turbidity = 0.02; //0.04; /* m^{-1} */
+    //my_double half_saturation_constant = 0.0025; /* micro-mole photons m^{-2} s^{-1} */
+    //my_double max_production_rate = 0.00133333333333333; //0.00066666666666; /* hours^{-1} */ 
+    //my_double loss_rate = 0.000333333333333334; //0.000166666666666667; /* hours^{-1} */;
 
     /* accumulate data */
     set_to_zero_output(ruler_y,NY);
@@ -993,10 +993,10 @@ void build_forcing(){
     //MPI_Allreduce(&local_cumulative_scalar, &cumulative_scalar, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
    /* compute the loccal light intensity */
-   light_intensity = incident_light_intensity * exp( - phytoplankton_specific_lght_attenuation * cumulative_scalar - background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
+   light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
 
    /* compute the growth rate Eq. (3) and (4) in the paper */
-   growth_rate = (max_production_rate * light_intensity / (half_saturation_constant + light_intensity)) - loss_rate;
+   growth_rate = (property.max_production_rate * light_intensity / (property.half_saturation_constant + light_intensity)) - property.loss_rate;
 
    /* add the forcing */
    s_source[IDX(i,j,k)] += growth_rate * s[IDX(i, j, k)];

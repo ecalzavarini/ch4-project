@@ -472,6 +472,35 @@ void assign_parameters(){
   property.Amp_s = read_parameter(name);
   fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.Amp_s ); 
  #endif
+ #ifdef LB_SCALAR_HUISMAN /* properties for J.Huisman phytoplankton model */
+  sprintf(name,"incident_light_intensity");
+  property.incident_light_intensity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> incident_light_intensity = %e\n", property.incident_light_intensity ); 
+
+  sprintf(name,"phytoplankton_specific_lght_attenuation");
+  property.phytoplankton_specific_lght_attenuation = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> phytoplankton_specific_lght_attenuation = %e\n", property.phytoplankton_specific_lght_attenuation );  
+
+  sprintf(name,"background_turbidity");
+  property.background_turbidity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.background_turbidity ); 
+
+  sprintf(name,"half_saturation_constant");
+  property.half_saturation_constant = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> half_saturation_constant = %e\n", property.half_saturation_constant ); 
+
+  sprintf(name,"max_production_rate");
+  property.max_production_rate = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> max_production_rate = %e\n", property.max_production_rate ); 
+
+  sprintf(name,"loss_rate");
+  property.loss_rate = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> loss_rate = %e\n", property.loss_rate ); 
+
+  sprintf(name,"settling_velocity");
+  property.settling_velocity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> settling_velocity = %e\n", property.settling_velocity ); 
+ #endif 
 #endif /* end of ifded LB_SCALAR */
 
 

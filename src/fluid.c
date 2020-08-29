@@ -1103,10 +1103,10 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
   if( which_pop == 'h' ){
     vector auxiliary_velocity;
     my_double auxiliary_scalar;
-    my_double settling_velocity = 0.00333;
+    //my_double settling_velocity = 0.0133333333333333; //0.00333333333333333;
     auxiliary_scalar =  s[IDX(i,j,k)];
     auxiliary_velocity.x = u[IDX(i,j,k)].x;
-    auxiliary_velocity.y = u[IDX(i,j,k)].y - settling_velocity;
+    auxiliary_velocity.y = u[IDX(i,j,k)].y - property.settling_velocity;
     auxiliary_velocity.z = u[IDX(i,j,k)].z;   
     ff_eq =  equilibrium_given_velocity(auxiliary_velocity , auxiliary_scalar);
   }  
