@@ -289,6 +289,10 @@ extern my_double *s;
   extern int randomization_itime_s;
   #endif
  #endif
+ #ifdef LB_SCALAR_HUISMAN
+  extern  my_double *s_ruler_y, *s_ruler_y_local;
+  extern  my_double *p_ruler_y, *p_ruler_y_local;
+ #endif
 #endif
 
 

@@ -1356,6 +1356,15 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
  if(s_source == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
  set_to_zero_scalar( s_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
+
+ #ifdef LB_SCALAR_HUISMAN
+  s_ruler_y_local  = (my_double*) my_malloc(sizeof(output)*NY);
+  p_ruler_y_local  = (my_double*) my_malloc(sizeof(output)*NY);
+  s_ruler_y  = (my_double*) my_malloc(sizeof(output)*NY);
+  p_ruler_y  = (my_double*) my_malloc(sizeof(output)*NY);
+  //for (j = 0; j < NY; j++) s_ruler_y_local[j]=p_ruler_y_local[j]=s_ruler_y[j]=p_ruler_y_local[j]=0.0;      
+ #endif
+ 
 #endif
 
   if(ROOT) fprintf(stderr,"Total memory allocation %lf MB\n",(my_double)memory_all/1.e+6); 
@@ -1631,6 +1640,12 @@ my_free(ym_zm_edge_scalar);
  #ifdef LB_SCALAR_FORCING
  my_free(s_source);
  #endif
+ #ifdef LB_SCALAR_HUISMAN
+    my_free(s_ruler_y);
+    my_free(p_ruler_y);
+    my_free(s_ruler_y_local);
+    my_free(p_ruler_y_local);
+ #endif   
 #endif
 
  if(ROOT) fprintf(stderr,"Total unfree memory %lf MB\n",(my_double)memory_all/1.e+6); 

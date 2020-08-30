@@ -963,16 +963,27 @@ void build_forcing(){
  #ifdef LB_SCALAR_FORCING_HUISMAN /* implement phytoplankton J. Husiman et al. vol. 159, no. 3, The American Naturalist, march 2002 */
 
    /* variables that need to be defined */
-    /* used for the calculations */
     my_double cumulative_scalar, light_intensity, growth_rate;
-    /* parameters and physical constants */
-    //my_double incident_light_intensity = 0.0291666666666667; //0.233333333333333; /* micro-mole photons m^{-2} s^{-1} */
-    //my_double phytoplankton_specific_lght_attenuation = 0.0000000015; //0.000000000375; /* m^2 / cell */
-    //my_double background_turbidity = 0.02; //0.04; /* m^{-1} */
-    //my_double half_saturation_constant = 0.0025; /* micro-mole photons m^{-2} s^{-1} */
-    //my_double max_production_rate = 0.00133333333333333; //0.00066666666666; /* hours^{-1} */ 
-    //my_double loss_rate = 0.000333333333333334; //0.000166666666666667; /* hours^{-1} */;
 
+    /* set to zero position and scalar rulers along y */
+    for (jj = 0; jj < NY; jj++){
+      s_ruler_y_local[jj]=p_ruler_y_local[jj]=s_ruler_y[jj]=p_ruler_y_local[jj]=0.0;  
+    }
+    /* fill the tweo rulers with all the value along the y axis for a fixed x,z position */
+    for (jj = BRD; jj < LNY+BRD; jj++){
+      p_ruler_y_local[jj -BRD + LNY_START] = center_V[IDX(i, jj, k)].y;
+      s_ruler_y_local[jj -BRD + LNY_START] = s[IDX(i, jj, k)];
+    }
+    MPI_Allreduce(s_ruler_y_local, s_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(p_ruler_y_local, p_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    /* compute the integral of scalar field from top position NY down to the current coordiante */
+    cumulative_scalar = 0.0; 
+    for (jj = 0; jj < NY; jj++){
+      fac=(p_ruler_y[jj] >center_V[IDX(i,j,k)].y)?1.0:0.0;
+      cumulative_scalar += s_ruler_y[jj]*fac;
+    }
+
+#ifdef OLD_VERSION /*very slow */  
     /* accumulate data */
     set_to_zero_output(ruler_y,NY);
     set_to_zero_output(ruler_y_local,NY);
@@ -988,7 +999,8 @@ void build_forcing(){
       fac=(ruler_y[jj].y >center_V[IDX(i,j,k)].y)?1.0:0.0;
       cumulative_scalar += ruler_y[jj].s*fac;
     }
-
+#endif /* OLD_VERSION */
+    
    /* compute the loccal light intensity */
    light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
 

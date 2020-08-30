@@ -290,6 +290,10 @@ my_double invcs, invcs2, invcs4;
   int randomization_itime_s;
   #endif
  #endif
+ #ifdef LB_SCALAR_HUISMAN
+  my_double *s_ruler_y, *s_ruler_y_local;
+  my_double *p_ruler_y, *p_ruler_y_local;
+ #endif
 #endif
 
 
