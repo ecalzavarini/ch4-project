@@ -214,7 +214,7 @@ int compare(const void *a, const void *b)
 
 int check_prime(int x){
     int i;
-    for(i=2;x%i!=0;i++);
+    for(i=2;x%i!=0;i++)
         if(x==i) {
             return 1;
         }
@@ -327,6 +327,32 @@ void processor_splitting()
 	fprintf(stderr, "me %d , mex %d  mey %d mez %d\n", me, mex, mey, mez);
 #endif
 
+	/* this does not work! 	
+#ifdef PARALLEL_CARTESIAN
+	MPI_Comm Comm_3d_grid;
+	int ndim = 3;
+	int dimensions[3];
+	int periodic[3];
+	int reorder = 1;
+	int coord_3d[3];
+	int me_rank_3d;
+	periodic[0] = periodic[1] = periodic[2] =  1;
+	dimensions[0] = nxprocs; 
+	dimensions[1] = nyprocs;
+	dimensions[2] = nzprocs;
+	MPI_Cart_create(MPI_COMM_WORLD,ndim,dimensions,periodic,reorder,&Comm_3d_grid);
+	MPI_Comm_rank(Comm_3d_grid,&me_rank_3d);
+	MPI_Cart_coords(Comm_3d_grid,me_rank_3d,ndim,coord_3d);
+	fprintf(stderr,"I am %d: (%d,%d,%d); originally %d\n",me_rank_3d,coord_3d[0],coord_3d[1],coord_3d[2], me);
+
+	mex = coord_3d[0];
+	mey = coord_3d[1];
+	mez = coord_3d[2];
+	me = me_rank_3d;       
+#endif
+	*/
+
+
 	/* processor rulers for vertices */
 	LNX_START = LNX * mex;
 	LNX_END = LNX * (mex + 1);
@@ -369,6 +395,7 @@ void processor_splitting()
 #endif
 
 	/* every procs finds its neighbors */
+	/*
 	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
 	next = (mex-1+nxprocs) % nxprocs; me_xm = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
 	next = (mey+1+nyprocs) % nyprocs; me_yp = mez * (nyprocs * nxprocs) + next * nxprocs + mex; 
@@ -376,8 +403,13 @@ void processor_splitting()
 	next = (mez+1+nzprocs) % nzprocs; me_zp = next * (nyprocs * nxprocs) + mey * nxprocs + mex; 
 	next = (mez-1+nzprocs) % nzprocs; me_zm = next * (nyprocs * nxprocs) + mey * nxprocs + mex;
 
+#ifdef DEBUG
+  fprintf(stderr, "me  %d old way: me_xp %d, me_xm %d, me_yp %d, me_ym %d, me_zp %d, me_zm %d \n",me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+	*/
+
+	/* Map of of next neighbor processors  */ 	
         me_next  = (int*) malloc(sizeof(int)*27);
-	/* Alternative way more compact and safer, to be done */ 
 	for (k = -1; k <=1; k++)
 		for (j = -1; j <=1; j++)
 			for (i = -1; i <=1; i++) {
@@ -389,8 +421,19 @@ void processor_splitting()
 
 			  // fprintf(stderr,"me %d, i=%d j=%d k=%d, me_next=%d\n", me,i,j,k,me_next[IDX_NEXT(i,j,k)]);
 			}
+	
+ /* for the faces */
+ me_xp = me_next[IDX_NEXT(  1,  0,  0)];
+ me_xm = me_next[IDX_NEXT( -1,  0,  0)];
+ me_yp = me_next[IDX_NEXT(  0,  1,  0)];
+ me_ym = me_next[IDX_NEXT(  0, -1,  0)];
+ me_zp = me_next[IDX_NEXT(  0,  0,  1)]; 
+ me_zm = me_next[IDX_NEXT(  0,  0, -1)]; 	
 
-
+#ifdef DEBUG
+ fprintf(stderr, "me %d new way: me_xp %d, me_xm %d, me_yp %d, me_ym %d, me_zp %d, me_zm %d \n",me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+ 
 #ifdef METHOD_EDGES_AND_CORNERS
 
  /* for the corners */
@@ -479,7 +522,7 @@ void measure_time(){
 	 fprintf(fout,"Execution time per time step %e\n",(t2-t1)/(double)itime);
 	 fprintf(fout,"Execution time per grid point %e\n",(t2-t1)/(double)(NX*NY*NZ));
 	 fprintf(fout,"Execution time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
-	 fprintf(fout,"Time ticks on this machine %e\n", tick);
+	 fprintf(fout,"Time tick on this machine %e\n", tick);
 	 fprintf(fout,"Number of processes for this run %d\n",nprocs);
          fprintf(fout,"Execution time per process %e\n",(t2-t1)/(double)nprocs);
 	 fclose(fout);	 
