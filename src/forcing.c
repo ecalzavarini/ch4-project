@@ -422,8 +422,12 @@ void build_forcing(){
         kn=0.5; /* one cell */
    //  	kn=1.0; /* two cells */
 	/* along x */  
-        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
+        //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	//force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+	//force[IDX(i,j,k)].z += 0.0; 
+        /* for Vinicius */
+	force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].z += 0.0; 
  
   #else
