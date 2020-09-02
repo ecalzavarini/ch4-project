@@ -1095,24 +1095,31 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  #endif
 #endif
 
-
-#ifdef METHOD_REDEFINED_POP
-	ff_eq = f_eq[IDX(i,j,k)];
-#else     
-	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
-#endif
-	
-
+  
 #ifdef LB_SCALAR_SETTLING_HUISMAN
 	/* compute eq. function for scalar on the sum of two velocities u + settling_velocity */
-	/* still not optimized because the old eq function (see above) is also computed */
   if( which_pop == 'h' ){
     auxiliary_velocity.x = u[IDX(i,j,k)].x;
     auxiliary_velocity.y = u[IDX(i,j,k)].y - property.settling_velocity;
     auxiliary_velocity.z = u[IDX(i,j,k)].z;   
     ff_eq =  equilibrium_given_velocity(auxiliary_velocity , s[IDX(i,j,k)] );
+  }else{
+    /* this is for the other populations (velocity and temperature */
+ #ifdef METHOD_REDEFINED_POP
+	ff_eq = f_eq[IDX(i,j,k)];
+ #else     
+	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+ #endif
   }  
-#endif	
+#else /* if LB_SCALAR_SETTLING_HUISMAN is NOT defined */
+  /* for all the populations */
+ #ifdef METHOD_REDEFINED_POP
+	ff_eq = f_eq[IDX(i,j,k)];
+ #else     
+	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+ #endif
+#endif
+
 	
 
 #ifndef METHOD_EXPONENTIAL
