@@ -129,7 +129,7 @@ void initial_conditions(int restart)
 	/* uy component */
         /* uy  fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); */       
        	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(c[pp].x * (-fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) + c[pp].y * (fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)) );	
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(c[pp].x * (-sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) + c[pp].y * (cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)) );	
 #endif  	
 
 
