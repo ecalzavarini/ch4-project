@@ -12,6 +12,7 @@
 
 /* PARALLEL (MPI related) */
 #define NEW_SENDRECV  /* improve speed: does not use itermediate transfer buffers */
+//#define PARALLEL_MPICART /* defines an optimized cartesian grid of processor (DO NOT USE YET)*/
 
 /* OUTPUT */
 //#define OUTPUT_DIAGN_APPEND
@@ -53,6 +54,7 @@
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
+#define LB_FLUID_INITIAL_CELLULAR
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
 //#define LB_INITIAL_BAROMETRIC
@@ -61,7 +63,7 @@
 //#define LB_FLUID_INITIAL_ADD_NOISE
 #define LB_FLUID_INITIAL_UNIT_DENSITY
 //#define LB_FLUID_AFTER_INIT_PERTURBATION
-//#define LB_FLUID_FORCING  /* activate force on the fluid */
+#define LB_FLUID_FORCING  /* activate force on the fluid */
 //#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
@@ -72,7 +74,7 @@
 //#define LB_FLUID_FORCING_PENALIZATION
 //#define LB_FLUID_FORCING_PENALIZATION_DIRECTION_X
 //#define LB_FLUID_FORCING_DIRECT
-//#define LB_FLUID_FORCING_CELLULAR
+#define LB_FLUID_FORCING_CELLULAR
 //#define LB_FLUID_FORCING_CELLULAR_UNSTEADY
 //#define LB_FLUID_FORCING_HIT
 //#define LB_FLUID_FORCING_HIT_LINEAR
@@ -92,10 +94,10 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_Y_M_SLIP                                           
-//#define LB_FLUID_BC_Y_P_SLIP  
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC_Y_M_SLIP                                           
+#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
 //#define LB_FLUID_BC_Y_M_VELOCITY
