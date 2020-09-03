@@ -323,77 +323,11 @@ void processor_splitting()
 				}
 			}
 
-#ifdef DEBUG
+	//#ifdef DEBUG
 	fprintf(stderr, "me %d , mex %d  mey %d mez %d\n", me, mex, mey, mez);
-#endif
+	//#endif
 
-	/* this does not work! 	
-#ifdef PARALLEL_CARTESIAN
-	MPI_Comm Comm_3d_grid;
-	int ndim = 3;
-	int dimensions[3];
-	int periodic[3];
-	int reorder = 1;
-	int coord_3d[3];
-	int me_rank_3d;
-	periodic[0] = periodic[1] = periodic[2] =  1;
-	dimensions[0] = nxprocs; 
-	dimensions[1] = nyprocs;
-	dimensions[2] = nzprocs;
-	MPI_Cart_create(MPI_COMM_WORLD,ndim,dimensions,periodic,reorder,&Comm_3d_grid);
-	MPI_Comm_rank(Comm_3d_grid,&me_rank_3d);
-	MPI_Cart_coords(Comm_3d_grid,me_rank_3d,ndim,coord_3d);
-	fprintf(stderr,"I am %d: (%d,%d,%d); originally %d\n",me_rank_3d,coord_3d[0],coord_3d[1],coord_3d[2], me);
-
-	mex = coord_3d[0];
-	mey = coord_3d[1];
-	mez = coord_3d[2];
-	me = me_rank_3d;       
-#endif
-	*/
-
-
-	/* processor rulers for vertices */
-	LNX_START = LNX * mex;
-	LNX_END = LNX * (mex + 1);
-	LNY_START = LNY * mey;
-	LNY_END = LNY * (mey + 1);
-	LNZ_START = LNZ * mez;
-	LNZ_END = LNZ * (mez + 1);
-
-#ifdef DEBUG
-	fprintf(stderr, "me %d LNX_START %d , LNY_START %d  LNZ_START %d\n", me, LNX_START ,LNY_START, LNZ_START);
-	fprintf(stderr, "me %d LNX_END %d , LNY_END %d  LNZ_END %d\n", me, LNX_END ,LNY_END, LNZ_END);
-#endif
-
-	/* processor rulers for the grid */
-	NXG=NX+1;
-	NYG=NY+1;
-	NZG=NZ+1;
-	LNXG=LNX+1;
-	LNYG=LNY+1;
-	LNZG=LNZ+1;
-	/*
-	LNXG_START = LNXG * mex;
-	LNXG_END = LNXG * (mex + 1);
-	LNYG_START = LNYG * mey;
-	LNYG_END = LNYG * (mey + 1);
-	LNZG_START = LNZG * mez;
-	LNZG_END = LNZG * (mez + 1);
-	*/	
-	LNXG_START = LNX * mex;
-	LNXG_END = LNXG * (mex + 1);
-	LNYG_START = LNY * mey;
-	LNYG_END = LNYG * (mey + 1);
-	LNZG_START = LNZ * mez;
-	LNZG_END = LNZG * (mez + 1);
-	
-
-#ifdef DEBUG
-	fprintf(stderr, "me %d LNXG_START %d , LNYG_START %d  LNZG_START %d\n", me, LNXG_START ,LNYG_START, LNZG_START);
-	fprintf(stderr, "me %d LNXG_END %d , LNYG_END %d  LNZG_END %d\n", me, LNXG_END ,LNYG_END, LNZG_END);
-#endif
-
+	 	
 	/* every procs finds its neighbors */
 	/*
 	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
@@ -462,9 +396,134 @@ void processor_splitting()
 
 #endif
 
+
+#ifdef PARALLEL_MPICART
+ /* Alternative way to split the computational domain on a grid of processor, it is LESS performant than the previous mode */
+ MPI_Comm Comm_3d_grid;
+ int ndim = 3;
+ int dimensions[3];
+ int periodic[3];
+ int reorder = 1;
+ int coord[3];
+ int me_rank;
+
+
+ /* Give partial freedom to MPI to chose thes sizes of the grid of processors */
+ if(NX==1){dimensions[0] = 1;}else{dimensions[0] = 0;}
+ if(NY==1){dimensions[1] = 1;}else{dimensions[1] = 0;}
+ if(NZ==1){dimensions[2] = 1;}else{dimensions[2] = 0;}
+ fprintf(stderr,"Restrictions (%d, %d, %d) give decomposition ", dimensions[0], dimensions[1], dimensions[2]);
+ MPI_Dims_create(nprocs, 3, dimensions);
+ fprintf(stderr,"(%d, %d, %d).\n", dimensions[0], dimensions[1], dimensions[2]);
+ 
+ nxprocs = dimensions[0]; 
+ nyprocs = dimensions[1];
+ nzprocs = dimensions[2];
+	
+ error = 0;
+ if(NX%nxprocs==0){ LNX=NX/nxprocs; }else{error=1;}
+ if(NY%nyprocs==0){ LNY=NY/nyprocs; }else{error=1;}
+ if(NZ%nzprocs==0){ LNZ=NZ/nzprocs; }else{error=1;}
+ if(error){
+    MPI_Finalize();
+    exit(-1);
+  }
+	
+ periodic[0] = periodic[1] = periodic[2] =  1;
+ MPI_Cart_create(MPI_COMM_WORLD,ndim,dimensions,periodic,reorder,&Comm_3d_grid);
+ MPI_Comm_rank(Comm_3d_grid,&me_rank);
+ MPI_Cart_coords(Comm_3d_grid,me_rank,ndim,coord);
+
+ fprintf(stderr,"I am %d: (%d,%d,%d); originally %d\n",me_rank,coord[0],coord[1],coord[2], me);
+
+ mex = coord[0];
+ mey = coord[1];
+ mez = coord[2];
+ me = me_rank;       
+
+ /* 6 faces */
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym);
+ coord[0]=mex  ; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_zp);
+ coord[0]=mex  ; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_zm);
+ #ifdef METHOD_EDGES_AND_CORNERS
+  /* 8 corners */
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp_zp);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym_zm);
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp_zm);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym_zp);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym_zp);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp_zm);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp_zp);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym_zm);
+ /* 12 edges */
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp_zp);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym_zm);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp_zm);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym_zp);
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_zp);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_zm);
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_zm);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_zp);  
+ #endif
+#endif /* end of PARALLEL_MPICART */
+ 
+
 #ifdef DEBUG
 	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
 #endif
+
+
+
+
+	/* processor rulers for vertices (computational node points) */
+	LNX_START = LNX * mex;
+	LNX_END = LNX * (mex + 1);
+	LNY_START = LNY * mey;
+	LNY_END = LNY * (mey + 1);
+	LNZ_START = LNZ * mez;
+	LNZ_END = LNZ * (mez + 1);
+
+#ifdef DEBUG
+	fprintf(stderr, "me %d LNX_START %d , LNY_START %d  LNZ_START %d\n", me, LNX_START ,LNY_START, LNZ_START);
+	fprintf(stderr, "me %d LNX_END %d , LNY_END %d  LNZ_END %d\n", me, LNX_END ,LNY_END, LNZ_END);
+#endif
+
+	/* processor rulers for the grid */
+	NXG=NX+1;
+	NYG=NY+1;
+	NZG=NZ+1;
+	LNXG=LNX+1;
+	LNYG=LNY+1;
+	LNZG=LNZ+1;
+	/*
+	LNXG_START = LNXG * mex;
+	LNXG_END = LNXG * (mex + 1);
+	LNYG_START = LNYG * mey;
+	LNYG_END = LNYG * (mey + 1);
+	LNZG_START = LNZG * mez;
+	LNZG_END = LNZG * (mez + 1);
+	*/	
+	LNXG_START = LNX * mex;
+	LNXG_END = LNXG * (mex + 1);
+	LNYG_START = LNY * mey;
+	LNYG_END = LNYG * (mey + 1);
+	LNZG_START = LNZ * mez;
+	LNZG_END = LNZG * (mez + 1);
+	
+
+#ifdef DEBUG
+	fprintf(stderr, "me %d LNXG_START %d , LNYG_START %d  LNZG_START %d\n", me, LNXG_START ,LNYG_START, LNZG_START);
+	fprintf(stderr, "me %d LNXG_END %d , LNYG_END %d  LNZG_END %d\n", me, LNXG_END ,LNYG_END, LNZG_END);
+#endif
+
+	
 
 #ifdef NEW_SENDRECV
 	/* Creates a vector (strided) datatype */
