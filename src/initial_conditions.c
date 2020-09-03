@@ -113,7 +113,24 @@ void initial_conditions(int restart)
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
-#endif  
+#endif
+
+#ifdef LB_FLUID_INITIAL_CELLULAR
+    LY=(my_double)property.SY; //NY;
+    y = (my_double)center_V[IDX(i,j,k)].y;
+    LX=(my_double)property.SX; //NX;
+    x = (my_double)center_V[IDX(i,j,k)].x;	
+	kn=0.5; /* one cell */
+   //   kn=1.0; /* two cells */
+        fn = property.Amp_x*LY*LY/(property.nu*2.0*one_pi*one_pi);
+        /* for Vinicius */
+        /* ux component */
+	/*  -fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY);   */
+	/* uy component */
+        /* uy  fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); */       
+       	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(c[pp].x * (-fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) + c[pp].y * (fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)) );	
+#endif  	
 
 
 #ifdef LB_FLUID_INITIAL_POISEUILLE 
