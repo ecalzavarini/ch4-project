@@ -1,6 +1,6 @@
-=================
+==========================
 Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
-=================
+==========================
 .. image:: figs/passive-scalar.jpg
   :width: 300
   :alt: visualization of the dissipation field of a passive scalar in turbulence
@@ -76,10 +76,7 @@ This code has been employed in the following published studies:
    
 7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, J. Fluid Mech. **901**, A8 (2020).
    http://dx.doi.org/10.1017/jfm.2020.539
-
-
-Preprints:
-
    
-8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, (2020). preprint https://arxiv.org/abs/2005.05448
+8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, Phys. Rev. Fluids **5**, 114304 (2020).
+   https://doi.org/10.1103/PhysRevFluids.5.114304
    
