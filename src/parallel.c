@@ -196,9 +196,9 @@ void initialization_MPI(int argc, char **argv){
   idum = &initdum;
 #endif
 
-  //#ifdef DEBUG_HARD
+#ifdef VERBOSE
 fprintf(stderr,"RANDOM me %d myrand(): %e\n",me, myrand());
-//#endif
+#endif
 
 
 }
@@ -323,9 +323,9 @@ void processor_splitting()
 				}
 			}
 
-	//#ifdef DEBUG
+#ifdef DEBUG
 	fprintf(stderr, "me %d , mex %d  mey %d mez %d\n", me, mex, mey, mez);
-	//#endif
+#endif
 
 	 	
 	/* every procs finds its neighbors */
