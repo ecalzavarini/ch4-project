@@ -824,10 +824,11 @@ void set_to_zero_output(output  *f,int size){
 void *my_malloc(size_t size){
   my_double real_size;
   void *ptr;
-  ptr = malloc(size);
-#ifdef SYSTEM_OSX
-  real_size = malloc_size(ptr);
-#endif
+  ptr = malloc(size);  
+//#ifdef SYSTEM_OSX   
+// temporarily disabled because it does not work on OSX Catalina!
+//  real_size = malloc_size(ptr);
+//#endif
 #ifdef SYSTEM_LINUX
   real_size = malloc_usable_size(ptr);
 #endif
@@ -848,9 +849,10 @@ void *my_malloc(size_t size){
 
 void my_free(void *ptr){
   size_t size;
-#ifdef SYSTEM_OSX
-  size = malloc_size(ptr);
-#endif
+// temporarily disabled because it does not work on OSX Catalina!
+//#ifdef SYSTEM_OSX
+//  size = malloc_size(ptr);
+//#endif
 #ifdef SYSTEM_LINUX
   size = malloc_usable_size(ptr);
 #endif
