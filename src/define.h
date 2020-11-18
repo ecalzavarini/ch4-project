@@ -21,7 +21,7 @@
 #define OUTPUT_H5_GRID /* write the grid in every h5 file, not essential but useful for VisIt visualizations */
 #define OUTPUT_H5_TIMESTAMP_REAL /* enable "time_now" as time stamp on the name of .h5 files instead of itime */
 #define OUTPUT_AT_START /* write down the complete intial state */
-
+//#define VERBOSE /* if not defined, the amount of output communication is limited */
 
 /* GRID */
 #define GRID_REGULAR
@@ -38,9 +38,9 @@
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D1Q3
-#define GRID_POP_D2Q9 
+//#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
-//#define GRID_POP_D3Q19
+#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -54,7 +54,8 @@
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
-#define LB_FLUID_INITIAL_CELLULAR
+//#define LB_FLUID_INITIAL_CELLULAR
+//#define   LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
 //#define LB_INITIAL_BAROMETRIC
@@ -76,12 +77,14 @@
 //#define LB_FLUID_FORCING_DIRECT
 #define LB_FLUID_FORCING_CELLULAR
 //#define LB_FLUID_FORCING_CELLULAR_UNSTEADY
+//#define LB_FLUID_FORCING_STIRRER
 //#define LB_FLUID_FORCING_HIT
 //#define LB_FLUID_FORCING_HIT_LINEAR
 //#define LB_FLUID_FORCING_HIT_ZEROMODE
 //#define LB_FLUID_FORCING_HIT_RANDOM
 //#define LB_FLUID_FORCING_HIT_TYPE2
 //#define LB_FLUID_FORCING_HIT_RECTANGULAR
+//#define LB_FLUID_FORCING_HIT_2D
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
@@ -96,14 +99,14 @@
 
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-#define LB_FLUID_BC_Y_M_SLIP                                           
-#define LB_FLUID_BC_Y_P_SLIP  
+//#define LB_FLUID_BC_Y_M_SLIP                                           
+//#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 
-//#define LB_FLUID_BC_X                                                     
+#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -113,7 +116,7 @@
 //#define LB_FLUID_BC_X_M_OUTLET 
 //#define LB_FLUID_BC_X_P_OUTLET  
                                              
-//#define LB_FLUID_BC_Z
+#define LB_FLUID_BC_Z
 //#define LB_FLUID_BC_Z_M_SLIP                                             
 //#define LB_FLUID_BC_Z_P_SLIP  
 //#define LB_FLUID_BC_Z_M_OUTLET 
@@ -133,7 +136,6 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_STEPPING_AB2
 //#define METHOD_STEPPING_AB3
 //#define METHOD_COLLISION_IMPLICIT
-
 //#define METHOD_CENTERED
 //#define METHOD_UPWIND
 //#define METHOD_UPWIND_SKEW
@@ -143,9 +145,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_MYQUICK_CARTESIAN
 //#define METHOD_MYQUICK_LIMITER
 //#define METHOD_MIXED
-
 //#define METHOD_TRAPEZOID
-
 //#define METHOD_EDGES_AND_CORNERS
 //#define METHOD_FORCING_GUO
 //#define METHOD_FORCING_MALASPINAS
@@ -253,18 +253,18 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-#define LB_SCALAR
+//#define LB_SCALAR
 //#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
 //#define LB_SCALAR_INITIAL_BULK
-#define LB_SCALAR_INITIAL_CONSTANT
-#define LB_SCALAR_INITIAL_CONSTANT_MEAN
+//#define LB_SCALAR_INITIAL_CONSTANT
+//#define LB_SCALAR_INITIAL_CONSTANT_MEAN
 //#define LB_SCALAR_INITIAL_CONSTANT_BOT
 //#define LB_SCALAR_INITIAL_CONSTANT_TOP
 //#define LB_SCALAR_INITIAL_SPOT
 //#define LB_SCALAR_BUOYANCY
-#define LB_SCALAR_BC
-#define LB_SCALAR_BC_Y
+//#define LB_SCALAR_BC
+//#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_BC_Y_P_OUTLET
 //#define LB_SCALAR_BC_Y_M_OUTLET
 //#define LB_SCALAR_BC_Y_P_NOFLUX
@@ -280,7 +280,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_BC_Z_P_NOFLUX
 //#define LB_SCALAR_BC_Z_M_NOFLUX
 //#define LB_SCALAR_FLUCTUATION  
-#define LB_SCALAR_FORCING
+//#define LB_SCALAR_FORCING
 //#define LB_SCALAR_FORCING_REACTION
 //#define LB_SCALAR_FORCING_REACTION_FKPP
 //#define LB_SCALAR_FORCING_REACTION_FKPP_FLUCTUATION
@@ -291,12 +291,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_HIT_ZEROMODE
 //#define LB_SCALAR_FORCING_HIT_LINEAR  
 //#define LB_SCALAR_FORCING_GRAD
-
-#define LB_SCALAR_HUISMAN
-#define LB_SCALAR_SETTLING_HUISMAN
-#define LB_SCALAR_FORCING_HUISMAN
-#define LB_SCALAR_BC_Y_P_HUISMAN
-#define LB_SCALAR_BC_Y_M_HUISMAN
+/* Huisman model */
+//#define LB_SCALAR_HUISMAN
+//#define LB_SCALAR_SETTLING_HUISMAN
+//#define LB_SCALAR_FORCING_HUISMAN
+//#define LB_SCALAR_BC_Y_P_HUISMAN
+//#define LB_SCALAR_BC_Y_M_HUISMAN
 
 
 /* Lagragian parts */
@@ -304,7 +304,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+#define LAGRANGE_NUCLEATE
+//#define LAGRANGE_NUCLEATE_REMELT
 //#define LAGRANGE_INITIAL_PAIRS
 //#define LAGRANGE_ADD_TRACER
 //#define LAGRANGE_ADD_TRACER_STATIC
@@ -321,7 +323,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY
 //#define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-//#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
 //#define LAGRANGE_ORIENTATION_JEFFREY
