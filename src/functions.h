@@ -122,6 +122,12 @@ void sendrecv_particles();
 void write_point_particle_h5();
 void read_point_particle_h5();
 void dump_particle_averages();
+#ifdef LAGRANGE_NUCLEATE
+my_double T_L(my_double depth, my_double Phi);
+my_double rp_growth_rate(my_double temp, my_double depth);
+void nucleate_particles(my_double *tfield);
+void shake_ghosts();
+#endif
 #endif
 
 /* random.c */

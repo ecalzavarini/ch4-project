@@ -519,7 +519,7 @@ void assign_parameters(){
   property.particle_radius_min = read_parameter(name);
   sprintf(name,"particle_radius_max");
   property.particle_radius_max = read_parameter(name);
-  fprintf(stderr,"particle_radius_types %g , particle_radius_max %g , particle_radius_min %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
+  fprintf(stderr,"particle_radius_types %g , particle_radius_min %g , particle_radius_max %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
   if( property.particle_radius_types <1 || property.particle_radius_max < property.particle_radius_min ){ fprintf(stderr,"Error in particle_radius parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -532,7 +532,7 @@ void assign_parameters(){
   property.particle_density_min = read_parameter(name);
   sprintf(name,"particle_density_max");
   property.particle_density_max = read_parameter(name);
-  fprintf(stderr,"particle_density_types %g , particle_density_max %g , particle_density_min %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
+  fprintf(stderr,"particle_density_types %g , particle_density_min %g , particle_density_max %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
   if( property.particle_density_types <1 || property.particle_density_max < property.particle_density_min ){ fprintf(stderr,"Error in particle_density parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -706,6 +706,22 @@ void assign_parameters(){
       property.particle_types += property.fluid_tracers;
       fprintf(stderr,"The first particle_type is a fluid tracer\n");
   #endif    
+ #endif
+ #ifdef LAGRANGE_NUCLEATE
+  sprintf(name,"T_liq");
+  property.T_liq = read_parameter(name);
+  sprintf(name,"Vref");
+  property.Vref = read_parameter(name);
+  sprintf(name,"Nref");
+  property.Nref = read_parameter(name);
+  sprintf(name,"Vpow");
+  property.Vpow = read_parameter(name);
+  sprintf(name,"Npow");
+  property.Npow = read_parameter(name);
+  sprintf(name,"E_del");
+  property.E_del = read_parameter(name);
+  sprintf(name,"UC_frac");
+  property.UC_frac = read_parameter(name);
  #endif
 
   /* total number of particles types */

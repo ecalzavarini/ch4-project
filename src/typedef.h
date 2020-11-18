@@ -187,6 +187,9 @@ typedef struct {
    my_double tau_polymer, nu_polymer;
   #endif /* LAGRANGE_POLYMER */
  #endif /* LAGRANGE_GRADIENT */
+ #ifdef LAGRANGE_NUCLEATE
+   my_double T_liq, Vref, Nref, Vpow, E_del, Npow, UC_frac; 
+ #endif
 #endif /* LAGRANGE */
 } prop;
 
@@ -399,6 +402,13 @@ typedef struct {
   #endif
  #endif
 #endif
+#ifdef LAGRANGE_NUCLEATE
+  my_double grave;
+  my_double age;
+#endif
+#ifdef LB_LAGRANGE_BC_INELASTIC
+  my_double sediment;
+#endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
   my_double t_old;
@@ -442,6 +452,13 @@ typedef struct {
  #ifdef LB_TEMPERATURE
   my_double t,t2,t4; 
   my_double dt_t,dt_t2;
+ #endif
+ #ifdef LAGRANGE_NUCLEATE
+  my_double grave;
+  my_double age;
+ #endif
+ #ifdef LB_LAGRANGE_BC_INELASTIC
+  my_double sediment;
  #endif
 } output_particle;
 
