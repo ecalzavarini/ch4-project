@@ -425,10 +425,24 @@ void build_forcing(){
         //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
 	//force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
 	//force[IDX(i,j,k)].z += 0.0; 
-        /* for Vinicius */
-	force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].z += 0.0; 
+        /* for Vinicius */       
+	//force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	//force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
+	//force[IDX(i,j,k)].z += 0.0;
+	/* Clotilde */
+	kn=1.0;
+	//if (z<LZ/8){
+	force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+        force[IDX(i,j,k)].z = 0;
+	//}
+	//x=x+LX/8.;
+	//y=y+LY/8.;
+	//my_double LXNEW = LX + LX/2;
+	//my_double LYNEW = LY + LY/2;
+	//force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LXNEW)*cos(kn*two_pi*y/LYNEW); 
+	//force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LXNEW)*sin(kn*two_pi*y/LYNEW); 
+	//force[IDX(i,j,k)].z += 0.0;
  
   #else
     kn=0.5;
@@ -439,7 +453,33 @@ void build_forcing(){
 	force[IDX(i,j,k)].z += 0.0; 
 
   #endif
- #endif  
+ #endif
+
+
+ #ifdef LB_FLUID_FORCING_STIRRER
+	my_double stirrer_radius = 8.0;
+	my_double stirrer_height = 4.0;
+	my_double stirrer_frequency = 0.05;
+	my_double stirrer_x = LX/2.0;
+	my_double stirrer_z = LZ/2.0;
+	vector stirrer_vel;
+	my_double angle,distance;
+        my_double radial_distance;
+	
+        fac = 0.001;
+	radial_distance = sqrt((x-stirrer_x)*(x-stirrer_x) + (z-stirrer_z)*(z-stirrer_z));
+	
+	if( y < stirrer_height && y > 0.0 && radial_distance  <= stirrer_radius ){ /* rectangular stirrer */	  
+	  
+	    stirrer_vel.x =  (z-stirrer_z)*stirrer_frequency;
+	    stirrer_vel.y =  0.0;
+	    stirrer_vel.z = -(x-stirrer_x)*stirrer_frequency; 	  
+	
+	    force[IDX(i,j,k)].x += fac*(stirrer_vel.x - u[IDX(i,j,k)].x);
+	    force[IDX(i,j,k)].y += 0.0;//(stirrer_vel.y - u[IDX(i,j,k)].y);
+	    force[IDX(i,j,k)].z += fac*(stirrer_vel.z - u[IDX(i,j,k)].z);
+	 }
+ #endif	
 
  #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form nu_add*laplacian( u ), where nu_add is an additional viscosity */ 
 	vec = laplacian_vector(u, i, j, k);
@@ -485,8 +525,16 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LX + phi_u[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
     }
+    #elif defined(LB_FLUID_FORCING_HIT_2D)
+     /* Force at a given scale, delta correlated in time, incompressible forcing */
+    for(ii=0; ii<nk; ii++){
+    //  fac = pow(vk2[ii],-2./6.);  
+      force[IDX(i,j,k)].x += property.Amp_x * ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) );
+      force[IDX(i,j,k)].y += property.Amp_y * ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
+    force[IDX(i,j,k)].z = 0.0;
+     }  
     #else
-     /* Force at large scale, similar to Federico, Prasad forcing */
+     /* Force at large scale, similar to Federico, Prasad forcing , for 3D turbulence */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-2./6.);
       //force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
