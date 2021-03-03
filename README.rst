@@ -80,8 +80,9 @@ This code has been employed in the following published studies:
 8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, Phys. Rev. Fluids **5**, 114304 (2020).
    https://doi.org/10.1103/PhysRevFluids.5.114304
 
-Preprints
+9) *Rotational dynamics of bottom-heavy rods in turbulence from experiments and numerical simulations*, Linfeng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, Theo. App. Mechanics Lett., *100227* (2021).
+   https://doi.org/10.1016/j.taml.2021.100227
 
-9) *Rotational dynamics of bottom-heavy rods in turbulence from experiments and numerical simulations*, Linfeng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, https://arxiv.org/abs/2012.05571 (2020)
+Preprints
 
 10) *Ice front shaping by upward convective current*, Ziqi Wang, Linfeng Jiang, Yihong Du, Chao Sun, Enrico Calzavarini, https://arxiv.org/abs/2012.12078
