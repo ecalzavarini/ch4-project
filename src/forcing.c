@@ -420,38 +420,44 @@ void build_forcing(){
  #ifdef LB_FLUID_FORCING_CELLULAR
   #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
         kn=0.5; /* one cell */
-   //  	kn=1.0; /* two cells */
-	/* along x */  
-        //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	//force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
-	//force[IDX(i,j,k)].z += 0.0; 
-        /* for Vinicius */       
-	//force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	//force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
-	//force[IDX(i,j,k)].z += 0.0;
-	/* Clotilde */
-	kn=1.0;
-	//if (z<LZ/8){
-	force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
-        force[IDX(i,j,k)].z = 0;
-	//}
-	//x=x+LX/8.;
-	//y=y+LY/8.;
-	//my_double LXNEW = LX + LX/2;
-	//my_double LYNEW = LY + LY/2;
-	//force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LXNEW)*cos(kn*two_pi*y/LYNEW); 
-	//force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LXNEW)*sin(kn*two_pi*y/LYNEW); 
-	//force[IDX(i,j,k)].z += 0.0;
- 
+    //  	kn=1.0; /* two cells */
+	  /* along x */  
+    //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	  //force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+	  //force[IDX(i,j,k)].z += 0.0; 
+    /* for Vinicius */       
+	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	  //force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+    force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LY)*cos(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LY)*sin(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].z += 0.0;
+	  /* Clotilde */
+	  //kn=1.0;
+	  //if (z<LZ/8){
+	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	  //force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+    //      force[IDX(i,j,k)].z = 0;
+	  //}
+	  //x=x+LX/8.;
+	  //y=y+LY/8.;
+	  //my_double LXNEW = LX + LX/2;
+	  //my_double LYNEW = LY + LY/2;
+	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LXNEW)*cos(kn*two_pi*y/LYNEW); 
+	  //force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LXNEW)*sin(kn*two_pi*y/LYNEW); 
+	  //force[IDX(i,j,k)].z += 0.0;
   #else
     kn=0.5;
-    omega_t = two_pi*property.time_dt*(0.01/LX);
-	/* along x */  
-        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
-	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
-	force[IDX(i,j,k)].z += 0.0; 
-
+    //omega_t = two_pi*property.time_dt*(0.01/LX);
+	  /* along x */  
+    //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	  //force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	  //force[IDX(i,j,k)].z += 0.0; 
+    //Vinicius oscillations
+    omega_t = 0.1*two_pi/(2.*LY);
+    fac = (LY)*sin(two_pi*itime/100);
+    force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*(x+fac)/LY)*cos(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*(x+fac)/LY)*sin(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].z += 0.0;
   #endif
  #endif
 
