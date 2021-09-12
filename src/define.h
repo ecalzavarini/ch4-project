@@ -38,9 +38,9 @@
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D1Q3
-//#define GRID_POP_D2Q9 
+#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
-#define GRID_POP_D3Q19
+//#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -55,7 +55,7 @@
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_CELLULAR
-//#define   LB_FLUID_INITIAL_STIRRER
+//#define LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
 //#define LB_INITIAL_BAROMETRIC
@@ -99,14 +99,14 @@
 
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_Y_M_SLIP                                           
-//#define LB_FLUID_BC_Y_P_SLIP  
+#define LB_FLUID_BC_Y_M_SLIP                                           
+#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 
-#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -116,7 +116,7 @@
 //#define LB_FLUID_BC_X_M_OUTLET 
 //#define LB_FLUID_BC_X_P_OUTLET  
                                              
-#define LB_FLUID_BC_Z
+//#define LB_FLUID_BC_Z
 //#define LB_FLUID_BC_Z_M_SLIP                                             
 //#define LB_FLUID_BC_Z_P_SLIP  
 //#define LB_FLUID_BC_Z_M_OUTLET 
@@ -127,7 +127,6 @@
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FINITE_VOLUME
 #define METHOD_STREAMING
-
 //#define METHOD_TRT
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
@@ -304,8 +303,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
-#define LAGRANGE_NUCLEATE
+//#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+//#define LAGRANGE_NUCLEATE
 //#define LAGRANGE_NUCLEATE_REMELT
 //#define LAGRANGE_INITIAL_PAIRS
 //#define LAGRANGE_ADD_TRACER
@@ -323,14 +322,15 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY
 //#define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
-#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+//#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+//#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
 //#define LAGRANGE_ORIENTATION_JEFFREY
 //#define LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
 //#define LAGRANGE_ORIENTATION_BC
 //#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
+//#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG /* Alternative and correct implementation used in our TAML 2021 paper */
 //#define LAGRANGE_ORIENTATION_DIFFUSION
 //#define LAGRANGE_ORIENTATION_RANDOM
 //#define LAGRANGE_ORIENTATION_ACTIVE
