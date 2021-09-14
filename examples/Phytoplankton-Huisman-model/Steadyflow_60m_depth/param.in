@@ -1,0 +1,137 @@
+resume 1
+resume_u 0
+resume_t 1
+resume_s 0
+
+NX 600
+NY 300
+NZ 1
+
+SX 600
+SY 300
+SZ 1
+
+time_dt 1.0
+time_start 0.
+time_end 230400.
+time_dump_field 20000.
+time_dump_diagn 200.
+
+tau_u 0.875
+nu_add 0.0
+
+ym_wall_velocity_x 0.1 
+ym_wall_velocity_z 0
+yp_wall_velocity_x -0.01
+yp_wall_velocity_z 0
+
+Amp_x 1.e-2 
+Amp_y 0.00 
+Amp_z 0.00
+
+Omega_x 0.00
+Omega_y 0.01
+Omega_z 0.00
+
+noise_u 1.e-1
+
+tau_t 0.52
+
+T_bot  0.5
+T_top -0.5
+T_ref  0.0
+T_ref2 0.0
+grad_T_bot -0.05   -0.0078125
+grad_T_top 0.0   -0.0078125
+
+beta_t  0.000008  0.00006944444444444
+beta2_t 0.0
+
+noise_t 3.e-5
+
+gravity_x 0.0  
+gravity_y 1.0  
+gravity_z 0.0
+
+Amp_t 0.0  0.0016  3.91971e-05   0.00005  0.00130208333333333 
+attenuation 0.0390625  
+
+T_solid -0.5
+latent_heat 1
+specific_heat 1
+specific_heat_ice 0.00586826
+tau_solid 1.1
+layer_height 20
+cavity_radius 40
+cavity_SX 50
+cavity_SY 25
+cavity_SZ 50
+
+#tau_s 0.68
+S_bot 2.e+8
+S_top 2.e+8
+S_ref 0.0
+beta_s 0.001897778
+Amp_s 0.01
+
+
+tau_s	0.875
+settling_velocity	0.000555556
+loss_rate	2.77778E-05
+max_production_rate	0.000111111
+half_saturation_constant	0.12
+background_turbidity	0.04
+phytoplankton_specific_lght_attenuation	3.75E-10
+incident_light_intensity	1.4
+
+
+
+time_dump_lagr 1000
+particle_number 2000
+
+particle_radius_types 4
+particle_radius_min 1
+particle_radius_max 4
+
+particle_density_types 3
+particle_density_min 1
+particle_density_max 10
+
+tau_drag_types 3
+tau_drag_min 0
+tau_drag_max 100
+
+beta_coeff_types 3
+beta_coeff_min 0
+beta_coeff_max 3
+
+gravity_coeff_types 1
+gravity_coeff_min 0.01
+gravity_coeff_max 0.01
+
+aspect_ratio_types 1
+aspect_ratio_min 100.0
+aspect_ratio_max 100.0
+
+gyrotaxis_velocity_types 1
+gyrotaxis_velocity_min 0.03
+gyrotaxis_velocity_max 0.03
+
+rotational_diffusion_types 1
+rotational_diffusion_min 0.001
+rotational_diffusion_max 0.001
+
+swim_velocity_types 1
+swim_velocity_min 0.01
+swim_velocity_max 0.01
+
+jump_time_types 1
+jump_time_min 10.0
+jump_time_max 10.0
+
+critical_shear_rate_types 1
+critical_shear_rate_min 0.0
+critical_shear_rate_max 100.
+
+tau_polymer 50000
+nu_polymer  0.14
