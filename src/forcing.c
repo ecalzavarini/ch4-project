@@ -419,17 +419,17 @@ void build_forcing(){
 	
  #ifdef LB_FLUID_FORCING_CELLULAR
   #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
-        kn=0.5; /* one cell */
+    kn=0.5; /* one cell */
     //  	kn=1.0; /* two cells */
+    /* compute forcing amplitude to give a flow with amplitude Amp_x */
+    fac = property.Amp_x*property.nu*2.0*(two_pi/LX)*(two_pi/LX);
 	  /* along x */  
     //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
 	  //force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
 	  //force[IDX(i,j,k)].z += 0.0; 
     /* for Vinicius */       
-	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	  //force[IDX(i,j,k)].y += property.Amp_x*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
-    force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LY)*cos(kn*two_pi*y/LY); 
-	  force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LY)*sin(kn*two_pi*y/LY); 
+    force[IDX(i,j,k)].x -= fac*sin(kn*two_pi*x/LY)*cos(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].y += fac*cos(kn*two_pi*x/LY)*sin(kn*two_pi*y/LY); 
 	  force[IDX(i,j,k)].z += 0.0;
 	  /* Clotilde */
 	  //kn=1.0;

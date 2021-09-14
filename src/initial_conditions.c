@@ -117,20 +117,23 @@ void initial_conditions(int restart)
 #endif
 
 #ifdef LB_FLUID_INITIAL_CELLULAR
-    LY=(my_double)property.SY; //NY;
-    y = (my_double)center_V[IDX(i,j,k)].y;
-    LX=(my_double)property.SX; //NX;
-    x = (my_double)center_V[IDX(i,j,k)].x;	
+  LY = (my_double)property.SY; //NY;
+  y = (my_double)center_V[IDX(i,j,k)].y;
+  LX = (my_double)property.SX; //NX;
+  x = (my_double)center_V[IDX(i,j,k)].x;	
 	kn=0.5; /* one cell */
    //   kn=1.0; /* two cells */
-        fn = property.Amp_x*LY*LY/(property.nu*2.0*one_pi*one_pi);
+        //fn = property.Amp_x*LX*LX/(property.nu*2.0*two_pi*two_pi);
+        /* Amp_x is the amplitde of the velocity field */
+        fn = property.Amp_x;
         /* for Vinicius */
         /* ux component */
-	/*  -fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY);   */
-	/* uy component */
-        /* uy  fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); */       
-       	for (pp = 0; pp < NPOP; pp++)  
-	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(c[pp].x * (-sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) + c[pp].y * (cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)) );	
+	      /*  -fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY);   */
+	      /* uy component */
+        /*   fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); */       
+  for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(  c[pp].x * (-sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) 
+                                            + c[pp].y * ( cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY))  );	
 #endif
 
  #ifdef LB_FLUID_INITIAL_STIRRER
