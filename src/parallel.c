@@ -213,14 +213,14 @@ int compare(const void *a, const void *b)
 
 
 int check_prime(int x){
-    int i;
-    for(i=2;x%i!=0;i++)
-        if(x==i) {
-            return 1;
+  int i;
+  int isprime = 0;
+    for(i=2;i<x;i++)
+        if(x%i == 0) {
+            isprime++;
+            break;
         }
-        else {
-            return 0;
-        }
+    return isprime;
 }
 
 
