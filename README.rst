@@ -83,7 +83,8 @@ This code has been employed in the following published studies:
 9) *Rotational dynamics of bottom-heavy rods in turbulence from experiments and numerical simulations*, Linfeng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, Theo. App. Mechanics Lett., *100227* (2021).
    https://doi.org/10.1016/j.taml.2021.100227
 
-10) *Ice front shaping by upward convective current*, Ziqi Wang, Linfeng Jiang, Yihong Du, Chao Sun, Enrico Calzavarini, https://doi.org/10.1103/PhysRevFluids.6.L091501
+10) *Ice front shaping by upward convective current*, Ziqi Wang, Linfeng Jiang, Yihong Du, Chao Sun, Enrico Calzavarini, Phys. Rev. Fluids **6**, L091501 (2021). 
+   https://doi.org/10.1103/PhysRevFluids.6.L091501
 
 Preprint
 
