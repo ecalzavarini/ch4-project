@@ -3,30 +3,32 @@ resume_u 1
 resume_t 1
 resume_s 0
 
-NX 256
-NY 128
+NX 400
+NY 400
 NZ 1
 
-SX 256
-SY 128
+SX 400
+SY 400
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 100000.
-time_dump_field 10000.
-time_dump_diagn 100.
+time_end 25000.
+time_dump_field 500.
+time_dump_diagn 2000.
 
-tau_u 0.7
+tau_u 0.536
 nu_add 0.0
 
 ym_wall_velocity_x 0.1 
 ym_wall_velocity_z 0
-yp_wall_velocity_x -0.01
+yp_wall_velocity_x 0.01
 yp_wall_velocity_z 0
+yp_wall_gradient_velocity_x 5.e-3
+yp_wall_gradient_velocity_z 0
 
-Amp_x 1.e-6 0.00000104483774986841
-Amp_y 0.00 1.e-5
+Amp_x 1.e-2 
+Amp_y 0.00 
 Amp_z 0.00
 
 Omega_x 0.00
@@ -35,14 +37,14 @@ Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.52
+tau_t 0.505
 
-T_bot  0.5
-T_top -0.5
+T_bot -40.0
+T_top  40.0
 T_ref  0.0
 T_ref2 0.0
-grad_T_bot -0.05   -0.0078125
-grad_T_top 0.0   -0.0078125
+grad_T_bot 0.2  -0.0078125
+grad_T_top -23.7989104016857  -0.0078125
 
 beta_t  0.000008  0.00006944444444444
 beta2_t 0.0
@@ -53,8 +55,8 @@ gravity_x 0.0
 gravity_y 1.0  
 gravity_z 0.0
 
-Amp_t 0.0  0.0016  3.91971e-05   0.00005  0.00130208333333333 
-attenuation 0.0390625  
+Amp_t 0.04  0.0016  3.91971e-05   0.00005  0.00130208333333333 
+attenuation 0.025
 
 T_solid -0.5
 latent_heat 1
@@ -75,18 +77,19 @@ beta_s 0.001897778
 Amp_s 0.01
 
 
-tau_s	0.725
-settling_velocity	0.00166666666666666
-loss_rate	0.0000833333333333334
-max_production_rate	0.000333333333333333
-half_saturation_constant	0.04
+tau_s	0.875
+settling_velocity	0.000555556
+loss_rate	2.77778E-05
+max_production_rate	0.000111111
+half_saturation_constant	0.12
 background_turbidity	0.04
-phytoplankton_specific_lght_attenuation	0.000000000375
-incident_light_intensity	0.466666666666667
+phytoplankton_specific_lght_attenuation	3.75E-10
+incident_light_intensity	1.4
+
 
 
 time_dump_lagr 1000
-particle_number 2000
+particle_number 1000
 
 particle_radius_types 4
 particle_radius_min 1
@@ -96,9 +99,9 @@ particle_density_types 3
 particle_density_min 1
 particle_density_max 10
 
-tau_drag_types 3
+tau_drag_types 1
 tau_drag_min 0
-tau_drag_max 100
+tau_drag_max 0
 
 beta_coeff_types 3
 beta_coeff_min 0

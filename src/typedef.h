@@ -66,6 +66,9 @@ typedef struct {
    #ifdef LB_FLUID_BC_Y_P_VELOCITY
     my_double yp_wall_velocity_x , yp_wall_velocity_z ;
    #endif
+   #ifdef LB_FLUID_BC_Y_P_GRADIENT
+    my_double yp_wall_gradient_velocity_x , yp_wall_gradient_velocity_z ;
+   #endif
   #endif
  #endif
  #ifdef LB_FLUID_INITIAL_ADD_NOISE
@@ -170,6 +173,9 @@ typedef struct {
    my_double aspect_ratio_types, aspect_ratio_min , aspect_ratio_max;
     #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     my_double gyrotaxis_velocity_types, gyrotaxis_velocity_min, gyrotaxis_velocity_max;
+    #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    my_double gyrotaxis_stability_types, gyrotaxis_stability_min, gyrotaxis_stability_max;
     #endif
    #endif
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -382,6 +388,9 @@ typedef struct {
    my_double aspect_ratio;
     #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     my_double gyrotaxis_velocity;
+    #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    my_double gyrotaxis_stability;
     #endif
    #endif 
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION

@@ -195,6 +195,14 @@ void assign_parameters(){
      property.yp_wall_velocity_z = read_parameter(name);
      fprintf(stderr,"yp_wall_velocity_x %g , yp_wall_velocity_z %g\n",(double)property.yp_wall_velocity_x, (double)property.yp_wall_velocity_z);
    #endif
+   #ifdef LB_FLUID_BC_Y_P_GRADIENT
+     /* YP wall velocity gradient*/
+     sprintf(name,"yp_wall_gradient_velocity_x");
+     property.yp_wall_gradient_velocity_x = read_parameter(name);
+     sprintf(name,"yp_wall_gradient_velocity_z");
+     property.yp_wall_gradient_velocity_z = read_parameter(name);
+     fprintf(stderr,"yp_wall_gradient_velocity_x %g , yp_wall_gradient_velocity_z %g\n",(double)property.yp_wall_gradient_velocity_x, (double)property.yp_wall_gradient_velocity_z);
+   #endif
   #endif
  #endif
  #ifdef LB_FLUID_INITIAL_ADD_NOISE
@@ -617,6 +625,21 @@ void assign_parameters(){
     /* total number of particles types up to now */
     property.particle_types *= property.gyrotaxis_velocity_types;
     #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    /* gyrotaxis_velocity for rotation  */ 
+    sprintf(name,"gyrotaxis_stability_types");
+    property.gyrotaxis_stability_types = read_parameter(name); 
+    sprintf(name,"gyrotaxis_stability_min");
+    property.gyrotaxis_stability_min = read_parameter(name);
+    sprintf(name,"gyrotaxis_stability_max");
+    property.gyrotaxis_stability_max = read_parameter(name);
+    fprintf(stderr,"gyrotaxis_stability_types %g , gyrotaxis_stability_max %g , gyrotaxis_stability_min %g\n",(double)property.gyrotaxis_stability_types, (double)property.gyrotaxis_stability_min, (double)property.gyrotaxis_stability_max);
+    if( property.gyrotaxis_stability_types <1 || property.gyrotaxis_stability_max < property.gyrotaxis_stability_min ){ fprintf(stderr,"Error in gyrotaxis_stability parameters\n Exit.\n"); exit(0);}   
+  
+    /* total number of particles types up to now */
+    property.particle_types *= property.gyrotaxis_stability_types;
+    #endif
+
    #endif 
 
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
