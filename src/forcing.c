@@ -595,7 +595,7 @@ void build_forcing(){
   temp = (t[IDX(i,j,k)] - property.T_bot);
    #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)   
   /* subtract to the temperature the linear profile */
-  temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
+  temp_linear = -(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
    #elif defined(LB_TEMPERATURE_BUOYANCY_T0_REF2)   
   temp = (t[IDX(i,j,k)] - property.T_ref2);
@@ -878,7 +878,10 @@ void build_forcing(){
 
   #else
   /* just a monocromatic light source */
-  t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+  /* at top */
+  //t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+  /* at bottom */
+  t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*(property.SY-center_V[IDX(i,j,k)].y));
   #endif
   #ifdef LB_TEMPERATURE_FORCING_RADIATION_REFLECTION
     #ifdef LB_TEMPERATURE_MELTING
