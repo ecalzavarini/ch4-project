@@ -678,12 +678,12 @@ if(LNY_END == NY){
 	  /* no moving wall if we are in the solid */
 	  if(liquid_frac[IDX(i, j, k)] < 1.0) fac = 0.0;
  #endif
-	/* impose a velocity at the wall */
+	 /* impose a velocity at the wall */
 	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) 
 	  	rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - fac*6.0*wgt[pp]*( c[pp].x*property.yp_wall_velocity_x  + c[pp].z*property.yp_wall_velocity_z );
 
 #elif defined(LB_FLUID_BC_Y_P_GRADIENT)
-	/* impose a velocity gradient at the wall*/
+	 /* impose a velocity gradient at the wall*/
 	 if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD){		
 		vel.x = 0.5*property.yp_wall_gradient_velocity_x + u[IDX(i,j,k)].x; 
 		vel.z = 0.5*property.yp_wall_gradient_velocity_z + u[IDX(i,j,k)].z; 
