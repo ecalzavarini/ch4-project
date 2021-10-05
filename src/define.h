@@ -100,12 +100,12 @@
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 #define LB_FLUID_BC_Y_M_SLIP                                           
-//#define LB_FLUID_BC_Y_P_SLIP  
+#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
 //#define LB_FLUID_BC_Y_P_OUTLET
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
-#define LB_FLUID_BC_Y_P_GRADIENT
+//#define LB_FLUID_BC_Y_P_GRADIENT
 
 //#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
@@ -177,7 +177,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
-#define LB_TEMPERATURE_BC_Y_P_FLUX
+//#define LB_TEMPERATURE_BC_Y_P_FLUX
 //#define LB_TEMPERATURE_BC_Y_P_VARIABLE
 //#define LB_TEMPERATURE_BC_Y_M_OUTLET
 //#define LB_TEMPERATURE_BC_Y_M_NOFLUX
@@ -197,6 +197,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Z_M_NOFLUX
 //#define LB_TEMPERATURE_BC_X_NOFLUX /* obsolete : only for finite-volume */
 //#define LB_TEMPERATURE_BC_KEEP_WITHIN
+//#define LB_TEMPERATURE_KEEP_CONSTANT /* use with care */
 #define LB_TEMPERATURE_FORCING
 //#define LB_TEMPERATURE_FORCING_PAST
 //#define LB_TEMPERATURE_FORCING_BULK 

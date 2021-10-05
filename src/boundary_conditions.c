@@ -492,6 +492,37 @@ sendrecv_borders_pop(rhs_h);
  }/* k */
 #endif
 
+//#define LB_TEMPERATURE_KEEP_CONSTANT
+#ifdef LB_TEMPERATURE_KEEP_CONSTANT
+/*  A very ad-hoc way to fix the overall temperature */
+/* compute the zero mode intensity (the mean temperature) */
+my_double t0, t0_all, norm;
+t0 = t0_all = 0.0;
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            t0 += t[IDX(i,j,k)];
+          }
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+     t0_all *= norm;
+    }
+	 t0_all -= property.T_ref;  	 
+    if(fabs(t0_all)>1.e-8){
+ /* this is the brutal solution, we remove the temperature deviation from the zero value */
+ //if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+	    for(pp=0;pp<NPOP;pp++) rhs_g[IDX(i,j,k)].p[pp] -= wgt[pp]*t0_all;
+      }/* i */
+   }/* j */
+ }/* k */
+	}/* if */
+#endif
+
+
 /************************************/
 	/* X direction */ 
 #ifdef LB_FLUID_BC_X
