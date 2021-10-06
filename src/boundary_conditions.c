@@ -523,6 +523,32 @@ t0 = t0_all = 0.0;
 #endif
 
 
+//#define LB_TEMPERATURE_BC_Y_P_FLUX_CONSTANTGLOBALTEMPERATURE
+#ifdef LB_TEMPERATURE_BC_Y_P_FLUX_CONSTANTGLOBALTEMPERATURE
+/*  A way to keep constant the global temperature in the system.
+This is obtained by adjusting the top heat flux  so that it is equal to the bottom flux and by subtracting 
+the global temperture increase from the previous time-step
+ */
+my_double t0, t0_all, norm;
+t0 = t0_all = 0.0;
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            //t0 += t[IDX(i,j,k)];
+			t0 += m(rhs_g[IDX(i,j,k)]);
+          }
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );	
+    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+     t0_all *= norm;
+    }	 
+if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+	property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX);
+if(ROOT)fprintf(stderr,"property.grad_T_top = %e\n",property.grad_T_top);	
+#endif
+
+
+
 /************************************/
 	/* X direction */ 
 #ifdef LB_FLUID_BC_X

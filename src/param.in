@@ -13,9 +13,9 @@ SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 25000.
+time_end 50000.
 time_dump_field 500.
-time_dump_diagn 2000.
+time_dump_diagn 200.
 
 tau_u 0.536
 nu_add 0.0
@@ -44,7 +44,7 @@ T_top  40.0
 T_ref  0.0
 T_ref2 0.0
 grad_T_bot 0.2  -0.0078125
-grad_T_top -23.7989104016857  -0.0078125
+grad_T_top -11.7994552008428  -0.0078125
 
 beta_t  0.000008  0.00006944444444444
 beta2_t 0.0
@@ -55,7 +55,7 @@ gravity_x 0.0
 gravity_y 1.0  
 gravity_z 0.0
 
-Amp_t 0.04  0.0016  3.91971e-05   0.00005  0.00130208333333333 
+Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333 
 attenuation 0.025
 
 T_solid -0.5
