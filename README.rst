@@ -88,3 +88,5 @@ This code has been employed in the following published studies:
 11) *Equilibrium states of the ice-water front in a differentially heated rectangular cell*, Ziqi Wang, Enrico Calzavarini, Chao Sun, Europhys. Lett. (EPL), 135 (2021) 54001. https://doi.org/10.1209/0295-5075/ac30e7
 
 12) *Dynamics of finite-size spheroids in turbulent flow: the roles of flow structures and  particle boundary layers*, Lin-Feng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, http://arxiv.org/abs/2202.03937 
+
+13) *Accumulation and alignment of elongated gyrotactic swimmers in turbulence*, Zehua Liu, Linfeng Jiang, Chao Sun, https://arxiv.org/abs/2202.04351
