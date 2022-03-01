@@ -90,3 +90,5 @@ This code has been employed in the following published studies:
 12) *Dynamics of finite-size spheroids in turbulent flow: the roles of flow structures and  particle boundary layers*, Lin-Feng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, http://arxiv.org/abs/2202.03937 
 
 13) *Accumulation and alignment of elongated gyrotactic swimmers in turbulence*, Zehua Liu, Linfeng Jiang, Chao Sun, https://arxiv.org/abs/2202.04351
+
+14) *Residence time of inertial particles in 3D thermal convection: implications for magma reservoirs*, Vojtech Patocka, Nicola Tosi, Enrico Calzavarini, https://arxiv.org/abs/2202.12633 
