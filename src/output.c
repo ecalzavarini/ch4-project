@@ -106,6 +106,9 @@ scal = s2 = epss = dxs = dys = dzs = uxs = uys = uzs = nusx = nusy = nusz = 0.0;
 if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 
   irun = (int)( itime/ (int)(property.time_dump_diagn/property.time_dt) );
+  #ifdef OUTPUT_AT_START
+  irun += 1;
+  #endif
 
   /* set to zero local rulers */
  set_to_zero_output(ruler_x_local,NX);

@@ -26,6 +26,9 @@ typedef struct {
   my_double zz;
 } sym_tensor;
 
+#ifdef GRID_POP_D1Q3
+#define NPOP 3
+#endif
 #ifdef GRID_POP_D2Q9
 #define NPOP 9
 #endif
@@ -62,6 +65,9 @@ typedef struct {
    #endif
    #ifdef LB_FLUID_BC_Y_P_VELOCITY
     my_double yp_wall_velocity_x , yp_wall_velocity_z ;
+   #endif
+   #ifdef LB_FLUID_BC_Y_P_GRADIENT
+    my_double yp_wall_gradient_velocity_x , yp_wall_gradient_velocity_z ;
    #endif
   #endif
  #endif
@@ -131,6 +137,15 @@ typedef struct {
   #ifdef LB_SCALAR_FORCING
   my_double Amp_s;
   #endif
+  #ifdef LB_SCALAR_HUISMAN /* properties for J.Huisman phytoplankton model */
+   my_double incident_light_intensity; /* micro-mole photons m^{-2} s^{-1} */
+   my_double phytoplankton_specific_lght_attenuation;/* m^2 / cell */
+   my_double background_turbidity; /* m^{-1} */
+   my_double half_saturation_constant; /* micro-mole photons m^{-2} s^{-1} */
+   my_double max_production_rate; /* hours^{-1} */ 
+   my_double loss_rate; /* hours^{-1} */;
+   my_double settling_velocity; /* m/hours */
+  #endif
  #endif/* end of LB_SCALAR */
 #endif /* end of LB_FLUID */
 
@@ -159,6 +174,9 @@ typedef struct {
     #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     my_double gyrotaxis_velocity_types, gyrotaxis_velocity_min, gyrotaxis_velocity_max;
     #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    my_double gyrotaxis_stability_types, gyrotaxis_stability_min, gyrotaxis_stability_max;
+    #endif
    #endif
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
    my_double rotational_diffusion_types, rotational_diffusion_min, rotational_diffusion_max;
@@ -175,6 +193,9 @@ typedef struct {
    my_double tau_polymer, nu_polymer;
   #endif /* LAGRANGE_POLYMER */
  #endif /* LAGRANGE_GRADIENT */
+ #ifdef LAGRANGE_NUCLEATE
+   my_double T_liq, Vref, Nref, Vpow, E_del, Npow, UC_frac; 
+ #endif
 #endif /* LAGRANGE */
 } prop;
 
@@ -216,6 +237,13 @@ typedef struct {
 
 #ifndef METHOD_LOG
 /* WARNING mvx means rho*vx momentum ,  m means rho density*/
+
+#ifdef GRID_POP_D1Q3
+#define mvx(a) 0.0
+#define mvy(a) (a.p[1] -a.p[2])
+#define mvz(a) 0.0
+#define m(a) (a.p[0]+a.p[1]+a.p[2])
+#endif
 
 #ifdef GRID_POP_D2Q9
 #define mvx(a) (a.p[7] +a.p[6] +a.p[5] -a.p[1] -a.p[2] -a.p[3])
@@ -361,6 +389,9 @@ typedef struct {
     #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     my_double gyrotaxis_velocity;
     #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    my_double gyrotaxis_stability;
+    #endif
    #endif 
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
    my_double rotational_diffusion;
@@ -379,6 +410,13 @@ typedef struct {
   my_double dt_cxx,dt_cyy,dt_czz,dt_cxy,dt_cyz,dt_cxz;
   #endif
  #endif
+#endif
+#ifdef LAGRANGE_NUCLEATE
+  my_double grave;
+  my_double age;
+#endif
+#ifdef LB_LAGRANGE_BC_INELASTIC
+  my_double sediment;
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
@@ -423,6 +461,13 @@ typedef struct {
  #ifdef LB_TEMPERATURE
   my_double t,t2,t4; 
   my_double dt_t,dt_t2;
+ #endif
+ #ifdef LAGRANGE_NUCLEATE
+  my_double grave;
+  my_double age;
+ #endif
+ #ifdef LB_LAGRANGE_BC_INELASTIC
+  my_double sediment;
  #endif
 } output_particle;
 

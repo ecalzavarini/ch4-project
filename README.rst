@@ -1,14 +1,14 @@
-=================
+==========================
 Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
-=================
+==========================
 .. image:: figs/passive-scalar.jpg
   :width: 300
   :alt: visualization of the dissipation field of a passive scalar in turbulence
-     
+
 Introduction
 ============
 
-A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It includes : 
+A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It includes :
 
 - **fluid dynamics**  (with several volume forcing terms for Channel flow, Homogeneous Isotropic Turbulence, buoyancy)
 - **temperature dynamics** (advection, diffusion , sink/source or reaction terms)
@@ -19,8 +19,8 @@ A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It in
 
 Requirements:
 
-- MPI 
-- HDF5 
+- MPI
+- HDF5
 - CMake (optional)
 
 History
@@ -30,7 +30,7 @@ This project is a continuation and extension https://github.com/ecalzavarini/ice
 
 Contact
 =======
-This project is based at Unite de Mecanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France. 
+This project is based at Unite de Mecanique de Lille (UML EA 7512, http://uml.univ-lille.fr ) France.
 
 For more information please contact:
 
@@ -39,7 +39,7 @@ Enrico Calzavarini <enrico.calzavarini@polytech-lille.fr> , www.ecalzavarini.inf
 *Contributors*: Kalyan Shrestha, Babak Rabbanipour Esfahani (Lille University, FR), Vojtech Patocka (Charles University, Prague CZ), Linfeng Jiang, Ziqi Wang (Tsinghua University, Beijing CHINA)
 
 
-How to: 
+How to:
 ======
 See wiki pages https://github.com/ecalzavarini/ch4-project/wiki (very incomplete)
 
@@ -61,25 +61,34 @@ This code has been employed in the following published studies:
 
 2) *Micro-bubbles and micro-particles are not faithful tracers of turbulent acceleration*, Varghese Mathai, Enrico Calzavarini,  Jon Brons, Chao Sun and Detlef Lohse, Phys. Rev. Lett. **117**, 024501 (2016).
    https://link.aps.org/doi/10.1103/PhysRevLett.117.024501
-   
+
 3) *Propelled microprobes in turbulence*, Enrico Calzavarini, Yongxiang X. Huang, Francois G. Schmitt and Lipo Wang, Phys. Rev. Fluids **3**, 054604 (2018).
    https://link.aps.org/doi/10.1103/PhysRevFluids.3.054604
 
 4) *Basal melting driven by turbulent thermal convection*, Babak Rabbanipour Esfahani, Silvia C. Hirata, Stefano Berti and Enrico Calzavarini, Phys. Rev. Fluids **3**, 053501 (2018).
    https://link.aps.org/doi/10.1103/PhysRevFluids.3.053501
 
-5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini, Phys. Rev. E **99**, 013108 (2019). 
+5) *Robustness of heat-transfer in confined inclined convection at high-Prandtl number*, Linfeng Jiang, Chao Sun and Enrico Calzavarini, Phys. Rev. E **99**, 013108 (2019).
    https://link.aps.org/doi/10.1103/PhysRevE.99.013108
 
 6) *Anisotropic particles in two-dimensional convective turbulence*, Enrico Calzavarini, Linfeng Jiang and Chao Sun, Phys. Fluids **32**, 023305 (2020).
    https://doi.org/10.1063/1.5141798
-   
+
 7) *Rotation of anisotropic particles in Rayleigh-Benard turbulence*,  Linfeng Jiang, Enrico Calzavarini and Chao Sun, J. Fluid Mech. **901**, A8 (2020).
    http://dx.doi.org/10.1017/jfm.2020.539
 
+8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, Phys. Rev. Fluids **5**, 114304 (2020).
+   https://doi.org/10.1103/PhysRevFluids.5.114304
 
-Preprints:
+9) *Rotational dynamics of bottom-heavy rods in turbulence from experiments and numerical simulations*, Linfeng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, Theo. App. Mechanics Lett., *100227* (2021).
+   https://doi.org/10.1016/j.taml.2021.100227
 
-   
-8) *Settling of inertial particles in turbulent Rayleigh-Benard convection*, Vojtech Patocka, Enrico Calzavarini, Nicola Tosi, (2020). preprint https://arxiv.org/abs/2005.05448
-   
+10) *Ice front shaping by upward convective current*, Ziqi Wang, Linfeng Jiang, Yihong Du, Chao Sun, Enrico Calzavarini, Phys. Rev. Fluids **6**, L091501 (2021). https://doi.org/10.1103/PhysRevFluids.6.L091501
+
+11) *Equilibrium states of the ice-water front in a differentially heated rectangular cell*, Ziqi Wang, Enrico Calzavarini, Chao Sun, Europhys. Lett. (EPL), 135 (2021) 54001. https://doi.org/10.1209/0295-5075/ac30e7
+
+12) *Dynamics of finite-size spheroids in turbulent flow: the roles of flow structures and  particle boundary layers*, Lin-Feng Jiang, Cheng Wang, Shuang Liu, Chao Sun, Enrico Calzavarini, http://arxiv.org/abs/2202.03937 
+
+13) *Accumulation and alignment of elongated gyrotactic swimmers in turbulence*, Zehua Liu, Linfeng Jiang, Chao Sun, https://arxiv.org/abs/2202.04351
+
+14) *Residence time of inertial particles in 3D thermal convection: implications for magma reservoirs*, Vojtech Patocka, Nicola Tosi, Enrico Calzavarini, https://arxiv.org/abs/2202.12633 

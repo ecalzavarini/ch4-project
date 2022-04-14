@@ -492,6 +492,65 @@ sendrecv_borders_pop(rhs_h);
  }/* k */
 #endif
 
+//#define LB_TEMPERATURE_KEEP_CONSTANT
+#ifdef LB_TEMPERATURE_KEEP_CONSTANT
+/*  A very ad-hoc way to fix the overall temperature */
+/* compute the zero mode intensity (the mean temperature) */
+my_double t0, t0_all, norm;
+t0 = t0_all = 0.0;
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            t0 += t[IDX(i,j,k)];
+          }
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+     t0_all *= norm;
+    }
+	 t0_all -= property.T_ref;  	 
+    if(fabs(t0_all)>1.e-8){
+ /* this is the brutal solution, we remove the temperature deviation from the zero value */
+ //if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+ for(k=BRD;k<LNZ+BRD;k++){
+   for(j=BRD;j<LNY+BRD;j++){
+      for(i=BRD;i<LNX+BRD;i++){ 
+	    for(pp=0;pp<NPOP;pp++) rhs_g[IDX(i,j,k)].p[pp] -= wgt[pp]*t0_all;
+      }/* i */
+   }/* j */
+ }/* k */
+	}/* if */
+#endif
+
+
+//#define LB_TEMPERATURE_BC_Y_P_FLUX_CONSTANTGLOBALTEMPERATURE
+#ifdef LB_TEMPERATURE_BC_Y_P_FLUX_CONSTANTGLOBALTEMPERATURE
+/*  A way to keep constant the global temperature in the system.
+This is obtained by adjusting the top heat flux  so that it is equal to the bottom flux and by subtracting 
+the global temperture increase from the previous time-step
+ */
+my_double t0, t0_all, norm;
+t0 = t0_all = 0.0;
+    for(k=BRD;k<LNZ+BRD;k++)
+      for(j=BRD;j<LNY+BRD;j++)
+        for(i=BRD;i<LNX+BRD;i++){ 
+            //t0 += t[IDX(i,j,k)];
+			t0 += m(rhs_g[IDX(i,j,k)]);
+          }
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );	
+    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
+    if(norm !=0.0){
+     t0_all *= norm;
+    }	 
+//if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+	property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX*property.SZ);
+	if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
+		if(ROOT)fprintf(stderr,"property.grad_T_top = %e\n",property.grad_T_top);	
+	}
+#endif
+
+
+
 /************************************/
 	/* X direction */ 
 #ifdef LB_FLUID_BC_X
@@ -678,7 +737,17 @@ if(LNY_END == NY){
 	  /* no moving wall if we are in the solid */
 	  if(liquid_frac[IDX(i, j, k)] < 1.0) fac = 0.0;
  #endif
-	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - fac*6.0*wgt[pp]*( c[pp].x*property.yp_wall_velocity_x  + c[pp].z*property.yp_wall_velocity_z );
+	 /* impose a velocity at the wall */
+	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) 
+	  	rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - fac*6.0*wgt[pp]*( c[pp].x*property.yp_wall_velocity_x  + c[pp].z*property.yp_wall_velocity_z );
+
+#elif defined(LB_FLUID_BC_Y_P_GRADIENT)
+	 /* impose a velocity gradient at the wall*/
+	 if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD){		
+		vel.x = 0.5*property.yp_wall_gradient_velocity_x + u[IDX(i,j,k)].x; 
+		vel.z = 0.5*property.yp_wall_gradient_velocity_z + u[IDX(i,j,k)].z; 
+	  	rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp] - 6.0*wgt[pp]*( c[pp].x*vel.x  + c[pp].z*vel.z );
+	}
 #else
 	  /* NO SLIP */
 	  if (ii>= 0 && ii< LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j+1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
@@ -1149,6 +1218,31 @@ if(LNY_END == NY){
 #ifdef LB_SCALAR_BC_Y_P_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j-1,k)]);
 #endif
+
+#ifdef LB_SCALAR_BC_Y_P_FLUX
+	  /* we fix the scalar gradient at the wall */
+	  S_wall = 0.5*property.grad_S_top + s[IDX(i,j,k)] + property.S_ref;
+#endif
+
+#ifdef LB_SCALAR_BC_Y_P_MIXED /* incomplete and not tested */
+	  my_double r1,r2,r3;
+	  vector vec_grad_S_top;
+          /* mixed or Robin bc  of the form r1*S - r2*dS/dy = r3 at the wall with a, b constants */
+          /* see https://en.wikipedia.org/wiki/Robin_boundary_condition */
+	  vec_grad_S_top = gradient_scalar(s,i,j,k); /* compute wall gradient */
+	  r1 = -property.huisman_v;
+	  r2 = property.chi;
+	  r3 = 0.0;
+	  vec_grad_S_top.y = (r3 + r2*vec_grad_S_top.y)/r1;  /* change the gradient intensity (b/a)*dS/dy*/
+          S_wall = 0.5*vec_grad_S_top.y + s[IDX(i,j,k)] + property.S_ref;
+#endif
+	  
+#ifdef LB_SCALAR_BC_Y_P_HUISMAN
+	  /* it is a no-net flux boundary condition, in the presence of sinking */
+	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
+	  S_wall = (2*property.chi /(property.settling_velocity+2*property.chi))* s[IDX(i,j,k)] + property.S_ref;
+#endif	  
+	  
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]);
 
 #ifdef LB_SCALAR_BC_Y_P_NOFLUX
@@ -1185,6 +1279,32 @@ if(LNY_START == 0){
 #ifdef LB_SCALAR_BC_Y_M_OUTLET
 	  S_wall =  s[IDX(i,j,k)] + 0.5*( s[IDX(i,j,k)] - s[IDX(i,j+1,k)]);
 #endif
+
+#ifdef LB_SCALAR_BC_Y_M_FLUX
+          /* we fix the scalar gradient at the wall */
+          S_wall = -0.5*property.grad_S_bot + s[IDX(i,j,k)] + property.S_ref;
+#endif
+
+#ifdef LB_SCALAR_BC_Y_M_MIXED /* incomplete and not tested */
+          my_double r1,r2,r3;
+          vector vec_grad_S_bot;
+          /* mixed or Robin bc  of the form r1*S - r2*dS/dy = r3 at the wall with a, b constants */
+          /* see https://en.wikipedia.org/wiki/Robin_boundary_condition */
+          vec_grad_S_bot = gradient_scalar(s,i,j,k); /* compute wall gradient */
+          r1 = -property.huisman_v;
+          r2 = property.chi;
+          r3 = 0.0;
+          vec_grad_S_bot.y = (r3 + r2*vec_grad_S_bot.y)/r1;  /* change the gradient intensity (b/a)*dS/dy*/
+          S_wall = -0.5*vec_grad_S_bot.y + s[IDX(i,j,k)] + property.S_ref;
+#endif	  
+
+#ifdef LB_SCALAR_BC_Y_M_HUISMAN
+	  /* it is a no-net flux boundary condition, in the presence of sinking */
+	  /*  the form settling_velocity*S - property.chi*dS/dy = 0 at the wall with fac, fac2 constants */
+	  S_wall = (2*property.chi /(-property.settling_velocity+2*property.chi))* s[IDX(i,j,k)] + property.S_ref;
+#endif	  
+
+	  
 	  fac = 2.0*((S_wall-property.S_ref)- s[IDX(i,j,k)]); 
 
 #ifdef LB_SCALAR_BC_Y_M_NOFLUX

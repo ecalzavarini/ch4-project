@@ -38,7 +38,7 @@
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D1Q3
-#define GRID_POP_D2Q9
+#define GRID_POP_D2Q9 
 //#define GRID_POP_D3Q15
 //#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
@@ -50,12 +50,12 @@
 #define LB_FLUID 
 //#define LB_FLUID_PAST
 //#define LB_FLUID_INITIAL_KOLMOGOROV 
-#define LB_FLUID_INITIAL_POISEUILLE
+//#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
 //#define LB_FLUID_INITIAL_VORTICES 
 //#define LB_FLUID_INITIAL_CELLULAR
-//#define   LB_FLUID_INITIAL_STIRRER
+//#define LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
 //#define LB_INITIAL_BAROMETRIC
@@ -64,9 +64,9 @@
 //#define LB_FLUID_INITIAL_ADD_NOISE
 #define LB_FLUID_INITIAL_UNIT_DENSITY
 //#define LB_FLUID_AFTER_INIT_PERTURBATION
-#define LB_FLUID_FORCING  /* activate force on the fluid */
+//#define LB_FLUID_FORCING  /* activate force on the fluid */
 //#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
-#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
+//#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
 //#define LB_FLUID_FORCING_KOLMOGOROV
@@ -97,8 +97,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET                       
@@ -106,7 +106,7 @@
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 
-//#define LB_FLUID_BC_X
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -125,9 +125,8 @@
 /* METHODS for time stepping or convective term */
 /* For smooth simulations 
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
-#define METHOD_FINITE_VOLUME
-//#define METHOD_STREAMING
-
+//#define METHOD_FINITE_VOLUME
+#define METHOD_STREAMING
 //#define METHOD_TRT
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
@@ -253,18 +252,18 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 
 /* EXTRA SCALAR FIELD e.g. CH4 */
-//#define LB_SCALAR
+#define LB_SCALAR
 //#define LB_SCALAR_INITIAL_LINEAR
 //#define LB_SCALAR_INITIAL_ADD_PERTURBATION
 //#define LB_SCALAR_INITIAL_BULK
-//#define LB_SCALAR_INITIAL_CONSTANT
-//#define LB_SCALAR_INITIAL_CONSTANT_MEAN
+#define LB_SCALAR_INITIAL_CONSTANT
+#define LB_SCALAR_INITIAL_CONSTANT_MEAN
 //#define LB_SCALAR_INITIAL_CONSTANT_BOT
 //#define LB_SCALAR_INITIAL_CONSTANT_TOP
 //#define LB_SCALAR_INITIAL_SPOT
 //#define LB_SCALAR_BUOYANCY
-//#define LB_SCALAR_BC
-//#define LB_SCALAR_BC_Y
+#define LB_SCALAR_BC
+#define LB_SCALAR_BC_Y
 //#define LB_SCALAR_BC_Y_P_OUTLET
 //#define LB_SCALAR_BC_Y_M_OUTLET
 //#define LB_SCALAR_BC_Y_P_NOFLUX
@@ -280,7 +279,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_BC_Z_P_NOFLUX
 //#define LB_SCALAR_BC_Z_M_NOFLUX
 //#define LB_SCALAR_FLUCTUATION  
-//#define LB_SCALAR_FORCING
+#define LB_SCALAR_FORCING
 //#define LB_SCALAR_FORCING_REACTION
 //#define LB_SCALAR_FORCING_REACTION_FKPP
 //#define LB_SCALAR_FORCING_REACTION_FKPP_FLUCTUATION
@@ -292,11 +291,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_FORCING_HIT_LINEAR  
 //#define LB_SCALAR_FORCING_GRAD
 /* Huisman model */
-//#define LB_SCALAR_HUISMAN
-//#define LB_SCALAR_SETTLING_HUISMAN
-//#define LB_SCALAR_FORCING_HUISMAN
-//#define LB_SCALAR_BC_Y_P_HUISMAN
-//#define LB_SCALAR_BC_Y_M_HUISMAN
+#define LB_SCALAR_HUISMAN
+#define LB_SCALAR_SETTLING_HUISMAN
+#define LB_SCALAR_FORCING_HUISMAN
+#define LB_SCALAR_BC_Y_P_HUISMAN
+#define LB_SCALAR_BC_Y_M_HUISMAN
 
 
 /* Lagragian parts */
@@ -331,6 +330,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
 //#define LAGRANGE_ORIENTATION_BC
 //#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
+//#define LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG /* Alternative and correct implementation used in our TAML 2021 paper */
 //#define LAGRANGE_ORIENTATION_DIFFUSION
 //#define LAGRANGE_ORIENTATION_RANDOM
 //#define LAGRANGE_ORIENTATION_ACTIVE

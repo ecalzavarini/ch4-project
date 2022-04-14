@@ -419,23 +419,73 @@ void build_forcing(){
 	
  #ifdef LB_FLUID_FORCING_CELLULAR
   #ifndef LB_FLUID_FORCING_CELLULAR_UNSTEADY 
-        kn=0.5; /* one cell */
-   //  	kn=1.0; /* two cells */
-	/* along x */  
-        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); 
-	force[IDX(i,j,k)].z += 0.0; 
- 
+    kn=0.5; /* one cell */
+    //  	kn=1.0; /* two cells */
+    /* compute forcing amplitude to give a flow with amplitude Amp_x */
+    fac = property.Amp_x*property.nu*2.0*(two_pi/LX)*(two_pi/LX);
+	  /* along x */  
+    //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	  //force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+	  //force[IDX(i,j,k)].z += 0.0; 
+    /* for Vinicius */       
+    force[IDX(i,j,k)].x -= fac*sin(kn*two_pi*x/LY)*cos(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].y += fac*cos(kn*two_pi*x/LY)*sin(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].z += 0.0;
+	  /* Clotilde */
+	  //kn=1.0;
+	  //if (z<LZ/8){
+	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY); 
+	  //force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY);
+    //      force[IDX(i,j,k)].z = 0;
+	  //}
+	  //x=x+LX/8.;
+	  //y=y+LY/8.;
+	  //my_double LXNEW = LX + LX/2;
+	  //my_double LYNEW = LY + LY/2;
+	  //force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*x/LXNEW)*cos(kn*two_pi*y/LYNEW); 
+	  //force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*x/LXNEW)*sin(kn*two_pi*y/LYNEW); 
+	  //force[IDX(i,j,k)].z += 0.0;
   #else
     kn=0.5;
-    omega_t = two_pi*property.time_dt*(0.01/LX);
-	/* along x */  
-        force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
-	force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
-	force[IDX(i,j,k)].z += 0.0; 
-
+    //omega_t = two_pi*property.time_dt*(0.01/LX);
+	  /* along x */  
+    //force[IDX(i,j,k)].x += property.Amp_x*sin(kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	  //force[IDX(i,j,k)].y -= property.Amp_x*cos(kn*two_pi*x/LX)*sin(kn*two_pi*y/LY)*sin(omega_t*itime); 
+	  //force[IDX(i,j,k)].z += 0.0; 
+    //Vinicius oscillations
+    omega_t = 0.1*two_pi/(2.*LY);
+    fac = (LY)*sin(two_pi*itime/100);
+    force[IDX(i,j,k)].x -= property.Amp_x*sin(kn*two_pi*(x+fac)/LY)*cos(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].y += property.Amp_x*cos(kn*two_pi*(x+fac)/LY)*sin(kn*two_pi*y/LY); 
+	  force[IDX(i,j,k)].z += 0.0;
   #endif
- #endif  
+ #endif
+
+
+ #ifdef LB_FLUID_FORCING_STIRRER
+	my_double stirrer_radius = 8.0;
+	my_double stirrer_height = 4.0;
+	my_double stirrer_frequency = 0.05;
+	my_double stirrer_x = LX/2.0;
+	my_double stirrer_z = LZ/2.0;
+	vector stirrer_vel;
+	my_double angle,distance;
+        my_double radial_distance;
+	
+        fac = 0.001;
+	radial_distance = sqrt((x-stirrer_x)*(x-stirrer_x) + (z-stirrer_z)*(z-stirrer_z));
+	
+	if( y < stirrer_height && y > 0.0 && radial_distance  <= stirrer_radius ){ /* rectangular stirrer */	  
+	  
+	    stirrer_vel.x =  (z-stirrer_z)*stirrer_frequency;
+	    stirrer_vel.y =  0.0;
+	    stirrer_vel.z = -(x-stirrer_x)*stirrer_frequency; 	  
+	
+	    force[IDX(i,j,k)].x += fac*(stirrer_vel.x - u[IDX(i,j,k)].x);
+	    force[IDX(i,j,k)].y += 0.0;//(stirrer_vel.y - u[IDX(i,j,k)].y);
+	    force[IDX(i,j,k)].z += fac*(stirrer_vel.z - u[IDX(i,j,k)].z);
+	 }
+ #endif	
 
  #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form nu_add*laplacian( u ), where nu_add is an additional viscosity */ 
 	vec = laplacian_vector(u, i, j, k);
@@ -481,8 +531,16 @@ void build_forcing(){
       force[IDX(i,j,k)].y += fac*property.Amp_y* ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
       force[IDX(i,j,k)].z += fac*property.Amp_z* ( sin(two_pi*(vk[ii].y*y/LX + phi_u[ii].y)) + sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
     }
+    #elif defined(LB_FLUID_FORCING_HIT_2D)
+     /* Force at a given scale, delta correlated in time, incompressible forcing */
+    for(ii=0; ii<nk; ii++){
+    //  fac = pow(vk2[ii],-2./6.);  
+      force[IDX(i,j,k)].x += property.Amp_x * ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) );
+      force[IDX(i,j,k)].y += property.Amp_y * ( sin(two_pi*(vk[ii].x*x/LX + phi_u[ii].x)) );
+    force[IDX(i,j,k)].z = 0.0;
+     }  
     #else
-     /* Force at large scale, similar to Federico, Prasad forcing */
+     /* Force at large scale, similar to Federico, Prasad forcing , for 3D turbulence */
     for(ii=0; ii<nk; ii++){
       fac = pow(vk2[ii],-2./6.);
       //force[IDX(i,j,k)].x += fac*property.Amp_x* ( sin(two_pi*(vk[ii].y*y/LY + phi_u[ii].y)) + sin(two_pi*(vk[ii].z*z/LZ + phi_u[ii].z)) );
@@ -537,7 +595,7 @@ void build_forcing(){
   temp = (t[IDX(i,j,k)] - property.T_bot);
    #elif defined(LB_TEMPERATURE_BUOYANCY_T0_GRAD)   
   /* subtract to the temperature the linear profile */
-  temp_linear = 0.0; //-(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
+  temp_linear = -(property.deltaT/property.SY)*center_V[IDX(i,j,k)].y + 0.5*property.deltaT; 
   temp = (t[IDX(i,j,k)] - temp_linear );
    #elif defined(LB_TEMPERATURE_BUOYANCY_T0_REF2)   
   temp = (t[IDX(i,j,k)] - property.T_ref2);
@@ -722,7 +780,7 @@ void build_forcing(){
 
  #ifdef LB_TEMPERATURE_FORCING_PROFILE
   /* impose a mean linear temperature profile , note that bc for temp shall be set to 0 */
-  t_source[IDX(i,j,k)] = (property.deltaT/property.SY)*u[IDX(i,j,k)].y;
+    t_source[IDX(i,j,k)] = (property.deltaT/property.SY)*u[IDX(i,j,k)].y; // y direction
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING_REACTION
@@ -820,7 +878,10 @@ void build_forcing(){
 
   #else
   /* just a monocromatic light source */
-  t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+  /* at top */
+  //t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*center_V[IDX(i,j,k)].y); 
+  /* at bottom */
+  t_source[IDX(i,j,k)] = property.Amp_t*property.attenuation*exp(-property.attenuation*(property.SY-center_V[IDX(i,j,k)].y));
   #endif
   #ifdef LB_TEMPERATURE_FORCING_RADIATION_REFLECTION
     #ifdef LB_TEMPERATURE_MELTING
@@ -956,9 +1017,60 @@ void build_forcing(){
  #endif
 #endif
 
-#ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */
+ #ifdef LB_SCALAR_FORCING_GRAD /* force scalar with constant gradient (along y) */
     s_source[IDX(i,j,k)] += -property.Amp_s*u[IDX(i,j,k)].y;
-#endif
+ #endif
+
+ #ifdef LB_SCALAR_FORCING_HUISMAN /* implement phytoplankton J. Husiman et al. vol. 159, no. 3, The American Naturalist, march 2002 */
+
+   /* variables that need to be defined */
+    my_double cumulative_scalar, light_intensity, growth_rate;
+
+    /* set to zero position and scalar rulers along y */
+    for (jj = 0; jj < NY; jj++){
+      s_ruler_y_local[jj]=p_ruler_y_local[jj]=s_ruler_y[jj]=p_ruler_y_local[jj]=0.0;  
+    }
+    /* fill the tweo rulers with all the value along the y axis for a fixed x,z position */
+    for (jj = BRD; jj < LNY+BRD; jj++){
+      p_ruler_y_local[jj -BRD + LNY_START] = center_V[IDX(i, jj, k)].y;
+      s_ruler_y_local[jj -BRD + LNY_START] = s[IDX(i, jj, k)];
+    }
+    MPI_Allreduce(s_ruler_y_local, s_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(p_ruler_y_local, p_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    /* compute the integral of scalar field from top position NY down to the current coordiante */
+    cumulative_scalar = 0.0; 
+    for (jj = 0; jj < NY; jj++){
+      fac=(p_ruler_y[jj] >center_V[IDX(i,j,k)].y)?1.0:0.0;
+      cumulative_scalar += s_ruler_y[jj]*fac;
+    }
+
+#ifdef OLD_VERSION /*very slow */  
+    /* accumulate data */
+    set_to_zero_output(ruler_y,NY);
+    set_to_zero_output(ruler_y_local,NY);
+    for (jj = BRD; jj < LNY+BRD; jj++){
+      ruler_y_local[jj -BRD + LNY_START].y = center_V[IDX(i, jj, k)].y;
+      ruler_y_local[jj -BRD + LNY_START].s = s[IDX(i, jj, k)];
+    }
+    MPI_Allreduce(ruler_y_local, ruler_y, NY, MPI_output_type, MPI_SUM_output, MPI_COMM_WORLD );
+
+    /* compute the integral of scalar from top of the system (SY) to position y for the given (x,z) position */
+    cumulative_scalar = 0.0; 
+    for (jj = 0; jj < NY; jj++){
+      fac=(ruler_y[jj].y >center_V[IDX(i,j,k)].y)?1.0:0.0;
+      cumulative_scalar += ruler_y[jj].s*fac;
+    }
+#endif /* OLD_VERSION */
+    
+   /* compute the loccal light intensity */
+   light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
+
+   /* compute the growth rate Eq. (3) and (4) in the paper */
+   growth_rate = (property.max_production_rate * light_intensity / (property.half_saturation_constant + light_intensity)) - property.loss_rate;
+
+   /* add the forcing */
+   s_source[IDX(i,j,k)] += growth_rate * s[IDX(i, j, k)];
+ #endif /* end of LB_SCALAR_FORCING_HUISMAN */  
 
 #endif
 

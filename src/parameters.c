@@ -195,6 +195,14 @@ void assign_parameters(){
      property.yp_wall_velocity_z = read_parameter(name);
      fprintf(stderr,"yp_wall_velocity_x %g , yp_wall_velocity_z %g\n",(double)property.yp_wall_velocity_x, (double)property.yp_wall_velocity_z);
    #endif
+   #ifdef LB_FLUID_BC_Y_P_GRADIENT
+     /* YP wall velocity gradient*/
+     sprintf(name,"yp_wall_gradient_velocity_x");
+     property.yp_wall_gradient_velocity_x = read_parameter(name);
+     sprintf(name,"yp_wall_gradient_velocity_z");
+     property.yp_wall_gradient_velocity_z = read_parameter(name);
+     fprintf(stderr,"yp_wall_gradient_velocity_x %g , yp_wall_gradient_velocity_z %g\n",(double)property.yp_wall_gradient_velocity_x, (double)property.yp_wall_gradient_velocity_z);
+   #endif
   #endif
  #endif
  #ifdef LB_FLUID_INITIAL_ADD_NOISE
@@ -472,6 +480,35 @@ void assign_parameters(){
   property.Amp_s = read_parameter(name);
   fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.Amp_s ); 
  #endif
+ #ifdef LB_SCALAR_HUISMAN /* properties for J.Huisman phytoplankton model */
+  sprintf(name,"incident_light_intensity");
+  property.incident_light_intensity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> incident_light_intensity = %e\n", property.incident_light_intensity ); 
+
+  sprintf(name,"phytoplankton_specific_lght_attenuation");
+  property.phytoplankton_specific_lght_attenuation = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> phytoplankton_specific_lght_attenuation = %e\n", property.phytoplankton_specific_lght_attenuation );  
+
+  sprintf(name,"background_turbidity");
+  property.background_turbidity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> Amp_s = %e\n", property.background_turbidity ); 
+
+  sprintf(name,"half_saturation_constant");
+  property.half_saturation_constant = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> half_saturation_constant = %e\n", property.half_saturation_constant ); 
+
+  sprintf(name,"max_production_rate");
+  property.max_production_rate = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> max_production_rate = %e\n", property.max_production_rate ); 
+
+  sprintf(name,"loss_rate");
+  property.loss_rate = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> loss_rate = %e\n", property.loss_rate ); 
+
+  sprintf(name,"settling_velocity");
+  property.settling_velocity = read_parameter(name);
+  fprintf(stderr,"Amplitude forcing scalar -> settling_velocity = %e\n", property.settling_velocity ); 
+ #endif 
 #endif /* end of ifded LB_SCALAR */
 
 
@@ -490,7 +527,7 @@ void assign_parameters(){
   property.particle_radius_min = read_parameter(name);
   sprintf(name,"particle_radius_max");
   property.particle_radius_max = read_parameter(name);
-  fprintf(stderr,"particle_radius_types %g , particle_radius_max %g , particle_radius_min %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
+  fprintf(stderr,"particle_radius_types %g , particle_radius_min %g , particle_radius_max %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
   if( property.particle_radius_types <1 || property.particle_radius_max < property.particle_radius_min ){ fprintf(stderr,"Error in particle_radius parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -503,7 +540,7 @@ void assign_parameters(){
   property.particle_density_min = read_parameter(name);
   sprintf(name,"particle_density_max");
   property.particle_density_max = read_parameter(name);
-  fprintf(stderr,"particle_density_types %g , particle_density_max %g , particle_density_min %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
+  fprintf(stderr,"particle_density_types %g , particle_density_min %g , particle_density_max %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
   if( property.particle_density_types <1 || property.particle_density_max < property.particle_density_min ){ fprintf(stderr,"Error in particle_density parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -588,6 +625,21 @@ void assign_parameters(){
     /* total number of particles types up to now */
     property.particle_types *= property.gyrotaxis_velocity_types;
     #endif
+    #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    /* gyrotaxis_velocity for rotation  */ 
+    sprintf(name,"gyrotaxis_stability_types");
+    property.gyrotaxis_stability_types = read_parameter(name); 
+    sprintf(name,"gyrotaxis_stability_min");
+    property.gyrotaxis_stability_min = read_parameter(name);
+    sprintf(name,"gyrotaxis_stability_max");
+    property.gyrotaxis_stability_max = read_parameter(name);
+    fprintf(stderr,"gyrotaxis_stability_types %g , gyrotaxis_stability_max %g , gyrotaxis_stability_min %g\n",(double)property.gyrotaxis_stability_types, (double)property.gyrotaxis_stability_min, (double)property.gyrotaxis_stability_max);
+    if( property.gyrotaxis_stability_types <1 || property.gyrotaxis_stability_max < property.gyrotaxis_stability_min ){ fprintf(stderr,"Error in gyrotaxis_stability parameters\n Exit.\n"); exit(0);}   
+  
+    /* total number of particles types up to now */
+    property.particle_types *= property.gyrotaxis_stability_types;
+    #endif
+
    #endif 
 
    #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -677,6 +729,22 @@ void assign_parameters(){
       property.particle_types += property.fluid_tracers;
       fprintf(stderr,"The first particle_type is a fluid tracer\n");
   #endif    
+ #endif
+ #ifdef LAGRANGE_NUCLEATE
+  sprintf(name,"T_liq");
+  property.T_liq = read_parameter(name);
+  sprintf(name,"Vref");
+  property.Vref = read_parameter(name);
+  sprintf(name,"Nref");
+  property.Nref = read_parameter(name);
+  sprintf(name,"Vpow");
+  property.Vpow = read_parameter(name);
+  sprintf(name,"Npow");
+  property.Npow = read_parameter(name);
+  sprintf(name,"E_del");
+  property.E_del = read_parameter(name);
+  sprintf(name,"UC_frac");
+  property.UC_frac = read_parameter(name);
  #endif
 
   /* total number of particles types */
@@ -779,10 +847,11 @@ void set_to_zero_output(output  *f,int size){
 void *my_malloc(size_t size){
   my_double real_size;
   void *ptr;
-  ptr = malloc(size);
-#ifdef SYSTEM_OSX
-  real_size = malloc_size(ptr);
-#endif
+  ptr = malloc(size);  
+//#ifdef SYSTEM_OSX   
+// temporarily disabled because it does not work on OSX Catalina!
+//  real_size = malloc_size(ptr);
+//#endif
 #ifdef SYSTEM_LINUX
   real_size = malloc_usable_size(ptr);
 #endif
@@ -803,9 +872,10 @@ void *my_malloc(size_t size){
 
 void my_free(void *ptr){
   size_t size;
-#ifdef SYSTEM_OSX
-  size = malloc_size(ptr);
-#endif
+// temporarily disabled because it does not work on OSX Catalina!
+//#ifdef SYSTEM_OSX
+//  size = malloc_size(ptr);
+//#endif
 #ifdef SYSTEM_LINUX
   size = malloc_usable_size(ptr);
 #endif
@@ -1327,6 +1397,15 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
  if(s_source == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
  set_to_zero_scalar( s_source,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
+
+ #ifdef LB_SCALAR_HUISMAN
+  s_ruler_y_local  = (my_double*) my_malloc(sizeof(output)*NY);
+  p_ruler_y_local  = (my_double*) my_malloc(sizeof(output)*NY);
+  s_ruler_y  = (my_double*) my_malloc(sizeof(output)*NY);
+  p_ruler_y  = (my_double*) my_malloc(sizeof(output)*NY);
+  //for (j = 0; j < NY; j++) s_ruler_y_local[j]=p_ruler_y_local[j]=s_ruler_y[j]=p_ruler_y_local[j]=0.0;      
+ #endif
+ 
 #endif
 
   if(ROOT) fprintf(stderr,"Total memory allocation %lf MB\n",(my_double)memory_all/1.e+6); 
@@ -1602,6 +1681,12 @@ my_free(ym_zm_edge_scalar);
  #ifdef LB_SCALAR_FORCING
  my_free(s_source);
  #endif
+ #ifdef LB_SCALAR_HUISMAN
+    my_free(s_ruler_y);
+    my_free(p_ruler_y);
+    my_free(s_ruler_y_local);
+    my_free(p_ruler_y_local);
+ #endif   
 #endif
 
  if(ROOT) fprintf(stderr,"Total unfree memory %lf MB\n",(my_double)memory_all/1.e+6); 

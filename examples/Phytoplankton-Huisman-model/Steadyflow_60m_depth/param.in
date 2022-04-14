@@ -1,31 +1,29 @@
 resume 1
-resume_u 1
+resume_u 0
 resume_t 1
 resume_s 0
 
-NX 400
-NY 400
+NX 600
+NY 300
 NZ 1
 
-SX 400
-SY 400
+SX 600
+SY 300
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 50000.
-time_dump_field 500.
+time_end 230400.
+time_dump_field 20000.
 time_dump_diagn 200.
 
-tau_u 0.536
+tau_u 0.875
 nu_add 0.0
 
 ym_wall_velocity_x 0.1 
 ym_wall_velocity_z 0
-yp_wall_velocity_x 0.01
+yp_wall_velocity_x -0.01
 yp_wall_velocity_z 0
-yp_wall_gradient_velocity_x 5.e-3
-yp_wall_gradient_velocity_z 0
 
 Amp_x 1.e-2 
 Amp_y 0.00 
@@ -37,14 +35,14 @@ Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.505
+tau_t 0.52
 
-T_bot -40.0
-T_top  40.0
+T_bot  0.5
+T_top -0.5
 T_ref  0.0
 T_ref2 0.0
-grad_T_bot 0.2  -0.0078125
-grad_T_top -11.7994552008428  -0.0078125
+grad_T_bot -0.05   -0.0078125
+grad_T_top 0.0   -0.0078125
 
 beta_t  0.000008  0.00006944444444444
 beta2_t 0.0
@@ -55,8 +53,8 @@ gravity_x 0.0
 gravity_y 1.0  
 gravity_z 0.0
 
-Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333 
-attenuation 0.025
+Amp_t 0.0  0.0016  3.91971e-05   0.00005  0.00130208333333333 
+attenuation 0.0390625  
 
 T_solid -0.5
 latent_heat 1
@@ -89,7 +87,7 @@ incident_light_intensity	1.4
 
 
 time_dump_lagr 1000
-particle_number 1000
+particle_number 2000
 
 particle_radius_types 4
 particle_radius_min 1
@@ -99,9 +97,9 @@ particle_density_types 3
 particle_density_min 1
 particle_density_max 10
 
-tau_drag_types 1
+tau_drag_types 3
 tau_drag_min 0
-tau_drag_max 0
+tau_drag_max 100
 
 beta_coeff_types 3
 beta_coeff_min 0

@@ -5,7 +5,7 @@ double myrand(){
 
   double val;
 
-#ifdef RANDOM48
+#ifdef SYSTEM_RANDOM48
   val=drand48();
   #else
   val=ran1();
@@ -16,7 +16,7 @@ double myrand(){
 }
 
 
-#ifndef RANDOM48
+#ifndef SYSTEM_RANDOM48
 /*******************************************************/
 
 //Define a random double as a substitute for drand48:

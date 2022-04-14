@@ -23,11 +23,11 @@ NNX = int(scale_x*NX)
 new_t = np.zeros((NNZ,NNY,NNX),t.dtype)
 new_v = np.zeros((NNZ,NNY,NNX),v.dtype)
 
-for ii in xrange(0,NNX):
+for ii in range(0,NNX):
     i=math.floor(ii/scale_x)
-    for jj in xrange(0,NNY):
+    for jj in range(0,NNY):
         j=math.floor(jj/scale_y)
-        for kk in xrange(0,NNZ):
+        for kk in range(0,NNZ):
             k=math.floor(kk/scale_z)
             new_t[kk,jj,ii] = t[k,j,i]
             new_v[kk,jj,ii] = v[k,j,i]

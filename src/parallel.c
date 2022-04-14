@@ -187,7 +187,7 @@ void initialization_MPI(int argc, char **argv){
 #endif
 
  /* Initialize random seeds */
-#ifdef RANDOM48
+#ifdef SYSTEM_RANDOM48
   seed = time(NULL);
   srand48(me+seed);
 #else
@@ -196,9 +196,9 @@ void initialization_MPI(int argc, char **argv){
   idum = &initdum;
 #endif
 
-  //#ifdef DEBUG_HARD
+#ifdef VERBOSE
 fprintf(stderr,"RANDOM me %d myrand(): %e\n",me, myrand());
-//#endif
+#endif
 
 
 }
@@ -213,14 +213,14 @@ int compare(const void *a, const void *b)
 
 
 int check_prime(int x){
-    int i;
-    for(i=2;x%i!=0;i++);
-        if(x==i) {
-            return 1;
+  int i;
+  int isprime = 0;
+    for(i=2;i<x;i++)
+        if(x%i == 0) {
+            isprime++;
+            break;
         }
-        else {
-            return 0;
-        }
+    return isprime;
 }
 
 
@@ -327,7 +327,162 @@ void processor_splitting()
 	fprintf(stderr, "me %d , mex %d  mey %d mez %d\n", me, mex, mey, mez);
 #endif
 
-	/* processor rulers for vertices */
+	 	
+	/* every procs finds its neighbors */
+	/*
+	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
+	next = (mex-1+nxprocs) % nxprocs; me_xm = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
+	next = (mey+1+nyprocs) % nyprocs; me_yp = mez * (nyprocs * nxprocs) + next * nxprocs + mex; 
+	next = (mey-1+nyprocs) % nyprocs; me_ym = mez * (nyprocs * nxprocs) + next * nxprocs + mex;
+	next = (mez+1+nzprocs) % nzprocs; me_zp = next * (nyprocs * nxprocs) + mey * nxprocs + mex; 
+	next = (mez-1+nzprocs) % nzprocs; me_zm = next * (nyprocs * nxprocs) + mey * nxprocs + mex;
+
+#ifdef DEBUG
+  fprintf(stderr, "me  %d old way: me_xp %d, me_xm %d, me_yp %d, me_ym %d, me_zp %d, me_zm %d \n",me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+	*/
+
+	/* Map of of next neighbor processors  */ 	
+        me_next  = (int*) malloc(sizeof(int)*27);
+	for (k = -1; k <=1; k++)
+		for (j = -1; j <=1; j++)
+			for (i = -1; i <=1; i++) {
+
+			  next_x = (mex+i+nxprocs) % nxprocs;
+			  next_y = (mey+j+nyprocs) % nyprocs;
+			  next_z = (mez+k+nzprocs) % nzprocs;
+			  me_next[IDX_NEXT(i,j,k)] = next_z * (nyprocs * nxprocs) + next_y * nxprocs + next_x;
+
+			  // fprintf(stderr,"me %d, i=%d j=%d k=%d, me_next=%d\n", me,i,j,k,me_next[IDX_NEXT(i,j,k)]);
+			}
+	
+ /* for the faces */
+ me_xp = me_next[IDX_NEXT(  1,  0,  0)];
+ me_xm = me_next[IDX_NEXT( -1,  0,  0)];
+ me_yp = me_next[IDX_NEXT(  0,  1,  0)];
+ me_ym = me_next[IDX_NEXT(  0, -1,  0)];
+ me_zp = me_next[IDX_NEXT(  0,  0,  1)]; 
+ me_zm = me_next[IDX_NEXT(  0,  0, -1)]; 	
+
+#ifdef DEBUG
+ fprintf(stderr, "me %d new way: me_xp %d, me_xm %d, me_yp %d, me_ym %d, me_zp %d, me_zm %d \n",me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+ 
+#ifdef METHOD_EDGES_AND_CORNERS
+
+ /* for the corners */
+ me_xp_yp_zp = me_next[IDX_NEXT(  1,  1,  1)];
+ me_xm_ym_zm = me_next[IDX_NEXT( -1, -1, -1)];
+ me_xp_yp_zm = me_next[IDX_NEXT(  1,  1, -1)];
+ me_xm_ym_zp = me_next[IDX_NEXT( -1, -1,  1)];
+ me_xp_ym_zp = me_next[IDX_NEXT(  1, -1,  1)]; 
+ me_xm_yp_zm = me_next[IDX_NEXT( -1,  1, -1)]; 
+ me_xm_yp_zp = me_next[IDX_NEXT( -1,  1,  1)]; 
+ me_xp_ym_zm = me_next[IDX_NEXT(  1, -1, -1)]; 
+	
+ /* for the edges */
+ me_xp_yp = me_next[IDX_NEXT(  1,  1,  0)]; 
+ me_xm_ym = me_next[IDX_NEXT( -1, -1,  0)]; 
+ me_xp_ym = me_next[IDX_NEXT(  1, -1,  0)]; 
+ me_xm_yp = me_next[IDX_NEXT( -1,  1,  0)]; 
+ me_yp_zp = me_next[IDX_NEXT(  0,  1,  1)]; 
+ me_ym_zm = me_next[IDX_NEXT(  0, -1, -1)]; 
+ me_yp_zm = me_next[IDX_NEXT(  0,  1, -1)]; 
+ me_ym_zp = me_next[IDX_NEXT(  0, -1,  1)]; 
+ me_xp_zp = me_next[IDX_NEXT(  1,  0,  1)]; 
+ me_xm_zm = me_next[IDX_NEXT( -1,  0, -1)]; 
+ me_xp_zm = me_next[IDX_NEXT(  1,  0, -1)]; 
+ me_xm_zp = me_next[IDX_NEXT( -1,  0,  1)]; 
+
+#endif
+
+
+#ifdef PARALLEL_MPICART
+ /* Alternative way to split the computational domain on a grid of processor, it is LESS performant than the previous mode */
+ MPI_Comm Comm_3d_grid;
+ int ndim = 3;
+ int dimensions[3];
+ int periodic[3];
+ int reorder = 1;
+ int coord[3];
+ int me_rank;
+
+
+ /* Give partial freedom to MPI to chose thes sizes of the grid of processors */
+ if(NX==1){dimensions[0] = 1;}else{dimensions[0] = 0;}
+ if(NY==1){dimensions[1] = 1;}else{dimensions[1] = 0;}
+ if(NZ==1){dimensions[2] = 1;}else{dimensions[2] = 0;}
+ fprintf(stderr,"Restrictions (%d, %d, %d) give decomposition ", dimensions[0], dimensions[1], dimensions[2]);
+ MPI_Dims_create(nprocs, 3, dimensions);
+ fprintf(stderr,"(%d, %d, %d).\n", dimensions[0], dimensions[1], dimensions[2]);
+ 
+ nxprocs = dimensions[0]; 
+ nyprocs = dimensions[1];
+ nzprocs = dimensions[2];
+	
+ error = 0;
+ if(NX%nxprocs==0){ LNX=NX/nxprocs; }else{error=1;}
+ if(NY%nyprocs==0){ LNY=NY/nyprocs; }else{error=1;}
+ if(NZ%nzprocs==0){ LNZ=NZ/nzprocs; }else{error=1;}
+ if(error){
+    MPI_Finalize();
+    exit(-1);
+  }
+	
+ periodic[0] = periodic[1] = periodic[2] =  1;
+ MPI_Cart_create(MPI_COMM_WORLD,ndim,dimensions,periodic,reorder,&Comm_3d_grid);
+ MPI_Comm_rank(Comm_3d_grid,&me_rank);
+ MPI_Cart_coords(Comm_3d_grid,me_rank,ndim,coord);
+
+ fprintf(stderr,"I am %d: (%d,%d,%d); originally %d\n",me_rank,coord[0],coord[1],coord[2], me);
+
+ mex = coord[0];
+ mey = coord[1];
+ mez = coord[2];
+ me = me_rank;       
+
+ /* 6 faces */
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym);
+ coord[0]=mex  ; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_zp);
+ coord[0]=mex  ; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_zm);
+ #ifdef METHOD_EDGES_AND_CORNERS
+  /* 8 corners */
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp_zp);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym_zm);
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp_zm);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym_zp);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym_zp);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp_zm);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp_zp);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym_zm);
+ /* 12 edges */
+ coord[0]=mex+1; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_yp);
+ coord[0]=mex-1; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_ym);
+ coord[0]=mex+1; coord[1]=mey-1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_ym);
+ coord[0]=mex-1; coord[1]=mey+1; coord[2]=mez  ; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_yp);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp_zp);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym_zm);
+ coord[0]=mex  ; coord[1]=mey+1; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_yp_zm);
+ coord[0]=mex  ; coord[1]=mey-1; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_ym_zp);
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_zp);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_zm);
+ coord[0]=mex+1; coord[1]=mey  ; coord[2]=mez-1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xp_zm);
+ coord[0]=mex-1; coord[1]=mey  ; coord[2]=mez+1; MPI_Cart_rank(Comm_3d_grid, coord, &me_xm_zp);  
+ #endif
+#endif /* end of PARALLEL_MPICART */
+ 
+
+#ifdef DEBUG
+	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
+#endif
+
+
+
+
+	/* processor rulers for vertices (computational node points) */
 	LNX_START = LNX * mex;
 	LNX_END = LNX * (mex + 1);
 	LNY_START = LNY * mey;
@@ -368,60 +523,7 @@ void processor_splitting()
 	fprintf(stderr, "me %d LNXG_END %d , LNYG_END %d  LNZG_END %d\n", me, LNXG_END ,LNYG_END, LNZG_END);
 #endif
 
-	/* every procs finds its neighbors */
-	next = (mex+1+nxprocs) % nxprocs; me_xp = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
-	next = (mex-1+nxprocs) % nxprocs; me_xm = mez * (nyprocs * nxprocs) + mey * nxprocs + next;
-	next = (mey+1+nyprocs) % nyprocs; me_yp = mez * (nyprocs * nxprocs) + next * nxprocs + mex; 
-	next = (mey-1+nyprocs) % nyprocs; me_ym = mez * (nyprocs * nxprocs) + next * nxprocs + mex;
-	next = (mez+1+nzprocs) % nzprocs; me_zp = next * (nyprocs * nxprocs) + mey * nxprocs + mex; 
-	next = (mez-1+nzprocs) % nzprocs; me_zm = next * (nyprocs * nxprocs) + mey * nxprocs + mex;
-
-        me_next  = (int*) malloc(sizeof(int)*27);
-	/* Alternative way more compact and safer, to be done */ 
-	for (k = -1; k <=1; k++)
-		for (j = -1; j <=1; j++)
-			for (i = -1; i <=1; i++) {
-
-			  next_x = (mex+i+nxprocs) % nxprocs;
-			  next_y = (mey+j+nyprocs) % nyprocs;
-			  next_z = (mez+k+nzprocs) % nzprocs;
-			  me_next[IDX_NEXT(i,j,k)] = next_z * (nyprocs * nxprocs) + next_y * nxprocs + next_x;
-
-			  // fprintf(stderr,"me %d, i=%d j=%d k=%d, me_next=%d\n", me,i,j,k,me_next[IDX_NEXT(i,j,k)]);
-			}
-
-
-#ifdef METHOD_EDGES_AND_CORNERS
-
- /* for the corners */
- me_xp_yp_zp = me_next[IDX_NEXT(  1,  1,  1)];
- me_xm_ym_zm = me_next[IDX_NEXT( -1, -1, -1)];
- me_xp_yp_zm = me_next[IDX_NEXT(  1,  1, -1)];
- me_xm_ym_zp = me_next[IDX_NEXT( -1, -1,  1)];
- me_xp_ym_zp = me_next[IDX_NEXT(  1, -1,  1)]; 
- me_xm_yp_zm = me_next[IDX_NEXT( -1,  1, -1)]; 
- me_xm_yp_zp = me_next[IDX_NEXT( -1,  1,  1)]; 
- me_xp_ym_zm = me_next[IDX_NEXT(  1, -1, -1)]; 
 	
- /* for the edges */
- me_xp_yp = me_next[IDX_NEXT(  1,  1,  0)]; 
- me_xm_ym = me_next[IDX_NEXT( -1, -1,  0)]; 
- me_xp_ym = me_next[IDX_NEXT(  1, -1,  0)]; 
- me_xm_yp = me_next[IDX_NEXT( -1,  1,  0)]; 
- me_yp_zp = me_next[IDX_NEXT(  0,  1,  1)]; 
- me_ym_zm = me_next[IDX_NEXT(  0, -1, -1)]; 
- me_yp_zm = me_next[IDX_NEXT(  0,  1, -1)]; 
- me_ym_zp = me_next[IDX_NEXT(  0, -1,  1)]; 
- me_xp_zp = me_next[IDX_NEXT(  1,  0,  1)]; 
- me_xm_zm = me_next[IDX_NEXT( -1,  0, -1)]; 
- me_xp_zm = me_next[IDX_NEXT(  1,  0, -1)]; 
- me_xm_zp = me_next[IDX_NEXT( -1,  0,  1)]; 
-
-#endif
-
-#ifdef DEBUG
-	fprintf(stderr, "me %d , me_xp %d  me_xm %d me_yp %d me_ym %d me_zp %d me_zm %d\n", me, me_xp, me_xm, me_yp, me_ym, me_zp, me_zm);
-#endif
 
 #ifdef NEW_SENDRECV
 	/* Creates a vector (strided) datatype */
@@ -479,7 +581,7 @@ void measure_time(){
 	 fprintf(fout,"Execution time per time step %e\n",(t2-t1)/(double)itime);
 	 fprintf(fout,"Execution time per grid point %e\n",(t2-t1)/(double)(NX*NY*NZ));
 	 fprintf(fout,"Execution time per time step and grid point %e\n",(t2-t1)/(double)(itime*NX*NY*NZ));
-	 fprintf(fout,"Time ticks on this machine %e\n", tick);
+	 fprintf(fout,"Time tick on this machine %e\n", tick);
 	 fprintf(fout,"Number of processes for this run %d\n",nprocs);
          fprintf(fout,"Execution time per process %e\n",(t2-t1)/(double)nprocs);
 	 fclose(fout);	 

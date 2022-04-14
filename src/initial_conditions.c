@@ -17,6 +17,7 @@ void initial_conditions(int restart)
 
 
 #ifdef LB_FLUID
+/* viscosity */
   nu = (my_double)property.nu;
 #endif
 
@@ -113,7 +114,52 @@ void initial_conditions(int restart)
         /* along x */
        	for (pp = 0; pp < NPOP; pp++)  
 	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*c[pp].x*fn*sin(kn*two_pi*y/L);
-#endif  
+#endif
+
+#ifdef LB_FLUID_INITIAL_CELLULAR
+  LY = (my_double)property.SY; //NY;
+  y = (my_double)center_V[IDX(i,j,k)].y;
+  LX = (my_double)property.SX; //NX;
+  x = (my_double)center_V[IDX(i,j,k)].x;	
+	kn=0.5; /* one cell */
+   //   kn=1.0; /* two cells */
+        //fn = property.Amp_x*LX*LX/(property.nu*2.0*two_pi*two_pi);
+        /* Amp_x is the amplitde of the velocity field */
+        fn = property.Amp_x;
+        /* for Vinicius */
+        /* ux component */
+	      /*  -fn*sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY);   */
+	      /* uy component */
+        /*   fn*cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY); */       
+  for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*fn*wgt[pp]*(  c[pp].x * (-sin(2.*kn*two_pi*x/LX)*cos(kn*two_pi*y/LY)) 
+                                            + c[pp].y * ( cos(2.*kn*two_pi*x/LX)*sin(kn*two_pi*y/LY))  );	
+#endif
+
+ #ifdef LB_FLUID_INITIAL_STIRRER
+	my_double stirrer_radius = 8.0;
+	my_double stirrer_height = 4.0;
+	my_double stirrer_frequency = 0.01;
+	my_double stirrer_x = LX/2.0;
+	my_double stirrer_z = LZ/2.0;
+	vector stirrer_vel;
+	my_double angle,distance;
+        my_double radial_distance;
+	
+        
+	radial_distance = sqrt((x-stirrer_x)*(x-stirrer_x) + (z-stirrer_z)*(z-stirrer_z));
+	
+	if( y < stirrer_height && y > 0.0 && radial_distance  <= stirrer_radius ){
+	  
+	    stirrer_vel.x =  (z-stirrer_z)*stirrer_frequency;
+	    stirrer_vel.y =  0.0;
+	    stirrer_vel.z = -(x-stirrer_x)*stirrer_frequency;
+	    
+	for (pp = 0; pp < NPOP; pp++)  
+	  p[IDX(i,j,k)].p[pp] +=  3.0*wgt[pp]*(c[pp].x * stirrer_vel.x + c[pp].y * stirrer_vel.y + c[pp].z * stirrer_vel.z);
+	    
+	}
+ #endif		
 
 
 #ifdef LB_FLUID_INITIAL_POISEUILLE 
@@ -482,6 +528,13 @@ void initial_conditions(int restart)
 	  if( abs(center_V[IDX(i,j,k)].x - property.SX/2.0)<10   ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
 #endif
 
+#ifdef LB_SCALAR_INITIAL_SPOT
+  /* impose a mean temperature profile? , note that bc for temp shall be set to 0 */
+      my_double spot;
+      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
+      if( spot < 10.0 ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
+#endif	  
+
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
 	  h[IDX(i,j,k)].p[pp] = wgt[pp]*s[IDX(i,j,k)];
@@ -502,8 +555,8 @@ void initial_conditions(int restart)
       if(ROOT) fprintf(stderr,"The %s file is present!\n Populations are initialized from file.\n",fnamein);
       fclose(fin);
   }else{   
-    if(restart) if(ROOT)  fprintf(stderr,"Warning message -> %s file is missing!\n Populations are initialized from memory.\n",fnamein);
-    if(!restart) if(ROOT) fprintf(stderr,"Warning message -> %s file not requested!\n Populations are initialized from memory.\n",fnamein);
+    if(restart) if(ROOT)  fprintf(stderr,"Warning message -> %s file is missing!\n Populations are initialized from scratch.\n",fnamein);
+    if(!restart) if(ROOT) fprintf(stderr,"Warning message -> %s file not requested!\n Populations are initialized from scratch.\n",fnamein);
   }
 
  #ifdef LB_TEMPERATURE_MELTING
@@ -699,7 +752,13 @@ void initialization_forcing(){
     vk[5].x=1; vk[5].y=0; vk[5].z=1;
     /* compute the square */
     for (ii=0; ii<nk; ii++) vk2[ii] = vk[ii].x*vk[ii].x + vk[ii].y*vk[ii].y + vk[ii].z*vk[ii].z;
-
+    
+    // #ifdef LB_FLUID_FORCING_HIT_2D
+    /* this is to force 2D turbulence at small scale, it overrides the previous settings */
+    //nk = 1; /* we will just use one mode */
+    //vk[0].x=NX/8; vk[0].y=NY/8; vk[0].z=0; /* setting for single-mode small-scale forcing */ 
+    // #endif
+    
     if(ROOT){
       fprintf(stderr,"Forced modes\n"); 
       for (ii=0; ii<nk; ii++) fprintf(stderr,"%d : %e %e %e squared norm %e\n",ii+1, vk[ii].x,vk[ii].y,vk[ii].z,vk2[ii]); 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -38,7 +39,7 @@ MPI_Op MPI_SUM_output_particle;
 #endif
 
 /* random seed */
-#ifdef RANDOM48
+#ifdef SYSTEM_RANDOM48
 unsigned int seed;
 #else
 long * idum;
@@ -290,6 +291,10 @@ my_double invcs, invcs2, invcs4;
   int randomization_itime_s;
   #endif
  #endif
+ #ifdef LB_SCALAR_HUISMAN
+  my_double *s_ruler_y, *s_ruler_y_local;
+  my_double *p_ruler_y, *p_ruler_y_local;
+ #endif
 #endif
 
 
@@ -298,7 +303,7 @@ int itime;
 my_double time_now;
 char OutDir[256];
 
-#ifdef TIMING
+#ifdef SYSTEM_TIMING
 my_double t1,t2,tick;
 #endif
 
@@ -307,6 +312,10 @@ my_double t1,t2,tick;
 #ifdef LAGRANGE
 point_particle *tracer , *tracer_here, *tracer_there, *all_tracer_there;
 int npart;
+#ifdef LAGRANGE_NUCLEATE 
+my_double sol_frac, delT_ref;
+int ngrave;
+#endif
 #endif
 
 
