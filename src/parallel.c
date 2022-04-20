@@ -139,6 +139,19 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->dt_t += (a+i)->dt_t;
     (b+i)->dt_t2 += (a+i)->dt_t2;
 #endif
+ #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+    (b+i)->ux += (a+i)->ux;
+    (b+i)->uy += (a+i)->uy;
+    (b+i)->uz += (a+i)->uz;
+
+    (b+i)->ux2 += (a+i)->ux2;
+    (b+i)->uy2 += (a+i)->uy2;
+    (b+i)->uz2 += (a+i)->uz2;
+
+    (b+i)->ux4 += (a+i)->ux4;
+    (b+i)->uy4 += (a+i)->uy4;
+    (b+i)->uz4 += (a+i)->uz4;
+ #endif
   }
 }
 #endif

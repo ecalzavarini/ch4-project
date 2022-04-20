@@ -81,6 +81,9 @@ void initial_conditions_particles(int restart)
   my_double *critical_shear_rate, *jump_time;
   vector vec;
   my_double val;
+  #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    my_double *gyrotaxis_stability;
+  #endif
   double *type_counter_local, *type_counter_all;
 
 #ifdef LAGRANGE_INITIAL_PAIRS
@@ -405,7 +408,24 @@ void initial_conditions_particles(int restart)
     for (i = 0; i < property.particle_types; i++)
       if (ROOT)
         fprintf(stderr, "type %d aspect_ratio %g\n", i, aspect_ratio[i]);
-
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+        gyrotaxis_stability = (my_double*) malloc(sizeof(my_double)*property.particle_types);
+		cycles = (property.particle_types-property.fluid_tracers)/property.gyrotaxis_stability_types;
+        if(property.gyrotaxis_stability_types > 1) step = pow(property.gyrotaxis_stability_max/property.gyrotaxis_stability_min, 1.0/(property.gyrotaxis_stability_types-1.0)); else step = 0;/* log increment of gyrotaxis_stability*/
+		for (n=0; n<(int)property.fluid_tracers; n++) gyrotaxis_stability[n] = 1.0; /* this is for the no offcenter particles */
+        for (k=0; k<(int)(cycles/repetitions)  ; k++){
+            for (i=0; i<(int)property.gyrotaxis_stability_types; i++){
+                for (j=0; j<(int)repetitions; j++){
+                    /* linear increment */
+                    //      gyrotaxis_stability[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_stability_types ] = property.gyrotaxis_stability_min + i*step;
+                    /* geometric increment */
+                    gyrotaxis_stability[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_stability_types ] = property.gyrotaxis_stability_min * pow(step,(double)i);
+                }
+            }
+        }
+        repetitions *= property.gyrotaxis_stability_types;
+        for(i=0;i<property.particle_types;i++) if(ROOT) fprintf(stderr,"type %d gyrotaxis_stability %g\n",i,gyrotaxis_stability[i]);
+#endif /* end of LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG */
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
     gyrotaxis_velocity = (my_double *)malloc(sizeof(my_double) * property.particle_types);
     cycles = (property.particle_types - property.fluid_tracers) / property.gyrotaxis_velocity_types;
@@ -602,6 +622,9 @@ void initial_conditions_particles(int restart)
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
         fprintf(fin, "gyrotaxis_velocity %e ", gyrotaxis_velocity[i]);
 #endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+  fprintf(fin,"gyrotaxis_stability %e ",gyrotaxis_stability[i]);
+#endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
         fprintf(fin, "rotational_diffusion %e ", rotational_diffusion[i]);
@@ -653,6 +676,9 @@ void initial_conditions_particles(int restart)
       /* gyrotaxis rotational parameter: the velocity  v_0 parameter,  as in F.De Lillo, M. Cencini et al., PRL 112, 044502 (2014) */
       //(tracer+i)->gyrotaxis_velocity = 1.0;
       (tracer + i)->gyrotaxis_velocity = gyrotaxis_velocity[type];
+#endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+      (tracer+i)->gyrotaxis_stability = gyrotaxis_stability[type];
 #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
@@ -1785,6 +1811,13 @@ void output_particles()
     ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
     status = H5Dclose(dataset_id);
 #endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+        /* GYROTACTIC PARAMETER */
+        dataset_id = H5Dcreate(group, "gyrotaxis_stability", hdf5_type, filespace,H5P_DEFAULT, H5P_DEFAULT ,H5P_DEFAULT);
+        for(i=0;i<npart;i++) aux[i]=(tracer + i)->gyrotaxis_stability;
+        ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+        status = H5Dclose(dataset_id);
+#endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_ACTIVE
     dataset_id = H5Dcreate(group, "swim_velocity", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -2168,6 +2201,14 @@ void output_particles()
       fprintf(fout, "%s:/lagrange/gyrotaxis_velocity\n", NEW_H5FILE_NAME);
       fprintf(fout, "</DataItem>\n");
       fprintf(fout, "</Attribute>\n");
+#endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+      /* gyrotaxis velocity parameter */
+      fprintf(fout,"<Attribute Name=\"gyrotaxis_stability\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+      fprintf(fout,"<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout,"%s:/lagrange/gyrotaxis_stability\n",NEW_H5FILE_NAME);
+      fprintf(fout,"</DataItem>\n");
+      fprintf(fout,"</Attribute>\n");
 #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_ACTIVE
@@ -2636,6 +2677,9 @@ void move_particles()
   my_double beta, c_perp, c_par;
   my_double uvx, uvy, uvz;
   my_double matM[3][3];
+#endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+  my_double f_stability,stability,vec_g[3];
 #endif
 #endif
   my_double reactivity;
@@ -3219,7 +3263,16 @@ void move_particles()
       }
       vecF[i] -= vecP[i] * scalOSO;
     }
-
+ #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+     stability = (tracer+ipart)->gyrotaxis_stability;
+     f_stability = -0.5/stability/property.tau_eta*1;//1 for gravity
+     vec_g[0] = 0.0;
+     vec_g[1] = -1.0;//1 for gravity
+     vec_g[2] = 0.0;
+     for (i=0; i<3; i++){
+         vecF[i] +=f_stability*(vec_g[i] - (vec_g[0]*vecP[0]+vec_g[1]*vecP[1]+vec_g[2]*vecP[2])*vecP[i]);
+     }
+    #endif
 #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
     /* Now we compute RHS of the Jeffrey equation for N (it is the vector normal to P) */
     /* first product TMP[i] = S[i][j]*N[j] */
@@ -3897,6 +3950,10 @@ void write_point_particle_h5()
   sprintf(label, "gyrotaxis_velocity");
   H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
 #endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    sprintf(label,"gyrotaxis_stability");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_DOUBLE);
+#endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   sprintf(label, "rotational_diffusion");
@@ -4195,6 +4252,10 @@ void read_point_particle_h5()
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   sprintf(label, "gyrotaxis_velocity");
   H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
+#endif
+#ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
+    sprintf(label,"gyrotaxis_stability");
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_DOUBLE);
 #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION

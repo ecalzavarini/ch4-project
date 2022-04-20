@@ -462,6 +462,11 @@ typedef struct {
   my_double t,t2,t4; 
   my_double dt_t,dt_t2;
  #endif
+ #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+  my_double ux,uy,uz;
+  my_double ux2,uy2,uz2;
+  my_double ux4,uy4,uz4;
+ #endif
  #ifdef LAGRANGE_NUCLEATE
   my_double grave;
   my_double age;
