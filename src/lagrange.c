@@ -2447,6 +2447,19 @@ void dump_particle_averages()
       out_particle_local[type].dt_t = out_particle_all[type].dt_t = 0.0;
       out_particle_local[type].dt_t2 = out_particle_all[type].dt_t2 = 0.0;
 #endif
+#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+      out_particle_local[type].ux = out_particle_all[type].ux = 0.0;
+      out_particle_local[type].uy = out_particle_all[type].uy = 0.0;
+      out_particle_local[type].uz = out_particle_all[type].uz = 0.0;
+
+      out_particle_local[type].ux2 = out_particle_all[type].ux2 = 0.0;
+      out_particle_local[type].uy2 = out_particle_all[type].uy2 = 0.0;
+      out_particle_local[type].uz2 = out_particle_all[type].uz2 = 0.0;
+
+      out_particle_local[type].ux4 = out_particle_all[type].ux4 = 0.0;
+      out_particle_local[type].uy4 = out_particle_all[type].uy4 = 0.0;
+      out_particle_local[type].uz4 = out_particle_all[type].uz4 = 0.0;
+#endif
     }
 
     /* Begin loop on particles */
@@ -2517,6 +2530,20 @@ void dump_particle_averages()
       out_particle_local[type].dt_t += (tracer + ipart)->dt_t;
       out_particle_local[type].dt_t2 += (tracer + ipart)->dt_t * (tracer + ipart)->dt_t;
 #endif
+#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+      out_particle_local[type].ux += (tracer + ipart)->ux;
+      out_particle_local[type].uy += (tracer + ipart)->uy;
+      out_particle_local[type].uz += (tracer + ipart)->uz;
+
+      out_particle_local[type].ux2 += (tracer + ipart)->ux * (tracer + ipart)->ux;
+      out_particle_local[type].uy2 += (tracer + ipart)->uy * (tracer + ipart)->uy;
+      out_particle_local[type].uz2 += (tracer + ipart)->uz * (tracer + ipart)->uz;
+
+      out_particle_local[type].ux4 += pow((tracer + ipart)->ux, 4.0);
+      out_particle_local[type].uy4 += pow((tracer + ipart)->uy, 4.0);
+      out_particle_local[type].uz4 += pow((tracer + ipart)->uz, 4.0);
+#endif
+
 
     } /* end of for on ipart */
 
@@ -2593,6 +2620,19 @@ void dump_particle_averages()
       out_particle_all[type].dt_t *= norm;
       out_particle_all[type].dt_t2 *= norm;
 #endif
+#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+      out_particle_all[type].ux *= norm;
+      out_particle_all[type].uy *= norm;
+      out_particle_all[type].uz *= norm;
+
+      out_particle_all[type].ux2 *= norm;
+      out_particle_all[type].uy2 *= norm;
+      out_particle_all[type].uz2 *= norm;
+
+      out_particle_all[type].ux4 *= norm;
+      out_particle_all[type].uy4 *= norm;
+      out_particle_all[type].uz4 *= norm;
+#endif
     }
 
     if (ROOT)
@@ -2626,6 +2666,12 @@ void dump_particle_averages()
         fprintf(fout, "%e %e %e %e %e ",
                 (double)out_particle_all[type].t, (double)out_particle_all[type].t2, (double)out_particle_all[type].t4,
                 (double)out_particle_all[type].dt_t, (double)out_particle_all[type].dt_t2);
+#endif
+#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+        fprintf(fout, "%e %e %e %e %e %e %e %e %e ", 
+                (double)out_particle_all[type].ux, (double)out_particle_all[type].uy, (double)out_particle_all[type].uz,
+                (double)out_particle_all[type].ux2, (double)out_particle_all[type].uy2, (double)out_particle_all[type].uz2,
+                (double)out_particle_all[type].ux4, (double)out_particle_all[type].uy4, (double)out_particle_all[type].uz4);
 #endif
         fprintf(fout, "\n");
       }
