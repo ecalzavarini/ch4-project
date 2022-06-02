@@ -573,23 +573,31 @@ void initial_conditions(int restart)
  #endif
 
 #ifdef LB_FLUID
- #ifdef LB_FLUID_AFTER_INIT_PERTURBATION 
-   for(k=BRD;k<LNZ+BRD;k++)
-    for(j=BRD;j<LNY+BRD;j++)
-      for(i=BRD;i<LNX+BRD;i++){ 
-	for (pp = 0; pp < NPOP; pp++)  p[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
-      } 
+  #ifdef LB_FLUID_INITIAL_ADD_NOISE
+    #ifdef LB_FLUID_INITIAL_ADD_NOISE_AFTER_READ
+      for(k=BRD;k<LNZ+BRD;k++)
+        for(j=BRD;j<LNY+BRD;j++)
+          for(i=BRD;i<LNX+BRD;i++){ 
+          /* random component of amplitude noise_u in each direction (check it)*/
+            for (pp = 0; pp < NPOP; pp++)  
+	            p[IDX(i,j,k)].p[pp] += property.noise_u*3.0*wgt[pp]*( (2.0*myrand()-1.0)*c[pp].x + (2.0*myrand()-1.0)*c[pp].y + (2.0*myrand()-1.0)*c[pp].z );  
+          } 
+   #endif      
  #endif
 #endif
 
 #ifdef LB_TEMPERATURE
- #ifdef LB_TEMPERATURE_AFTER_INIT_PERTURBATION 
-   for(k=BRD;k<LNZ+BRD;k++)
-    for(j=BRD;j<LNY+BRD;j++)
-      for(i=BRD;i<LNX+BRD;i++){ 
-       	for (pp = 0; pp < NPOP; pp++)  g[IDX(i,j,k)].p[pp] += wgt[pp]*(2.0*myrand()-1.0);
-      } 
+  #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE
+    #ifdef LB_TEMPERATURE_INITIAL_ADD_NOISE_AFTER_READ
+      for(k=BRD;k<LNZ+BRD;k++)
+        for(j=BRD;j<LNY+BRD;j++)
+          for(i=BRD;i<LNX+BRD;i++){ 
+          /* random component of amplitude noise_t  to the temperature */
+            for (pp = 0; pp < NPOP; pp++)  
+              g[IDX(i,j,k)].p[pp] += property.noise_t*wgt[pp]*(2.0*myrand()-1.0); 
+          } 
  #endif
+#endif
 #endif
 
 
