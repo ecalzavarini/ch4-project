@@ -1065,6 +1065,11 @@ void build_forcing(){
    /* compute the loccal light intensity */
    light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
 
+   /* if light is variable along the orizontal direction do the following */
+  //if( fabs(center_V[IDX(i,j,k)].x - property.SX/2.) < property.SX/4. ){
+  //  light_intensity = 0.0;
+  //}
+
    /* compute the growth rate Eq. (3) and (4) in the paper */
    growth_rate = (property.max_production_rate * light_intensity / (property.half_saturation_constant + light_intensity)) - property.loss_rate;
 
