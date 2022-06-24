@@ -1,0 +1,67 @@
+resume 1
+resume_u 1
+resume_t 0
+resume_s 0
+
+NX 128
+NY 128
+NZ 128
+
+SX 128
+SY 128
+SZ 128
+
+time_dt 1.0
+time_start 0.0
+time_end 50000.
+time_dump_field 50000.
+time_dump_diagn 100.
+
+tau_u 0.525
+nu_add 0.0
+
+ym_wall_velocity_x 0.0 
+ym_wall_velocity_z 0.0
+yp_wall_velocity_x 0.0
+yp_wall_velocity_z 0.0
+
+Amp_x 3.429354e-07  1.143118e-07 
+Amp_y 0.0  1.143118e-07 
+Amp_z 0.0  1.143118e-07 
+
+Omega_x 0.00
+Omega_y 0.00
+Omega_z 0.00
+
+noise_u 1.e-6
+
+tau_t 0.7
+
+gravity_x 0.0  
+gravity_y 1.0  
+gravity_z 0.0
+
+time_dump_lagr 20000
+particle_number 6312000
+
+particle_radius_types 4
+particle_radius_min 0.1
+particle_radius_max 10
+
+particle_density_types 21
+particle_density_min 0.1
+particle_density_max 10
+
+tau_drag_types 25
+tau_drag_min 13.6
+tau_drag_max 2720.
+
+beta_coeff_types 7
+beta_coeff_min 0.0015
+beta_coeff_max 3
+
+gravity_coeff_types 3
+gravity_coeff_min 2.027465397e-06
+gravity_coeff_max 2.027465397e-04
+
+
