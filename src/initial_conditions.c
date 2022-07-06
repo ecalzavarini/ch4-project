@@ -351,10 +351,12 @@ void initial_conditions(int restart)
  #endif
 
  #ifdef LB_TEMPERATURE_INITIAL_SPOT
-  /* impose a mean temperature profile , note that bc for temp shall be set to 0 */
-      my_double spot;
-      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 10.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+  /* initialize a thermal spherical spot in the center of the domain , note that bc for temp shall be set to 0 */
+      my_double r_spot;
+      r_spot = sqrt( pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
+                 + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
+                 + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0) );
+      if( r_spot <= 6.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
  #endif
 
  #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
@@ -493,47 +495,48 @@ void initial_conditions(int restart)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){ 
 
-#ifdef LB_SCALAR_INITIAL_LINEAR
-	/* linear temperature gradient */
-	L=(my_double)property.SY; //LY;
-	y = (my_double)center_V[IDX(i,j,k)].y;
-	s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );			
-#endif 
+  #ifdef LB_SCALAR_INITIAL_LINEAR
+	  /* linear temperature gradient */
+	  L=(my_double)property.SY; //LY;
+	  y = (my_double)center_V[IDX(i,j,k)].y;
+	  s[IDX(i,j,k)] = ( (property.S_bot-property.S_ref) - (property.deltaS/L)*y );			
+  #endif 
 
-#ifdef LB_SCALAR_INITIAL_ADD_PERTURBATION	 
+  #ifdef LB_SCALAR_INITIAL_ADD_PERTURBATION	 
       if(NZ==1){
         if(center_V[IDX(i, j, k)].x<property.SX/2){ s[IDX(i,j,k)] += 1.e-2; }else{ s[IDX(i,j,k)] -= 1.e-2; }
       }else{
 	if(center_V[IDX(i, j, k)].x<property.SX/2 && center_V[IDX(i, j, k)].z<property.SZ/2){ s[IDX(i,j,k)] += 1.e-1; }else{ s[IDX(i,j,k)] -= 0.25e-1; }
       }
-#endif
+  #endif
 
-#ifdef LB_SCALAR_INITIAL_CONSTANT
-#ifdef LB_SCALAR_INITIAL_CONSTANT_MEAN
+  #ifdef LB_SCALAR_INITIAL_CONSTANT
+    #ifdef LB_SCALAR_INITIAL_CONSTANT_MEAN
         /* constant mean scalar */
 	  s[IDX(i,j,k)] = 0.5*(property.S_top + property.S_bot);
-#endif
-#ifdef LB_SCALAR_INITIAL_CONSTANT_BOT
+    #endif
+    #ifdef LB_SCALAR_INITIAL_CONSTANT_BOT
         /* constant bottom scalar */
           s[IDX(i,j,k)] = property.S_bot;
-#endif
-#ifdef LB_SCALAR_INITIAL_CONSTANT_TOP
+    #endif
+    #ifdef LB_SCALAR_INITIAL_CONSTANT_TOP
         /* constant top scalar */
           s[IDX(i,j,k)] = property.S_top;
-#endif
-#endif
+    #endif
+  #endif
 
-
-#ifdef LB_SCALAR_INITIAL_BULK
+  #ifdef LB_SCALAR_INITIAL_BULK
 	  if( abs(center_V[IDX(i,j,k)].x - property.SX/2.0)<10   ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
-#endif
+  #endif
 
-#ifdef LB_SCALAR_INITIAL_SPOT
-  /* impose a mean temperature profile? , note that bc for temp shall be set to 0 */
-      my_double spot;
-      spot = pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0)+pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0);
-      if( spot < 10.0 ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
-#endif	  
+  #ifdef LB_SCALAR_INITIAL_SPOT
+  /* initialize a thermal spherical spot in the center of the domain , note that bc for temp shall be set to 0 */
+      my_double r_spot;
+      r_spot = sqrt( pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
+                 + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
+                 + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0) );
+      if( r_spot <= 6.0 ) s[IDX(i,j,k)] = property.S_bot; else  s[IDX(i,j,k)] = property.S_top;
+  #endif
 
 	/* on the populations */
 	for (pp = 0; pp < NPOP; pp++) 
