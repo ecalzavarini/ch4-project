@@ -351,13 +351,25 @@ void initial_conditions(int restart)
  #endif
 
  #ifdef LB_TEMPERATURE_INITIAL_SPOT
-  /* initialize a thermal spherical spot in the center of the domain , note that bc for temp shall be set to 0 */
+  #ifdef LB_TEMPERATURE_INITIAL_SPOT_GAUSSIAN
+  /* initialize a thermal spherically symmetric Gaussian spot in the center of the domain */
+      my_double r2_spot;
+      my_double sigma_spot;
+      r2_spot =  pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
+                 + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
+                 + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0);
+      t[IDX(i,j,k)] =  property.T_top + property.T_bot*exp(-r2_spot/(2.0*sigma_spot));
+  #else
+  /* initialize a thermal spherical spot in the center of the domain */
       my_double r_spot;
       r_spot = sqrt( pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
                  + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
                  + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0) );
       if( r_spot <= 6.0 ) t[IDX(i,j,k)] = property.T_bot; else  t[IDX(i,j,k)] = property.T_top;
+  #endif    
  #endif
+
+ 
 
  #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
       val = 1.e-3; 
