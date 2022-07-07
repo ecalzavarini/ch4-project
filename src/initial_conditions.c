@@ -354,7 +354,7 @@ void initial_conditions(int restart)
   #ifdef LB_TEMPERATURE_INITIAL_SPOT_GAUSSIAN
   /* initialize a thermal spherically symmetric Gaussian spot in the center of the domain */
       my_double r2_spot;
-      my_double sigma_spot = ;
+      my_double sigma_spot = 3.0;
       r2_spot =  pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
                  + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
                  + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0);
