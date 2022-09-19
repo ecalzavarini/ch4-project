@@ -61,9 +61,9 @@
 //#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
-//#define LB_FLUID_INITIAL_ADD_NOISE
 #define LB_FLUID_INITIAL_UNIT_DENSITY
-//#define LB_FLUID_AFTER_INIT_PERTURBATION
+//#define LB_FLUID_INITIAL_ADD_NOISE
+//#define LB_FLUID_INITIAL_ADD_NOISE_AFTER_READ
 #define LB_FLUID_FORCING  /* activate force on the fluid */
 //#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
@@ -306,6 +306,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
+//#define LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
 //#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
 //#define LAGRANGE_NUCLEATE
 //#define LAGRANGE_NUCLEATE_REMELT
