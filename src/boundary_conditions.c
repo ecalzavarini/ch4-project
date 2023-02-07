@@ -170,6 +170,21 @@ if(LNY_END == NY){
 
 if(LNY_START == 0){
   j = BRD; 
+
+#ifdef LB_FLUID_BC_Y_M_OUTLET
+	if(pp==0){
+	  vel.x =  u[IDX(i, j, k)].x;
+	  vel.y =  u[IDX(i, j, k)].y;
+	  vel.z =  u[IDX(i, j, k)].z;
+	  rho = dens[IDX(i, j, k)];
+	  p[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho);
+#ifdef METHOD_MYQUICK
+          p[IDX(i,j-2,k)] = p[IDX(i,j-1,k)];
+#endif
+	}
+#else
+
+
 #ifdef LB_FLUID_BC_Y_M_SLIP	
 	/*
         if(norm_ym_pop[IDX_Y(i, k)].p[pp] > 0.0){ 
@@ -210,7 +225,7 @@ if(LNY_START == 0){
 #endif
   
 #endif
-
+#endif
 
  }
 
@@ -409,6 +424,8 @@ void boundary_and_pbc_conditions_for_streaming(){
   pop p_eq,p_neq;
   int ii,jj,kk;	
   my_double fac;
+  my_double density_wall;
+  
 
   /* communications to be done in any case  (especially for pbc)*/
 
@@ -828,6 +845,20 @@ if(LNY_START == 0){
 
 	  rhs_p[IDX(i,j-1,k)] = equilibrium_given_velocity(vel,rho); 
 }
+#endif
+
+
+#ifdef LB_FLUID_BC_Y_M_DENSITY
+	density_wall = 1.0;
+	fac = 2.0*( density_wall - dens[IDX(i,j,k)] );
+
+	for(pp=0;pp<NPOP;pp++){
+		if(c[pp].y<0){
+			ii = i+(int)c[pp].x;
+			kk = k+(int)c[pp].z;
+			rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[inv[pp]] + wgt[inv[pp]]*fac; 
+		}
+	}
 #endif
 
 
@@ -1688,7 +1719,6 @@ if(LNY_START == 0){
 	  if (ii >= 0 && ii < LNX+TWO_BRD && kk >= 0 && kk < LNZ+TWO_BRD) rhs_p[IDX(ii,j-1,kk)].p[inv[pp]] = rhs_p[IDX(i,j,k)].p[pp];
 #endif
 
-
 #ifdef LB_FLUID_BC_Y_M_JET
   /* inlet geometry - circle: POSITION OF CENTER COORDINATES OF THE CIRCLE SPECIFIED HERE ITSELF */
   if (sqrt(pow(center_V[IDX(i,j,k)].x-(property.SX/2.0), 2.0)+pow(center_V[IDX(i,j,k)].z-(property.SZ/2.0), 2.0)) <= 7.0){    
@@ -1866,7 +1896,6 @@ if(LNY_START == 0){
 #else
 	  T_wall = 0.0;
 #endif
-
 
 
 #ifdef LB_TEMPERATURE_BC_Y_M_OUTLET

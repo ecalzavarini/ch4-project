@@ -97,15 +97,18 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
-//#define LB_FLUID_BC_Y_M_JET                       
+//#define LB_FLUID_BC_Y_M_JET 
+//#define LB_FLUID_BC_Y_M_OUTLET
+#define LB_FLUID_BC_Y_M_DENSITY                      
 //#define LB_FLUID_BC_Y_P_OUTLET
 //#define LB_FLUID_BC_Y_M_VELOCITY
 //#define LB_FLUID_BC_Y_P_VELOCITY
 //#define LB_FLUID_BC_Y_P_GRADIENT
+
 
 //#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
