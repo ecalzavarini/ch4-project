@@ -302,6 +302,18 @@ void initial_conditions(int restart)
 	t[IDX(i,j,k)] = ( (property.T_bot-property.T_ref) - (property.deltaT/L)*y ); //Tb to Tt, linear temp prof; property.deltaT = property.T_bot-property.T_top;
  #endif 
 
+ #ifdef LB_TEMPERATURE_INITIAL_OCEANMIXEDLAYER
+	/* steady diffusive temperature profile for our implemetation of the model 
+   by Neeraja Bhamidipati et al.  Ocean Modelling 149 (2020) 101615 .
+   This for Yanis internship 2023 */
+	L = (my_double)property.SY; 
+	y = (my_double)center_V[IDX(i,j,k)].y;
+	t[IDX(i,j,k)] = -(property.Amp_t/(property.attenuation*property.kappa))*exp(-(L-y)*property.attenuation) 
+                  + property.grad_T_bot*y  
+                  - property.grad_T_bot*L/2. 
+                  + (property.Amp_t/(pow(property.attenuation,2.0)*property.kappa*L))*(1.-exp(-L*property.attenuation)) + property.T_ref;
+ #endif 
+
 #ifdef LB_TEMPERATURE_INITIAL_LINEAR_ZERO_TO_TBOT_ZIQI
 	/* linear temperature gradient */
 	L=(my_double)property.SY; //LY;
