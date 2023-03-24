@@ -308,10 +308,17 @@ void initial_conditions(int restart)
    This for Yanis internship 2023 */
 	L = (my_double)property.SY; 
 	y = (my_double)center_V[IDX(i,j,k)].y;
-	t[IDX(i,j,k)] = -(property.Amp_t/(property.attenuation*property.kappa))*exp(-(L-y)*property.attenuation) 
+	/* Enrico wrong */
+  /*
+  t[IDX(i,j,k)] = -(property.Amp_t/(property.attenuation*property.kappa))*exp(-(L-y)*property.attenuation) 
                   + property.grad_T_bot*y  
                   - property.grad_T_bot*L/2. 
                   + (property.Amp_t/(pow(property.attenuation,2.0)*property.kappa*L))*(1.-exp(-L*property.attenuation)) + property.T_ref;
+ */
+ /* Yanis good */
+  t[IDX(i,j,k)] = (property.Amp_t/property.kappa)*exp(-L*property.attenuation)*( 
+                  (-exp(y*property.attenuation)/property.attenuation)+y-((1.-exp(L*property.attenuation))/(L*pow(property.attenuation, 2.0)))-(L/2.) 
+                  ) + property.grad_T_bot*(y-(L/2.)) + property.T_ref ;
  #endif 
 
 #ifdef LB_TEMPERATURE_INITIAL_LINEAR_ZERO_TO_TBOT_ZIQI
