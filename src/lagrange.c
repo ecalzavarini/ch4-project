@@ -2990,9 +2990,12 @@ void move_particles()
 #ifdef LAGRANGE_ADDEDMASS
 #ifdef LAGRANGE_ADDEDMASS_WAKEDRAG
       /* this ADDs the Shiller-Naumann drag correction as in  E.Calzavarini et al. Physica D 241 (2012) 237-244  */
-      /*  It has the form 0.15*re_p^0.687/tau with re_p the particle raynolds number re_p = |velocity difference|*diameter/viscosity */
+      /*  It has the form 0.15*re_p^0.687/tau with re_p the particle reynolds number re_p = |velocity difference|*diameter/viscosity */
 
-      /* compute  the particle diameter from \tau = r^2/(3*\beta*\nu)  */
+      /* compute  the particle diameter from \tau */
+      /* tau = r^2/(3*\beta*\nu)  */
+      /* NOTE : this works only if beta != 0. 
+      The case beta=0 leads to diameter_p = 0, for that a specification of the particle density is needed */ 
       diameter_p = 2.0 * sqrt((tracer + ipart)->tau_drag * 3.0 * (tracer + ipart)->beta_coeff * property.nu);
 
       /* compute the particle Reynolds number */
