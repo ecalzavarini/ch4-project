@@ -3476,9 +3476,10 @@ void move_particles()
 
 #ifdef LB_FLUID_BC
 
-    //fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
+  //fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
 
 #ifdef LB_LAGRANGE_BC_INELASTIC
+    /* fully inelastic collision */
     /* 1) the position is set exactly on the boundary */
     /* 2) the velocity is set to zero */
     fac1 = 0.0; /* position component is set to zero */
@@ -3488,22 +3489,37 @@ void move_particles()
     /* 1) the position is mirrored with respect to the boundary */
     /* 2)  the velocity is reversed in the cartesian component perpendicualr to the wall */
     fac1 = -1.0; /* position component is reversed    */
-    fac2 = 1.0;  /* velocity component stays the same */
+    fac2 =  1.0; /* velocity component stays the same */
 #endif
 
 #ifdef LB_FLUID_BC_Y
-    if ((tracer + ipart)->y < 0.0)
+    /* bottom wall */
+    if ((tracer + ipart)->y < 0.0) 
     {
+  #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT  
+      /* IF REINJECTION IS NOT DEFINED! */
       /* position */
       (tracer + ipart)->y *= fac1;
       /* velocity */
       (tracer + ipart)->vx *= fac2;
-      if ((tracer + ipart)->vy < 0.0)
-        (tracer + ipart)->vy *= fac1;
+      if ((tracer + ipart)->vy < 0.0) (tracer + ipart)->vy *= fac1;
       (tracer + ipart)->vz *= fac2;
-#ifdef LB_LAGRANGE_BC_INELASTIC
+  #endif  
+  #ifdef LB_LAGRANGE_BC_INELASTIC
+    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
+    /* particles falling across the bottom are randomly injected on top (and viceversa)
+      (their velocity stays null) */
+      (tracer + ipart)->x = property.SX*myrand();
+      //(tracer + ipart)->y = property.SY*(1.-FLT_EPSILON);
+      (tracer + ipart)->y += property.SY;
+      (tracer + ipart)->z = property.SZ*myrand();
+    /* setting Stokes velocity */
+      (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+    #endif
 /* Sedimentation of particles at the bottom boundary */
-#ifdef LAGRANGE_NUCLEATE
+    #ifdef LAGRANGE_NUCLEATE
       if ((tracer + ipart)->grave <= 0.0)
       {
         /* Turning sediments into ghosts, saving the mean sqrt(tau_drag) of sediment in grave */
@@ -3515,32 +3531,47 @@ void move_particles()
           (tracer + ipart)->age, (tracer + ipart)->tau_drag, (tracer + ipart)->beta_coeff);
         (tracer + ipart)->tau_drag = -1.0;
       }
-#else
+    #else
       /* Cases with initial injection. Once sedimented the particle is dead. */
-      if ((tracer + ipart)->sediment == 0.0)
+      //if ((tracer + ipart)->sediment == 0.0)
         (tracer + ipart)->sediment += 1.0;
-#endif
-#endif
-#ifdef LAGRANGE_ORIENTATION_BC
+    #endif
+  #endif
+  #ifdef LAGRANGE_ORIENTATION_BC
       /* orientation */
       if ((tracer + ipart)->py < 0.0)
-        (tracer + ipart)->py *= -1.0;
-#endif
+         (tracer + ipart)->py *= -1.0;
+  #endif
     }
 
+    /* top wall */
     if ((tracer + ipart)->y >= property.SY)
     {
+  #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT
+      /* IF REINJECTION IS NOT DEFINED! */
       /* position */
       (tracer + ipart)->y = property.SY - fac2 * ((tracer + ipart)->y - property.SY) - (1.0 - fac2) * property.SY * FLT_EPSILON;
-      //fprintf(stderr,"(tracer+ipart)->y %e\n",(tracer+ipart)->y);
+      //fprintf(stderr,"(tracer+ipart)->y %e\n",(tracer+ipart)->y);    
       /* velocity */
       (tracer + ipart)->vx *= fac2;
-      if ((tracer + ipart)->vy > 0.0)
-        (tracer + ipart)->vy *= fac1;
+      if ((tracer + ipart)->vy > 0.0) (tracer + ipart)->vy *= fac1;
       (tracer + ipart)->vz *= fac2;
-#ifdef LB_LAGRANGE_BC_INELASTIC
+  #endif
+  #ifdef LB_LAGRANGE_BC_INELASTIC
+    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
+    /* particles falling across the bottom are randomly injected on top (and viceversa)
+      (their velocity stays null) */
+      (tracer + ipart)->x = property.SX*myrand();
+      //(tracer + ipart)->y = FLT_EPSILON;
+      (tracer + ipart)->y -= (property.SY - FLT_EPSILON);
+      (tracer + ipart)->z = property.SZ*myrand();
+    /* setting Stokes velocity */
+      (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+    #endif  
 /* Sedimentation of particles at the top boundary */
-#ifdef LAGRANGE_NUCLEATE
+    #ifdef LAGRANGE_NUCLEATE
       if ((tracer + ipart)->grave <= 0.0)
       {
         /* Turning sediments into ghosts, saving the mean sqrt(tau_drag) of sediment in grave */
@@ -3552,17 +3583,18 @@ void move_particles()
           (tracer + ipart)->age, (tracer + ipart)->tau_drag, (tracer + ipart)->beta_coeff);
         (tracer + ipart)->tau_drag = -1.0;
       }
-#else
+    #else
       /* Cases with initial injection. Once sedimented the particle is dead. */
-      if ((tracer + ipart)->sediment == 0.0)
-        (tracer + ipart)->sediment += 1.0;
-#endif
-#endif
-#ifdef LAGRANGE_ORIENTATION_BC
+      //if ((tracer + ipart)->sediment == 0.0)
+        //(tracer + ipart)->sediment += 1.0;
+        (tracer + ipart)->sediment = time_now;
+    #endif
+  #endif
+  #ifdef LAGRANGE_ORIENTATION_BC
       /* orientation */
       if ((tracer + ipart)->py > 0.0)
         (tracer + ipart)->py *= -1.0;
-#endif
+  #endif
     }
 #endif
 

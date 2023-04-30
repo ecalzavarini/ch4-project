@@ -330,7 +330,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE_GRAVITY
 #define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-//#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+#define LB_LAGRANGE_BC_INELASTIC_REINJECT
 //#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
