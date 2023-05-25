@@ -3514,9 +3514,15 @@ void move_particles()
       (tracer + ipart)->y += property.SY;
       (tracer + ipart)->z = property.SZ*myrand();
     /* setting Stokes velocity */
+      #ifdef LAGRANGE_GRAVITY_VARIABLE
       (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      #else
+      (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      #endif
     #endif
 /* Sedimentation of particles at the bottom boundary */
     #ifdef LAGRANGE_NUCLEATE
