@@ -3,17 +3,17 @@ resume_u 1
 resume_t 1
 resume_s 0
 
-NX 400
-NY 400
+NX 101
+NY 50
 NZ 1
 
-SX 400
-SY 400
+SX 101
+SY 50
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 50000.
+time_end 100000.
 time_dump_field 500.
 time_dump_diagn 200.
 
@@ -39,11 +39,11 @@ noise_u 1.e-1
 
 tau_t 0.505
 
-T_bot -40.0
-T_top  40.0
+T_bot   1.0
+T_top  -1.0
 T_ref  0.0
 T_ref2 0.0
-grad_T_bot 0.2  -0.0078125
+grad_T_bot 0.01  -0.0078125
 grad_T_top -11.7994552008428  -0.0078125
 
 beta_t  0.000008  0.00006944444444444
@@ -55,7 +55,7 @@ gravity_x 0.0
 gravity_y 1.0  
 gravity_z 0.0
 
-Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333 
+Amp_t 0.002  0.0016  3.91971e-05   0.00005  0.00130208333333333 
 attenuation 0.025
 
 T_solid -0.5
@@ -86,18 +86,16 @@ background_turbidity	0.04
 phytoplankton_specific_lght_attenuation	3.75E-10
 incident_light_intensity	1.4
 
-
-
 time_dump_lagr 1000
-particle_number 1000
+particle_number 2000
 
-particle_radius_types 4
+particle_radius_types 1
 particle_radius_min 1
-particle_radius_max 4
+particle_radius_max 1
 
-particle_density_types 3
-particle_density_min 1
-particle_density_max 10
+particle_density_types 1
+particle_density_min 1.1
+particle_density_max 1.1
 
 tau_drag_types 1
 tau_drag_min 0
@@ -108,8 +106,8 @@ beta_coeff_min 0
 beta_coeff_max 3
 
 gravity_coeff_types 1
-gravity_coeff_min 0.01
-gravity_coeff_max 0.01
+gravity_coeff_min 0.0001
+gravity_coeff_max 0.0001
 
 aspect_ratio_types 1
 aspect_ratio_min 100.0

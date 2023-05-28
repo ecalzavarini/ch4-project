@@ -2740,6 +2740,10 @@ void move_particles()
 #endif
 #endif
 
+/* this variable is used for the implementation of BC for particles */
+  my_double radius;  
+  int type;
+
   //fprintf(stderr,"me %d I am here, npart %d time %g\n",me, npart,time_now);
 
   /* Begin loop on particles */
@@ -3492,14 +3496,30 @@ void move_particles()
     fac2 =  1.0; /* velocity component stays the same */
 #endif
 
+radius = 0.0;
+/* we compute the radius of the particle from tau_drag and beta or density */
+#ifdef LB_LAGRANGE_BC_RADIUSandDENSITY
+  #ifdef LAGRANGE_RADIUSandDENSITY
+  /* we identify the particle type */
+  //type = ((int)(tracer + i)->name) % (int)property.particle_types;
+  //radius = particle_radius[j];
+	  #ifdef LAGRANGE_ADDEDMASS
+    /* we use tau with added mass \tau = r^2/(3*\beta*\nu) (Note: beta was derived from density assuming that rho_f=1 )*/
+	    radius = sqrt( (tracer + ipart)->tau_drag * property.nu * 3.0 * (tracer + ipart)->beta_coeff );
+	  #endif
+  #endif
+#endif
+
+
 #ifdef LB_FLUID_BC_Y
     /* bottom wall */
-    if ((tracer + ipart)->y < 0.0) 
+    if ((tracer + ipart)->y < radius) 
     {
   #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT  
       /* IF REINJECTION IS NOT DEFINED! */
       /* position */
-      (tracer + ipart)->y *= fac1;
+      //(tracer + ipart)->y *= fac1;
+      (tracer + ipart)->y = fac1*((tracer + ipart)->y - radius) + radius;
       /* velocity */
       (tracer + ipart)->vx *= fac2;
       if ((tracer + ipart)->vy < 0.0) (tracer + ipart)->vy *= fac1;
@@ -3551,12 +3571,13 @@ void move_particles()
     }
 
     /* top wall */
-    if ((tracer + ipart)->y >= property.SY)
+    if ((tracer + ipart)->y >= property.SY-radius)
     {
   #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT
       /* IF REINJECTION IS NOT DEFINED! */
       /* position */
-      (tracer + ipart)->y = property.SY - fac2 * ((tracer + ipart)->y - property.SY) - (1.0 - fac2) * property.SY * FLT_EPSILON;
+      //(tracer + ipart)->y = property.SY - fac2 * ((tracer + ipart)->y - property.SY) - (1.0 - fac2) * property.SY * FLT_EPSILON;
+      (tracer + ipart)->y = fac1*((tracer + ipart)->y - (property.SY-radius)) + (property.SY-radius) ;
       //fprintf(stderr,"(tracer+ipart)->y %e\n",(tracer+ipart)->y);    
       /* velocity */
       (tracer + ipart)->vx *= fac2;
@@ -3611,7 +3632,7 @@ void move_particles()
 #endif
 
 #ifdef LB_FLUID_BC_X
-    if ((tracer + ipart)->x < 0.0)
+    if ((tracer + ipart)->x < radius)
     {
       /* position */
       (tracer + ipart)->x *= fac1;
@@ -3622,7 +3643,7 @@ void move_particles()
       (tracer + ipart)->vz *= fac2;
     }
 
-    if ((tracer + ipart)->x >= property.SX)
+    if ((tracer + ipart)->x >= property.SX-radius)
     {
       /* position */
       (tracer + ipart)->x = property.SX - fac2 * ((tracer + ipart)->x - property.SX) - (1.0 - fac2) * property.SX * FLT_EPSILON;
@@ -3635,7 +3656,7 @@ void move_particles()
 #endif
 
 #ifdef LB_FLUID_BC_Z
-    if ((tracer + ipart)->z < 0.0)
+    if ((tracer + ipart)->z < radius)
     {
       /* position */
       (tracer + ipart)->z *= fac1;
@@ -3646,7 +3667,7 @@ void move_particles()
         (tracer + ipart)->vz *= fac1;
     }
 
-    if ((tracer + ipart)->z >= property.SZ)
+    if ((tracer + ipart)->z >= property.SZ-radius)
     {
       /* position */
       (tracer + ipart)->z = property.SZ - fac2 * ((tracer + ipart)->z - property.SZ) - (1.0 - fac2) * property.SZ * FLT_EPSILON;
