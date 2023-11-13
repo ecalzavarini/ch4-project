@@ -33,32 +33,58 @@ void copy_vector(vector *f, vector *f_copy){
     #ifdef EULER_PARTICLE_CONCENTRATION
 
 /* compute the right hand side of the concentration equation */
-/*   \partial_t c = - u \nabla c   */
-void compute_rhs_c()
-{
+/*   \partial_t c = - \nabla \cdot ( u * c)   */
+void compute_rhs_c(){
+
+ mydouble uface;
 
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
 
-             /*  we implement the linear upwind scheme for FV */
-            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x )
-            if( uface  >0){
+            /*  we implement the linear upwind scheme for the Finite Volume method*/
+
+            /* x + 1/2 face */
+            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x)
+            if( uface  >0)
                 rhs_c[IDX(i,j,k)] =  -uface * c[IDX(i,j,k)];
-            }else{
+            else
                 rhs_c[IDX(i,j,k)] =  -uface * c[IDX(i+1,j,k)];
-            }
-            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x )
-            if( u[IDX(i,j,k)].y >0){
-                rhs_c[IDX(i,j,k)] +=  -u[IDX(i,j,k)].y*( c[IDX(i,j,k)] - c[IDX(i,j-1,k)] );
-            }else{
-                rhs_c[IDX(i,j,k)] +=  -u[IDX(i,j,k)].y*( c[IDX(i,j+1,k)] - c[IDX(i,j,k)] );
-            }
-            if( u[IDX(i,j,k)].z >0){
-                rhs_c[IDX(i,j,k)] =  -u[IDX(i,j,k)].z*( c[IDX(i,j,k)] - c[IDX(i,j,k-1)] );
-            }else{
-                rhs_c[IDX(i,j,k)] =  -u[IDX(i,j,k)].z*( c[IDX(i,j,k+1)] - c[IDX(i,j,k)] );
-            }
+
+            /* x - 1/2 face */
+            uface = 0.5 * (u[IDX(i,j,k)].x + u [IDX(i-1,j,k).x])
+	        if (uface >  0)
+		        rhs_c[IDX(i,j,k)] += -uface * c[IDX(i-1,j,k)];
+            else
+		        rhs_c[IDX(i,j,k)] += -uface * c[IDX(i,j,k)];
+            
+            /* y + 1/2 face */
+	        uface =  0.5*( u[IDX(i,j,k)].y + u[IDX(i,j+1,k)].y)
+            if( uface >0)
+                rhs_c[IDX(i,j,k)] +=  -uface * c[IDX(i,j,k)];
+            else
+                rhs_c[IDX(i,j,k)] +=  -uface *  c[IDX(i,j+1,k)];
+            
+            /* y - 1/2 face */
+	        uface = 0.5 * (u[IDX(i,j,k)].y + u[IDX(i,j-1,k)].y);
+	        if( uface >0)
+	            rhs_c[IDX(i,j,k)] += -uface * c[IDX(i,j-1,k)];
+            else
+	            rhs_c[IDX(i,j,k)] += -uface * c[IDX(i,j,k)];	
+
+            /* z + 1/2 face */
+	        uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,K+1)].z);
+            if( uface >0)
+                rhs_c[IDX(i,j,k)] +=  -uface * c[IDX(i,j,k)];
+            else
+                rhs_c[IDX(i,j,k)] +=  -uface * c[IDX(i,j,k+1)];
+            
+            /* z - 1/2 face */
+    	    uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k-1)].z);
+	        if (uface > 0)
+	            rhs_c[IDX(i,j,k)] += -uface * c[IDX(i,j,k-1)];
+	        else
+                rhs_c[IDX(i,j,k)] += -uface * c[IDX(i,j,k)];		    
 
             /*  we implement the linear upwind scheme for FD */
             /*
@@ -73,9 +99,9 @@ void compute_rhs_c()
                 rhs_c[IDX(i,j,k)] +=  -u[IDX(i,j,k)].y*( c[IDX(i,j+1,k)] - c[IDX(i,j,k)] );
             }
             if( u[IDX(i,j,k)].z >0){
-                rhs_c[IDX(i,j,k)] =  -u[IDX(i,j,k)].z*( c[IDX(i,j,k)] - c[IDX(i,j,k-1)] );
+                rhs_c[IDX(i,j,k)] +=  -u[IDX(i,j,k)].z*( c[IDX(i,j,k)] - c[IDX(i,j,k-1)] );
             }else{
-                rhs_c[IDX(i,j,k)] =  -u[IDX(i,j,k)].z*( c[IDX(i,j,k+1)] - c[IDX(i,j,k)] );
+                rhs_c[IDX(i,j,k)] +=  -u[IDX(i,j,k)].z*( c[IDX(i,j,k+1)] - c[IDX(i,j,k)] );
             }
             */
             }/* for i,j,k */
@@ -88,8 +114,7 @@ void compute_rhs_c()
 
 
 
-void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f)
-{
+void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f){
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
@@ -101,6 +126,9 @@ void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f)
 
 
 
+
 copy_scalar(rhs_c, old_rhs_c);
+/* implement the boundary condition for the fluid hydrodynamics fields */
+boundary_conditions_hydro(); 
 compute_rhs_c();
 time_stepping_scalar(c,rhs_c,old_rhs_c);
