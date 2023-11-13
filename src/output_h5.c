@@ -156,7 +156,13 @@ void output_h5(){
  H5Dclose(edataset);
 #endif
 
-
+#ifdef EULER_PARTICLE
+  #ifdef EULER_PARTICLE_CONCENTRATION
+ edataset = H5Dcreate(group, "particle_concentration", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, c);
+ H5Dclose(edataset);
+ #endif
+#endif
 
   MPI_Barrier(MPI_COMM_WORLD);
       
@@ -292,6 +298,16 @@ void output_h5(){
   fprintf(fout,"%s:/euler/landscape\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
+#endif
+
+#ifdef EULER_PARTICLE
+  #ifdef EULER_PARTICLE_CONCENTRATION
+  fprintf(fout,"<Attribute Name=\"particle_concentration\" AttributeType=\"Scalar\" Center=\"Node\">\n");
+  fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
+  fprintf(fout,"%s:/euler/particle_concentration\n",NEW_H5FILE_NAME);
+  fprintf(fout,"</DataItem>\n");
+  fprintf(fout,"</Attribute>\n");
+  #endif
 #endif
 
   fprintf(fout,"<Time Value=\" %e\" />\n",time_now);

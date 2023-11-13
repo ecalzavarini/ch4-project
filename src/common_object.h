@@ -318,9 +318,10 @@ extern int ngrave;
 #endif
 
 
-
-
-
+/* euler_particle defintions */
+#ifdef EULER_PARTICLE
+extern my_double *c, *rhs_c, *old_rhs_c;
+#endif
 
 
 
