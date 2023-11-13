@@ -1408,6 +1408,18 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
  
 #endif
 
+#ifdef EULER_PARTICLE
+  #ifdef EULER_PARTICLE_CONCENTRATION
+    c  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+    if(c == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
+    set_to_zero_scalar( c,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+    rhs_c  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+    if(rhs_c == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
+    set_to_zero_scalar( rhs_c,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  #endif
+#endif
+
   if(ROOT) fprintf(stderr,"Total memory allocation %lf MB\n",(my_double)memory_all/1.e+6); 
 
 }
