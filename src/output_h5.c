@@ -159,7 +159,7 @@ void output_h5(){
 #ifdef EULER_PARTICLE
   #ifdef EULER_PARTICLE_CONCENTRATION
  edataset = H5Dcreate(group, "particle_concentration", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
-  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, c);
+  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, conc);
  H5Dclose(edataset);
  #endif
 #endif
