@@ -670,7 +670,7 @@ void initial_conditions(int restart)
       if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n euler particle concentration is initialized from memory.\n",fnamein);
     }
     /* send-receive borders */ 
-    //sendrecv_borders_scalar(conc);
+    sendrecv_borders_scalar(conc);
   #endif
  #endif
 #endif
