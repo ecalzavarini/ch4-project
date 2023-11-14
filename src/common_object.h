@@ -320,7 +320,9 @@ extern int ngrave;
 
 /* euler_particle defintions */
 #ifdef EULER_PARTICLE
-extern my_double *c, *rhs_c, *old_rhs_c;
+  #ifdef EULER_PARTICLE_CONCENTRATION
+extern my_double *conc, *rhs_conc, *old_rhs_conc;
+  #endif
 #endif
 
 

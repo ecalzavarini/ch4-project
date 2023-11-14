@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 		/* if REDEFINED_POP is defined the BC are computed for f_aux in advection */
 #endif
 #endif
-#endif
+#endif /* end of NOT DEFINED method STREAMING */
 
 #ifdef LB_FLUID
 		compute_advection(p, rhs_p, property.tau_u, p_eq, 'p');
@@ -176,6 +176,13 @@ int main(int argc, char **argv)
 		output_particles();		  /* binary or h5 */
 		dump_particle_averages(); /* ascii diagnostic averages */
 #endif
+
+	  /* now the extra EULERIAN equations (implemented by Finite-volumes method) */
+#ifdef EULER_PARTICLE
+compute_rhs_conc();
+time_stepping_scalar(conc,rhs_conc,old_rhs_conc);
+#endif 
+
 	} /* loop on time: time_now */
 
 #ifdef SYSTEM_TIMING
@@ -184,13 +191,16 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef OUTPUT_H5
-	write_pop_h5();
-#ifdef LB_TEMPERATURE_MELTING
-	write_scalar_h5(liquid_frac, "liquid_frac");
-#endif
-#ifdef LAGRANGE
-	write_point_particle_h5();
-#endif
+		write_pop_h5();
+	#ifdef LB_TEMPERATURE_MELTING
+		write_scalar_h5(liquid_frac, "liquid_frac");
+	#endif
+	#ifdef LAGRANGE
+		write_point_particle_h5();
+	#endif
+	#ifdef EULER_PARTICLE
+		write_scalar_h5(conc, "euler_particle_concentration");
+	#endif 
 #endif
 
 	/* Shut down */

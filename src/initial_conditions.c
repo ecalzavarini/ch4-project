@@ -646,6 +646,35 @@ void initial_conditions(int restart)
 #endif
 #endif
 
+/* From here initial conditions for other eulerian fields */
+
+#ifdef OUTPUT_H5
+  #ifdef EULER_PARTICLE
+    #ifdef EULER_PARTICLE_CONCENTRATION
+      for(k=BRD;k<LNZ+BRD;k++)
+        for(j=BRD;j<LNY+BRD;j++)
+          for(i=BRD;i<LNX+BRD;i++){ 
+            if(center_V[IDX(i, j, k)].y<property.SY/2)
+            conc[IDX(i,j,k)] = 1; 
+            else 
+            conc[IDX(i,j,k)] = 0; 
+          }
+    /* read the data from file if this is requested and the file exists */
+    sprintf(fnamein,"euler_particle_concentration.h5");  
+    fin = fopen("euler_particle_concentration.h5","r"); 
+    if(restart && resume_t && fin != NULL){
+      read_scalar_h5(conc,"euler_particle_concentration");
+        if(ROOT) fprintf(stderr,"The %s file is present!\n euler particle concentration is initialized from file.\n",fnamein);
+      fclose(fin);
+    }else{   
+      if(ROOT) fprintf(stderr,"Warning message -> %s file is missing!\n euler particle concentration is initialized from memory.\n",fnamein);
+    }
+    /* send-receive borders */ 
+    //sendrecv_borders_scalar(conc);
+  #endif
+ #endif
+#endif
+
 }
 
 

@@ -318,6 +318,12 @@ int ngrave;
 #endif
 #endif
 
+/* euler_particle defintions */
+#ifdef EULER_PARTICLE
+    #ifdef EULER_PARTICLE_CONCENTRATION
+my_double *conc, *rhs_conc, *old_rhs_conc;
+    #endif
+#endif
 
 
 
