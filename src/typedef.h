@@ -290,6 +290,8 @@ typedef struct {
 #define BRD 2
 #elif defined(LAGRANGE_GRADIENT_BRD2)  /* define a double border in order to have centered second order gradients everywhere */
 #define BRD 2
+#elif defined(EULER_PARTICLE)  /* define a double border in order to use QUICK advection scheme */
+#define BRD 2
 #else 
 #define BRD 1
 #endif
