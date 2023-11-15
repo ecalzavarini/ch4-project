@@ -179,8 +179,11 @@ int main(int argc, char **argv)
 
 	  /* now the extra EULERIAN equations (implemented by Finite-volumes method) */
 #ifdef EULER_PARTICLE
+//int i;
+//for (i = 0; i < 10; i++){
 compute_rhs_conc();
 time_stepping_scalar(conc,rhs_conc,old_rhs_conc);
+//}
 #endif 
 
 	} /* loop on time: time_now */

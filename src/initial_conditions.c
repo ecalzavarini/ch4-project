@@ -651,13 +651,19 @@ void initial_conditions(int restart)
 #ifdef OUTPUT_H5
   #ifdef EULER_PARTICLE
     #ifdef EULER_PARTICLE_CONCENTRATION
+    my_double r_spot;
       for(k=BRD;k<LNZ+BRD;k++)
         for(j=BRD;j<LNY+BRD;j++)
           for(i=BRD;i<LNX+BRD;i++){ 
-            if(center_V[IDX(i, j, k)].y<property.SY/2)
-            conc[IDX(i,j,k)] = 1; 
-            else 
-            conc[IDX(i,j,k)] = 0; 
+           // if(center_V[IDX(i, j, k)].y<property.SY/2)
+           // conc[IDX(i,j,k)] = 0.1; 
+           // else 
+           // conc[IDX(i,j,k)] = 0;              
+      r_spot = sqrt( pow(center_V[IDX(i,j,k)].x-property.SX/2.0, 2.0) 
+                 + pow(center_V[IDX(i,j,k)].y-property.SY/2.0, 2.0)
+                 + pow(center_V[IDX(i,j,k)].z-property.SZ/2.0, 2.0) );
+      //if( r_spot <= 12.0 ) conc[IDX(i,j,k)] = 0.1; else  conc[IDX(i,j,k)] = 0;
+      conc[IDX(i,j,k)] = exp( - pow((r_spot/5.0),2.0) );
           }
     /* read the data from file if this is requested and the file exists */
     sprintf(fnamein,"euler_particle_concentration.h5");  
