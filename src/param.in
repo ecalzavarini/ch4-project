@@ -13,8 +13,8 @@ SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 2000.
-time_dump_field 50.
+time_end 40000.
+time_dump_field 400.
 time_dump_diagn 200.
 
 tau_u 0.536
@@ -46,7 +46,7 @@ T_ref2 0.0
 grad_T_bot 0.01  -0.0078125
 grad_T_top -11.7994552008428  -0.0078125
 
-beta_t  0.000016  0.00006944444444444
+beta_t  0.0000016  0.000016  0.00006944444444444
 beta2_t 0.0
 
 noise_t 3.e-5

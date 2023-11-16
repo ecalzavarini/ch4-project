@@ -106,30 +106,30 @@ boundary_conditions_hydro();
 
         /*  we implement the QUICK scheme for the Finite Volume method*/
 
-            uface = 0.01;
+            //uface = 0.01;
             /* x + 1/2 face */
-            //uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
+            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i-1, j, k)] + coeff_D * conc[IDX(i+1, j, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i+1, j, k)] + coeff_UU * conc[IDX(i+2, j, k)] + coeff_D * conc[IDX(i, j, k)]);
 
             /* x - 1/2 face */
-            //uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
+            uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
 	        if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i-1, j, k)] + coeff_UU * conc[IDX(i-2, j, k)] + coeff_D * conc[IDX(i, j, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i+1, j, k)] + coeff_D * conc[IDX(i-1, j, k)]);
             
-            uface = 0.01;
+            //uface = 0.01;
             /* y + 1/2 face */
-            //uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(1, j+1, k)].y);
+            uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(1, j+1, k)].y);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j-1, k)] + coeff_D * conc[IDX(i, j+1, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j+1, k)] + coeff_UU * conc[IDX(i, j+2, k)] + coeff_D * conc[IDX(i, j, k)]);
             /* y - 1/2 face*/ 
-            //uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(i, j-1, k)].y);
+            uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(i, j-1, k)].y);
              if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j-1, k)] + coeff_UU * conc[IDX(i, j-2, k)] + coeff_D * conc[IDX(i, j, k)]);
             else
@@ -137,13 +137,13 @@ boundary_conditions_hydro();
             
             uface = 0.0;
             /* z + 1/2 face */
-            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i+1, j, k)].z);
+            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k+1)].z);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j, k-1)] + coeff_D * conc[IDX(i, j, k+1)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k+1)] + coeff_UU * conc[IDX(i, j, k+2)] + coeff_D * conc[IDX(i, j, k)]);
             /* z - 1/2 face */ 
-            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i-1, j, k)].z);
+            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k-1)].z);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k-1)] + coeff_UU * conc[IDX(i, j, k-2)] + coeff_D * conc[IDX(i, j, k)]);
             else
