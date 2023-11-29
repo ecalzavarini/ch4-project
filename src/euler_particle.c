@@ -43,9 +43,9 @@ my_double minmod(my_double a, my_double b) {
     #ifdef EULER_PARTICLE_CONCENTRATION
 /* which method? */
 #define TEST
-#define UPWIND
+//#define UPWIND
 //#define QUICK
-//#define KT
+#define KT
 
 /* compute the right hand side of the concentration equation */
 /*   \partial_t conc = - \nabla \cdot ( u * conc)   */
@@ -69,6 +69,7 @@ void compute_rhs_conc(){
 
 /* we store the previous rhs */
 copy_scalar(rhs_conc, old_rhs_conc);
+
 /* apply the boundary condition for the fluid hydrodynamics fields */
 boundary_conditions_hydro(); 
 
@@ -80,7 +81,10 @@ boundary_conditions_hydro();
           u[IDX(i, j, k)].y = 0.0;
           u[IDX(i, j, k)].z = 0.0;
                }
+     boundary_conditions_hydro();
 #endif
+
+
 
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
@@ -94,45 +98,45 @@ boundary_conditions_hydro();
             /* NOTE : this scheme is TOO diffusive! */
 
             /* x + 1/2 face */
-            uface = 0.01;
-            //uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
+            //uface = 0.01;
+            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
             if( uface  >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
             else
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i+1,j,k)];
 
             /* x - 1/2 face */
-            //uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
+            uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
 	        if (uface >  0)
 		        rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i-1,j,k)];
             else
 		        rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j,k)];
             
             /* y + 1/2 face */
-            uface =  0.01;
-	        //uface =  0.5*( u[IDX(i,j,k)].y + u[IDX(i,j+1,k)].y);
+            //uface =  0.01;
+	       uface =  0.5*( u[IDX(i,j,k)].y + u[IDX(i,j+1,k)].y);
             if( uface >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
             else
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j+1,k)];
             
             /* y - 1/2 face */
-	        //uface = 0.5 * (u[IDX(i,j,k)].y + u[IDX(i,j-1,k)].y);
+	        uface = 0.5 * (u[IDX(i,j,k)].y + u[IDX(i,j-1,k)].y);
 	        if( uface >0)
 	            rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j-1,k)];
             else
 	            rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j,k)];	
 
             /* z + 1/2 face */
-            uface =  0.0;
-	        //uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k+1)].z);
+            //uface =  0.0;
+	        uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k+1)].z);
             if( uface >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
             else
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k+1)];
             
             /* z - 1/2 face */
-    	    //uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k-1)].z);
+    	        uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k-1)].z);
 	        if (uface > 0)
 	            rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j,k-1)];
 	        else
@@ -142,44 +146,44 @@ boundary_conditions_hydro();
 #ifdef QUICK
         /*  we implement the QUICK scheme for the Finite Volume method*/
 
-            uface = 0.001;
+            //uface = 0.001;
             /* x + 1/2 face */
-            //uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
+            uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i-1, j, k)] + coeff_D * conc[IDX(i+1, j, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i+1, j, k)] + coeff_UU * conc[IDX(i+2, j, k)] + coeff_D * conc[IDX(i, j, k)]);
 
             /* x - 1/2 face */
-            //uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
+            uface = 0.5 * (u[IDX(i,j,k)].x + u[IDX(i-1,j,k)].x);
 	        if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i-1, j, k)] + coeff_UU * conc[IDX(i-2, j, k)] + coeff_D * conc[IDX(i, j, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i+1, j, k)] + coeff_D * conc[IDX(i-1, j, k)]);
             
-            uface = 0.0;
+            //uface = 0.0;
             /* y + 1/2 face */
-            //uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(1, j+1, k)].y);
+            uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(1, j+1, k)].y);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j-1, k)] + coeff_D * conc[IDX(i, j+1, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j+1, k)] + coeff_UU * conc[IDX(i, j+2, k)] + coeff_D * conc[IDX(i, j, k)]);
             /* y - 1/2 face*/ 
-            //uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(i, j-1, k)].y);
+            uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(i, j-1, k)].y);
              if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j-1, k)] + coeff_UU * conc[IDX(i, j-2, k)] + coeff_D * conc[IDX(i, j, k)]);
             else
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j+1, k)] + coeff_D * conc[IDX(i, j-1, k)]);
             
-            uface = 0.0;
+            //uface = 0.0;
             /* z + 1/2 face */
-            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k+1)].z);
+            uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k+1)].z);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j, k-1)] + coeff_D * conc[IDX(i, j, k+1)]);
             else
                  rhs_conc[IDX(i, j, k)] += -uface * (coeff_U * conc[IDX(i, j, k+1)] + coeff_UU * conc[IDX(i, j, k+2)] + coeff_D * conc[IDX(i, j, k)]);
             /* z - 1/2 face */ 
-            //uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k-1)].z);
+            uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k-1)].z);
             if (uface > 0)
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k-1)] + coeff_UU * conc[IDX(i, j, k-2)] + coeff_D * conc[IDX(i, j, k)]);
             else
@@ -299,7 +303,7 @@ boundary_conditions_hydro();
           H6 = 0.5 * (fL6 + fR6 - f * (eR1 - eL1));
 
          /* final formula of KT scheme*/
-          rhs_conc[IDX(i,j,k)] +=  -(H1-H2)-(H3-H4)-(H5-H6);
+          rhs_conc[IDX(i,j,k)] =  -(H1-H2)-(H3-H4)-(H5-H6);
 #endif
           } /* i, j, k */
             
@@ -320,7 +324,7 @@ void time_stepping_scalar(my_double *ff, my_double *rhs_ff, my_double *old_rhs_f
             /* this is 2nd order Adams-Bashforth */
             ff[IDX(i,j,k)] += 1.5*rhs_ff[IDX(i,j,k)] - 0.5*old_rhs_ff[IDX(i,j,k)];
             /* 1st order Euler */
-            //f[IDX(i,j,k)] += rhs_f[IDX(i,j,k)];
+            //ff[IDX(i,j,k)] += rhs_ff[IDX(i,j,k)];
     
             }
             /* copy borders */
