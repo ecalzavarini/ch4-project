@@ -165,7 +165,7 @@ my_double tau_s_les(int i , int j , int k);
 void copy_scalar(my_double *f, my_double *f_copy);
 void copy_vector(vector *f, vector *f_copy);
   #ifdef EULER_PARTICLE_CONCENTRATION
-double minmod(double a, double b, double c);
+double minmod(double a, double b);
 void compute_rhs_conc();
   #endif
 void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f);
