@@ -42,9 +42,10 @@ my_double minmod(my_double a, my_double b) {
 #ifdef EULER_PARTICLE
     #ifdef EULER_PARTICLE_CONCENTRATION
 /* which method? */
-//#define UPWIND
+#define TEST
+#define UPWIND
 //#define QUICK
-#define KT
+//#define KT
 
 /* compute the right hand side of the concentration equation */
 /*   \partial_t conc = - \nabla \cdot ( u * conc)   */
@@ -71,6 +72,7 @@ copy_scalar(rhs_conc, old_rhs_conc);
 /* apply the boundary condition for the fluid hydrodynamics fields */
 boundary_conditions_hydro(); 
 
+#ifdef TEST
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
@@ -78,7 +80,7 @@ boundary_conditions_hydro();
           u[IDX(i, j, k)].y = 0.0;
           u[IDX(i, j, k)].z = 0.0;
                }
-
+#endif
 
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
@@ -293,8 +295,8 @@ boundary_conditions_hydro();
 
           /*Numerical fluxed at x-1/2*/
           H2 = 0.5 * (fL4 + fR4 - d * (cR1 - cL1));
-          H4 = 0.5 * (fL5 + fR5 - e * (cR1 - cL1));
-          H6 = 0.5 * (fL6 + fR6 - f * (cR1 - cL1));
+          H4 = 0.5 * (fL5 + fR5 - e * (dR1 - dL1));
+          H6 = 0.5 * (fL6 + fR6 - f * (eR1 - eL1));
 
          /* final formula of KT scheme*/
           rhs_conc[IDX(i,j,k)] +=  -(H1-H2)-(H3-H4)-(H5-H6);
