@@ -66,6 +66,7 @@ void compute_rhs_conc(){
  my_double ux1, ux2, uy1, uy2, uz1, uz2, ux11, uy11, uz11, ux22, uy22, uz22, cx1, cx2, cy1, cy2, cz1, cz2, cx11, cy11, cz11, cx22, cy22, cz22;
  my_double a, b, c, d, e, f, H1, H2, H3, H4, H5, H6;
  my_double fL1, fR1, fL2, fR2, fL3, fR3, fL4, fR4, fL5, fR5, fL6, fR6;
+ int ip,jp,kp,im,km,jm,ipp,jpp,kpp,imm,jmm,kmm;
 
 /* we store the previous rhs */
 copy_scalar(rhs_conc, old_rhs_conc);
@@ -85,13 +86,16 @@ boundary_conditions_hydro();
 #endif
 
 
-
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
 
-            rhs_conc[IDX(i,j,k)] = 0.0;
+               ip  = i+1; jp  = j+1; kp  = k+1;
+               im  = i-1; jm  = j-1; km  = k-1;
+               ipp = i+2; jpp = j+2; kpp = k+2;
+               imm = i-2; jmm = j-2; kmm = k-2;
 
+               rhs_conc[IDX(i,j,k)] = 0.0;
 
 #ifdef UPWIND 
             /*  we implement the linear upwind scheme for the Finite Volume method*/     
@@ -185,42 +189,43 @@ boundary_conditions_hydro();
 #endif /* QUICK */
 
 #ifdef KT 
+
           /*at face H_i+1/2, H_j+1/2, H_k+1/2*/
 
-          ux1 = minmod((u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x) / dx, (u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x)/ dx  );
-          ux2 = minmod((u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x) / dx, (u[IDX(i+2, j, k)].x - u[IDX(i+1, j, k)].x)/ dx);
-          uy1 = minmod((u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y) / dy, (u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y)/ dy  );
-          uy2 = minmod((u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y) / dy, (u[IDX(i, j+2, k)].y - u[IDX(i, j+1, k)].y)/ dy);
-          uz1 = minmod((u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z) / dz, (u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z)/ dz  );
-          uz2 = minmod((u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z) / dz, (u[IDX(i, j, k+2)].z - u[IDX(i, j, k+1)].z)/ dz);
+          ux1 = minmod((u[IDX(i,  j,  k )].x - u[IDX(im, j,  k )].x) / dx, (u[IDX(ip,  j,   k  )].x - u[IDX(i,  j,  k )].x)/ dx);
+          ux2 = minmod((u[IDX(ip, j,  k )].x - u[IDX(i,  j,  k )].x) / dx, (u[IDX(ipp, j,   k  )].x - u[IDX(ip, j,  k )].x)/ dx);
+          uy1 = minmod((u[IDX(i,  j,  k )].y - u[IDX(i,  jm, k )].y) / dy, (u[IDX(i,   jp,  k  )].y - u[IDX(i,  j,  k )].y)/ dy);
+          uy2 = minmod((u[IDX(i,  jp, k )].y - u[IDX(i,  j,  k )].y) / dy, (u[IDX(i,   jpp, k  )].y - u[IDX(i,  jp, k )].y)/ dy);
+          uz1 = minmod((u[IDX(i,  j,  k )].z - u[IDX(i,  j,  km)].z) / dz, (u[IDX(i,   j,   kp )].z - u[IDX(i,  j,  k )].z)/ dz);
+          uz2 = minmod((u[IDX(i,  j,  kp)].z - u[IDX(i,  j,  k )].z) / dz, (u[IDX(i,   j,   kpp)].z - u[IDX(i,  j,  kp)].z)/ dz);
           
           
           /*Velocity at x+1/2 slope limiting*/
 
-          uL = u[IDX(i, j, k)].x + 0.5 * dx * ux1;
-          uR = u[IDX(i+1, j, k)].x - 0.5 * dx * ux2;
+          uL = u[IDX(i,  j, k)].x + 0.5 * dx * ux1;
+          uR = u[IDX(ip, j, k)].x - 0.5 * dx * ux2;
 
-          vL = u[IDX(i, j, k)].y + 0.5 * dy * uy1;
-          vR = u[IDX(i, j+1, k)].y - 0.5 * dy * uy2;
+          vL = u[IDX(i, j,  k)].y + 0.5 * dy * uy1;
+          vR = u[IDX(i, jp, k)].y - 0.5 * dy * uy2;
 
-          wL = u[IDX(i, j, k)].z + 0.5 * dz * uz1;
-          wR = u[IDX(i, j, k+1)].z - 0.5 * dz * uz2;
+          wL = u[IDX(i, j, k )].z + 0.5 * dz * uz1;
+          wR = u[IDX(i, j, kp)].z - 0.5 * dz * uz2;
 
-          cx1 = minmod((conc[IDX(i, j, k)] - conc[IDX(i-1, j, k)]) / dx, (conc[IDX(i+1, j, k)] - conc[IDX(i, j, k)]) / dx);
-          cx2 = minmod((conc[IDX(i+1, j, k)] - conc[IDX(i, j, k)]) / dx, (conc[IDX(i+2, j, k)] - conc[IDX(i+1, j, k)])/ dx);
-          cy1 = minmod((conc[IDX(i, j, k)] - conc[IDX(i, j-1, k)]) / dy, (conc[IDX(i, j+1, k)] - conc[IDX(i, j, k)])/ dy);
-          cy2 = minmod((conc[IDX(i, j+1, k)] - conc[IDX(i, j, k)]) / dy, (conc[IDX(i, j+2, k)] - conc[IDX(i, j+1, k)])/ dy);
-          cz1 = minmod((conc[IDX(i, j, k)] - conc[IDX(i, j, k-1)]) / dz, (conc[IDX(i, j, k+1)] - conc[IDX(i, j, k)])/ dz);
-          cz2 = minmod((conc[IDX(i, j, k+1)] - conc[IDX(i, j, k)]) / dz, (conc[IDX(i, j, k+2)] - conc[IDX(i, j, k+1)])/ dz);
+          cx1 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(im, j,  k )]) / dx, (conc[IDX(ip,  j,   k  )] - conc[IDX(i,  j,  k )])/ dx);
+          cx2 = minmod((conc[IDX(ip, j,  k )] - conc[IDX(i,  j,  k )]) / dx, (conc[IDX(ipp, j,   k  )] - conc[IDX(ip, j,  k )])/ dx);
+          cy1 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(i,  jm, k )]) / dy, (conc[IDX(i,   jp,  k  )] - conc[IDX(i,  j,  k )])/ dy);
+          cy2 = minmod((conc[IDX(i,  jp, k )] - conc[IDX(i,  j,  k )]) / dy, (conc[IDX(i,   jpp, k  )] - conc[IDX(i,  jp, k )])/ dy);
+          cz1 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(i,  j,  km)]) / dz, (conc[IDX(i,   j,   kp )] - conc[IDX(i,  j,  k )])/ dz);
+          cz2 = minmod((conc[IDX(i,  j,  kp)] - conc[IDX(i,  j,  k )]) / dz, (conc[IDX(i,   j,   kpp)] - conc[IDX(i,  j,  kp)])/ dz);
 
-          cL = conc[IDX(i, j, k)] + 0.5 * dx * cx1;
-          cR = conc[IDX(i+1, j, k)] - 0.5 * dx * cx2;
+          cL = conc[IDX(i,  j, k)] + 0.5 * dx * cx1;
+          cR = conc[IDX(ip, j, k)] - 0.5 * dx * cx2;
 
-          dL = conc[IDX(i, j, k)] + 0.5 * dy * cy1;
-          dR = conc[IDX(i, j+1, k)] - 0.5 * dy * cy2;
+          dL = conc[IDX(i, j, k )] + 0.5 * dy * cy1;
+          dR = conc[IDX(i, jp, k)] - 0.5 * dy * cy2;
 
-          eL = conc[IDX(i, j, k)] + 0.5 * dz * cz1;
-          eR = conc[IDX(i, j, k+1)] - 0.5 * dz * cz2;
+          eL = conc[IDX(i, j, k )] + 0.5 * dz * cz1;
+          eR = conc[IDX(i, j, kp)] - 0.5 * dz * cz2;
 
           fL1 = cL * uL;
           fR1 = cR * uR;
@@ -240,64 +245,63 @@ boundary_conditions_hydro();
           H3 = 0.5 * (fL2 + fR2 - b * (dR - dL));
           H5 = 0.5 * (fL3 + fR3 - c * (eR - eL));
 
+         /*at face H_i-1/2, H_j-1/2, H_k-1/2*/
 
-          /*at face H_i-1/2, H_j-1/2, H_k-1/2*/
-
-          ux11 = minmod((u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x) / dx, (u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x)/ dx);
-          ux22 = minmod((u[IDX(i-1, j, k)].x - u[IDX(i-2, j, k)].x) / dx, (u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x)/ dx);
-          uy11 = minmod((u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y) / dy, (u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y)/ dy);
-          uy22 = minmod((u[IDX(i, j+1, k)].y - u[IDX(i, j-2, k)].y) / dy, (u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y)/ dy);
-          uz11 = minmod((u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z) / dz, (u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z)/ dz);
-          uz22 = minmod((u[IDX(i, j, k-1)].z - u[IDX(i, j, k-2)].z) / dz, (u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z)/ dz);
+          ux1 = minmod((u[IDX(im, j,  k )].x - u[IDX(imm, j,   k  )].x) / dx, (u[IDX(i,   j,  k )].x - u[IDX(im, j,   k )].x)/ dx);
+          ux2 = minmod((u[IDX(i,  j,  k )].x - u[IDX(im,  j,   k  )].x) / dx, (u[IDX(ip,  j,  k )].x - u[IDX(i,  j,   k )].x)/ dx);
+          uy1 = minmod((u[IDX(i,  jm, k )].y - u[IDX(i,   jmm, k  )].y) / dy, (u[IDX(i,   j,  k )].y - u[IDX(i,  jm,  k )].y)/ dy);
+          uy2 = minmod((u[IDX(i,  j,  k )].y - u[IDX(i,   jm,  k  )].y) / dy, (u[IDX(i,   jp, k )].y - u[IDX(i,  j,   k )].y)/ dy);
+          uz1 = minmod((u[IDX(i,  j,  km)].z - u[IDX(i,   j,   kmm)].z) / dz, (u[IDX(i,   j,  k )].z - u[IDX(i,  j,   km)].z)/ dz);
+          uz2 = minmod((u[IDX(i,  j,  k )].z - u[IDX(i,   j,   km )].z) / dz, (u[IDX(i,   j,  kp)].z - u[IDX(i,  j,   k )].z)/ dz);
           
           
-          /*Velocity at x-1/2 slope-limiting*/
+          /*Velocity at x-1/2 slope limiting*/
 
-          uL1 = u[IDX(i, j, k)].x + 0.5 * dx * ux11;
-          uR1 = u[IDX(i-1, j, k)].x - 0.5 * dx * ux22;
+          uL = u[IDX(im, j, k )].x + 0.5 * dx * ux1;
+          uR = u[IDX(i, j,  k )].x - 0.5 * dx * ux2;
 
-          vL1 = u[IDX(i, j, k)].y + 0.5 * dy * uy11;
-          vR1 = u[IDX(i, j-1, k)].y - 0.5 * dy * uy22;
+          vL = u[IDX(i, jm, k )].y + 0.5 * dy * uy1;
+          vR = u[IDX(i, j,  k )].y - 0.5 * dy * uy2;
 
-          wL1 = u[IDX(i, j, k)].z + 0.5 * dz * uz11;
-          wR1 = u[IDX(i, j, k-1)].z - 0.5 * dz * uz22;
+          wL = u[IDX(i, j,  km)].z + 0.5 * dz * uz1;
+          wR = u[IDX(i, j,  k )].z - 0.5 * dz * uz2;
 
-          cx11 = minmod((conc[IDX(i, j, k)] - conc[IDX(i-1, j, k)]) / dx, (conc[IDX(i+1, j, k)] - conc[IDX(i, j, k)]) / dx);
-          cx22 = minmod((conc[IDX(i-1, j, k)] - conc[IDX(i-2, j, k)]) / dx, (conc[IDX(i, j, k)] - conc[IDX(i-1, j, k)])/ dx);
-          cy11 = minmod((conc[IDX(i, j, k)] - conc[IDX(i, j-1, k)]) / dy, (conc[IDX(i, j+1, k)] - conc[IDX(i, j, k)])/ dy);
-          cy22 = minmod((conc[IDX(i, j-1, k)] - conc[IDX(i, j-2, k)]) / dy, (conc[IDX(i, j, k)] - conc[IDX(i, j-1, k)])/ dy);
-          cz11 = minmod((conc[IDX(i, j, k)] - conc[IDX(i, j, k-1)]) / dz, (conc[IDX(i, j, k+1)] - conc[IDX(i, j, k)])/ dz);
-          cz22 = minmod((conc[IDX(i, j, k-1)] - conc[IDX(i, j, k-2)]) / dz, (conc[IDX(i, j, k)] - conc[IDX(i, j, k-1)])/ dz);
+          cx1 = minmod((conc[IDX(im, j,  k )] - conc[IDX(imm, j,   k  )]) / dx, (conc[IDX(i,   j,  k )] - conc[IDX(im, j,  k )])/ dx);
+          cx2 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(im,  j,   k  )]) / dx, (conc[IDX(ip,  j,  k )] - conc[IDX(i,  j,  k )])/ dx);
+          cy1 = minmod((conc[IDX(i,  jm, k )] - conc[IDX(i,   jmm, k  )]) / dy, (conc[IDX(i,   j,  k )] - conc[IDX(i,  jm, k )])/ dy);
+          cy2 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(i,   jm,  k  )]) / dy, (conc[IDX(i,   jp, k )] - conc[IDX(i,  j,  k )])/ dy);
+          cz1 = minmod((conc[IDX(i,  j,  km)] - conc[IDX(i,   j,   kmm)]) / dz, (conc[IDX(i,   j,  k )] - conc[IDX(i,  j,  km)])/ dz);
+          cz2 = minmod((conc[IDX(i,  j,  k )] - conc[IDX(i,   j,   km )]) / dz, (conc[IDX(i,   j,  kp)] - conc[IDX(i,  j,  k )])/ dz);
 
-          cL1 = conc[IDX(i, j, k)] + 0.5 * dx * cx11;
-          cR1 = conc[IDX(i-1, j, k)] - 0.5 * dx * cx22;
+          cL = conc[IDX(im,  j, k)] + 0.5 * dx * cx1;
+          cR = conc[IDX(i , j, k)] - 0.5 * dx * cx2;
 
-          dL1 = conc[IDX(i, j, k)] + 0.5 * dy * cy11;
-          dR1 = conc[IDX(i, j-1, k)] - 0.5 * dy * cy22;
+          dL = conc[IDX(i, jm,  k)] + 0.5 * dy * cy1;
+          dR = conc[IDX(i, j , k)] - 0.5 * dy * cy2;
 
-          eL1 = conc[IDX(i, j, k)] + 0.5 * dz * cz11;
-          eR1 = conc[IDX(i, j, k-1)]  - 0.5 * dz * cz22;
+          eL = conc[IDX(i, j, km )] + 0.5 * dz * cz1;
+          eR = conc[IDX(i, j, k  )] - 0.5 * dz * cz2;
 
-          fL4 = cL1 * uL1;
-          fR4 = cR1 * uR1;
+          fL1 = cL * uL;
+          fR1 = cR * uR;
 
-          fL5 = dL1 * vL1;
-          fR5 = dR1 * vR1;
+          fL2 = dL * vL;
+          fR2 = dR * vR;
 
-          fL6 = eL1 * wL1;
-          fR6 = eR1 * wR1;
+          fL3 = eL * wL;
+          fR3 = eR * wR;
 
-          d = fmax(fabs(uL1), fabs(uR1));
-          e = fmax(fabs(vL1), fabs(vR1));
-          f = fmax(fabs(wL1), fabs(wR1));
+          a = fmax(fabs(uL), fabs(uR));
+          b = fmax(fabs(vL), fabs(vR));
+          c = fmax(fabs(wL), fabs(wR));
 
-          /*Numerical fluxed at x-1/2*/
-          H2 = 0.5 * (fL4 + fR4 - d * (cR1 - cL1));
-          H4 = 0.5 * (fL5 + fR5 - e * (dR1 - dL1));
-          H6 = 0.5 * (fL6 + fR6 - f * (eR1 - eL1));
+          /*Numerical fluxes at x-1/2*/
+          H2 = 0.5 * (fL1 + fR1 - a * (cR - cL));
+          H4 = 0.5 * (fL2 + fR2 - b * (dR - dL));
+          H6 = 0.5 * (fL3 + fR3 - c * (eR - eL));
 
          /* final formula of KT scheme*/
-          rhs_conc[IDX(i,j,k)] =  -(H1-H2)-(H3-H4)-(H5-H6);
+          rhs_conc[IDX(i,j,k)] =  ( -(H1-H2)-(H3-H4)-(H5-H6) )/dx;
 #endif
           } /* i, j, k */
             
