@@ -98,7 +98,6 @@ boundary_conditions_hydro();
             /* NOTE : this scheme is TOO diffusive! */
 
             /* x + 1/2 face */
-            //uface = 0.01;
             uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
             if( uface  >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
@@ -113,7 +112,6 @@ boundary_conditions_hydro();
 		        rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j,k)];
             
             /* y + 1/2 face */
-            //uface =  0.01;
 	       uface =  0.5*( u[IDX(i,j,k)].y + u[IDX(i,j+1,k)].y);
             if( uface >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
@@ -128,7 +126,6 @@ boundary_conditions_hydro();
 	            rhs_conc[IDX(i,j,k)] += uface * conc[IDX(i,j,k)];	
 
             /* z + 1/2 face */
-            //uface =  0.0;
 	        uface = 0.5 * (u[IDX(i,j,k)].z + u[IDX(i,j,k+1)].z);
             if( uface >0)
                 rhs_conc[IDX(i,j,k)] +=  -uface * conc[IDX(i,j,k)];
@@ -146,7 +143,6 @@ boundary_conditions_hydro();
 #ifdef QUICK
         /*  we implement the QUICK scheme for the Finite Volume method*/
 
-            //uface = 0.001;
             /* x + 1/2 face */
             uface =  0.5*( u[IDX(i,j,k)].x + u[IDX(i+1,j,k)].x);
             if (uface > 0)
@@ -161,7 +157,6 @@ boundary_conditions_hydro();
             else
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i+1, j, k)] + coeff_D * conc[IDX(i-1, j, k)]);
             
-            //uface = 0.0;
             /* y + 1/2 face */
             uface = 0.5 * (u[IDX(i, j, k)].y + u[IDX(1, j+1, k)].y);
             if (uface > 0)
@@ -175,7 +170,6 @@ boundary_conditions_hydro();
             else
                  rhs_conc[IDX(i, j, k)] += uface * (coeff_U * conc[IDX(i, j, k)] + coeff_UU * conc[IDX(i, j+1, k)] + coeff_D * conc[IDX(i, j-1, k)]);
             
-            //uface = 0.0;
             /* z + 1/2 face */
             uface = 0.5 * (u[IDX(i, j, k)].z + u[IDX(i, j, k+1)].z);
             if (uface > 0)
@@ -196,7 +190,7 @@ boundary_conditions_hydro();
           ux1 = minmod((u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x) / dx, (u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x)/ dx  );
           ux2 = minmod((u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x) / dx, (u[IDX(i+2, j, k)].x - u[IDX(i+1, j, k)].x)/ dx);
           uy1 = minmod((u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y) / dy, (u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y)/ dy  );
-          uy2 = minmod((u[IDX(i, j+1, k)].x - u[IDX(i, j, k)].y) / dy, (u[IDX(i, j+2, k)].y - u[IDX(i, j+1, k)].y)/ dy);
+          uy2 = minmod((u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y) / dy, (u[IDX(i, j+2, k)].y - u[IDX(i, j+1, k)].y)/ dy);
           uz1 = minmod((u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z) / dz, (u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z)/ dz  );
           uz2 = minmod((u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z) / dz, (u[IDX(i, j, k+2)].z - u[IDX(i, j, k+1)].z)/ dz);
           
@@ -252,7 +246,7 @@ boundary_conditions_hydro();
           ux11 = minmod((u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x) / dx, (u[IDX(i+1, j, k)].x - u[IDX(i, j, k)].x)/ dx);
           ux22 = minmod((u[IDX(i-1, j, k)].x - u[IDX(i-2, j, k)].x) / dx, (u[IDX(i, j, k)].x - u[IDX(i-1, j, k)].x)/ dx);
           uy11 = minmod((u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y) / dy, (u[IDX(i, j+1, k)].y - u[IDX(i, j, k)].y)/ dy);
-          uy22 = minmod((u[IDX(i, j+1, k)].x - u[IDX(i, j-2, k)].y) / dy, (u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y)/ dy);
+          uy22 = minmod((u[IDX(i, j+1, k)].y - u[IDX(i, j-2, k)].y) / dy, (u[IDX(i, j, k)].y - u[IDX(i, j-1, k)].y)/ dy);
           uz11 = minmod((u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z) / dz, (u[IDX(i, j, k+1)].z - u[IDX(i, j, k)].z)/ dz);
           uz22 = minmod((u[IDX(i, j, k-1)].z - u[IDX(i, j, k-2)].z) / dz, (u[IDX(i, j, k)].z - u[IDX(i, j, k-1)].z)/ dz);
           
