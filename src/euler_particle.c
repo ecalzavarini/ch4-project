@@ -30,11 +30,24 @@ void copy_vector(vector *ff, vector *ff_copy){
     #ifdef EULER_PARTICLE_CONCENTRATION
 /* Minmod limiter function */
 my_double minmod(my_double a, my_double b) {
-     my_double sgn_a = (a > 0) - (a < 0);
-     my_double sgn_b = (b > 0) - (b < 0);
-
+     //my_double sgn_a = (a > 0) - (a < 0);
+     //my_double sgn_b = (b > 0) - (b < 0);
+     my_double sgn_a = (a>0)? 1.0 : -1.0;
+     my_double sgn_b = (b>0)? 1.0 : -1.0;
      return 0.5 * (sgn_a + sgn_b) * fmin(fabs(a), fabs(b));
-     }
+}
+#ifdef AAA
+/* Minmod Van Leer limiter function */
+my_double minmod_theta(my_double a, my_double b, my_double c){
+     if (a > 0 && b > 0 && c > 0) {
+          return fmin(fmin(a, b), c);
+     } else if (a < 0 && b < 0 && c < 0) {
+          return fmax(fmax(a, b), c);
+          } else {
+          return 0.0;
+          }
+}
+#endif
     #endif
 #endif
 
@@ -89,7 +102,8 @@ boundary_conditions_hydro();
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
 			for (k = BRD; k < LNZ+BRD; k++) {
-
+               
+               /* precompute the indexes */
                ip  = i+1; jp  = j+1; kp  = k+1;
                im  = i-1; jm  = j-1; km  = k-1;
                ipp = i+2; jpp = j+2; kpp = k+2;
@@ -199,7 +213,6 @@ boundary_conditions_hydro();
           uz1 = minmod((u[IDX(i,  j,  k )].z - u[IDX(i,  j,  km)].z) / dz, (u[IDX(i,   j,   kp )].z - u[IDX(i,  j,  k )].z)/ dz);
           uz2 = minmod((u[IDX(i,  j,  kp)].z - u[IDX(i,  j,  k )].z) / dz, (u[IDX(i,   j,   kpp)].z - u[IDX(i,  j,  kp)].z)/ dz);
           
-          
           /*Velocity at x+1/2 slope limiting*/
 
           uL = u[IDX(i,  j, k)].x + 0.5 * dx * ux1;
@@ -253,7 +266,6 @@ boundary_conditions_hydro();
           uy2 = minmod((u[IDX(i,  j,  k )].y - u[IDX(i,   jm,  k  )].y) / dy, (u[IDX(i,   jp, k )].y - u[IDX(i,  j,   k )].y)/ dy);
           uz1 = minmod((u[IDX(i,  j,  km)].z - u[IDX(i,   j,   kmm)].z) / dz, (u[IDX(i,   j,  k )].z - u[IDX(i,  j,   km)].z)/ dz);
           uz2 = minmod((u[IDX(i,  j,  k )].z - u[IDX(i,   j,   km )].z) / dz, (u[IDX(i,   j,  kp)].z - u[IDX(i,  j,   k )].z)/ dz);
-          
           
           /*Velocity at x-1/2 slope limiting*/
 
