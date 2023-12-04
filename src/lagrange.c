@@ -3152,7 +3152,7 @@ void move_particles()
 #ifdef LAGRANGE_SMALLTAUD
       if ((tracer + ipart)->tau_drag < 10.0 && (tracer + ipart)->tau_drag > 0.0)
       {
-      /* Perturbation theory, see the document Convection_scaling.pdf */
+      /* Perturbation theory, see the document Convection_scaling.pdf by Vojta */
         (tracer + ipart)->vx = (tracer + ipart)->ux;
         (tracer + ipart)->vy = (tracer + ipart)->uy;
         (tracer + ipart)->vz = (tracer + ipart)->uz;
@@ -3168,6 +3168,19 @@ void move_particles()
         (tracer + ipart)->vy -= Dt_u.y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
         (tracer + ipart)->vz -= Dt_u.z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       }
+      #ifdef LAGRANGE_SMALLTAUD_FLOATER
+        /* v = u + tau_d * ( 1 - beta_0 + 2/3 beta_t (T-T_0) ) * (g-Du/Dt ) */
+        /* here beta_0 indicates the reference modified density ratio and beta_t the fluid thermal expansion coefficient */
+        (tracer + ipart)->vx = (tracer + ipart)->ux;
+        (tracer + ipart)->vy = (tracer + ipart)->uy;
+        (tracer + ipart)->vz = (tracer + ipart)->uz;
+
+        fac1 = (tracer + ipart)->tau_drag * (1.0 - (tracer + ipart)->beta_coeff + 2./3. * property.beta_t*((tracer + ipart)->t - property.T_ref)); 
+        /* note that the orientation of gravity is not included in property.gravity , so we have to add it explicitely */
+        (tracer + ipart)->vx += fac1*(-property.gravity_x - Dt_u.x);
+        (tracer + ipart)->vy += fac1*(-property.gravity_y - Dt_u.y);
+        (tracer + ipart)->vz += fac1*(-property.gravity_z - Dt_u.z);
+      #endif /* LAGRANGE_SMALLTAUD_FLOATER  */
 #endif
 
       if (itime == 1 && resume == 0)
@@ -3480,7 +3493,7 @@ void move_particles()
 
 #ifdef LB_FLUID_BC
 
-  //fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
+//fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
 
 #ifdef LB_LAGRANGE_BC_INELASTIC
     /* fully inelastic collision */
