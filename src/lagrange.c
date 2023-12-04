@@ -3149,7 +3149,8 @@ void move_particles()
       (tracer + ipart)->ay_old = (tracer + ipart)->ay;
       (tracer + ipart)->az_old = (tracer + ipart)->az;
 
-#ifdef LAGRANGE_SMALLTAUD
+    #ifdef LAGRANGE_SMALLTAUD
+      #ifdef LAGRANGE_SMALLTAUD_BETA /* small tau approx for beta stokes model */
       if ((tracer + ipart)->tau_drag < 10.0 && (tracer + ipart)->tau_drag > 0.0)
       {
       /* Perturbation theory, see the document Convection_scaling.pdf by Vojta */
@@ -3168,7 +3169,12 @@ void move_particles()
         (tracer + ipart)->vy -= Dt_u.y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
         (tracer + ipart)->vz -= Dt_u.z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       }
-      #ifdef LAGRANGE_SMALLTAUD_FLOATER
+      #endif
+      #ifdef LAGRANGE_SMALLTAUD_FLOATER /* small tau approx for beta stokes model and thermal buoyancy */
+      //if ((tracer + ipart)->tau_drag < 10.0 && (tracer + ipart)->tau_drag > 0.0)
+      /* if LAGRANGE_SMALLTAUD_FLOATER enabled, all particles except fluid tracers are treated this way */
+      if ((tracer + ipart)->tau_drag > 0.0)
+      {
         /* v = u + tau_d * ( 1 - beta_0 + 2/3 beta_t (T-T_0) ) * (g-Du/Dt ) */
         /* here beta_0 indicates the reference modified density ratio and beta_t the fluid thermal expansion coefficient */
         (tracer + ipart)->vx = (tracer + ipart)->ux;
@@ -3180,8 +3186,9 @@ void move_particles()
         (tracer + ipart)->vx += fac1*(-property.gravity_x - Dt_u.x);
         (tracer + ipart)->vy += fac1*(-property.gravity_y - Dt_u.y);
         (tracer + ipart)->vz += fac1*(-property.gravity_z - Dt_u.z);
+      }
       #endif /* LAGRANGE_SMALLTAUD_FLOATER  */
-#endif
+    #endif /* LAGRANGE_SMALLTAUD */
 
       if (itime == 1 && resume == 0)
       {

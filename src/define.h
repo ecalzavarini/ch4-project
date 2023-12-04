@@ -334,6 +334,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_LAGRANGE_BC_INELASTIC_REINJECT
 //#define LB_LAGRANGE_BC_RADIUSandDENSITY
 #define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+//#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
 #define LAGRANGE_SMALLTAUD_FLOATER
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
