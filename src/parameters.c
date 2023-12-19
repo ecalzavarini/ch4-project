@@ -1413,7 +1413,11 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
     conc  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
     if(conc == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
     set_to_zero_scalar( conc,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
-
+    /*
+    old_conc  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+    if(old_conc == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
+    set_to_zero_scalar( old_conc,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+    */
     rhs_conc  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
     if(rhs_conc == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
     set_to_zero_scalar( rhs_conc,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
@@ -1421,6 +1425,10 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
     old_rhs_conc  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
     if(old_rhs_conc == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
     set_to_zero_scalar( old_rhs_conc,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
+    old_old_rhs_conc  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+    if(old_old_rhs_conc == NULL){ fprintf(stderr,"Not enough memory to allocate s_source\n"); exit(-1);}
+    set_to_zero_scalar( old_old_rhs_conc,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   #endif
 #endif
 

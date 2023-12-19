@@ -366,8 +366,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_LES
 
 /* EULER FV */
-//#define EULER_PARTICLE
-//#define EULER_PARTICLE_CONCENTRATION
+#define EULER_PARTICLE
+#define EULER_PARTICLE_CONCENTRATION
 
 
 /***************************************************/

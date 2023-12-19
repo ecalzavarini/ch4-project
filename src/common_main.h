@@ -321,7 +321,7 @@ int ngrave;
 /* euler_particle defintions */
 #ifdef EULER_PARTICLE
     #ifdef EULER_PARTICLE_CONCENTRATION
-my_double *conc, *rhs_conc, *old_rhs_conc;
+my_double *conc, *old_conc, *rhs_conc, *old_rhs_conc, *old_old_rhs_conc;
     #endif
 #endif
 

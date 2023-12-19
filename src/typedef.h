@@ -292,6 +292,9 @@ typedef struct {
 #define BRD 2
 #elif defined(EULER_PARTICLE)  /* define a double border in order to use QUICK advection scheme */
 #define BRD 2
+  #ifdef WENO
+   #define BRD 3
+  #endif
 #else 
 #define BRD 1
 #endif
