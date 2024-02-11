@@ -161,6 +161,8 @@ my_double tau_t_les(int i , int j , int k){
 
   my_double tau_temp,tau_les;
   my_double prandtl = property.nu/property.kappa;
+  /* but usual choice is pr=O(1) */
+  prandtl = 1.0;
 
     tau_les = tau_u_les(i , j , k);
 
