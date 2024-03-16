@@ -5,12 +5,16 @@
 my_double tau_u_les(int i , int j , int k){
 
   tensor grad_u;
+  vector grad_t; /*Added by Luz*/
   my_double s_norm, nu_les, tau_les; 
   my_double C_smag = 0.16; /* See Leveque , Toschi JFM on shear improved smagorinski model */
   my_double lx,ly,lz,vol;
 
   
   grad_u = gradient_vector(u,i,j,k);
+  #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
+    grad_t = gradient_scalar(t,i,j,k); /*Added by Luz*/
+  #endif
 
   /* Norm of S */
   s_norm = sqrt( 0.5*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
@@ -135,12 +139,36 @@ my_double tau_u_les(int i , int j , int k){
 			  vol = pow(vol,1./3.);
 #endif
 
+#ifdef LB_FLUID_LES_SMAGORINSKY-LILLY /* This section was added by Luz */
+   my_double N2; /* Brunt Väisälä Frequanecy*/
+   my_double Ri; /* Richardson number N²/|S|², |S| = (2SijSij), Sij: Strain rate tensor */
+   my_double Cb; /* Buoyancy correction term */
+   my_double prandtl = 1.0; /* usual choice is pr=O(1) */ 
+ 
+   if(grad_t.y < 0){N2 = 0;}
+   else{N2 = property.beta_t * property.gravity_y * grad_t.y;}
+ 
+   Ri = N2 / pow( s_norm , 2.0 ); 
+ 
+   if(Ri < 1){Cb = sqrt(1 - (Ri/prandtl));}
+   else{Cb = 0;}
+   
+   s_norm = s_norm * Cb;
+ 
+   //fprintf(stderr,"vol C_Smag grad_t.y gravity_y %lf %lf %lf %lf\n",vol, C_smag, grad_t.y, property.gravity_y);
+   //fprintf(stderr,"s_norm_lilly %lf \n", s_norm);
+   #endif
+
+
 		 /* eddy viscosity */
+             //fprintf(stderr,"s_norm_ent %lf \n", s_norm);
 		    nu_les = s_norm * pow( C_smag * vol, 2.0 ); 		 
 		    		    
 
 #ifdef METHOD_STREAMING
+//fprintf(stderr,"nu_les_entrada %lf \n", nu_les);
   tau_les = 3.0*(nu_les + property.nu) + 0.5 ;		 
+  //fprintf(stdout,"nu_les %e %d %d %d %d\n", nu_les,i,j,k,itime);	
 #else
 #ifdef METHOD_REDEFINED_POP
   tau_les = 3.0*(nu_les + property.nu) + 0.5*property.time_dt ;
@@ -167,7 +195,8 @@ my_double tau_t_les(int i , int j , int k){
     tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_temp = (tau_les-0.5)/prandtl + 0.5 ;
+    tau_temp = 3.0*(property.kappa + (tau_les-0.5-3*property.nu)/(3*prandtl)) + 0.5 ; /* Luz modified */
+    //tau_temp = (tau_les-0.5)/prandtl + 0.5 ;
 #else
 #ifdef METHOD_REDEFINED_POP
     tau_temp = (tau_les-0.5*property.time_dt)/prandtl + 0.5*property.time_dt ;
