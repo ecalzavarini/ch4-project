@@ -139,7 +139,7 @@ my_double tau_u_les(int i , int j , int k){
 			  vol = pow(vol,1./3.);
 #endif
 
-#ifdef LB_FLUID_LES_SMAGORINSKY-LILLY /* This section was added by Luz */
+#ifdef LB_FLUID_LES_SMAGORINSKY_LILLY /* This section was added by Luz */
    my_double N2; /* Brunt Väisälä Frequanecy*/
    my_double Ri; /* Richardson number N²/|S|², |S| = (2SijSij), Sij: Strain rate tensor */
    my_double Cb; /* Buoyancy correction term */
