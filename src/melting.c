@@ -58,7 +58,7 @@ void melting(){
 			  mean_y_local[j - BRD + LNY_START] += ( Cp*t[IDX(i,j,k)] + Lf*liquid_frac[IDX(i,j,k)] )*lx*lz;
         }
 
-  	MPI_Allreduce(mean_y_local, mean_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  	MPI_Allreduce(mean_y_local, mean_y, NY, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 	
 	norm = 1.0/(my_double)(property.SX*property.SZ);
 	for (i = 0; i < NY; i++){
@@ -169,7 +169,7 @@ void melting(){
 	    }
         }
 
-  	MPI_Allreduce(&liquid_frac_status, &liquid_frac_status_all, 1 , MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  	MPI_Allreduce(&liquid_frac_status, &liquid_frac_status_all, 1 , MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
 	// if(ROOT) fprintf(stderr,"status %e\n",liquid_frac_status_all);	
 	if(liquid_frac_status_all != 0.0){

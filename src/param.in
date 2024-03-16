@@ -13,12 +13,12 @@ SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 40000.
-time_dump_field 400.
-time_dump_diagn 200.
+time_end 50000.
+time_dump_field 500.
+time_dump_diagn 250.
 
-tau_u 0.536
-nu_add 0.0
+tau_u 0.505
+nu_add -0.00166666666666667
 
 ym_wall_velocity_x 0.1 
 ym_wall_velocity_z 0

@@ -260,7 +260,7 @@ void initial_conditions(int restart)
 	  norm += p[IDX(i,j,k)].p[pp];
       }
 
-  MPI_Allreduce(&norm, &norm_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce(&norm, &norm_all, 1, MPI_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
   norm_all /= property.NX* property.NY* property.NZ;
 
   for(k=BRD;k<LNZ+BRD;k++)

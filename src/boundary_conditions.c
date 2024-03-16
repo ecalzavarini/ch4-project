@@ -520,7 +520,7 @@ t0 = t0_all = 0.0;
         for(i=BRD;i<LNX+BRD;i++){ 
             t0 += t[IDX(i,j,k)];
           }
-    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
     norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
      t0_all *= norm;
@@ -554,7 +554,7 @@ t0 = t0_all = 0.0;
             //t0 += t[IDX(i,j,k)];
 			t0 += m(rhs_g[IDX(i,j,k)]);
           }
-    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );	
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );	
     norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
      t0_all *= norm;

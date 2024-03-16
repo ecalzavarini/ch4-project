@@ -22,7 +22,6 @@ int main(int argc, char **argv)
 #endif
 	initial_conditions(resume);
 	initialization_forcing();
-
 	/* first recontruction of hydrodynamic fields */
 #ifdef LB_FLUID
 	hydro_fields('p');
@@ -55,7 +54,6 @@ int main(int argc, char **argv)
 #ifdef SYSTEM_TIMING
 	t1 = MPI_Wtime();
 #endif
-
 	itime = 0;
 	time_now = property.time_start;
 

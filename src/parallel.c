@@ -4,6 +4,16 @@
 //void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
 //void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
 
+void sum_my_double(my_double *a, my_double *b, int *length, MPI_Datatype *dtype){
+  int i;
+
+  for (i = 0; i < *length; i++) {
+
+    b[i]  += a[i];
+
+  }
+}
+
  
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype){
   int i;
@@ -156,6 +166,7 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
 }
 #endif
 
+/* The following is the first function called in main */
 void initialization_MPI(int argc, char **argv){
 	/* Initialize MPI */
 	MPI_Init(&argc, &argv);
@@ -166,34 +177,55 @@ void initialization_MPI(int argc, char **argv){
 		fprintf(stderr, "Hello world! I am ROOT: processor %d of %d\n", me, nprocs);
 
 
-	/* commit types */
- MPI_Type_contiguous(NPROP, MPI_DOUBLE , &MPI_property_type);
+/* define and commit types */
+ MPI_Type_contiguous(1, MPI_DOUBLE , &MPI_MY_DOUBLE); /* this is the default : double precision */
+#ifdef PRECISION_FLOAT
+ MPI_Type_contiguous(1, MPI_FLOAT , &MPI_MY_DOUBLE);
+#endif
+#ifdef PRECISION_DOUBLE_LONG
+ MPI_Type_contiguous(1, MPI_LONG_DOUBLE , &MPI_MY_DOUBLE);
+#endif
+
+ MPI_Type_commit(&MPI_MY_DOUBLE);
+ MPI_Op_create( (MPI_User_function *)sum_my_double, 1, &MPI_SUM_my_double );
+
+#ifdef DEBUG
+	/* check  of the sum between my_double operation */
+	my_double prova, prova_all;
+	prova = 1;
+	prova_all = 2;
+	MPI_Allreduce(&prova, &prova_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
+	if (ROOT) fprintf(stderr, "MPI_SUM_my_double check %e x %d = %e\n",prova,nprocs,prova_all);
+/* end of check */
+#endif 
+
+ //MPI_Type_contiguous(1, MPI_MY_DOUBLE, &MPI_my_double_type); /* duplicated but still used in the code e.g. for SENDRECV */
+ //MPI_Type_commit(&MPI_my_double_type);
+
+ MPI_Type_contiguous(NPROP, MPI_MY_DOUBLE , &MPI_property_type);
  MPI_Type_commit(&MPI_property_type);
 
- MPI_Type_contiguous(NOUT, MPI_DOUBLE , &MPI_output_type);
+ MPI_Type_contiguous(NOUT, MPI_MY_DOUBLE , &MPI_output_type);
  MPI_Type_commit(&MPI_output_type);
  MPI_Op_create( (MPI_User_function *)sum_output, 1, &MPI_SUM_output );
  if(ROOT) fprintf(stderr,"--------> NOUT size %d\n",(int)NOUT);
 
- MPI_Type_contiguous(3, MPI_DOUBLE, &MPI_vector_type);
+ MPI_Type_contiguous(3, MPI_MY_DOUBLE, &MPI_vector_type);
  MPI_Type_commit(&MPI_vector_type);
  MPI_Op_create( (MPI_User_function *)sum_vector, 1, &MPI_SUM_vector );
-
- MPI_Type_contiguous(1, MPI_DOUBLE, &MPI_my_double_type);
- MPI_Type_commit(&MPI_my_double_type);
 
 #ifdef LB
  //NPOP = 19;
  /* commit pop type */
- MPI_Type_contiguous(NPOP, MPI_DOUBLE, &MPI_pop_type);
+ MPI_Type_contiguous(NPOP, MPI_MY_DOUBLE, &MPI_pop_type);
  MPI_Type_commit(&MPI_pop_type);
 #endif
 
 #ifdef LAGRANGE 
- MPI_Type_contiguous(SIZE_OF_POINT_PARTICLE, MPI_DOUBLE, &MPI_point_particle_type);
+ MPI_Type_contiguous(SIZE_OF_POINT_PARTICLE, MPI_MY_DOUBLE, &MPI_point_particle_type);
  MPI_Type_commit(&MPI_point_particle_type);
 
- MPI_Type_contiguous(SIZE_OF_OUTPUT_PARTICLE, MPI_DOUBLE , &MPI_output_particle_type);
+ MPI_Type_contiguous(SIZE_OF_OUTPUT_PARTICLE, MPI_MY_DOUBLE , &MPI_output_particle_type);
  MPI_Type_commit(&MPI_output_particle_type);
  MPI_Op_create( (MPI_User_function *)sum_output_particle, 1, &MPI_SUM_output_particle);
  if(ROOT) fprintf(stderr,"--------> SIZE_OF_OUTPUT_PARTICLE size %d\n",(int)SIZE_OF_OUTPUT_PARTICLE);
@@ -567,9 +599,9 @@ void processor_splitting()
     MPI_Type_commit(&MPI_vector_plane_z);
 
      /* scalar */
-    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+TWO_BRD) , MPI_my_double_type, &MPI_my_double_plane_x);
-    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_my_double_type, &MPI_my_double_plane_y);
-    MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_my_double_type, &MPI_my_double_plane_z);
+    MPI_Type_vector((LNZ+TWO_BRD)*(LNY+TWO_BRD), BRD , (LNX+TWO_BRD) , MPI_MY_DOUBLE, &MPI_my_double_plane_x);
+    MPI_Type_vector((LNZ+TWO_BRD), (LNX+TWO_BRD)*BRD , (LNX+TWO_BRD)*(LNY+TWO_BRD) , MPI_MY_DOUBLE, &MPI_my_double_plane_y);
+    MPI_Type_vector(BRD, (LNX+TWO_BRD)*(LNY+TWO_BRD), (LNX+TWO_BRD)*(LNY+TWO_BRD), MPI_MY_DOUBLE, &MPI_my_double_plane_z);
 
     MPI_Type_commit(&MPI_my_double_plane_x);
     MPI_Type_commit(&MPI_my_double_plane_y);

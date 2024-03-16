@@ -1,7 +1,7 @@
 #include "common_object.h"
 
 
-double myrand(){
+my_double myrand(){
 
   double val;
 
@@ -11,7 +11,7 @@ double myrand(){
   val=ran1();
 #endif
 
-  return val;
+  return (my_double)val;
 
 }
 

@@ -93,13 +93,13 @@ void assign_parameters(){
 
     /* size of center nodes grid */
     sprintf(name,"NX");
-    property.NX = (double)read_parameter(name);
+    property.NX = (my_double)read_parameter(name);
     NX = (int)property.NX;
     sprintf(name,"NY");
-    property.NY = (double)read_parameter(name);
+    property.NY = (my_double)read_parameter(name);
     NY = (int)property.NY;
     sprintf(name,"NZ");
-    property.NZ = (double)read_parameter(name);
+    property.NZ = (my_double)read_parameter(name);
     NZ = (int)property.NZ;
     fprintf(stderr,"Grid Size:\nNX %d \nNY %d \nNZ %d\n", NX , NY, NZ);
 
@@ -107,27 +107,27 @@ void assign_parameters(){
 
     /* Size of simulation domain */
     sprintf(name,"SX");
-    property.SX = (double)read_parameter(name);
+    property.SX = (my_double)read_parameter(name);
     sprintf(name,"SY");
-    property.SY = (double)read_parameter(name);
+    property.SY = (my_double)read_parameter(name);
     sprintf(name,"SZ");
-    property.SZ = (double)read_parameter(name);
+    property.SZ = (my_double)read_parameter(name);
     fprintf(stderr,"System Size:\nSX %d \nSY %d \nSZ %d\n", (int)property.SX , (int)property.SY, (int)property.SZ);
 #ifdef METHOD_STREAMING
     /* check if \Delta x = 1 */
     //if(property.SX != property.NX ){ fprintf(stderr," WARNING!  property.SX != property.NX with STREAMING ON, please change it.\n"); exit(-1);}
     //if(property.SY != property.NY ){ fprintf(stderr," WARNING!  property.SY != property.NY with STREAMING ON, please change it.\n"); exit(-1);}
     //if(property.SZ != property.NZ ){ fprintf(stderr," WARNING!  property.SZ != property.NZ with STREAMING ON, please change it.\n"); exit(-1);}
-    fprintf(stderr," Delta X = %e \n",property.SX/property.NX);
-    fprintf(stderr," Delta Y = %e \n",property.SY/property.NY);
-    fprintf(stderr," Delta Z = %e \n",property.SZ/property.NZ);
+    fprintf(stderr," Delta X = %e \n",(double)property.SX/(double)property.NX);
+    fprintf(stderr," Delta Y = %e \n",(double)property.SY/(double)property.NY);
+    fprintf(stderr," Delta Z = %e \n",(double)property.SZ/(double)property.NZ);
     //if(property.SX/property.NX != property.SY/property.NY || property.SX/property.NX != property.SZ/property.NZ || property.SY/property.NY != property.SZ/property.NZ )
     //{ fprintf(stderr," WARNING!  DX != DY != DZ with STREAMING ON, please change it.\n"); exit(-1);}
 #endif
 
     /* time stepping parameters */
     sprintf(name,"time_dt");
-    property.time_dt = (double)read_parameter(name); 
+    property.time_dt = (my_double)read_parameter(name); 
     fprintf(stderr," Time step: %g\n",property.time_dt);
 #ifdef METHOD_STREAMING
     /* check if \Delta t = 1 */
@@ -136,27 +136,27 @@ void assign_parameters(){
 
 #endif
     sprintf(name,"time_start");
-    property.time_start = (double)read_parameter(name); 
-    fprintf(stderr,"Time start: %g\n",property.time_start);
+    property.time_start = (my_double)read_parameter(name); 
+    fprintf(stderr,"Time start: %g\n",(double)property.time_start);
 
     sprintf(name,"time_end");
-    property.time_end = (double)read_parameter(name); 
-    fprintf(stderr,"Time end: %g\n",property.time_end);
+    property.time_end = (my_double)read_parameter(name); 
+    fprintf(stderr,"Time end: %g\n",(double)property.time_end);
   
     sprintf(name,"time_dump_field");
-    property.time_dump_field = (double)read_parameter(name);
-    fprintf(stderr,"Time dump fields: %g\n",property.time_dump_field);
+    property.time_dump_field = (my_double)read_parameter(name);
+    fprintf(stderr,"Time dump fields: %g\n",(double)property.time_dump_field);
     if(property.time_dump_field < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_field < property.time_dt , please change it.\n"); exit(-1);}
 
     sprintf(name,"time_dump_diagn");
-    property.time_dump_diagn = (double)read_parameter(name);
-    fprintf(stderr,"Time dump diagnostic: %g\n",property.time_dump_diagn);
+    property.time_dump_diagn = (my_double)read_parameter(name);
+    fprintf(stderr,"Time dump diagnostic: %g\n",(double)property.time_dump_diagn);
     if(property.time_dump_diagn < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_diagn < property.time_dt , please change it.\n"); exit(-1);}
 
 #ifdef LAGRANGE
     sprintf(name,"time_dump_lagr");
-    property.time_dump_lagr = (double)read_parameter(name);
-    fprintf(stderr,"Time dump lagrange: %g\n",property.time_dump_lagr);
+    property.time_dump_lagr = (my_double)read_parameter(name);
+    fprintf(stderr,"Time dump lagrange: %g\n",(double)property.time_dump_lagr);
     if(property.time_dump_lagr < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_lagr < property.time_dt , please change it.\n"); exit(-1);}
 #endif
 
@@ -165,7 +165,7 @@ void assign_parameters(){
   fprintf(stderr,"YES <- LB_FLUID\n");
   sprintf(name,"tau_u");
   property.tau_u = read_parameter(name);
-  fprintf(stderr,"Properties:\ntau_u %g\n",(double)property.tau_u);
+  fprintf(stderr,"Properties:\ntau_u %e\n",(double)property.tau_u);
  #ifdef METHOD_STREAMING
   //property.nu = (property.tau_u-0.5)/3.0;
   property.nu = (property.tau_u-0.5*property.time_dt)/3.0;
@@ -176,7 +176,7 @@ void assign_parameters(){
   property.nu = property.tau_u/3.0;
   #endif
  #endif
-  fprintf(stderr,"viscosity %g\n",(double)property.nu);
+  fprintf(stderr,"viscosity %e\n",(double)property.nu);
  #ifdef LB_FLUID_BC
   #ifdef LB_FLUID_BC_Y
    #ifdef LB_FLUID_BC_Y_M_VELOCITY
@@ -185,7 +185,7 @@ void assign_parameters(){
      property.ym_wall_velocity_x = read_parameter(name);
      sprintf(name,"ym_wall_velocity_z");
      property.ym_wall_velocity_z = read_parameter(name);
-     fprintf(stderr,"ym_wall_velocity_x %g , ym_wall_velocity_z %g\n",(double)property.ym_wall_velocity_x, (double)property.ym_wall_velocity_z);
+     fprintf(stderr,"ym_wall_velocity_x %e , ym_wall_velocity_z %e\n",(double)property.ym_wall_velocity_x, (double)property.ym_wall_velocity_z);
    #endif
    #ifdef LB_FLUID_BC_Y_P_VELOCITY
      /* YP wall velocity */
@@ -193,7 +193,7 @@ void assign_parameters(){
      property.yp_wall_velocity_x = read_parameter(name);
      sprintf(name,"yp_wall_velocity_z");
      property.yp_wall_velocity_z = read_parameter(name);
-     fprintf(stderr,"yp_wall_velocity_x %g , yp_wall_velocity_z %g\n",(double)property.yp_wall_velocity_x, (double)property.yp_wall_velocity_z);
+     fprintf(stderr,"yp_wall_velocity_x %e , yp_wall_velocity_z %e\n",(double)property.yp_wall_velocity_x, (double)property.yp_wall_velocity_z);
    #endif
    #ifdef LB_FLUID_BC_Y_P_GRADIENT
      /* YP wall velocity gradient*/
@@ -201,14 +201,14 @@ void assign_parameters(){
      property.yp_wall_gradient_velocity_x = read_parameter(name);
      sprintf(name,"yp_wall_gradient_velocity_z");
      property.yp_wall_gradient_velocity_z = read_parameter(name);
-     fprintf(stderr,"yp_wall_gradient_velocity_x %g , yp_wall_gradient_velocity_z %g\n",(double)property.yp_wall_gradient_velocity_x, (double)property.yp_wall_gradient_velocity_z);
+     fprintf(stderr,"yp_wall_gradient_velocity_x %e , yp_wall_gradient_velocity_z %e\n",(double)property.yp_wall_gradient_velocity_x, (double)property.yp_wall_gradient_velocity_z);
    #endif
   #endif
  #endif
  #ifdef LB_FLUID_INITIAL_ADD_NOISE
      /* Intensity of noise perturbation on the velocity field */
      sprintf(name,"noise_u");
-     property.noise_u = (double)read_parameter(name);
+     property.noise_u = (my_double)read_parameter(name);
  #endif
  #ifdef LB_FLUID_FORCING
   /* forcing Amplitude */
@@ -219,9 +219,9 @@ void assign_parameters(){
   property.Amp_y = read_parameter(name);
   sprintf(name,"Amp_z");
   property.Amp_z = read_parameter(name);
-  fprintf(stderr,"Properties: Amp_x %g\n",(double)property.Amp_x);
-  fprintf(stderr,"Properties: Amp_y %g\n",(double)property.Amp_y);
-  fprintf(stderr,"Properties: Amp_z %g\n",(double)property.Amp_z);
+  fprintf(stderr,"Properties: Amp_x %e\n",(double)property.Amp_x);
+  fprintf(stderr,"Properties: Amp_y %e\n",(double)property.Amp_y);
+  fprintf(stderr,"Properties: Amp_z %e\n",(double)property.Amp_z);
   #ifdef LB_FLUID_FORCING_GRAVITY
   /* Introduce the gravity vector parameter (without applying any force): it is used for the buoyancy */
   sprintf(name,"gravity_x");
@@ -230,7 +230,7 @@ void assign_parameters(){
   property.gravity_y = read_parameter(name);
   sprintf(name,"gravity_z");
   property.gravity_z = read_parameter(name);
-  fprintf(stderr,"gravity_x %g, gravity_y %g, gravity_z %g\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
+  fprintf(stderr,"gravity_x %e, gravity_y %e, gravity_z %e\n",(double)property.gravity_x, (double)property.gravity_y, (double)property.gravity_z);
   #endif
   #ifdef LB_FLUID_FORCING_POISEUILLE
   fprintf(stderr,"Reynolds (Poiseuille) Number is -> Re= %e\n", property.Amp_x * property.SY /property.nu);
@@ -259,9 +259,9 @@ void assign_parameters(){
   property.Omega_y = read_parameter(name);
   sprintf(name,"Omega_z");
   property.Omega_z = read_parameter(name);
-  fprintf(stderr,"Properties: Omega_x %g\n",(double)property.Omega_x);
-  fprintf(stderr,"Properties: Omega_y %g\n",(double)property.Omega_y);
-  fprintf(stderr,"Properties: Omega_z %g\n",(double)property.Omega_z);
+  fprintf(stderr,"Properties: Omega_x %e\n",(double)property.Omega_x);
+  fprintf(stderr,"Properties: Omega_y %e\n",(double)property.Omega_y);
+  fprintf(stderr,"Properties: Omega_z %e\n",(double)property.Omega_z);
   #endif
  #endif
 #endif
@@ -271,7 +271,7 @@ void assign_parameters(){
   fprintf(stderr,"YES <- LB_TEMPERATURE\n");
   sprintf(name,"tau_t");
   property.tau_t = read_parameter(name);
-  fprintf(stderr,"Properties:\ntau_t %g\n",(double)property.tau_t);
+  fprintf(stderr,"Properties:\ntau_t %e\n",(double)property.tau_t);
  #ifdef METHOD_STREAMING
   //property.kappa = (property.tau_t-0.5)/3.0;
   property.kappa = (property.tau_t-0.5*property.time_dt)/3.0;
@@ -282,7 +282,7 @@ void assign_parameters(){
   property.kappa = property.tau_t/3.0;
   #endif
  #endif
-  fprintf(stderr,"thermal diffusivity %g\n",(double)property.kappa);
+  fprintf(stderr,"thermal diffusivity %e\n",(double)property.kappa);
   /* wall temperature values */
   sprintf(name,"T_bot");
   property.T_bot = read_parameter(name);
@@ -295,21 +295,21 @@ void assign_parameters(){
     property.T_ref2 = read_parameter(name);
    #endif
   property.deltaT = property.T_bot-property.T_top;
-  fprintf(stderr,"T_bot %g , T_top %g , deltaT %g\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
+  fprintf(stderr,"T_bot %e , T_top %e , deltaT %e\n",(double)property.T_bot, (double)property.T_top, (double)property.deltaT);
   /* wall temperature gradients */
   sprintf(name,"grad_T_bot");
   property.grad_T_bot = read_parameter(name);
   sprintf(name,"grad_T_top");
   property.grad_T_top = read_parameter(name);
-  fprintf(stderr,"grad_T_bot %g , grad_T_top %g\n",(double)property.grad_T_bot, (double)property.grad_T_top);
+  fprintf(stderr,"grad_T_bot %e , grad_T_top %e\n",(double)property.grad_T_bot, (double)property.grad_T_top);
  #ifdef LB_TEMPERATURE_BUOYANCY
   fprintf(stderr,"YES <- LB_TEMPERATURE_BUOYANCY\n");
   sprintf(name,"beta_t");
   property.beta_t = read_parameter(name);
-  fprintf(stderr,"linear volume expansion coefficient %g\n",(double)property.beta_t);
+  fprintf(stderr,"linear volume expansion coefficient %e\n",(double)property.beta_t);
   sprintf(name,"beta2_t");
   property.beta2_t = read_parameter(name);
-  fprintf(stderr,"quadratic volume expansion coefficient %g\n",(double)property.beta2_t);
+  fprintf(stderr,"quadratic volume expansion coefficient %e\n",(double)property.beta2_t);
   /*
   sprintf(name,"gravity_x");
   property.gravity_x = read_parameter(name);
@@ -418,7 +418,7 @@ void assign_parameters(){
       property.kappa_solid = property.tau_solid/3.0;
      #endif
     #endif
-    fprintf(stderr,"solid thermal diffusivity %g\n",(double)property.kappa_solid);
+    fprintf(stderr,"solid thermal diffusivity %e\n",(double)property.kappa_solid);
     fprintf(stderr,"Solid over fluid diffusivity ratio is -> kappa_ratio = kappa_solid / kappa = %e\n", property.kappa_solid/property.kappa);
     fout = fopen("numbers.dat","a");
     fprintf(fout,"kappa_ratio %e\n", property.kappa_solid/property.kappa);
@@ -429,7 +429,7 @@ void assign_parameters(){
    #ifdef LB_TEMPERATURE_FORCING_VISCOUS
    sprintf(name,"specific_heat");
    property.specific_heat = read_parameter(name);
-   fprintf(stderr,"specific heat %g\n",(double)property.specific_heat);
+   fprintf(stderr,"specific heat %e\n",(double)property.specific_heat);
    #endif 
   #endif  
   #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN
@@ -448,7 +448,7 @@ void assign_parameters(){
   fprintf(stderr,"YES <- LB_SCALAR\n");
   sprintf(name,"tau_s");
   property.tau_s = read_parameter(name);
-  fprintf(stderr,"Properties:\ntau_s %g\n",(double)property.tau_s);
+  fprintf(stderr,"Properties:\ntau_s %e\n",(double)property.tau_s);
  #ifdef METHOD_STREAMING
   //property.chi = (property.tau_s-0.5)/3.0;
   property.chi = (property.tau_s-0.5*property.time_dt)/3.0;
@@ -459,7 +459,7 @@ void assign_parameters(){
   property.chi = property.tau_s/3.0;
   #endif
  #endif
-  fprintf(stderr,"mass diffusivity %g\n",(double)property.chi);
+  fprintf(stderr,"mass diffusivity %e\n",(double)property.chi);
 
   sprintf(name,"S_bot");
   property.S_bot = read_parameter(name);
@@ -468,12 +468,12 @@ void assign_parameters(){
   sprintf(name,"S_ref");
   property.S_ref = read_parameter(name);
   property.deltaS = property.S_bot-property.S_top;
-  fprintf(stderr,"S_bot %g , S_top %g , deltaS %g\n",(double)property.S_bot, (double)property.S_top, (double)property.deltaS);
+  fprintf(stderr,"S_bot %e , S_top %e , deltaS %e\n",(double)property.S_bot, (double)property.S_top, (double)property.deltaS);
  #ifdef LB_SCALAR_BUOYANCY
   fprintf(stderr,"YES <- LB_SCALAR_BUOYANCY\n");
   sprintf(name,"beta_s");
   property.beta_s = read_parameter(name);
-  fprintf(stderr,"linear volume expansion coefficient for scalar %g\n",(double)property.beta_s);
+  fprintf(stderr,"linear volume expansion coefficient for scalar %e\n",(double)property.beta_s);
  #endif
  #ifdef LB_SCALAR_FORCING
   sprintf(name,"Amp_s");
@@ -517,7 +517,7 @@ void assign_parameters(){
   fprintf(stderr,"YES <- LAGRANGE\n");
   sprintf(name,"particle_number");
   property.particle_number = read_parameter(name);
-  fprintf(stderr,"Properties: particle_number %g\n",(double)property.particle_number);
+  fprintf(stderr,"Properties: particle_number %e\n",(double)property.particle_number);
 
  #ifdef LAGRANGE_RADIUSandDENSITY  
   /* particle radius  */
@@ -527,7 +527,7 @@ void assign_parameters(){
   property.particle_radius_min = read_parameter(name);
   sprintf(name,"particle_radius_max");
   property.particle_radius_max = read_parameter(name);
-  fprintf(stderr,"particle_radius_types %g , particle_radius_min %g , particle_radius_max %g\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
+  fprintf(stderr,"particle_radius_types %e , particle_radius_min %e , particle_radius_max %e\n",(double)property.particle_radius_types, (double)property.particle_radius_min, (double)property.particle_radius_max);
   if( property.particle_radius_types <1 || property.particle_radius_max < property.particle_radius_min ){ fprintf(stderr,"Error in particle_radius parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -540,7 +540,7 @@ void assign_parameters(){
   property.particle_density_min = read_parameter(name);
   sprintf(name,"particle_density_max");
   property.particle_density_max = read_parameter(name);
-  fprintf(stderr,"particle_density_types %g , particle_density_min %g , particle_density_max %g\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
+  fprintf(stderr,"particle_density_types %e , particle_density_min %e , particle_density_max %e\n",(double)property.particle_density_types, (double)property.particle_density_min, (double)property.particle_density_max);
   if( property.particle_density_types <1 || property.particle_density_max < property.particle_density_min ){ fprintf(stderr,"Error in particle_density parameters\n Exit.\n"); exit(0);}
 
   /* total number of particles types up to now */
@@ -858,7 +858,7 @@ void *my_malloc(size_t size){
   free(ptr);
   //  real_size = (my_double) size; // just a temporary inaccurate solution.
   memory_local += (my_double) real_size;
-  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD);
   if(memory_all > memory_max) memory_max=memory_all; 
 #ifdef DEBUG_MEMORY
   if(ROOT){
@@ -880,7 +880,7 @@ void my_free(void *ptr){
   size = malloc_usable_size(ptr);
 #endif
   memory_local -= (my_double)size;
-  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(&memory_local, &memory_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD);
 #ifdef DEBUG_MEMORY
   if(ROOT){ 
     fprintf(stderr,"Free %lf MB. Present memory allocation %lf MB\n", (my_double)size/1.e+6, memory_all/1.e+6);
@@ -1432,7 +1432,7 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
   #endif
 #endif
 
-  if(ROOT) fprintf(stderr,"Total memory allocation %lf MB\n",(my_double)memory_all/1.e+6); 
+  if(ROOT) fprintf(stderr,"Total memory allocation %e MB\n",(double)memory_all/1.e+6); 
 
 }
 

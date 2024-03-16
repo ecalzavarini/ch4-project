@@ -24,7 +24,9 @@ int  me_xp_yp, me_xm_ym, me_xp_ym , me_xm_yp , me_yp_zp , me_ym_zm , me_yp_zm , 
 int *me_next;
 int nprocs;
 int nxprocs, nyprocs, nzprocs;
-MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type, MPI_my_double_type;
+MPI_Datatype MPI_MY_DOUBLE;
+MPI_Op MPI_SUM_my_double;
+MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type;// MPI_my_double_type;
 MPI_Op MPI_SUM_output;
 MPI_Op MPI_SUM_vector;
 

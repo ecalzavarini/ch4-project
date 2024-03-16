@@ -2,8 +2,28 @@
  #include "define.h"
 #endif
 
-//#define my_double long double 
-#define my_double double /* give nickname for the type 'double', #define nickname type */
+
+/* define my_double as either a float a daouble or a long double */
+  #if defined(PRECISION_FLOAT)
+   #define my_double float
+  #elif defined(PRECISION_DOUBLE_LONG)
+   #define my_double long double
+  #else
+    /* this is the default choice */
+   #define my_double double
+  #endif
+
+/* same definitiond for the H5 types*/
+#ifdef OUTPUT_H5
+  #if defined(PRECISION_FLOAT)
+   #define H5T_NATIVE_MY_DOUBLE  H5T_NATIVE_FLOAT
+  #elif defined(PRECISION_DOUBLE_LONG)
+   #define H5T_NATIVE_MY_DOUBLE  H5T_NATIVE_LDOUBLE 
+  #else
+  /* this is the default choice */
+   #define H5T_NATIVE_MY_DOUBLE  H5T_NATIVE_DOUBLE
+  #endif
+#endif 
 
 /* Useful structures */
 typedef struct {
@@ -287,16 +307,20 @@ typedef struct {
 
 /* total frame size */
 #ifdef METHOD_MYQUICK
-#define BRD 2
+  #define BRD 2
 #elif defined(LAGRANGE_GRADIENT_BRD2)  /* define a double border in order to have centered second order gradients everywhere */
-#define BRD 2
+  #define BRD 2
+#elif defined(LB_FLUID_LES)  /* define a double border in order to compute gradients for LES */
+  #define BRD 2
+#elif defined(LB_FLUID_FORCING_LAPLACIAN)
+  #define BRD 2
 #elif defined(EULER_PARTICLE)  /* define a double border in order to use QUICK advection scheme */
-#define BRD 2
+  #define BRD 2
   #ifdef WENO
    #define BRD 3
   #endif
 #else 
-#define BRD 1
+  #define BRD 1
 #endif
 #define TWO_BRD 2*BRD
 

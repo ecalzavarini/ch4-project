@@ -3,7 +3,8 @@
 #endif
 
 /* parallel.c */
-void initialization_MPI();
+void initialization_MPI(int argc, char **argv);
+//void initialization_MPI();
 void measure_time();
 void sum_output(output *a, output *b, int *length, MPI_Datatype *dtype);
 void sum_vector(vector *a, vector *b, int *length, MPI_Datatype *dtype);
@@ -131,7 +132,7 @@ void shake_ghosts();
 #endif
 
 /* random.c */
-double myrand();
+my_double myrand();
 #ifndef SYSTEM_RANDOM48
 double ran1();
 #endif

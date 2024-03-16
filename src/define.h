@@ -6,6 +6,10 @@
 //#define DEBUG_CENTERS
 //#define DEBUG_LAGRANGE_INTERPOLATE
 
+/* PRECISION (the default is DOUBLE and does not need to be defined)*/
+//#define PRECISION_FLOAT   
+//#define PRECISION_DOUBLE_LONG  /*still buggy!*/
+
 /* SYSTEM RELATED */
 #define SYSTEM_RANDOM48  /* does enable drand48 , default is our random number generator */
 #define SYSTEM_TIMING /* measure computetion time */
@@ -49,7 +53,7 @@
 /* FLUID */
 #define LB_FLUID 
 //#define LB_FLUID_PAST
-//#define LB_FLUID_INITIAL_KOLMOGOROV 
+#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -58,18 +62,18 @@
 //#define LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-#define LB_INITIAL_BAROMETRIC
+//#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 #define LB_FLUID_INITIAL_UNIT_DENSITY
 //#define LB_FLUID_INITIAL_ADD_NOISE
 //#define LB_FLUID_INITIAL_ADD_NOISE_AFTER_READ
 #define LB_FLUID_FORCING  /* activate force on the fluid */
-#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
+//#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
-//#define LB_FLUID_FORCING_KOLMOGOROV
+#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_SHEAR_LINEAR
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
@@ -88,7 +92,7 @@
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
-//#define LB_FLUID_FORCING_LAPLACIAN
+#define LB_FLUID_FORCING_LAPLACIAN
 //#define LB_FLUID_FORCING_CORIOLIS
  
 /* Landscape definitions in the domain */
@@ -97,8 +101,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-#define LB_FLUID_BC
-#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+//#define LB_FLUID_BC
+//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET 
@@ -155,13 +159,13 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 #define LB_TEMPERATURE_INITIAL_LINEAR
 #define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_OCEANMIXEDLAYER
-#define LB_TEMPERATURE_INITIAL_ADD_NOISE
+//#define LB_TEMPERATURE_INITIAL_ADD_NOISE
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE_AFTER_READ
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
@@ -306,7 +310,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 
 
 /* Lagragian parts */
-#define LAGRANGE
+//#define LAGRANGE
 //#define LAGRANGE_DEBUG
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
@@ -321,9 +325,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
 //#define LAGRANGE_TAUDRAG_INCREMENT_LOG
-#define LAGRANGE_GRADIENT 
-#define LAGRANGE_GRADIENT_BRD2
-#define LAGRANGE_ADDEDMASS
+//#define LAGRANGE_GRADIENT 
+//#define LAGRANGE_GRADIENT_BRD2
+//#define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_ADDEDMASS_INCREMENT_LOG
 //#define LAGRANGE_ADDEDMASS_LIFT
 //#define LAGRANGE_ADDEDMASS_WAKEDRAG
@@ -333,9 +337,9 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
 //#define LB_LAGRANGE_BC_INELASTIC_REINJECT
 //#define LB_LAGRANGE_BC_RADIUSandDENSITY
-#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+//#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
-#define LAGRANGE_SMALLTAUD_FLOATER
+//#define LAGRANGE_SMALLTAUD_FLOATER
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
 //#define LAGRANGE_ORIENTATION_JEFFREY
@@ -366,8 +370,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_SCALAR_LES
 
 /* EULER FV */
-#define EULER_PARTICLE
-#define EULER_PARTICLE_CONCENTRATION
+//#define EULER_PARTICLE
+//#define EULER_PARTICLE_CONCENTRATION
 
 
 /***************************************************/

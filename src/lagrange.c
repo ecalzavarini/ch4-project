@@ -84,7 +84,7 @@ void initial_conditions_particles(int restart)
   #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
     my_double *gyrotaxis_stability;
   #endif
-  double *type_counter_local, *type_counter_all;
+  my_double *type_counter_local, *type_counter_all;
 
 #ifdef LAGRANGE_INITIAL_PAIRS
   vector pair_direction;
@@ -160,7 +160,7 @@ void initial_conditions_particles(int restart)
           particle_radius[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_radius_types] = property.particle_radius_min + i * step;
 #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_RADIUS
           /* geometric increment */
-          particle_radius[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_radius_types] = property.particle_radius_min * pow(step, (double)i);
+          particle_radius[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_radius_types] = property.particle_radius_min * (my_double)pow(step, (double)i);
 #endif
         }
       }
@@ -199,7 +199,7 @@ void initial_conditions_particles(int restart)
           particle_density[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_density_types] = property.particle_density_min + i * step;
 #ifdef LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
           /* geometric increment */
-          particle_density[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_density_types] = property.particle_density_min * pow(step, (double)i);
+          particle_density[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.particle_density_types] = property.particle_density_min * (my_double)pow(step, (double)i);
 #endif
         }
       }
@@ -274,7 +274,7 @@ void initial_conditions_particles(int restart)
           tau_drag[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.tau_drag_types] = property.tau_drag_min + i * step;
 #ifdef LAGRANGE_TAUDRAG_INCREMENT_LOG
           /* geometric increment */
-          tau_drag[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.tau_drag_types] = property.tau_drag_min * pow(step, (double)i);
+          tau_drag[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.tau_drag_types] = property.tau_drag_min * (my_double)pow(step, (double)i);
 #endif
         }
       }
@@ -356,7 +356,7 @@ void initial_conditions_particles(int restart)
           gravity_coeff[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.gravity_coeff_types] = property.gravity_coeff_min + i * step;
 #ifdef LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
           /* geometric increment */
-          gravity_coeff[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.gravity_coeff_types] = property.gravity_coeff_min * pow(step, (double)i);
+          gravity_coeff[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.gravity_coeff_types] = property.gravity_coeff_min * (my_double)pow(step, (double)i);
 #endif
         }
       }
@@ -399,7 +399,7 @@ void initial_conditions_particles(int restart)
           aspect_ratio[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.aspect_ratio_types] = property.aspect_ratio_min + i * step;
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_INCREMENT_LOG
           /* geometric increment */
-          aspect_ratio[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.aspect_ratio_types] = property.aspect_ratio_min * pow(step, (double)i);
+          aspect_ratio[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.aspect_ratio_types] = property.aspect_ratio_min * (my_double)pow(step, (double)i);
 #endif
         }
       }
@@ -419,7 +419,7 @@ void initial_conditions_particles(int restart)
                     /* linear increment */
                     //      gyrotaxis_stability[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_stability_types ] = property.gyrotaxis_stability_min + i*step;
                     /* geometric increment */
-                    gyrotaxis_stability[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_stability_types ] = property.gyrotaxis_stability_min * pow(step,(double)i);
+                    gyrotaxis_stability[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_stability_types ] = property.gyrotaxis_stability_min * (my_double)pow(step,(double)i);
                 }
             }
         }
@@ -447,7 +447,7 @@ void initial_conditions_particles(int restart)
           /* linear increment */
           //      gyrotaxis_velocity[ (int)property.fluid_tracers + j+i*(int)repetitions+k*(int)repetitions*(int)property.gyrotaxis_velocity_types ] = property.gyrotaxis_velocity_min + i*step;
           /* geometric increment */
-          gyrotaxis_velocity[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.gyrotaxis_velocity_types] = property.gyrotaxis_velocity_min * pow(step, (double)i);
+          gyrotaxis_velocity[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.gyrotaxis_velocity_types] = property.gyrotaxis_velocity_min * (my_double)pow(step, (double)i);
         }
       }
     }
@@ -583,7 +583,7 @@ void initial_conditions_particles(int restart)
       type_counter_local[type] += 1.0;
     }
     /* Sum */
-    MPI_Allreduce(type_counter_local, type_counter_all, (int)property.particle_types, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(type_counter_local, type_counter_all, (int)property.particle_types, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD);
 
     /* write on file particle properties by family */
     if (ROOT)
@@ -981,7 +981,7 @@ void nucleate_particles(my_double *tfield)
           }
     nnucleate *= property.Nref;
     nuccount /= (LNX*fmin(property.UC_frac*property.NY,LNY)*LNZ);
-    MPI_Allreduce(&nnucleate, &all_nnucleate, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(&nnucleate, &all_nnucleate, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD);
   }
 
   for (ipart = 0; ipart < npart; ipart++)
@@ -1326,8 +1326,8 @@ void interpolate_scalar_at_particles(my_double *f, char which_scalar)
   my_double s;
 
   int ipart, im, jm, km, ip, jp, kp;
-  double dxm, dxp, dym, dyp, dzm, dzp;
-  double vol_ip_jp_kp, vol_im_jp_kp, vol_ip_jm_kp, vol_ip_jp_km, vol_im_jm_kp, vol_ip_jm_km, vol_im_jp_km, vol_im_jm_km;
+  my_double dxm, dxp, dym, dyp, dzm, dzp;
+  my_double vol_ip_jp_kp, vol_im_jp_kp, vol_ip_jm_kp, vol_ip_jp_km, vol_im_jm_kp, vol_ip_jm_km, vol_im_jp_km, vol_im_jm_km;
 
   int i, j, k;
 
@@ -1541,7 +1541,8 @@ void output_particles()
       exit(-1);
     }
 
-    hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+    
+    hdf5_type = H5Tcopy(H5T_NATIVE_MY_DOUBLE);
 
     /* Create a new file using default properties */
     plist_id = H5Pcreate(H5P_FILE_ACCESS);
@@ -2370,7 +2371,7 @@ void dump_particle_averages()
 
   output_particle *out_particle_local, *out_particle_all;
   int ipart, type;
-  double norm, *counter_local, *counter_all;
+  my_double norm, *counter_local, *counter_all;
   FILE *fout;
   char fname[128];
 
@@ -2551,7 +2552,7 @@ void dump_particle_averages()
     //if(ROOT) for(type=0;type<(int)property.particle_types;type++) fprintf(stdout,"before %e %e type %d\n", out_particle_local[type].vx2, out_particle_all[type].vx2, type);
     MPI_Allreduce(out_particle_local, out_particle_all, (int)property.particle_types, MPI_output_particle_type, MPI_SUM_output_particle, MPI_COMM_WORLD);
     //if(ROOT) for(type=0;type<(int)property.particle_types;type++) fprintf(stdout,"after %e %e type %d\n", out_particle_local[type].vx2, out_particle_all[type].vx2, type);
-    MPI_Allreduce(counter_local, counter_all, (int)property.particle_types, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(counter_local, counter_all, (int)property.particle_types, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD);
 
     for (type = 0; type < (int)property.particle_types; type++)
     {
@@ -3966,150 +3967,150 @@ void write_point_particle_h5()
 
   /* define its offsets */
   sprintf(label, "name");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "x");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "y");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "z");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "vx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "vx_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vy_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vz_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ax");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ay");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "az");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ax_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ay_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "az_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "tau_drag");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_MY_DOUBLE);
 
 #ifdef LB_FLUID
   sprintf(label, "ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ux_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uy_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uz_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_MY_DOUBLE);
   //#endif
 #ifdef LAGRANGE_GRAVITY
 #ifdef LAGRANGE_GRAVITY_VARIABLE
   sprintf(label, "gravity_coeff");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dx_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dx_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ADDEDMASS
   sprintf(label, "beta_coeff");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION
   sprintf(label, "px");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "py");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "pz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_px");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_py");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_pz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
   sprintf(label, "nx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ny");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "nz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_nx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_ny");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_nz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_JEFFREY
   sprintf(label, "aspect_ratio");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   sprintf(label, "gyrotaxis_velocity");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
     sprintf(label,"gyrotaxis_stability");
-    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_DOUBLE);
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   sprintf(label, "rotational_diffusion");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_ACTIVE
   sprintf(label, "swim_velocity");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
   sprintf(label, "critical_shear_rate");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "shear_rate");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "jump_time");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_MY_DOUBLE);
   /* jump orientation */
   sprintf(label, "px_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "py_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "pz_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #endif /* LAGRANGE_ORIENTATION */
@@ -4118,27 +4119,27 @@ void write_point_particle_h5()
 
 #ifdef LB_TEMPERATURE
   sprintf(label, "t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 
 #ifdef LB_SCALAR
   sprintf(label, "s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 
@@ -4195,9 +4196,9 @@ void write_point_particle_h5()
 
   /* Create scalar attribute : number of types */
   aid1 = H5Screate(H5S_SCALAR);
-  attr1 = H5Acreate(group, "particle_types", H5T_NATIVE_DOUBLE, aid1, H5P_DEFAULT, H5P_DEFAULT);
+  attr1 = H5Acreate(group, "particle_types", H5T_NATIVE_MY_DOUBLE, aid1, H5P_DEFAULT, H5P_DEFAULT);
   /* Write scalar attribute */
-  ret = H5Awrite(attr1, H5T_NATIVE_DOUBLE, &property.particle_types);
+  ret = H5Awrite(attr1, H5T_NATIVE_MY_DOUBLE, &property.particle_types);
   H5Aclose(attr1);
   H5Sclose(aid1);
 
@@ -4205,7 +4206,7 @@ void write_point_particle_h5()
   //aid2 = H5Screate(H5S_SIMPLE);
   //ret  = H5Sset_extent_simple(aid2, ARANK, adim, NULL);
   /* Create array attribute */
-  //attr2 = H5Acreate(group, "tau_drag", H5T_NATIVE_DOUBLE, aid2,H5P_DEFAULT,H5P_DEFAULT);
+  //attr2 = H5Acreate(group, "tau_drag", H5T_NATIVE_MY_DOUBLE, aid2,H5P_DEFAULT,H5P_DEFAULT);
   /* Write array attribute */
   //ret = H5Awrite(attr2, hdf5_type, tau_drag);
   //H5Aclose(attr2);
@@ -4269,150 +4270,150 @@ void read_point_particle_h5()
 
   /* define its offsets */
   sprintf(label, "name");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, name), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "x");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, x), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "y");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, y), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "z");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, z), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "vx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "vx_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vx_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vy_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vy_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "vz_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, vz_old), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ax");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ay");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "az");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ax_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ax_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ay_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ay_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "az_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, az_old), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "tau_drag");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, tau_drag), H5T_NATIVE_MY_DOUBLE);
 
 #ifdef LB_FLUID
   sprintf(label, "ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz), H5T_NATIVE_MY_DOUBLE);
 
   sprintf(label, "ux_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ux_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uy_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uy_old), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "uz_old");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, uz_old), H5T_NATIVE_MY_DOUBLE);
   //#endif
 #ifdef LAGRANGE_GRAVITY
 #ifdef LAGRANGE_GRAVITY_VARIABLE
   sprintf(label, "gravity_coeff");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gravity_coeff), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_ux");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_ux), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dx_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_uy");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uy), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dx_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_uz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_uz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_uz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_uz), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ADDEDMASS
   sprintf(label, "beta_coeff");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, beta_coeff), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION
   sprintf(label, "px");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "py");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "pz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_px");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_px), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_py");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_py), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_pz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_pz), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_SECONDORIENTATION
   sprintf(label, "nx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "ny");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, ny), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "nz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, nz), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_nx");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nx), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_ny");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_ny), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dt_nz");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dt_nz), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_JEFFREY
   sprintf(label, "aspect_ratio");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, aspect_ratio), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS
   sprintf(label, "gyrotaxis_velocity");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_velocity), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_JEFFREY_GYROTAXIS_LINFENG
     sprintf(label,"gyrotaxis_stability");
-    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_DOUBLE);
+    H5Tinsert(hdf5_type, label, HOFFSET(point_particle, gyrotaxis_stability), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
   sprintf(label, "rotational_diffusion");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, rotational_diffusion), H5T_NATIVE_MY_DOUBLE);
 #endif
 #ifdef LAGRANGE_ORIENTATION_ACTIVE
   sprintf(label, "swim_velocity");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, swim_velocity), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_ORIENTATION_ACTIVE_JUMP
   sprintf(label, "critical_shear_rate");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, critical_shear_rate), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "shear_rate");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, shear_rate), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "jump_time");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, jump_time), H5T_NATIVE_MY_DOUBLE);
   /* jump orientation */
   sprintf(label, "px_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, px_jump), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "py_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, py_jump), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "pz_jump");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, pz_jump), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 #endif
@@ -4421,27 +4422,27 @@ void read_point_particle_h5()
 
 #ifdef LB_TEMPERATURE
   sprintf(label, "t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_t), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_t), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_t");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 
 #ifdef LB_SCALAR
   sprintf(label, "s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, s), H5T_NATIVE_MY_DOUBLE);
 #ifdef LAGRANGE_GRADIENT
   sprintf(label, "dx_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dx_s), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dy_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dy_s), H5T_NATIVE_MY_DOUBLE);
   sprintf(label, "dz_s");
-  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_DOUBLE);
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_s), H5T_NATIVE_MY_DOUBLE);
 #endif
 #endif
 

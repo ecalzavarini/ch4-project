@@ -199,7 +199,7 @@ void build_forcing(){
 	    t0 += t[IDX(i,j,k)];
 	  }
 
-    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
@@ -261,7 +261,7 @@ void build_forcing(){
 	    s0 += s[IDX(i,j,k)];
 	  }
 
-    MPI_Allreduce(&s0, &s0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&s0, &s0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
    norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
@@ -301,7 +301,7 @@ void build_forcing(){
                     (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) *0.5 * property.nu;
 	}
 
-    MPI_Allreduce(&eps, &eps_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&eps, &eps_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
     norm = (my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0) eps_all /= norm;
@@ -339,10 +339,10 @@ void build_forcing(){
 			  }
 		  }
 	  }
-	  //MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-	  //MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+	  //MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
+	  //MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 	  MPI_Allreduce(&avg_buoyancy, &avg_buoyancy_sum, 1, MPI_vector_type, MPI_SUM_vector, MPI_COMM_WORLD );//linfeng
-	  MPI_Allreduce(&avg_volume, &avg_volume_sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );//linfeng
+	  MPI_Allreduce(&avg_volume, &avg_volume_sum, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );//linfeng
 
 	  avg_buoyancy_sum.x = avg_buoyancy_sum.x / avg_volume_sum;//linfeng
 	  avg_buoyancy_sum.y = avg_buoyancy_sum.y / avg_volume_sum;//linfeng
@@ -395,7 +395,7 @@ void build_forcing(){
     //x = (my_double)center_V[IDX(i,j,k)].x;
 
 	/* along x */  
-        force[IDX(i,j,k)].x += property.Amp_x*fny*sin(kn*two_pi*y/LY); 
+  force[IDX(i,j,k)].x += property.Amp_x*fny*sin(kn*two_pi*y/LY); 
 	force[IDX(i,j,k)].y += property.Amp_y*fnx*sin(kn*two_pi*x/LX); 
 	force[IDX(i,j,k)].z += property.Amp_z*fny*sin(kn*two_pi*y/LY);  
 
@@ -403,6 +403,23 @@ void build_forcing(){
 	//  fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
 	//  exit(1);
  #endif  
+
+#ifdef LB_FLUID_FORCING_KOLMOGOROV_TIMEMODULATED_AMPLITUDE 
+    kn=1.0;
+    fnx=nu*pow(two_pi/LX,2.0);
+    fny=nu*pow(two_pi/LY,2.0);
+    //y = (my_double)center_V[IDX(i,j,k)].y; /* not needed */
+    fac=two_pi*property.time_dt/10000;
+	/* along x */  
+  force[IDX(i,j,k)].x += sin(fac*itime)*property.Amp_x*fny*sin(kn*two_pi*y/LY); 
+	force[IDX(i,j,k)].y += sin(fac*itime)*property.Amp_y*fnx*sin(kn*two_pi*x/LX); 
+	force[IDX(i,j,k)].z += sin(fac*itime)*property.Amp_z*fny*sin(kn*two_pi*y/LY);  
+
+	//   fprintf(stderr,"force[IDX(i,j,k)].x %e force[IDX(i,j,k)].y %e force[IDX(i,j,k)].z %e\n",force[IDX(i,j,k)].x, force[IDX(i,j,k)].y,force[IDX(i,j,k)].z);
+	//  fprintf(stderr,"property.Amp_x %e property.Amp_y %e property.Amp_z %e\n",property.Amp_x, property.Amp_y,property.Amp_z);
+	//  exit(1);
+ #endif  
+
 
 	/* plane constant shear flow of the form F_x = A*y centered in the computational domain */	
  #ifdef LB_FLUID_FORCING_SHEAR_LINEAR 
@@ -648,8 +665,8 @@ void build_forcing(){
 				avg_buoyancy += liquid_frac[IDX(i,j,k)]*fac*property.gravity_y;
 				avg_volume += liquid_frac[IDX(i,j,k)];
 			}
-			MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-			MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+			MPI_Allreduce(&local_buoyancy, &sum_buoyancy, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
+			MPI_Allreduce(&local_volume, &sum_volume, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 			avg_buoyancy = sum_buoyancy / sum_volume;
 	#endif //ZIQI 
 	*/
@@ -890,7 +907,7 @@ void build_forcing(){
    /* The "local_depth" is computed from the melt fraction */
    lf = 0.0;
    for (jj = BRD; jj < LNY+BRD; jj++) lf += liquid_frac[IDX(i, jj, k)]*(mesh[IDXG(i, jj+1, k)].y - mesh[IDXG(i, jj, k)].y);
-   MPI_Allreduce(&lf, &local_depth, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+   MPI_Allreduce(&lf, &local_depth, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
    //if(ROOT) fprintf(stderr,"i %d k %d local_depth %e\n",i,k,local_depth); 
 
@@ -1035,8 +1052,8 @@ void build_forcing(){
       p_ruler_y_local[jj -BRD + LNY_START] = center_V[IDX(i, jj, k)].y;
       s_ruler_y_local[jj -BRD + LNY_START] = s[IDX(i, jj, k)];
     }
-    MPI_Allreduce(s_ruler_y_local, s_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
-    MPI_Allreduce(p_ruler_y_local, p_ruler_y, NY, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(s_ruler_y_local, s_ruler_y, NY, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
+    MPI_Allreduce(p_ruler_y_local, p_ruler_y, NY, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
     /* compute the integral of scalar field from top position NY down to the current coordiante */
     cumulative_scalar = 0.0; 
     for (jj = 0; jj < NY; jj++){
@@ -1066,9 +1083,9 @@ void build_forcing(){
    light_intensity = property.incident_light_intensity * exp( - property.phytoplankton_specific_lght_attenuation * cumulative_scalar - property.background_turbidity * (property.SY-center_V[IDX(i,j,k)].y) );
 
    /* if light is variable along the orizontal direction do the following */
-  //if( fabs(center_V[IDX(i,j,k)].x - property.SX/2.) < property.SX/4. ){
-  //  light_intensity = 0.0;
-  //}
+  if( fabs(center_V[IDX(i,j,k)].x - property.SX/2.) < property.SX/4. ){
+    light_intensity = 0.0;
+  }
 
    /* compute the growth rate Eq. (3) and (4) in the paper */
    growth_rate = (property.max_production_rate * light_intensity / (property.half_saturation_constant + light_intensity)) - property.loss_rate;
@@ -1162,7 +1179,7 @@ void build_forcing(){
             t0 += t_source[IDX(i,j,k)];
           }
 
-    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
     norm = 1.0/(property.NX*property.NY*property.NZ);
 
@@ -1184,7 +1201,7 @@ void build_forcing(){
             t0 += t_source[IDX(i,j,k)]*t[IDX(i,j,k)];
           }
 
-    MPI_Allreduce(&t0, &t0_all, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+    MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );
 
     norm = 1.0/(property.NX*property.NY*property.NZ);
 

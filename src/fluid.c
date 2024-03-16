@@ -1053,6 +1053,9 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  /* Inverse of the relaxation time */ 
  invtau = 1.0/tau;
 
+#ifdef LB_FLUID_LES
+  sendrecv_borders_vector(u);
+#endif
 
 #ifndef METHOD_COLLISION_IMPLICIT
 

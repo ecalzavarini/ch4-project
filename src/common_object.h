@@ -24,7 +24,9 @@ extern int  me_xp_yp, me_xm_ym, me_xp_ym , me_xm_yp , me_yp_zp , me_ym_zm , me_y
 extern int *me_next;
 extern int nprocs;
 extern int nxprocs, nyprocs, nzprocs;
-extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type,MPI_my_double_type;
+extern MPI_Datatype MPI_MY_DOUBLE;
+extern MPI_Op MPI_SUM_my_double;
+extern MPI_Datatype MPI_property_type , MPI_pop_type , MPI_vector_type, MPI_output_type; //MPI_my_double_type;
 extern MPI_Op MPI_SUM_output;
 extern MPI_Op MPI_SUM_vector;
 

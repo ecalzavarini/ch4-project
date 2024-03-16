@@ -72,7 +72,8 @@ void output_h5(){
   */
   H5Pclose(plist_id);
   
-  hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+    hdf5_type = H5Tcopy(H5T_NATIVE_MY_DOUBLE);
+  
 
   property_id  = H5Pcreate(H5P_DATASET_CREATE);       
     
@@ -385,11 +386,13 @@ void write_pop_h5(){
   */
   H5Pclose(plist_id);
   
-  //hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+
+
+
  hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(pop));
   for (i = 0; i < NPOP; i++){
     sprintf(label,"p%d",i);
-    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_DOUBLE);
+    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_MY_DOUBLE);
   }
 
 
@@ -445,9 +448,10 @@ void write_pop_h5(){
 #if defined(LB_FLUID_FORCING_HIT)||defined(LB_TEMPERATURE_FORCING_HIT)||defined(LB_SCALAR_FORCING_HIT) 
 
  hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
- H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
- H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
- H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+ H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_MY_DOUBLE);
+ H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_MY_DOUBLE);
+ H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_MY_DOUBLE);
+
 
  /* Create a group */
  group   = H5Gcreate (file_id, "/forcing", H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
@@ -555,7 +559,7 @@ void read_pop_h5(){
   hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(pop));
   for (i = 0; i < NPOP; i++){
     sprintf(label,"p%d",i);
-    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_DOUBLE);
+    H5Tinsert(hdf5_type, label, HOFFSET(pop, p[i]), H5T_NATIVE_MY_DOUBLE);
   }
   property_id  = H5Pcreate(H5P_DATASET_CREATE); 
 
@@ -617,9 +621,9 @@ void read_pop_h5(){
 /* ATTRIBUTES for FORCING */
 #if defined(LB_FLUID_FORCING_HIT)||defined(LB_TEMPERATURE_FORCING_HIT)||defined(LB_SCALAR_FORCING_HIT) 
    hdf5_type = H5Tcreate (H5T_COMPOUND, sizeof(vector));
-   H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_DOUBLE);
-   H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_DOUBLE);
-   H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_DOUBLE);
+   H5Tinsert(hdf5_type, "x", HOFFSET(vector, x), H5T_NATIVE_MY_DOUBLE);
+   H5Tinsert(hdf5_type, "y", HOFFSET(vector, y), H5T_NATIVE_MY_DOUBLE);
+   H5Tinsert(hdf5_type, "z", HOFFSET(vector, z), H5T_NATIVE_MY_DOUBLE);
 
 /* Check existence of the group "/forcing"  */
    status = H5Eset_auto(NULL, NULL,NULL);
@@ -750,7 +754,7 @@ void write_scalar_h5(my_double *field, char which_field[128]){
  
   H5Pclose(plist_id);
   
-  hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+    hdf5_type = H5Tcopy(H5T_NATIVE_MY_DOUBLE);
 
   property_id  = H5Pcreate(H5P_DATASET_CREATE);       
     
@@ -839,7 +843,7 @@ void read_scalar_h5(my_double *field, char which_field[128]){
   group   = H5Gopen(file_id, "/euler", H5P_DEFAULT);
   H5Pclose(plist_id);
 
-  hdf5_type = H5Tcopy(H5T_NATIVE_DOUBLE);
+    hdf5_type = H5Tcopy(H5T_NATIVE_MY_DOUBLE);
 
   property_id  = H5Pcreate(H5P_DATASET_CREATE); 
 

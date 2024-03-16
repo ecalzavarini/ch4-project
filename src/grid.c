@@ -15,7 +15,7 @@ void make_grid_rulers(my_double fac){
   dx=fac2/(my_double)NX;
   for(i=0; i< NXG; i++){	
     /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
-    grid_ruler_x[i] = -1.0+dx*((double)i);
+    grid_ruler_x[i] = -1.0+dx*((my_double)i);
     /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
     grid_ruler_x[i] = (1./fac)*tanh(grid_ruler_x[i]*atanh(fac));
     /* 3) rescale the -1,1 interval to the 0,SX interval*/
@@ -25,7 +25,7 @@ void make_grid_rulers(my_double fac){
   //dy=2./(my_double)NY;			 
   dy=fac2/(my_double)NY;
   for(i=0; i< NYG; i++){					    
-    grid_ruler_y[i] = -1.0+dy*((double)i);
+    grid_ruler_y[i] = -1.0+dy*((my_double)i);
     grid_ruler_y[i] = (1./fac)*tanh(grid_ruler_y[i]*atanh(fac));
     grid_ruler_y[i] = (property.SY/fac2)*(grid_ruler_y[i]+1.0);
     // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
@@ -34,7 +34,7 @@ void make_grid_rulers(my_double fac){
   //dz=2./(my_double)NZ;
   dz=fac2/(my_double)NZ;
   for(i=0; i< NZG; i++){					    
-    grid_ruler_z[i] = -1.0+dz*((double)i);
+    grid_ruler_z[i] = -1.0+dz*((my_double)i);
     grid_ruler_z[i] = (1./fac)*tanh(grid_ruler_z[i]*atanh(fac));
     grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
  }
@@ -43,7 +43,7 @@ void make_grid_rulers(my_double fac){
   dx=fac2/(my_double)NX;
   for(i=0; i< NXG; i++){	
     /* 1) build an array with NGX points, uniformly spaced points in the interval -1,1 */ 
-    grid_ruler_x[i] = -1.0+dx*((double)i);
+    grid_ruler_x[i] = -1.0+dx*((my_double)i);
     /* 2) build an array with NGX points, clustered to the walls in the interval -1,1 */ 
     grid_ruler_x[i] = (1.-fac)*sinh(grid_ruler_x[i]*asinh(1./(1.-fac)));
     /* 3) rescale the -1,1 interval to the 0,SX interval*/
@@ -53,7 +53,7 @@ void make_grid_rulers(my_double fac){
  
   dy=fac2/(my_double)NY;
   for(i=0; i< NYG; i++){					    
-    grid_ruler_y[i] = -1.0+dy*((double)i);
+    grid_ruler_y[i] = -1.0+dy*((my_double)i);
     grid_ruler_y[i] = (1.-fac)*sinh(grid_ruler_y[i]*asinh(1./(1.-fac)));
     grid_ruler_y[i] = (property.SY/fac2)*(grid_ruler_y[i]+1.0);
     // if(ROOT) fprintf(stderr,"grid_ruler_y[%d] = %e\n",i,grid_ruler_y[i]);
@@ -61,7 +61,7 @@ void make_grid_rulers(my_double fac){
 
   dz=fac2/(my_double)NZ;
   for(i=0; i< NZG; i++){					    
-    grid_ruler_z[i] = -1.0+dz*((double)i);
+    grid_ruler_z[i] = -1.0+dz*((my_double)i);
     grid_ruler_z[i] = (1.-fac)*tanh(grid_ruler_z[i]*atanh(1./(1.-fac)));
     grid_ruler_z[i] = (property.SZ/fac2)*(grid_ruler_z[i]+1.0);					  
  }
@@ -180,7 +180,7 @@ void read_mesh(){
 				for (i = BRD; i < LNXG+BRD; i++) {
 #endif
 				 
-				        mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD)*property.SX/property.NX;
+				    mesh[IDXG(i, j, k)].x = (my_double) (i + LNXG_START-BRD)*property.SX/property.NX;
 					mesh[IDXG(i, j, k)].y = (my_double) (j + LNYG_START-BRD)*property.SY/property.NY;
 					mesh[IDXG(i, j, k)].z = (my_double) (k + LNZG_START-BRD)*property.SZ/property.NZ;					
 					/*
@@ -194,7 +194,6 @@ void read_mesh(){
 					  if(j<LNYG+BRD-1) mesh[IDXG(i, j, k)].y += 0.25*(my_double)(2.0*myrand()-1.0);
 					  if(j<LNZG+BRD-1) mesh[IDXG(i, j, k)].z += 0.25*(my_double)(2.0*myrand()-1.0);
 #endif
-
 
 
 #ifdef GRID_REFINED
@@ -642,8 +641,8 @@ void sendrecv_borders_scalar(my_double *f){
         xp_scalar[IDX_XBRD(i,j,k)] = f[IDX(i+LNX,j,k)];
       }
 
-  MPI_Sendrecv( xp_scalar, brd_size, MPI_my_double_type, me_xp, 10,
-                xm_scalar, brd_size, MPI_my_double_type, me_xm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_scalar, brd_size, MPI_MY_DOUBLE, me_xp, 10,
+                xm_scalar, brd_size, MPI_MY_DOUBLE, me_xm, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -651,8 +650,8 @@ void sendrecv_borders_scalar(my_double *f){
         f[IDX(i,j,k)] = xm_scalar[IDX_XBRD(i,j,k)];
         xm_scalar[IDX_XBRD(i,j,k)] = f[IDX(i+BRD,j,k)];
       }
- MPI_Sendrecv( xm_scalar, brd_size, MPI_my_double_type, me_xm, 11,
-               xp_scalar, brd_size, MPI_my_double_type, me_xp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_scalar, brd_size, MPI_MY_DOUBLE, me_xm, 11,
+               xp_scalar, brd_size, MPI_MY_DOUBLE, me_xp, 11, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -671,8 +670,8 @@ void sendrecv_borders_scalar(my_double *f){
         yp_scalar[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
       }
 
-  MPI_Sendrecv( yp_scalar, brd_size, MPI_my_double_type, me_yp, 10,
-                ym_scalar, brd_size, MPI_my_double_type, me_ym, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( yp_scalar, brd_size, MPI_MY_DOUBLE, me_yp, 10,
+                ym_scalar, brd_size, MPI_MY_DOUBLE, me_ym, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -681,8 +680,8 @@ void sendrecv_borders_scalar(my_double *f){
 	ym_scalar[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
       }
   
- MPI_Sendrecv( ym_scalar, brd_size, MPI_my_double_type, me_ym, 13,
-               yp_scalar, brd_size, MPI_my_double_type, me_yp, 13, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( ym_scalar, brd_size, MPI_MY_DOUBLE, me_ym, 13,
+               yp_scalar, brd_size, MPI_MY_DOUBLE, me_yp, 13, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -700,8 +699,8 @@ void sendrecv_borders_scalar(my_double *f){
         zp_scalar[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
       }
 
-  MPI_Sendrecv( zp_scalar, brd_size, MPI_my_double_type, me_zp, 14,
-                zm_scalar, brd_size, MPI_my_double_type, me_zm, 14, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( zp_scalar, brd_size, MPI_MY_DOUBLE, me_zp, 14,
+                zm_scalar, brd_size, MPI_MY_DOUBLE, me_zm, 14, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -709,8 +708,8 @@ void sendrecv_borders_scalar(my_double *f){
         f[IDX(i,j,k)] = zm_scalar[IDX_ZBRD(i,j,k)];
         zm_scalar[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+BRD)];
       }
- MPI_Sendrecv( zm_scalar, brd_size, MPI_my_double_type, me_zm, 15,
-               zp_scalar, brd_size, MPI_my_double_type, me_zp, 15, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( zm_scalar, brd_size, MPI_MY_DOUBLE, me_zm, 15,
+               zp_scalar, brd_size, MPI_MY_DOUBLE, me_zp, 15, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -735,14 +734,14 @@ void sendrecv_borders_scalar(my_double *f){
         xm_yp_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+LNZ)];
       }
 
-  MPI_Sendrecv( xp_yp_zp_corner_scalar, brd_size, MPI_my_double_type, me_xp_yp_zp, 10,
-                xm_ym_zm_corner_scalar, brd_size, MPI_my_double_type, me_xm_ym_zm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xp_yp_zm_corner_scalar, brd_size, MPI_my_double_type, me_xp_yp_zm, 10,
-                xm_ym_zp_corner_scalar, brd_size, MPI_my_double_type, me_xm_ym_zp, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xp_ym_zp_corner_scalar, brd_size, MPI_my_double_type, me_xp_ym_zp, 10,
-                xm_yp_zm_corner_scalar, brd_size, MPI_my_double_type, me_xm_yp_zm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xm_yp_zp_corner_scalar, brd_size, MPI_my_double_type, me_xm_yp_zp, 10,
-                xp_ym_zm_corner_scalar, brd_size, MPI_my_double_type, me_xp_ym_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zp, 10,
+                xm_ym_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_yp_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zm, 10,
+                xm_ym_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym_zp, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_ym_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym_zp, 10,
+                xm_yp_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xm_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp_zp, 10,
+                xp_ym_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym_zm, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
@@ -756,14 +755,14 @@ void sendrecv_borders_scalar(my_double *f){
         xm_yp_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+BRD)];
         xp_ym_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+BRD)];
       }
- MPI_Sendrecv( xm_ym_zm_corner_scalar, brd_size, MPI_my_double_type, me_xm_ym_zm, 11,
-               xp_yp_zp_corner_scalar, brd_size, MPI_my_double_type, me_xp_yp_zp, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xm_ym_zp_corner_scalar, brd_size, MPI_my_double_type, me_xm_ym_zp, 11,
-               xp_yp_zm_corner_scalar, brd_size, MPI_my_double_type, me_xp_yp_zm, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xm_yp_zm_corner_scalar, brd_size, MPI_my_double_type, me_xm_yp_zm, 11,
-               xp_ym_zp_corner_scalar, brd_size, MPI_my_double_type, me_xp_ym_zp, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xp_ym_zm_corner_scalar, brd_size, MPI_my_double_type, me_xp_ym_zm, 11,
-               xm_yp_zp_corner_scalar, brd_size, MPI_my_double_type, me_xm_yp_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_ym_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym_zm, 11,
+               xp_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_ym_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym_zp, 11,
+               xp_yp_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zm, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_yp_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp_zm, 11,
+               xp_ym_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xp_ym_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym_zm, 11,
+               xm_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp_zp, 11, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
@@ -788,10 +787,10 @@ void sendrecv_borders_scalar(my_double *f){
         yp_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY,k+BRD)];
       }
 
-  MPI_Sendrecv( yp_zp_edge_scalar, brd_size, MPI_my_double_type, me_yp_zp, 10,
-                ym_zm_edge_scalar, brd_size, MPI_my_double_type, me_ym_zm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( yp_zm_edge_scalar, brd_size, MPI_my_double_type, me_yp_zm, 10,
-                ym_zp_edge_scalar, brd_size, MPI_my_double_type, me_ym_zp, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( yp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zp, 10,
+                ym_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_ym_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( yp_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zm, 10,
+                ym_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_ym_zp, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
@@ -801,10 +800,10 @@ void sendrecv_borders_scalar(my_double *f){
         ym_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+BRD)];
         ym_zp_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+LNZ)];
       }
- MPI_Sendrecv( ym_zm_edge_scalar, brd_size, MPI_my_double_type, me_ym_zm, 11,
-               yp_zp_edge_scalar, brd_size, MPI_my_double_type, me_yp_zp, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( ym_zp_edge_scalar, brd_size, MPI_my_double_type, me_ym_zp, 11,
-               yp_zm_edge_scalar, brd_size, MPI_my_double_type, me_yp_zm, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( ym_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_ym_zm, 11,
+               yp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( ym_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_ym_zp, 11,
+               yp_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zm, 11, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
@@ -824,10 +823,10 @@ void sendrecv_borders_scalar(my_double *f){
         xp_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX,j,k+BRD)];
       }
 
-  MPI_Sendrecv( xp_zp_edge_scalar, brd_size, MPI_my_double_type, me_xp_zp, 10,
-                xm_zm_edge_scalar, brd_size, MPI_my_double_type, me_xm_zm, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xp_zm_edge_scalar, brd_size, MPI_my_double_type, me_xp_zm, 10,
-                xm_zp_edge_scalar, brd_size, MPI_my_double_type, me_xm_zp, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zp, 10,
+                xm_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_zm, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zm, 10,
+                xm_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_zp, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -837,10 +836,10 @@ void sendrecv_borders_scalar(my_double *f){
         xm_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+BRD)];
         xm_zp_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+LNZ)];
       }
- MPI_Sendrecv( xm_zm_edge_scalar, brd_size, MPI_my_double_type, me_xm_zm, 11,
-               xp_zp_edge_scalar, brd_size, MPI_my_double_type, me_xp_zp, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xm_zp_edge_scalar, brd_size, MPI_my_double_type, me_xm_zp, 11,
-               xp_zm_edge_scalar, brd_size, MPI_my_double_type, me_xp_zm, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_zm, 11,
+               xp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_zp, 11,
+               xp_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zm, 11, MPI_COMM_WORLD, &status1);
 
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
@@ -861,10 +860,10 @@ void sendrecv_borders_scalar(my_double *f){
         xm_yp_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+LNY,k)];
       }
 
-  MPI_Sendrecv( xp_yp_edge_scalar, brd_size, MPI_my_double_type, me_xp_yp, 10,
-                xm_ym_edge_scalar, brd_size, MPI_my_double_type, me_xm_ym, 10, MPI_COMM_WORLD, &status1); 
-  MPI_Sendrecv( xm_yp_edge_scalar, brd_size, MPI_my_double_type, me_xm_yp, 10,
-                xp_ym_edge_scalar, brd_size, MPI_my_double_type, me_xp_ym, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xp_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp, 10,
+                xm_ym_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym, 10, MPI_COMM_WORLD, &status1); 
+  MPI_Sendrecv( xm_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp, 10,
+                xp_ym_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym, 10, MPI_COMM_WORLD, &status1); 
 
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
@@ -874,10 +873,10 @@ void sendrecv_borders_scalar(my_double *f){
         xm_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+BRD,k)];
         xp_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX,j+BRD,k)];
       }
- MPI_Sendrecv( xm_ym_edge_scalar, brd_size, MPI_my_double_type, me_xm_ym, 11,
-               xp_yp_edge_scalar, brd_size, MPI_my_double_type, me_xp_yp, 11, MPI_COMM_WORLD, &status1);
- MPI_Sendrecv( xp_ym_edge_scalar, brd_size, MPI_my_double_type, me_xp_ym, 11,
-               xm_yp_edge_scalar, brd_size, MPI_my_double_type, me_xm_yp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xm_ym_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym, 11,
+               xp_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp, 11, MPI_COMM_WORLD, &status1);
+ MPI_Sendrecv( xp_ym_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_ym, 11,
+               xm_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_yp, 11, MPI_COMM_WORLD, &status1);
 
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)

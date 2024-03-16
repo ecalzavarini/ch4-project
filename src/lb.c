@@ -366,8 +366,8 @@ void design_lb(){
 	fprintf(stderr,"cs2 %e\n",cs2);
 	*/
 	cs  = 1.0 /sqrt(3.0);  /* Why this value? Is this a property of the D3Q19 lattice or just a choice of convenience?*/
-	cs2 = pow((double)cs,2.0); //1.0 / 3.0;
-	cs4 = pow((double)cs,4.0); //1.0 / 9.0;
+	cs2 = pow((my_double)cs,2.0); //1.0 / 3.0;
+	cs4 = pow((my_double)cs,4.0); //1.0 / 9.0;
 	invcs  = 1.0 / cs;
 	invcs2 = 1.0 / cs2;
 	invcs4 = 1.0 / cs4;
