@@ -216,12 +216,14 @@ my_double tau_t_les(int i , int j , int k){
 my_double tau_s_les(int i , int j , int k){
 
   my_double tau_scal,tau_les;
-    my_double schmidt = property.nu/property.chi;
+  my_double schmidt = property.nu/property.chi;
+  schmidt = 1.0; /* same as for the turbulent Prandtl */
 
-    tau_les = tau_u_les(i , j , k);
+  tau_les = tau_u_les(i , j , k);
 
 #ifdef METHOD_STREAMING
-    tau_scal = (tau_les-0.5)/schmidt + 0.5 ;
+    //tau_scal = (tau_les-0.5)/schmidt + 0.5 ;
+    tau_scal = 3.0*(property.chi + (tau_les-0.5-3*property.nu)/(3*schmidt)) + 0.5 ; /* same as modified by Luz */
 #else
 #ifdef METHOD_REDEFINED_POP
     tau_scal = (tau_les-0.5*property.time_dt)/schmidt + 0.5*property.time_dt ;
