@@ -3521,13 +3521,14 @@ radius = 0.0;
 /* we compute the radius of the particle from tau_drag and beta or density */
 #ifdef LB_LAGRANGE_BC_RADIUSandDENSITY
   #ifdef LAGRANGE_RADIUSandDENSITY
-  /* we identify the particle type */
-  //type = ((int)(tracer + i)->name) % (int)property.particle_types;
+  /* yet to to be tested */
+  /* we identify the particle type, then we extract its radius */
+  //j = ((int)(tracer + ipart)->name) % (int)property.particle_types;
   //radius = particle_radius[j];
 	  #ifdef LAGRANGE_ADDEDMASS
     /* we use tau with added mass \tau = r^2/(3*\beta*\nu) (Note: beta was derived from density assuming that rho_f=1 )*/
 	    radius = sqrt( (tracer + ipart)->tau_drag * property.nu * 3.0 * (tracer + ipart)->beta_coeff );
-	  #endif
+    #endif
   #endif
 #endif
 
