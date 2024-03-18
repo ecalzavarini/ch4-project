@@ -1055,6 +1055,9 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 
 #ifdef LB_FLUID_LES
   sendrecv_borders_vector(u);
+  #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
+   sendrecv_borders_scalar(t);
+  #endif
 #endif
 
 #ifndef METHOD_COLLISION_IMPLICIT
