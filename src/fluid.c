@@ -1053,10 +1053,12 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  /* Inverse of the relaxation time */ 
  invtau = 1.0/tau;
 
-#ifdef LB_FLUID_LES
-  sendrecv_borders_vector(u);
-  #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
-   sendrecv_borders_scalar(t);
+#ifndef LB_FLUID_FORCING_LAPLACIAN_LES
+  #ifdef LB_FLUID_LES
+    sendrecv_borders_vector(u);
+    #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
+      sendrecv_borders_scalar(t);
+    #endif
   #endif
 #endif
 
@@ -1067,19 +1069,25 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
       for(i=BRD;i<LNX+BRD;i++){ 
 
 /* Here we begin the LES part , we compute tau for every i,j,k*/
-#ifdef LB_FLUID_LES
+#ifndef LB_FLUID_FORCING_LAPLACIAN_LES
+  #ifdef LB_FLUID_LES
   if( which_pop == 'p' ){
     tau_les = tau_u_les(i,j,k);
     invtau = 1.0/ tau_les;
     // fprintf(stderr,"%e %e\n",tau,tau_les);
   }
+  #endif
 #endif
-#ifdef LB_TEMPERATURE_LES
+
+#ifndef LB_TEMPERATURE_FORCING_LAPLACIAN_LES
+  #ifdef LB_TEMPERATURE_LES
   if( which_pop == 'g' ){
     tau_les = tau_t_les(i,j,k);
     invtau = 1.0/tau_les;
   }
+  #endif
 #endif
+
 #ifdef LB_SCALAR_LES
   if( which_pop == 'h' ){
     tau_les = tau_s_les(i,j,k);

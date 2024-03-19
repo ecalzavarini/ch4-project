@@ -7,7 +7,7 @@ void build_forcing(){
   my_double fnx,fny,fnz,kn,omega_t;
   my_double x,y,z;
   my_double LX,LY,LZ,nu;
-  my_double temp, fac, val,fac1,fac2;
+  my_double temp, fac, val, val2,fac1,fac2;
   my_double ax,ay,az; /* used to force HIT turbulence */
   vector dist,vel;
   vector u0, u0_all;
@@ -506,9 +506,16 @@ void build_forcing(){
 
  #ifdef LB_FLUID_FORCING_LAPLACIAN /* the forcing term has the form nu_add*laplacian( u ), where nu_add is an additional viscosity */ 
 	vec = laplacian_vector(u, i, j, k);
-        force[IDX(i,j,k)].x += property.nu_add * vec.x; 
-	force[IDX(i,j,k)].y += property.nu_add * vec.y; 
-	force[IDX(i,j,k)].z += property.nu_add * vec.z; 
+  #ifdef LB_FLUID_FORCING_LAPLACIAN_LES
+    val2 = tau_u_les(i,j,k) - property.tau_u;
+    force[IDX(i,j,k)].x += ((val2 - 0.5)/3.0  + property.nu_add) * vec.x; 
+	  force[IDX(i,j,k)].y += ((val2 - 0.5)/3.0  + property.nu_add) * vec.y; 
+	  force[IDX(i,j,k)].z += ((val2 - 0.5)/3.0  + property.nu_add) * vec.z; 
+  #else
+    force[IDX(i,j,k)].x += property.nu_add * vec.x; 
+	  force[IDX(i,j,k)].y += property.nu_add * vec.y; 
+	  force[IDX(i,j,k)].z += property.nu_add * vec.z; 
+  #endif
  #endif
 
  #ifdef LB_FLUID_FORCING_HIT  /* for HOMOGENEOUS ISOTROPIC TURBULENCE */     
@@ -844,7 +851,12 @@ void build_forcing(){
 
  #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN /* the forcing term has the form kappa_add*laplacian( t ), where kappa_add is an additional viscosity */
 	val = laplacian_scalar(t, i, j, k);
-        t_source[IDX(i,j,k)] += property.kappa_add * val; 
+  #ifdef LB_TEMPERATURE_FORCING_LAPLACIAN_LES
+    val2 = tau_t_les(i,j,k) - property.tau_t;
+    t_source[IDX(i,j,k)] += ((val2 - 0.5)/3.0  + property.kappa_add) * val; 
+  #else
+   t_source[IDX(i,j,k)] += property.kappa_add * val;  
+  #endif
  #endif
 
  #ifdef LB_TEMPERATURE_FORCING_VISCOUS /* add viscous heating source to the temperature field (we assume that the grid is uniform)*/
