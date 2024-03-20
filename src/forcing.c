@@ -1250,9 +1250,19 @@ void add_forcing(){
   pop p_eq , g_eq , h_eq;
   my_double mask;
   my_double magic_gamma;
+  my_double tau_les
 
 #ifdef LB_FLUID
 invtau = 1.0/property.tau_u;
+
+ #ifndef LB_FLUID_FORCING_LAPLACIAN_LES 
+  #ifdef LB_FLUID_LES
+    tau_les = tau_u_les(i,j,k);
+    invtau = 1.0/ tau_les;
+    // fprintf(stderr,"%e %e\n",tau,tau_les);
+  #endif
+ #endif
+
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
  magic_gamma = 0.25; //3./16.;
@@ -1279,6 +1289,14 @@ invtau_t = 1.0/property.tau_t;
 It is related to the thermal diffusivity kappa as kappa = (tau_t - 0.5)/3 
 therefore {val}>0.5 the suggested upper bound is {val}<2
 */
+
+ #ifndef LB_TEMPERATURE_FORCING_LAPLACIAN_LES
+  #ifdef LB_TEMPERATURE_LES
+    tau_les = tau_t_les(i,j,k);
+    invtau = 1.0/tau_les;
+  #endif
+ #endif
+
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
         magic_gamma = 0.25;
