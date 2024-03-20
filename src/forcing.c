@@ -1250,18 +1250,20 @@ void add_forcing(){
   pop p_eq , g_eq , h_eq;
   my_double mask;
   my_double magic_gamma;
-  my_double tau_les
+  my_double tau_les;
 
 #ifdef LB_FLUID
 invtau = 1.0/property.tau_u;
 
- #ifndef LB_FLUID_FORCING_LAPLACIAN_LES 
+/* communicate borders just to be sure */
+#ifndef LB_FLUID_FORCING_LAPLACIAN_LES
   #ifdef LB_FLUID_LES
-    tau_les = tau_u_les(i,j,k);
-    invtau = 1.0/ tau_les;
-    // fprintf(stderr,"%e %e\n",tau,tau_les);
+    sendrecv_borders_vector(u);
+    #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
+      sendrecv_borders_scalar(t);
+    #endif
   #endif
- #endif
+#endif
 
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
@@ -1289,14 +1291,6 @@ invtau_t = 1.0/property.tau_t;
 It is related to the thermal diffusivity kappa as kappa = (tau_t - 0.5)/3 
 therefore {val}>0.5 the suggested upper bound is {val}<2
 */
-
- #ifndef LB_TEMPERATURE_FORCING_LAPLACIAN_LES
-  #ifdef LB_TEMPERATURE_LES
-    tau_les = tau_t_les(i,j,k);
-    invtau = 1.0/tau_les;
-  #endif
- #endif
-
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
         magic_gamma = 0.25;
@@ -1404,7 +1398,17 @@ invtau_s = 1.0/property.tau_s;//tau_s: Parameters for the scalar field
 	    
 #else   
 
-	    /* This is METHOD_FORCING_GUO */    
+ /* This is LES for Guo */
+ #ifndef LB_FLUID_FORCING_LAPLACIAN_LES 
+  #ifdef defined(LB_FLUID_LES) && defined(METHOD_FORCING_GUO)
+    tau_les = tau_u_les(i,j,k);
+    invtau = 1.0/ tau_les;
+    // fprintf(stderr,"%e %e\n",tau,tau_les);
+    fac = (1.0-0.5*property.time_dt*invtau);
+  #endif
+ #endif
+
+	/* This is METHOD_FORCING_GUO */    
 	rho = dens[IDX(i,j,k)];  
 	ux=u[IDX(i,j,k)].x;
 	uy=u[IDX(i,j,k)].y;
