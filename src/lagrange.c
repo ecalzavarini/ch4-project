@@ -3121,12 +3121,12 @@ void move_particles()
         omega.z = (tracer + ipart)->dx_uy - (tracer + ipart)->dy_ux;
 
         /* lift force computation assuming lift coefficient CL = 1/2 */
-        /*  - beta/3 (u - v) x omega */
+        /*   beta/3 (u - v) x omega */
         lift_coeff = ((tracer + ipart)->beta_coeff) / 3.0;
 
-        (tracer + ipart)->ax += -lift_coeff * (((tracer + ipart)->uy - (tracer + ipart)->vy) * omega.z - ((tracer + ipart)->uz - (tracer + ipart)->vz) * omega.y);
-        (tracer + ipart)->ay += -lift_coeff * (((tracer + ipart)->uz - (tracer + ipart)->vz) * omega.x - ((tracer + ipart)->ux - (tracer + ipart)->vx) * omega.z);
-        (tracer + ipart)->az += -lift_coeff * (((tracer + ipart)->ux - (tracer + ipart)->vx) * omega.y - ((tracer + ipart)->uy - (tracer + ipart)->vy) * omega.x);
+        (tracer + ipart)->ax += lift_coeff * (((tracer + ipart)->uy - (tracer + ipart)->vy) * omega.z - ((tracer + ipart)->uz - (tracer + ipart)->vz) * omega.y);
+        (tracer + ipart)->ay += lift_coeff * (((tracer + ipart)->uz - (tracer + ipart)->vz) * omega.x - ((tracer + ipart)->ux - (tracer + ipart)->vx) * omega.z);
+        (tracer + ipart)->az += lift_coeff * (((tracer + ipart)->ux - (tracer + ipart)->vx) * omega.y - ((tracer + ipart)->uy - (tracer + ipart)->vy) * omega.x);
 
 #endif /* end of lift */
 
