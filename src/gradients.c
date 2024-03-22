@@ -3,8 +3,44 @@
 /* Contains several functions to compute the gradients of the hydrodynamic fields */
 
 #ifdef LB_FLUID
-/* be careful still not working */
 tensor strain_tensor(pop *f,int i, int j, int k){
+  int  pp;
+  pop f_eq;
+  tensor S;
+  my_double fac;
+  
+  //fac = 1.0;
+  /* the coefficient here below has been validate through a comparison with the expected S in the Kolmogorov flow */
+  fac = -1.0/( 2*cs2*dens[IDX(i,j,k)]*property.tau_u*property.time_dt) ;
+
+  S.xx = S.xy = S.xz = 0.0;
+  S.yx = S.yy = S.yz = 0.0;
+  S.zx = S.zy = S.zz = 0.0;
+
+      /* equilibrium distribution */
+   f_eq=equilibrium(f,i,j,k);
+
+      for (pp=0; pp<NPOP; pp++){
+	S.xx += fac*c[pp].x*c[pp].x*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.yy += fac*c[pp].y*c[pp].y*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.zz += fac*c[pp].z*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.xy += fac*c[pp].x*c[pp].y*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.xz += fac*c[pp].x*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+	S.yz += fac*c[pp].y*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
+      }
+
+      S.yx = S.xy;
+      S.zz = S.xz;
+      S.zy = S.yz;
+      /*
+      if (itime%10 == 0)fprintf(stdout,"itime %d %e %e %e %e %e\n",itime, 
+      center_V[IDX(i+1, j, k)].x, center_V[IDX(i, j, k)].y, center_V[IDX(i+1, j, k)].z, S.xy, S.xx );
+      */
+      return S;
+}
+
+tensor stress_tensor(pop *f,int i, int j, int k){
+  /* same as before but without normalization */  
   int  pp;
   pop f_eq;
   tensor S;
@@ -24,11 +60,11 @@ tensor strain_tensor(pop *f,int i, int j, int k){
 	S.xz += c[pp].x*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
 	S.yz += c[pp].y*c[pp].z*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
       }
+
       S.yx = S.xy;
       S.zz = S.xz;
       S.zy = S.yz;
 
-      //fprintf(stderr,"SXY %e\n",f_eq.p[0]);
       return S;
 }
 #endif

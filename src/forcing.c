@@ -1256,6 +1256,7 @@ void add_forcing(){
 invtau = 1.0/property.tau_u;
 
 /* communicate borders just to be sure */
+/*
 #ifndef LB_FLUID_FORCING_LAPLACIAN_LES
   #ifdef LB_FLUID_LES
     sendrecv_borders_vector(u);
@@ -1264,6 +1265,7 @@ invtau = 1.0/property.tau_u;
     #endif
   #endif
 #endif
+*/
 
  #ifdef METHOD_TRT
         /* This is two relaxation time TRT */
@@ -1401,7 +1403,8 @@ invtau_s = 1.0/property.tau_s;//tau_s: Parameters for the scalar field
  /* This is LES for Guo */
  #ifndef LB_FLUID_FORCING_LAPLACIAN_LES 
   #ifdef defined(LB_FLUID_LES) && defined(METHOD_FORCING_GUO)
-    tau_les = tau_u_les(i,j,k);
+    //tau_les = tau_u_les(i,j,k);
+    tau_les = tau_u_les_total[IDX(i, j, k)];
     invtau = 1.0/ tau_les;
     // fprintf(stderr,"%e %e\n",tau,tau_les);
     fac = (1.0-0.5*property.time_dt*invtau);

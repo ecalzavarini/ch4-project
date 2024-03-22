@@ -53,7 +53,7 @@
 /* FLUID */
 #define LB_FLUID 
 //#define LB_FLUID_PAST
-#define LB_FLUID_INITIAL_KOLMOGOROV 
+//#define LB_FLUID_INITIAL_KOLMOGOROV 
 //#define LB_FLUID_INITIAL_POISEUILLE
 //#define LB_FLUID_INITIAL_POISEUILLE_HALF
 //#define LB_FLUID_INITIAL_CHANNEL
@@ -62,18 +62,18 @@
 //#define LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 #define LB_FLUID_INITIAL_UNIT_DENSITY
 //#define LB_FLUID_INITIAL_ADD_NOISE
 //#define LB_FLUID_INITIAL_ADD_NOISE_AFTER_READ
 #define LB_FLUID_FORCING  /* activate force on the fluid */
-//#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
+#define LB_FLUID_FORCING_GRAVITY /* request the gravity parameter vector (without actually using it) */
 //#define LB_FLUID_FORCING_POISEUILLE  /* Constant forcing for flow along x direction */
 //#define LB_FLUID_FORCING_CHANNEL     /* Constant forcing for turbulent Channnel flow along x */
 //#define LB_FLUID_FORCING_CHANNEL_CONSTANT_POWER   /* Constant power forcing for turbulent Channnel flow along x */  
-#define LB_FLUID_FORCING_KOLMOGOROV
+//#define LB_FLUID_FORCING_KOLMOGOROV
 //#define LB_FLUID_FORCING_SHEAR_LINEAR
 //#define LB_FLUID_FORCING_LANDSCAPE
 //#define LB_FLUID_FORCING_PENALIZATION
@@ -92,7 +92,7 @@
 //#define LB_FLUID_FORCING_ABSORB
 //#define LB_FLUID_FORCING_NOZEROMODE
 //#define LB_FLUID_FORCING_CONSTANT_POWER
-#define LB_FLUID_FORCING_LAPLACIAN
+//#define LB_FLUID_FORCING_LAPLACIAN
 //#define LB_FLUID_FORCING_LAPLACIAN_LES  /* experimental */
 //#define LB_FLUID_FORCING_CORIOLIS
  
@@ -102,8 +102,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP                                           
 //#define LB_FLUID_BC_Y_P_SLIP  
 //#define LB_FLUID_BC_Y_M_JET 
@@ -115,7 +115,7 @@
 //#define LB_FLUID_BC_Y_P_GRADIENT
 
 
-//#define LB_FLUID_BC_X                                                     
+#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -160,7 +160,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 #define LB_TEMPERATURE_INITIAL_LINEAR
@@ -194,11 +194,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Y_M_FLUX 
 //#define LB_TEMPERATURE_BC_Y_M_VARIABLE
 
-//#define LB_TEMPERATURE_BC_X
+#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_P_OUTLET
 //#define LB_TEMPERATURE_BC_X_M_OUTLET
-//#define LB_TEMPERATURE_BC_X_P_NOFLUX
-//#define LB_TEMPERATURE_BC_X_M_NOFLUX
+#define LB_TEMPERATURE_BC_X_P_NOFLUX
+#define LB_TEMPERATURE_BC_X_M_NOFLUX
 
 //#define LB_TEMPERATURE_BC_Z
 //#define LB_TEMPERATURE_BC_Z_P_OUTLET
@@ -364,11 +364,12 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_POLYMER_FEEDBACK
 
 /* LES */
-//#define LB_FLUID_LES
+#define LB_FLUID_LES
+//#define LB_FLUID_LES_LOCAL_STRAIN
 //#define LB_FLUID_LES_SISM
 //#define LB_FLUID_LES_SISM_KALMAN
 //#define LB_FLUID_LES_VANDRIEST
-#define LB_FLUID_LES_SMAGORINSKY_LILLY
+//#define LB_FLUID_LES_SMAGORINSKY_LILLY
 #define LB_TEMPERATURE_LES
 //#define LB_SCALAR_LES
 

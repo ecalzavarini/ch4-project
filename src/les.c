@@ -4,19 +4,30 @@
  #ifdef LB_FLUID_LES
 my_double tau_u_les(int i , int j , int k){
 
-  tensor grad_u;
+  tensor grad_u, SS, QQ;
   vector grad_t; /*Added by Luz*/
   my_double s_norm, nu_les, tau_les; 
-  my_double C_smag = 0.16; /* See Leveque , Toschi JFM on shear improved smagorinski model */
+  my_double C_smag = 0.18; /* Leveque , Toschi JFM on shear improved smagorinski model uses instead 0.16*/
   my_double lx,ly,lz,vol;
+  my_double fac;
+  my_double q_norm;
 
-  
+
+ /* Norm of S  can be computed in two ways */ 
+ #ifdef LB_FLUID_LES_LOCAL_STRAIN
+/* 1) local computation of strain rate tensor and its norm from the populations */ 
+  QQ=stress_tensor(p, i, j, k);
+  /* the following factor is used to transform the strss tensor to the rate-of-stain tensor 
+  note that our trick , we use the previous value of the relaxation time except at the first time step */
+  if (itime == 1) tau_u_les_total[IDX(i,j,k)] = property.tau_u;
+  fac = -1.0/( 2*cs2*dens[IDX(i,j,k)]*tau_u_les_total[IDX(i,j,k)]*property.time_dt );
+  //fac = -1.0/( 2*cs2*dens[IDX(i,j,k)]*property.tau_u*property.time_dt );
+  s_norm = fabs(fac) * sqrt(2.0 * (QQ.xx*QQ.xx + QQ.xy*QQ.xy + QQ.xz*QQ.xz +
+                       QQ.yx*QQ.yx + QQ.yy*QQ.yy + QQ.yz*QQ.yz +
+                       QQ.zx*QQ.zx + QQ.zy*QQ.zy + QQ.zz*QQ.zz) );                     
+ #else
+/* 2) calculation from finite difference velocity gradients */
   grad_u = gradient_vector(u,i,j,k);
-  #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY 
-    grad_t = gradient_scalar(t,i,j,k); /*Added by Luz*/
-  #endif
-
-  /* Norm of S */
   s_norm = sqrt( 0.5*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
 		        (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
 		        (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
@@ -26,7 +37,7 @@ my_double tau_u_les(int i , int j , int k){
 		        (grad_u.zx + grad_u.xz)*(grad_u.zx + grad_u.xz) + 
 		        (grad_u.zy + grad_u.yz)*(grad_u.zy + grad_u.yz) +
 		        (grad_u.zz + grad_u.zz)*(grad_u.zz + grad_u.zz) ) );
-
+ #endif
 
    #ifdef LB_FLUID_LES_SISM
    my_double L, f_v, c_exp,var_mean;
@@ -37,6 +48,7 @@ my_double tau_u_les(int i , int j , int k){
    //   f_v = 0.0043;
    f_v = 0.0033626;  /* For Kalayn: please put a reference or explain the origin of this number */
    c_exp = 3.628 * (f_v/L) * property.time_dt;
+   c_exp = property.time_dt/100; /*enrico test because dt/Tmemory */
 
     /* Initialize */
 				if(itime==1) {
@@ -115,7 +127,7 @@ my_double tau_u_les(int i , int j , int k){
   }
   #endif
 
-  C_smag = 0.18;
+  //C_smag = 0.18;
 
  #ifdef LB_FLUID_LES_VANDRIEST
   if(j < (property.SY/2.0)){C_smag = 0.18 * (1.0 - exp((-(property.Amp_x * center_V[IDX(i,j,k)].y) / property.nu)/26.0));}
@@ -144,6 +156,8 @@ my_double tau_u_les(int i , int j , int k){
    my_double Ri; /* Richardson number N²/|S|², |S| = (2SijSij), Sij: Strain rate tensor */
    my_double Cb; /* Buoyancy correction term */
    my_double prandtl = 1.0; /* usual choice is pr=O(1) */ 
+
+   grad_t = gradient_scalar(t,i,j,k); /*Added by Luz*/
  
    if(grad_t.y < 0){N2 = 0;}
    else{N2 = property.beta_t * property.gravity_y * grad_t.y;}
@@ -178,6 +192,10 @@ my_double tau_u_les(int i , int j , int k){
 #endif
 
   //fprintf(stderr,"%e\n",s_norm);
+
+  /* the data are stored in a field , to be reused in other parts of the code */
+  tau_u_les_total[IDX(i, j, k)] = tau_les;
+
 return tau_les;
 }		 	  
 #endif
@@ -189,10 +207,11 @@ my_double tau_t_les(int i , int j , int k){
 
   my_double tau_temp,tau_les;
   my_double prandtl = property.nu/property.kappa;
-  /* but usual choice is pr=O(1) */
-  prandtl = 1.0;
+  /* Usual choice is Pr=O(1) */
+  prandtl = 1.0;  //0.85;
 
-    tau_les = tau_u_les(i , j , k);
+    //tau_les = tau_u_les(i , j , k);
+    tau_les = tau_u_les_total[IDX(i, j, k)];
 
 #ifdef METHOD_STREAMING
     tau_temp = 3.0*(property.kappa + (tau_les-0.5-3*property.nu)/(3*prandtl)) + 0.5 ; /* Luz modified */

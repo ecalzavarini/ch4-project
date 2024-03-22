@@ -1136,6 +1136,10 @@ interp6_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD
  #endif
 
  #ifdef LB_FLUID_LES
+  tau_u_les_total  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  if(tau_u_les_total == NULL){ fprintf(stderr,"Not enough memory to allocate tau_u_les_total\n"); exit(-1);}
+  set_to_zero_my_double( tau_u_les_total,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+
   #ifdef LB_FLUID_LES_SISM 
   u_mean = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
   if(u_mean == NULL){ fprintf(stderr,"Not enough memory to allocate u_mean\n"); exit(-1);}

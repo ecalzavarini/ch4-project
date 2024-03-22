@@ -242,6 +242,7 @@ my_double invcs, invcs2, invcs4;
  #endif
 
  #ifdef LB_FLUID_LES
+  my_double *tau_u_les_total;
   #ifdef LB_FLUID_LES_SISM
   vector *u_mean;
    #ifdef LB_FLUID_LES_SISM_KALMAN
