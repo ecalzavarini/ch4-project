@@ -271,7 +271,7 @@ return tau_les;
 #endif
 
 #ifdef LB_TEMPERATURE
-#ifdef LB_TEMPERATURE_LES
+#if defined(LB_TEMPERATURE_LES) && defined(LB_FLUID_LES)
 my_double tau_t_les(int i , int j , int k){
 
   my_double tau_temp,tau_les;
@@ -300,6 +300,7 @@ my_double tau_t_les(int i , int j , int k){
 
 
 #ifdef LB_SCALAR
+/* to be corrected as the temperature one */
 #ifdef LB_SCALAR_LES
 my_double tau_s_les(int i , int j , int k){
 

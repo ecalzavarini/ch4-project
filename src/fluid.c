@@ -1080,7 +1080,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #endif
 
 #ifndef LB_TEMPERATURE_FORCING_LAPLACIAN_LES
-  #ifdef LB_TEMPERATURE_LES
+  #if defined(LB_TEMPERATURE_LES) && defined(LB_FLUID_LES)
   if( which_pop == 'g' ){
     tau_les = tau_t_les(i,j,k);
     invtau = 1.0/tau_les;

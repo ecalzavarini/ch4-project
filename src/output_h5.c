@@ -133,10 +133,12 @@ void output_h5(){
   ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, dens);
  H5Dclose(edataset);
 
-  #ifdef LB_FLUID_LES_OUTPUT
-  edataset = H5Dcreate(group, "tau_u_les_total", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
-  ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, tau_u_les_total);
-  H5Dclose(edataset);
+  #ifdef LB_FLUID_LES
+    #ifdef LB_FLUID_LES_OUTPUT
+    edataset = H5Dcreate(group, "tau_u_les_total", hdf5_type, efilespace,H5P_DEFAULT, property_id,H5P_DEFAULT);
+    ret = H5Dwrite(edataset, hdf5_type, ememspace, efilespace, xfer_plist, tau_u_les_total);
+    H5Dclose(edataset);
+    #endif
   #endif
 #endif
 
@@ -275,12 +277,14 @@ void output_h5(){
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
 
-  #ifdef LB_FLUID_LES_OUTPUT
+  #ifdef LB_FLUID_LES
+    #ifdef LB_FLUID_LES_OUTPUT
   fprintf(fout,"<Attribute Name=\"tau_u_les_total\" AttributeType=\"Scalar\" Center=\"Node\">\n");
   fprintf(fout,"<DataItem Dimensions=\"%d %d %d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n",NZ,NY,NX,size);
   fprintf(fout,"%s:/euler/tau_u_les_total\n",NEW_H5FILE_NAME);
   fprintf(fout,"</DataItem>\n");
   fprintf(fout,"</Attribute>\n");
+    #endif
   #endif
 #endif
 
