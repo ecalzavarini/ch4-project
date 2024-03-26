@@ -11,6 +11,9 @@ my_double tau_u_les(int i , int j , int k){
   my_double lx,ly,lz,vol;
   my_double fac;
   my_double q_norm;
+  /* for WALE */
+  tensor WW,JJ;
+  my_double iso_const, s_norm2, j_norm2, C_wale, op_wale;
 
 
  /* Norm of S  can be computed in two ways */ 
@@ -183,8 +186,6 @@ my_double tau_u_les(int i , int j , int k){
   Subgrid-scale stress modelling based on the square of the velocity gradient tensor. 
   Flow, Turbulence and Combustion 62, 183–200.
   */
-  tensor WW,JJ;
-  my_double iso_const, s_norm2, j_norm2, C_wale, op_wale;
   /* rate of strain tensor */
   SS.xx = grad_u.xx;
   SS.yy = grad_u.yy;
@@ -239,7 +240,7 @@ my_double tau_u_les(int i , int j , int k){
   j_norm2 = JJ.xx*JJ.xx + JJ.xy*JJ.xy + JJ.xz*JJ.xz
           + JJ.yx*JJ.yx + JJ.yy*JJ.yy + JJ.yz*JJ.yz
           + JJ.zx*JJ.zx + JJ.zy*JJ.zy + JJ.zz*JJ.zz;
-          
+
   /* op_wale = (J J)^3/2 / ( (S S)^5/2 + (J J)^5/4 )  */
   op_wale = pow(j_norm2,1.5)/( pow(s_norm2,2.5) +  pow(j_norm2,1.25) );
   C_wale = 0.5; 
