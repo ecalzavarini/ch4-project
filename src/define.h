@@ -115,7 +115,7 @@
 //#define LB_FLUID_BC_Y_P_GRADIENT
 
 
-#define LB_FLUID_BC_X                                                     
+//#define LB_FLUID_BC_X                                                     
 //#define LB_FLUID_BC_X_M_SLIP                                             
 //#define LB_FLUID_BC_X_P_SLIP                                               
 //#define LB_FLUID_BC_X_M_INLET                                         
@@ -194,11 +194,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BC_Y_M_FLUX 
 //#define LB_TEMPERATURE_BC_Y_M_VARIABLE
 
-#define LB_TEMPERATURE_BC_X
+//#define LB_TEMPERATURE_BC_X
 //#define LB_TEMPERATURE_BC_X_P_OUTLET
 //#define LB_TEMPERATURE_BC_X_M_OUTLET
-#define LB_TEMPERATURE_BC_X_P_NOFLUX
-#define LB_TEMPERATURE_BC_X_M_NOFLUX
+//#define LB_TEMPERATURE_BC_X_P_NOFLUX
+//#define LB_TEMPERATURE_BC_X_M_NOFLUX
 
 //#define LB_TEMPERATURE_BC_Z
 //#define LB_TEMPERATURE_BC_Z_P_OUTLET
@@ -367,6 +367,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LB_FLUID_LES
 #define LB_FLUID_LES_OUTPUT
 //#define LB_FLUID_LES_LOCAL_STRAIN
+#define LB_FLUID_LES_WALE
 //#define LB_FLUID_LES_SISM
 //#define LB_FLUID_LES_SISM_KALMAN
 //#define LB_FLUID_LES_VANDRIEST

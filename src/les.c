@@ -28,6 +28,7 @@ my_double tau_u_les(int i , int j , int k){
  #else
 /* 2) calculation from finite difference velocity gradients */
   grad_u = gradient_vector(u,i,j,k);
+/* compute |S| = sqrt(2 S_ij S_ij) */
   s_norm = sqrt( 0.5*( (grad_u.xx + grad_u.xx)*(grad_u.xx + grad_u.xx) + 
 		        (grad_u.xy + grad_u.yx)*(grad_u.xy + grad_u.yx) +
 		        (grad_u.xz + grad_u.zx)*(grad_u.xz + grad_u.zx) +
@@ -137,8 +138,6 @@ my_double tau_u_les(int i , int j , int k){
   {fprintf(stderr," i j k  C_Smag %ld %ld %ld %lf \n",i,j,k,C_smag);}*/
  #endif
 
-
-
 #ifdef METHOD_STREAMING
 		          vol = 1.0;
 #else  		 
@@ -151,7 +150,7 @@ my_double tau_u_les(int i , int j , int k){
 			  vol = pow(vol,1./3.);
 #endif
 
-#ifdef LB_FLUID_LES_SMAGORINSKY_LILLY /* This section was added by Luz */
+  #ifdef LB_FLUID_LES_SMAGORINSKY_LILLY /* This section was added by Luz */
    my_double N2; /* Brunt Väisälä Frequanecy*/
    my_double Ri; /* Richardson number N²/|S|², |S| = (2SijSij), Sij: Strain rate tensor */
    my_double Cb; /* Buoyancy correction term */
@@ -171,13 +170,82 @@ my_double tau_u_les(int i , int j , int k){
  
    //fprintf(stderr,"vol C_Smag grad_t.y gravity_y %lf %lf %lf %lf\n",vol, C_smag, grad_t.y, property.gravity_y);
    //fprintf(stderr,"s_norm_lilly %lf \n", s_norm);
-   #endif
+  #endif
 
-
-		 /* eddy viscosity */
-             //fprintf(stderr,"s_norm_ent %lf \n", s_norm);
-		    nu_les = s_norm * pow( C_smag * vol, 2.0 ); 		 
+	/* eddy viscosity */
+  //fprintf(stderr,"s_norm_ent %lf \n", s_norm);
+	nu_les = s_norm * pow( C_smag * vol, 2.0 ); 		 
 		    		    
+  #ifdef LB_FLUID_LES_WALE
+  /* 
+  WALE : Wall-Adapting Local Eddy-Viscosity Model
+  Nicoud, F. & Ducros, F. 1999 
+  Subgrid-scale stress modelling based on the square of the velocity gradient tensor. 
+  Flow, Turbulence and Combustion 62, 183–200.
+  */
+  tensor WW,JJ;
+  my_double iso_const, s_norm2, j_norm2, C_wale, op_wale;
+  /* rate of strain tensor */
+  SS.xx = grad_u.xx;
+  SS.yy = grad_u.yy;
+  SS.zz = grad_u.zz;
+  SS.xy = SS.yx = 0.5*(grad_u.xy + grad_u.yx); 
+  SS.xz = SS.zx = 0.5*(grad_u.xz + grad_u.zx); 
+  SS.zy = SS.yz = 0.5*(grad_u.zy + grad_u.yz); 
+  /* rate of rotation tensor */
+  WW.xx = WW.yy = WW.zz = 0.0;
+  WW.xy = 0.5*(grad_u.xy - grad_u.yx); 
+  WW.xz = 0.5*(grad_u.xz - grad_u.zx); 
+  WW.yz = 0.5*(grad_u.zy - grad_u.yz); 
+  WW.yx = - WW.xy;
+  WW.zx = - WW.xz;
+  WW.zy = - WW.yz;
+/* compute the scalar term SS_ij*SS_ij - WW_ij * WW_ij */
+  iso_const = SS.xx*SS.xx + SS.xy*SS.xy + SS.xz*SS.xz 
+            + SS.yx*SS.yx + SS.yy*SS.yy + SS.yz*SS.yz 
+            + SS.zx*SS.zx + SS.zy*SS.zy + SS.zz*SS.zz 
+            - WW.xx*WW.xx + WW.xy*WW.xy + WW.xz*WW.xz 
+            - WW.yx*WW.yx + WW.yy*WW.yy + WW.yz*WW.yz 
+            - WW.zx*WW.zx + WW.zy*WW.zy + WW.zz*WW.zz;
+/* JJ_{ij} = SS_{ik}*SS_{kj} + WW_{ik}*WW_{kj} - delta_{ij}*iso_const/3  */            
+  JJ.xx = SS.xx*SS.xx + SS.xy*SS.yx + SS.xz*SS.zx 
+        + WW.xx*WW.xx + WW.xy*WW.yx + WW.xz*WW.zx - iso_const/3.0;
+  JJ.xy = SS.xx*SS.xy + SS.xy*SS.yy + SS.xz*SS.zy 
+        + WW.xx*WW.xy + WW.xy*WW.yy + WW.xz*WW.zy;
+  JJ.xz = SS.xx*SS.xz + SS.xy*SS.yz + SS.xz*SS.zz 
+        + WW.xx*WW.xz + WW.xy*WW.yz + WW.xz*WW.zz;
+  JJ.yx = SS.yx*SS.xx + SS.yy*SS.yx + SS.yz*SS.zx 
+        + WW.yx*WW.xx + WW.yy*WW.yx + WW.yz*WW.zx;
+  JJ.yy = SS.yx*SS.xy + SS.yy*SS.yy + SS.yz*SS.zy 
+        + WW.yx*WW.xy + WW.yy*WW.yy + WW.yz*WW.zy  - iso_const/3.0;
+  JJ.yz = SS.yx*SS.xz + SS.yy*SS.yz + SS.yz*SS.zz 
+        + WW.yx*WW.xz + WW.yy*WW.yz + WW.yz*WW.zz;
+  JJ.zx = SS.zx*SS.xx + SS.zy*SS.yx + SS.zz*SS.zx 
+        + WW.zx*WW.xx + WW.zy*WW.yx + WW.zz*WW.zx;
+  JJ.zy = SS.zx*SS.xy + SS.zy*SS.yy + SS.zz*SS.zy 
+        + WW.zx*WW.xy + WW.zy*WW.yy + WW.zz*WW.zy; 
+  JJ.zz = SS.zx*SS.xz + SS.zy*SS.yz + SS.zz*SS.zz 
+        + WW.zx*WW.xz + WW.zy*WW.yz + WW.zz*WW.zz - iso_const/3.0; 
+   /* compute  S_ij * S_ij */
+  /*
+  s_norm2 = SS.xx*SS.xx + SS.xy*SS.xy + SS.xz*SS.xz
+          + SS.yx*SS.yx + SS.yy*SS.yy + SS.yz*SS.yz
+          + SS.zx*SS.zx + SS.zy*SS.zy + SS.zz*SS.zz;
+  */
+  /* faster */
+  s_norm2 = pow(s_norm,2.0)/2.0;
+
+  /* This is J_ij * J_ij */
+  j_norm2 = JJ.xx*JJ.xx + JJ.xy*JJ.xy + JJ.xz*JJ.xz
+          + JJ.yx*JJ.yx + JJ.yy*JJ.yy + JJ.yz*JJ.yz
+          + JJ.zx*JJ.zx + JJ.zy*JJ.zy + JJ.zz*JJ.zz;
+          
+  /* op_wale = (J J)^3/2 / ( (S S)^5/2 + (J J)^5/4 )  */
+  op_wale = pow(j_norm2,1.5)/( pow(s_norm2,2.5) +  pow(j_norm2,1.25) );
+  C_wale = 0.5; 
+  nu_les = op_wale * pow( C_wale * vol, 2.0 );
+  #endif
+
 
 #ifdef METHOD_STREAMING
 //fprintf(stderr,"nu_les_entrada %lf \n", nu_les);
