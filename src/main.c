@@ -122,6 +122,9 @@ int main(int argc, char **argv)
 #ifdef LB_TEMPERATURE_MELTING
 		melting();
 #endif
+#ifdef LAGRANGE_TWOWAY
+	   add_particle_feedbacks(); 
+#endif
 #ifdef LAGRANGE_POLYMER_FEEDBACK
 		/* Add the divergence of the extra stress tensor */
 		add_lagrangian_polymer_feedback_on_the_flow();

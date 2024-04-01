@@ -59,7 +59,7 @@ void add_particle_feedbacks(){
   #ifdef LAGRANGE_TWOWAY_MOMENTUM
 
   /* compute rho_p /rho_f = (3-beta)/(2*beta) */
-  density_ratio = (3.0 - (tracer+ipart)->beta)/(2.0*(tracer+ipart)->beta);
+  density_ratio = (3.0 - (tracer+ipart)->beta)/(2.0*(tracer+ipart)->beta_coeff);
 
   /* this is the convention in our code 
    property.gravity_{x,y,z} just indicates the intensity 
@@ -107,9 +107,9 @@ void add_particle_feedbacks(){
   #ifdef LAGRANGE_TWOWAY_TEMPERATURE
 
   /* this term is equivalent to  3 * kappa / radius^2  but here expressed in terms of tau_drag and beta */
-  fac2 = property.kappa / ( property.nu * (tracer+ipart)->beta * (tracer+ipart)->tau_drag ); 
+  fac2 = property.kappa / ( property.nu * (tracer+ipart)->beta_coeff * (tracer+ipart)->tau_drag ); 
 
-  sp = ( (tracer+ipart)->tp - (tracer+ipart)->t ) * fac2;
+  sp = ( (tracer+ipart)->t_p - (tracer+ipart)->t ) * fac2;
 
   /* feedback in x */
   source_t[IDX(im, jm, km)] +=  fac * sp * vol_ip_jp_kp;

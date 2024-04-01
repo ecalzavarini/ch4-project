@@ -216,6 +216,9 @@ typedef struct {
  #ifdef LAGRANGE_NUCLEATE
    my_double T_liq, Vref, Nref, Vpow, E_del, Npow, UC_frac; 
  #endif
+ #ifdef LAGRANGE_TEMPERATURE
+  my_double cp_coeff_types, cp_coeff_min , cp_coeff_max;
+ #endif
 #endif /* LAGRANGE */
 } prop;
 
@@ -405,6 +408,7 @@ typedef struct {
   my_double dx_uz,dy_uz,dz_uz;
   #ifdef LAGRANGE_ADDEDMASS
    my_double beta_coeff; 
+   my_double Dt_ux, Dt_uy, Dt_uz; /* fluid acceleration */
   #endif
   #ifdef LAGRANGE_ORIENTATION
   my_double px,py,pz;
@@ -454,6 +458,10 @@ typedef struct {
  #ifdef LAGRANGE_GRADIENT
   my_double dx_t,dy_t,dz_t;
  #endif
+ #ifdef LAGRANGE_TEMPERATURE /*each particle has its own temperature */
+  my_double t_p;   // particle temperature
+  my_double cp_p;  // speacific heat of the particle
+ #endif 
 #endif
 #ifdef LB_SCALAR
   my_double s;  /*scalar value */

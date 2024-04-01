@@ -37,7 +37,7 @@ Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.500003
+tau_t 0.50003
 
 T_bot   1.0
 T_top  -1.0
@@ -86,8 +86,8 @@ background_turbidity	0.04
 phytoplankton_specific_lght_attenuation	3.75E-10
 incident_light_intensity	1.4
 
-time_dump_lagr 500
-particle_number 2000
+time_dump_lagr 2000
+particle_number 9000
 
 particle_radius_types 1
 particle_radius_min 0.0
@@ -98,20 +98,24 @@ particle_density_min 1.0
 particle_density_max 1.0
 
 tau_drag_types 1
-tau_drag_min 0
-tau_drag_max 0
+tau_drag_min 10000
+tau_drag_max 10000
 
-beta_coeff_types 3
-beta_coeff_min 0
-beta_coeff_max 3
+beta_coeff_types 2
+beta_coeff_min 0.0
+beta_coeff_max 3.0
 
 gravity_coeff_types 1
 gravity_coeff_min 0.0001
 gravity_coeff_max 0.0001
 
+cp_coeff_types 2
+cp_coeff_min 10
+cp_coeff_max 1000
+
 aspect_ratio_types 1
 aspect_ratio_min 100.0
-aspect_ratio_max 100.0
+aspect_ratio_max 100.
 
 gyrotaxis_velocity_types 1
 gyrotaxis_velocity_min 0.03

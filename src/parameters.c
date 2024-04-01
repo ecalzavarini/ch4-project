@@ -595,6 +595,21 @@ void assign_parameters(){
   #endif
  #endif
 
+#ifdef LAGRANGE_TEMPERATURE
+  /* specfic heat of the particle (assuming that the one of the fluid is 1)  */  
+  sprintf(name,"cp_coeff_types");
+  property.cp_coeff_types = read_parameter(name); 
+  sprintf(name,"cp_coeff_min");
+  property.cp_coeff_min = read_parameter(name);
+  sprintf(name,"cp_coeff_max");
+  property.cp_coeff_max = read_parameter(name);
+  fprintf(stderr,"cp_coeff_types %g , cp_coeff_max %g , cp_coeff_min %g\n",(double)property.cp_coeff_types, (double)property.cp_coeff_min, (double)property.cp_coeff_max);
+  if( property.cp_coeff_types <1 || property.cp_coeff_max < property.cp_coeff_min ){ fprintf(stderr,"Error in cp_coeff parameters\n Exit.\n"); exit(0);}
+
+  /* total number of particles types up to now */
+  property.particle_types *= property.cp_coeff_types;
+ #endif
+
  #ifdef LAGRANGE_GRADIENT
   #ifdef LAGRANGE_ORIENTATION
    #ifdef LAGRANGE_ORIENTATION_JEFFREY

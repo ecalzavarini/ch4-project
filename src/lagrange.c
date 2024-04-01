@@ -78,6 +78,9 @@ void initial_conditions_particles(int restart)
   my_double cycles, repetitions, step, *tau_drag, *beta_coeff, *aspect_ratio, *gyrotaxis_velocity, *rotational_diffusion, *swim_velocity;
   my_double *particle_radius, *particle_density;
   my_double *gravity_coeff;
+  #ifdef LAGRANGE_TEMPERATURE
+    my_double *cp_coeff; /* specific heat capacity of particles */
+  #endif
   my_double *critical_shear_rate, *jump_time;
   vector vec;
   my_double val;
@@ -560,6 +563,46 @@ void initial_conditions_particles(int restart)
 #endif /* LAGRANGE_ORIENTATION */
 #endif /* LAGRANGE_GRADIENT */
 
+#ifdef LAGRANGE_TEMPERATURE
+    cp_coeff = (my_double *)malloc(sizeof(my_double) * property.particle_types);
+    cycles = (property.particle_types - property.fluid_tracers) / property.cp_coeff_types;
+    /* default: linear increment */
+    if (property.cp_coeff_types > 1)
+      step = (property.cp_coeff_max - property.cp_coeff_min) / (property.cp_coeff_types - 1.0);
+    else
+      step = 0;
+ #ifdef LAGRANGE_TEMPERATURE_INCREMENT_LOG
+    /* geometric increment */
+    if (property.cp_coeff_types > 1)
+      step = pow(property.cp_coeff_max / property.cp_coeff_min, 1.0 / (property.cp_coeff_types - 1.0));
+    else
+      step = 0;
+ #endif
+    for (n = 0; n < (int)property.fluid_tracers; n++)
+      cp_coeff[n] = 0.0; /* this is for the tracer */
+    for (k = 0; k < (int)(cycles / repetitions); k++)
+    {
+      for (i = 0; i < (int)property.cp_coeff_types; i++)
+      {
+        for (j = 0; j < (int)repetitions; j++)
+        {
+          /* default: linear increment */
+          cp_coeff[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.cp_coeff_types] = property.cp_coeff_min + i * step;
+ #ifdef LAGRANGE_TEMPERATURE_INCREMENT_LOG
+          /* geometric increment */
+          cp_coeff[(int)property.fluid_tracers + j + i * (int)repetitions + k * (int)repetitions * (int)property.cp_coeff_types] = property.cp_coeff_min * (my_double)pow(step, (double)i);
+ #endif
+        }
+      }
+    }
+    repetitions *= property.cp_coeff_types;
+ #ifdef VERBOSE
+    for (i = 0; i < property.particle_types; i++)
+      if (ROOT)
+        fprintf(stderr, "type %d cp_coeff %g\n", i, cp_coeff[i]);
+ #endif
+#endif /* LAGRANGE_TEMPERATURE */
+
     /* Here we ASSIGN IDENTIFICATION NUMBERS (NAMES) to particles, and
    at the same time count the number of particles per family */
 
@@ -615,6 +658,10 @@ void initial_conditions_particles(int restart)
 #endif
 #endif
 
+#ifdef LAGRANGE_TEMPERATURE
+        fprintf(fin, "cp_coeff %e ", cp_coeff[i]);
+#endif
+
 #ifdef LAGRANGE_GRADIENT
 #ifdef LAGRANGE_ORIENTATION
 #ifdef LAGRANGE_ORIENTATION_JEFFREY
@@ -666,6 +713,10 @@ void initial_conditions_particles(int restart)
       /* added mass */
       (tracer + i)->beta_coeff = beta_coeff[type];
       //(tracer+i)->beta_coeff = 1.0;
+#endif
+#ifdef LAGRANGE_TEMPERATURE
+      /* gravity coefficient: modulates gravity per particle type */
+      (tracer + i)->cp_p = cp_coeff[type];
 #endif
 #ifdef LAGRANGE_ORIENTATION
 #ifdef LAGRANGE_ORIENTATION_JEFFREY
@@ -767,7 +818,11 @@ void initial_conditions_particles(int restart)
 
 #ifdef LB_TEMPERATURE
       /* @ENRICO: Shouldn't the temperature be initialized with the fluid temperature? */
+      /* Reply : yes if the first time step is important */
       (tracer + i)->t = (tracer + i)->t_old = (tracer + i)->dt_t = 0.0;
+  #ifdef LAGRANGE_TEMPERATURE
+      (tracer + i)->t_p = property.T_bot;
+  #endif
 #endif
 #ifdef LB_LAGRANGE_BC_INELASTIC
       /* Initializing that particles have not sedimented yet */
@@ -892,6 +947,18 @@ phi = two_pi*myrand();
       (tracer + i)->age = 0.0;
       /* (tracer + i)->beta_coeff = 1.0; beta_coeff will remain untouched */
     }
+#endif
+#ifdef LAGRANGE_INITIAL_TEMPERATURE_FLUID
+ #ifdef LAGRANGE_TEMPERATURE
+interpolate_scalar_at_particles(t, "t");
+    if (ROOT)
+      fprintf(stderr, "Injecting particles with fluid temperature\n");
+    for (i = 0; i < npart; i++)
+    {
+      /* copy just interpolated fluid temperature into particle temperature */
+      (tracer + i)->t_p = (tracer + i)->t;
+    }
+ #endif   
 #endif
 
   } /* end of if /else on restart */
@@ -1891,7 +1958,7 @@ void output_particles()
 #endif
 
 #ifdef LB_TEMPERATURE
-    /* WRITE PARTICLE TEMPERATURE */
+    /* WRITE FLUID TEMPERATURE AT PARTICLE POSITION */
     dataset_id = H5Dcreate(group, "temperature", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (i = 0; i < npart; i++)
       aux[i] = (tracer + i)->t;
@@ -1920,6 +1987,20 @@ void output_particles()
     dataset_id = H5Dcreate(group, "dz_t", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (i = 0; i < npart; i++)
       aux[i] = (tracer + i)->dz_t;
+    ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+    status = H5Dclose(dataset_id);
+#endif
+#ifdef LAGRANGE_TEMPERATURE
+    /* WRITE FLUID TEMPERATURE AT PARTICLE POSITION */
+    dataset_id = H5Dcreate(group, "temperature_particle", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    for (i = 0; i < npart; i++)
+      aux[i] = (tracer + i)->t_p;
+    ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+    status = H5Dclose(dataset_id);
+
+     dataset_id = H5Dcreate(group, "cp_particle", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    for (i = 0; i < npart; i++)
+      aux[i] = (tracer + i)->cp_p;
     ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
     status = H5Dclose(dataset_id);
 #endif
@@ -2272,7 +2353,7 @@ void output_particles()
 #endif
 
 #ifdef LB_TEMPERATURE
-      /* temperature at particle position */
+      /* fluid temperature at particle position */
       fprintf(fout, "<Attribute Name=\"temperature\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
       fprintf(fout, "<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
       fprintf(fout, "%s:/lagrange/temperature\n", NEW_H5FILE_NAME);
@@ -2297,6 +2378,21 @@ void output_particles()
       fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
       fprintf(fout, "%s:/lagrange/dz_t\n", NEW_H5FILE_NAME);
       fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</Attribute>\n");
+#endif
+#ifdef LAGRANGE_TEMPERATURE
+      /* particle temperature */
+      fprintf(fout, "<Attribute Name=\"temperature_particle\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+      fprintf(fout, "<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/temperature_particle\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</Attribute>\n");
+
+      /* particle thermal specific heat capacity */
+      fprintf(fout, "<Attribute Name=\"cp_particle\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
+      fprintf(fout, "<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/cp_particle\n", NEW_H5FILE_NAME);
       fprintf(fout, "</DataItem>\n");
       fprintf(fout, "</Attribute>\n");
 #endif
@@ -2751,7 +2847,7 @@ void move_particles()
   for (ipart = 0; ipart < npart; ipart++)
   {
 
-    /* We take care of of computing scalar derivatives at particle position */
+    /* We take care of of computing scalar time derivatives at particle position */
 #ifdef LB_TEMPERATURE
     if (itime == 1 && resume == 0)
     {
@@ -3111,6 +3207,10 @@ void move_particles()
         (tracer + ipart)->ax += Dt_u.x * (tracer + ipart)->beta_coeff;
         (tracer + ipart)->ay += Dt_u.y * (tracer + ipart)->beta_coeff;
         (tracer + ipart)->az += Dt_u.z * (tracer + ipart)->beta_coeff;
+        /* store the fluid acceleration on the particle structure */
+        (tracer + ipart)->Dt_ux = Dt_u.x;
+        (tracer + ipart)->Dt_uy = Dt_u.y;
+        (tracer + ipart)->Dt_uz = Dt_u.z;
 
 #ifdef LAGRANGE_ADDEDMASS_LIFT
         /* Here we add the Lift force */
@@ -3708,6 +3808,22 @@ radius = 0.0;
 #endif
 #endif
 
+#ifdef LB_TEMPERATURE
+  /* evolution of the particle temperature*/
+  #ifdef LAGRANGE_TEMPERATURE
+  /* compute the inverse of the relaxation time */
+  /*  (1/cp_p) * (kappa / nu ) * (2/(3-beta)) * 1/tau_drag  */
+  fac1 =  ( property.kappa * 2.0 ) / ( (tracer+ipart)->tau_drag * property.nu * (tracer + ipart)->cp_p * (3 - (tracer+ipart)->beta_coeff )  );
+  /* multiplied it by the time step delta_t */
+  fac1 *= property.time_dt;
+  //fprintf(stderr,"thermal relaxation time not ok fac1 %e",fac1);
+  /* first order eq, the exponenttial part is treated explicitly for better accuracy */
+  /* the eq is d_t T_p = (T-T_p)/tau_heat  */
+  /* the discretization gives  T_p(i+1) = (T_p(i) + fac1 * T(i) )*exp(-fac) with fac1 = time_dt/tau_heat     */
+   (tracer + ipart)->t_p = ( (tracer + ipart)->t_p + fac1*(tracer + ipart)->t )*exp(-fac1);
+  #endif
+#endif
+
   } /* end of loop on particles */
 
   sendrecv_particles();
@@ -4129,6 +4245,12 @@ void write_point_particle_h5()
   sprintf(label, "dz_t");
   H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_MY_DOUBLE);
 #endif
+  #ifdef LAGRANGE_TEMPERATURE
+  sprintf(label, "temperature_particle");
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t_p), H5T_NATIVE_MY_DOUBLE);
+  sprintf(label, "cp_particle");
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, cp_p), H5T_NATIVE_MY_DOUBLE);
+  #endif
 #endif
 
 #ifdef LB_SCALAR
@@ -4432,6 +4554,12 @@ void read_point_particle_h5()
   sprintf(label, "dz_t");
   H5Tinsert(hdf5_type, label, HOFFSET(point_particle, dz_t), H5T_NATIVE_MY_DOUBLE);
 #endif
+ #ifdef LAGRANGE_TEMPERATURE
+  sprintf(label, "temperature_particle");
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, t_p), H5T_NATIVE_MY_DOUBLE);
+  sprintf(label, "cp_particle");
+  H5Tinsert(hdf5_type, label, HOFFSET(point_particle, cp_p), H5T_NATIVE_MY_DOUBLE);
+ #endif
 #endif
 
 #ifdef LB_SCALAR
