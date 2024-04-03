@@ -205,9 +205,9 @@ my_double tau_u_les(int i , int j , int k){
   iso_const = SS.xx*SS.xx + SS.xy*SS.xy + SS.xz*SS.xz 
             + SS.yx*SS.yx + SS.yy*SS.yy + SS.yz*SS.yz 
             + SS.zx*SS.zx + SS.zy*SS.zy + SS.zz*SS.zz 
-            - WW.xx*WW.xx + WW.xy*WW.xy + WW.xz*WW.xz 
-            - WW.yx*WW.yx + WW.yy*WW.yy + WW.yz*WW.yz 
-            - WW.zx*WW.zx + WW.zy*WW.zy + WW.zz*WW.zz;
+            - WW.xx*WW.xx - WW.xy*WW.xy - WW.xz*WW.xz 
+            - WW.yx*WW.yx - WW.yy*WW.yy - WW.yz*WW.yz 
+            - WW.zx*WW.zx - WW.zy*WW.zy - WW.zz*WW.zz;
 /* JJ_{ij} = SS_{ik}*SS_{kj} + WW_{ik}*WW_{kj} - delta_{ij}*iso_const/3  */            
   JJ.xx = SS.xx*SS.xx + SS.xy*SS.yx + SS.xz*SS.zx 
         + WW.xx*WW.xx + WW.xy*WW.yx + WW.xz*WW.zx - iso_const/3.0;
