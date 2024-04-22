@@ -555,16 +555,14 @@ t0 = t0_all = 0.0;
 			t0 += m(rhs_g[IDX(i,j,k)]);
           }
     MPI_Allreduce(&t0, &t0_all, 1, MPI_MY_DOUBLE, MPI_SUM_my_double, MPI_COMM_WORLD );	
-    /*
+    
 	norm = 1.0/(my_double)(property.SX*property.SY*property.SZ);
     if(norm !=0.0){
      t0_all *= norm;
     }
-	*/	 
-	//if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+	if(ROOT)fprintf(stderr,"t0_all = %e, property.T_ref = %e\n",t0_all,property.T_ref);
 	//property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX*property.SZ);
-	norm = (my_double)(property.SX*property.SY*property.SZ);
-	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref*norm)/(property.kappa*property.SX*property.SZ);
+	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref)/(norm*property.kappa*property.SX*property.SZ);
 
 	if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 		if(ROOT)fprintf(stderr,"property.grad_T_top = %e\n",property.grad_T_top);	
