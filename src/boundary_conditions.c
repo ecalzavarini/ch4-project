@@ -544,7 +544,7 @@ t0 = t0_all = 0.0;
 #ifdef LB_TEMPERATURE_BC_Y_P_FLUX_CONSTANTGLOBALTEMPERATURE
 /*  A way to keep constant the global temperature in the system.
 This is obtained by adjusting the top heat flux  so that it is equal to the bottom flux and by subtracting 
-the global temperture increase from the previous time-step
+the global temperture increase from the previous time-step (we assume that the time step is one)
  */
 my_double t0, t0_all, norm;
 t0 = t0_all = 0.0;
@@ -561,9 +561,10 @@ t0 = t0_all = 0.0;
      t0_all *= norm;
     }
 	*/	 
-//if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
+	//if(ROOT)fprintf(stderr,"t0_all = %e\n",t0_all);
 	//property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX*property.SZ);
-	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref)/(property.kappa*property.SX*property.SZ);
+	norm = (my_double)(property.SX*property.SY*property.SZ);
+	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref*norm)/(property.kappa*property.SX*property.SZ);
 
 	if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 		if(ROOT)fprintf(stderr,"property.grad_T_top = %e\n",property.grad_T_top);	
