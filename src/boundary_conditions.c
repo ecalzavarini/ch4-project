@@ -562,7 +562,7 @@ t0 = t0_all = 0.0;
     }
 	if(ROOT)fprintf(stderr,"t0_all = %e, property.T_ref = %e\n",t0_all,property.T_ref);
 	//property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX*property.SZ);
-	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref)/(norm*property.kappa*property.SX*property.SZ);
+	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref)/(property.kappa*property.SX*property.SZ);
 
 	if(itime%((int)(property.time_dump_diagn/property.time_dt))==0){
 		if(ROOT)fprintf(stderr,"property.grad_T_top = %e\n",property.grad_T_top);	
