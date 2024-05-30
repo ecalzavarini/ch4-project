@@ -19,6 +19,11 @@ void processor_splitting();
 void allocate_fields();
 void free_fields();
 void set_to_zero_output(output  *f,int size);
+void set_to_zero_vector( vector *f,int size);
+void set_to_zero_scalar( my_double *f,int size);
+void set_to_zero_int( int *f,int size);
+void set_to_zero_my_double( my_double *f,int size);
+void set_to_zero_pop(pop  *f,int size);
 void *my_malloc(size_t size);
 void my_free(void *ptr);
 
@@ -171,4 +176,11 @@ double minmod(double a, double b);
 void compute_rhs_conc();
   #endif
 void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f);
+#endif
+
+/* lagrange_feedback.c */
+#ifdef LAGRANGE_TWOWAY
+void add_particle_feedbacks();
+void add_sendrecv_borders_scalar(my_double *f);
+void add_sendrecv_borders_vector(vector *f);
 #endif

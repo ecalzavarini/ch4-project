@@ -2,7 +2,7 @@
 CC=h5pcc 
 CFLAGS= -Wall -O3 -g -std=c11 # -Warray-bounds -pg #-g  
 LFLAGS= -lm -lhdf5 
-SOURCES= parallel.c grid.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c forcing.c output.c output_h5.c melting.c lagrange.c random.c les.c gradients.c polymer.c euler_particle.c
+SOURCES= parallel.c grid.c parameters.c lb.c boundary_conditions.c initial_conditions.c fluid.c forcing.c output.c output_h5.c melting.c lagrange.c random.c les.c gradients.c polymer.c euler_particle.c lagrange_feedback.c
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS= common_object.h common_main.h typedef.h functions.h define.h
 MYFLAGS= -DNO_XMLHEADERS 

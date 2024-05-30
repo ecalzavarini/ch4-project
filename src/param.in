@@ -17,7 +17,7 @@ time_end 200000.
 time_dump_field 2000.
 time_dump_diagn 250.
 
-tau_u 0.50003
+tau_u 0.50005
 nu_add 0.0001
 
 ym_wall_velocity_x 0.1 
@@ -37,7 +37,7 @@ Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.50003
+tau_t 0.50005
 
 T_bot   1.0
 T_top  -1.0

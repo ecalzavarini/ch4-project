@@ -1451,6 +1451,21 @@ ym_zm_edge_scalar = (my_double*) my_malloc(sizeof(my_double)*BRD*BRD*(LNX+TWO_BR
   #endif
 #endif
 
+#ifdef LAGRANGE
+  #ifdef LAGRANGE_TWOWAY
+    #ifdef LAGRANGE_TWOWAY_MOMENTUM
+      force_twoway  = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+      if(force_twoway == NULL){ fprintf(stderr,"Not enough memory to allocate force_twoway\n"); exit(-1);}
+      set_to_zero_vector( force_twoway,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+    #endif
+    #ifdef LAGRANGE_TWOWAY_TEMPERATURE
+      t_source_twoway  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+      if(t_source_twoway == NULL){ fprintf(stderr,"Not enough memory to allocate t_source_twoway\n"); exit(-1);}
+      set_to_zero_scalar( t_source_twoway,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+    #endif
+  #endif
+#endif
+
   if(ROOT) fprintf(stderr,"Total memory allocation %e MB\n",(double)memory_all/1.e+6); 
 
 }
@@ -1730,6 +1745,17 @@ my_free(ym_zm_edge_scalar);
     my_free(s_ruler_y_local);
     my_free(p_ruler_y_local);
  #endif   
+#endif
+
+#ifdef LAGRANGE
+  #ifdef LAGRANGE_TWOWAY
+    #ifdef LAGRANGE_TWOWAY_MOMENTUM
+      my_free(force_twoway);
+    #endif
+    #ifdef LAGRANGE_TWOWAY_TEMPERATURE
+      my_free(t_source_twoway);
+    #endif
+  #endif
 #endif
 
  if(ROOT) fprintf(stderr,"Total unfree memory %lf MB\n",(my_double)memory_all/1.e+6); 

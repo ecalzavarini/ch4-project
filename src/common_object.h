@@ -314,10 +314,14 @@ extern my_double t1,t2,tick;
 #ifdef LAGRANGE
 extern point_particle *tracer , *tracer_here, *tracer_there, *all_tracer_there;
 extern int npart;
-#ifdef LAGRANGE_NUCLEATE
-extern my_double sol_frac, delT_ref;
-extern int ngrave;
-#endif
+  #ifdef LAGRANGE_NUCLEATE
+    extern my_double sol_frac, delT_ref;
+    extern int ngrave;
+   #endif
+   #ifdef LAGRANGE_TWOWAY
+    extern vector *force_twoway;
+    extern my_double *t_source_twoway;
+    #endif
 #endif
 
 
