@@ -80,6 +80,11 @@ void add_particle_feedbacks(){
   fp.x = (tracer+ipart)->Dt_ux - gravity_vector.x + density_ratio*(gravity_vector.x - (tracer+ipart)->ax);
   fp.y = (tracer+ipart)->Dt_uy - gravity_vector.y + density_ratio*(gravity_vector.y - (tracer+ipart)->ay);
   fp.z = (tracer+ipart)->Dt_uz - gravity_vector.z + density_ratio*(gravity_vector.z - (tracer+ipart)->az);
+
+    /* test  */
+  fp.x =  0.0;
+  fp.y = gravity_vector.y ;
+  fp.z = 0.0;
  
   /* feedback in x */
   force_twoway[IDX(im, jm, km)].x +=  fac * fp.x * vol_ip_jp_kp;
