@@ -31,8 +31,6 @@ void add_particle_feedbacks(){
 
  for (ipart=0;ipart<npart;ipart++) {
 
-  fac = 1.0; //(property.SX*property.SY*property.SZ)/property.particle_number;   
-
   /* get coordinates in the domain */
   part.x = wrap( (tracer+ipart)->x ,  property.SX);
   part.y = wrap( (tracer+ipart)->y ,  property.SY);
@@ -69,6 +67,9 @@ void add_particle_feedbacks(){
   /* compute rho_p /rho_f = (3-beta)/(2*beta) */
   density_ratio = (3.0 - (tracer+ipart)->beta_coeff)/(2.0*(tracer+ipart)->beta_coeff);
 
+  /* this is the particle volume normalized byt the total domain volume*/
+  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. )  / (property.SX*property.SY*property.SZ);   
+
   /* this is the convention in our code 
    property.gravity_{x,y,z} just indicates the intensity 
    but the orientation along y is downward */
@@ -81,10 +82,11 @@ void add_particle_feedbacks(){
   fp.y = (tracer+ipart)->Dt_uy - gravity_vector.y + density_ratio*(gravity_vector.y - (tracer+ipart)->ay);
   fp.z = (tracer+ipart)->Dt_uz - gravity_vector.z + density_ratio*(gravity_vector.z - (tracer+ipart)->az);
 
+//fprintf(stderr, "fac %e\n",fac);
     /* test  */
-  fp.x =  0.0;
-  fp.y = gravity_vector.y ;
-  fp.z = 0.0;
+  //fp.x =  0.0;
+  //fp.y = density_ratio*(gravity_vector.y);
+  //fp.z = 0.0;
  
   /* feedback in x */
   force_twoway[IDX(im, jm, km)].x +=  fac * fp.x * vol_ip_jp_kp;
@@ -118,6 +120,9 @@ void add_particle_feedbacks(){
 
   #endif /* end of LAGRANGE_TWO_WAY_MOMENTUM */
   #ifdef LAGRANGE_TWOWAY_TEMPERATURE
+
+ /* this is the particle volume normalized byt the total domain volume*/
+  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. )  / (property.SX*property.SY*property.SZ);   
 
   /* this term is equivalent to  3 * kappa / radius^2  but here expressed in terms of tau_drag and beta */
   fac2 = property.kappa / ( property.nu * (tracer+ipart)->beta_coeff * (tracer+ipart)->tau_drag ); 

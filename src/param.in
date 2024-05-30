@@ -52,7 +52,7 @@ beta2_t 0.0
 noise_t 1.e-5
 
 gravity_x 0.0  
-gravity_y 1.e-5  
+gravity_y 1.e-3  
 gravity_z 0.0
 
 Amp_t 0.002  0.0016  3.91971e-05   0.00005  0.00130208333333333 
@@ -87,15 +87,15 @@ phytoplankton_specific_lght_attenuation	3.75E-10
 incident_light_intensity	1.4
 
 time_dump_lagr 100
-particle_number 2
+particle_number 1
 
 particle_radius_types 1
-particle_radius_min 0.05
-particle_radius_max 0.05
+particle_radius_min 0.1
+particle_radius_max 0.1
 
 particle_density_types 1
-particle_density_min 1.01
-particle_density_max 1.01
+particle_density_min 1.1
+particle_density_max 1.1
 
 tau_drag_types 1
 tau_drag_min 10000
