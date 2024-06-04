@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		melting();
 #endif
 #ifdef LAGRANGE_TWOWAY
-	   add_particle_feedbacks(); 
+	   if(itime>1 && resume==0) add_particle_feedbacks(); 
 #endif
 #ifdef LAGRANGE_POLYMER_FEEDBACK
 		/* Add the divergence of the extra stress tensor */
