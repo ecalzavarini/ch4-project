@@ -3,12 +3,12 @@ resume_u 0
 resume_t 0
 resume_s 0
 
-NX 128 
-NY 128
+NX 32 
+NY 32
 NZ 1
 
-SX 128 
-SY 128
+SX 32 
+SY 32
 SZ 1
 
 time_dt 1.0
@@ -17,7 +17,7 @@ time_end 200000.
 time_dump_field 100.
 time_dump_diagn 250.
 
-tau_u 0.5005
+tau_u 0.505
 nu_add 0.0001
 
 ym_wall_velocity_x 0.1 
@@ -37,7 +37,7 @@ Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.5005
+tau_t 0.505
 
 T_bot   1.0
 T_top  -1.0
@@ -87,23 +87,23 @@ phytoplankton_specific_lght_attenuation	3.75E-10
 incident_light_intensity	1.4
 
 time_dump_lagr 100
-particle_number 100
+particle_number 1
 
 particle_radius_types 1
 particle_radius_min 0.1
 particle_radius_max 0.1
 
 particle_density_types 1
-particle_density_min 1.1
-particle_density_max 1.1
+particle_density_min 1.0
+particle_density_max 1.0
 
 tau_drag_types 1
 tau_drag_min 10000
 tau_drag_max 10000
 
 beta_coeff_types 1
-beta_coeff_min 0.5
-beta_coeff_max 0.5
+beta_coeff_min 1.0
+beta_coeff_max 1.0
 
 gravity_coeff_types 1
 gravity_coeff_min 0.0001

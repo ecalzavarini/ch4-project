@@ -425,7 +425,9 @@ void boundary_and_pbc_conditions_for_streaming(){
   int ii,jj,kk;	
   my_double fac;
   my_double density_wall;
-  
+  #ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE_TANH
+  	my_double delta_T,delta_Theta, ratio_c, lenght_d;
+  #endif
 
   /* communications to be done in any case  (especially for pbc)*/
 
@@ -976,10 +978,20 @@ if(LNY_END == NY){
 #ifndef LB_TEMPERATURE_FLUCTUATION 
 	  T_wall = property.T_top;
 #ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE
-	  //	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
+	/* different types of variable top boundary conditions */
+	  //if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.0;  
 	  //T_wall = property.T_top;
-	  /* half fixed temperature, half  fixed-flux */
+	/* half fixed temperature, half  fixed-flux */
 	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
+	
+	#ifdef code default
+	   delta_T = property.T_top - property.T_bot; /* should be >0 */
+	   delta_Theta = delta_T*0.25; /* 25% higher temperature on the hot part */ 
+	   ratio_c = 0.25;  /* fraction of warm part  length waram / total length*/
+	   lenght_d = 5.0;  /* transition length in grid points */
+	   T_wall = property.T_top + delta_T + (delta_Theta/2.)*(tanh(-(2.0*(center_V[IDX(i,j,k)].x - ratio_c*property.SX))/lenght_d)+1);
+	#endif
+
 #endif
 #else
 	  T_wall = 0.0;
