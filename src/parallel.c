@@ -148,6 +148,9 @@ void sum_output_particle(output_particle *a, output_particle *b,  int *length, M
     (b+i)->t4 += (a+i)->t4;
     (b+i)->dt_t += (a+i)->dt_t;
     (b+i)->dt_t2 += (a+i)->dt_t2;
+	#ifdef LAGRANGE_TEMPERATURE 
+		(b+i)->t_p += (a+i)->t_p;
+	#endif	
 #endif
  #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
     (b+i)->ux += (a+i)->ux;

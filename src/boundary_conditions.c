@@ -984,12 +984,12 @@ if(LNY_END == NY){
 	/* half fixed temperature, half  fixed-flux */
 	  if(center_V[IDX(i,j,k)].x < property.SX/2.0)  T_wall = property.T_top; else T_wall = 0.5*property.grad_T_top + t[IDX(i,j,k)] + property.T_ref;
 	
-	#ifdef code default
+	#ifdef LB_TEMPERATURE_BC_Y_P_VARIABLE_TANH
 	   delta_T = property.T_top - property.T_bot; /* should be >0 */
 	   delta_Theta = delta_T*0.25; /* 25% higher temperature on the hot part */ 
 	   ratio_c = 0.25;  /* fraction of warm part  length waram / total length*/
 	   lenght_d = 5.0;  /* transition length in grid points */
-	   T_wall = property.T_top + delta_T + (delta_Theta/2.)*(tanh(-(2.0*(center_V[IDX(i,j,k)].x - ratio_c*property.SX))/lenght_d)+1);
+	   T_wall = property.T_bot + delta_T + (delta_Theta/2.)*(tanh(-(2.0*(center_V[IDX(i,j,k)].x - ratio_c*property.SX))/lenght_d)+1);
 	#endif
 
 #endif

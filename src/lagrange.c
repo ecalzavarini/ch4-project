@@ -2543,6 +2543,9 @@ void dump_particle_averages()
 
       out_particle_local[type].dt_t = out_particle_all[type].dt_t = 0.0;
       out_particle_local[type].dt_t2 = out_particle_all[type].dt_t2 = 0.0;
+      #ifdef LAGRANGE_TEMPERATURE
+        out_particle_local[type].t_p = out_particle_all[type].t_p = 0.0;
+      #endif
 #endif
 #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_local[type].ux = out_particle_all[type].ux = 0.0;
@@ -2626,6 +2629,9 @@ void dump_particle_averages()
 
       out_particle_local[type].dt_t += (tracer + ipart)->dt_t;
       out_particle_local[type].dt_t2 += (tracer + ipart)->dt_t * (tracer + ipart)->dt_t;
+      #ifdef LAGRANGE_TEMPERATURE
+        out_particle_local[type].t_p += (tracer + ipart)->t_p;
+      #endif
 #endif
 #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_local[type].ux += (tracer + ipart)->ux;
@@ -2716,6 +2722,9 @@ void dump_particle_averages()
 
       out_particle_all[type].dt_t *= norm;
       out_particle_all[type].dt_t2 *= norm;
+      #ifdef LAGRANGE_TEMPERATURE
+      out_particle_all[type].t_p *= norm;
+      #endif
 #endif
 #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_all[type].ux *= norm;
@@ -2763,6 +2772,10 @@ void dump_particle_averages()
         fprintf(fout, "%e %e %e %e %e ",
                 (double)out_particle_all[type].t, (double)out_particle_all[type].t2, (double)out_particle_all[type].t4,
                 (double)out_particle_all[type].dt_t, (double)out_particle_all[type].dt_t2);
+                #ifdef LAGRANGE_TEMPERATURE
+                fprintf(fout, "%e ",
+                (double)out_particle_all[type].t_p);
+                #endif
 #endif
 #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
         fprintf(fout, "%e %e %e %e %e %e %e %e %e ", 
