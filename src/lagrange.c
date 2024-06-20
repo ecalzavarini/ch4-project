@@ -27,6 +27,12 @@ void allocate_particles()
     else
       npart = (int)floor((int)property.particle_number / nprocs);
 
+      /* old way  ROOT processor will take just a little bit more particles */
+      /*
+    for (i=0;i<nprocs;i++){
+    if(ROOT) npart = (int)property.particle_number - (nprocs-1)*(int)floor((int)property.particle_number/nprocs); else npart = (int)floor((int)property.particle_number /nprocs);  			       
+    }
+      */
   } /* end if on particle_number */
 
 #ifdef VERBOSE
@@ -754,6 +760,10 @@ void initial_conditions_particles(int restart)
       (tracer + i)->x = LNX_START + myrand() * LNX;
       (tracer + i)->y = LNY_START + myrand() * LNY;
       (tracer + i)->z = LNZ_START + myrand() * LNZ;
+
+      /* test */ 
+      //if (i>0)
+      // (tracer + i)->y = property.SY - myrand() * 10;
 
 #ifdef LAGRANGE_INITIAL_PAIRS
       if (i % 2 == 0 && i > 0)
@@ -3678,6 +3688,10 @@ radius = 0.0;
       (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       #endif
+      #ifdef LAGRANGE_TEMPERATURE
+      /* the reinjected particle takes the temperature of the wall */
+      (tracer + ipart)->t_p = property.T_top;
+      #endif
     #endif
 /* Sedimentation of particles at the bottom boundary */
     #ifdef LAGRANGE_NUCLEATE
@@ -3736,6 +3750,10 @@ radius = 0.0;
       (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
       (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      #endif
+      #ifdef LAGRANGE_TEMPERATURE 
+      /* the reinjected particle takes the temperature of the wall */
+      (tracer + ipart)->t_p = property.T_bot;
       #endif
     #endif  
 /* Sedimentation of particles at the top boundary */
