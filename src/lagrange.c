@@ -100,6 +100,13 @@ void initial_conditions_particles(int restart)
   my_double pair_distance;
 #endif
 
+#ifdef LAGRANGE_INITIAL_GRID
+    /* position: particles on a regular grid */
+      int nxpart,nypart,nzpart;
+      int ipart, jpart, kpart;
+      my_double dpart;
+#endif
+
   rcounts = (int *)malloc(nprocs * sizeof(int));
 
   MPI_Allgather(&npart, 1, MPI_INT, rcounts, 1, MPI_INT, MPI_COMM_WORLD);
@@ -764,6 +771,29 @@ void initial_conditions_particles(int restart)
       /* test */ 
       //if (i>0)
       // (tracer + i)->y = property.SY - myrand() * 10;
+#ifdef LAGRANGE_INITIAL_GRID
+    /* Initializes particle positions  on a grid */
+    /* NOTE : it work well only if the total particle number is equal to the total grid points */
+    if(i==0){
+      dpart = pow(LNX*LNY*LNZ/npart, 1./3.);
+      //dpart = pow(LNX*LNY/npart, 1./2.);
+      nxpart=(int)floor(LNX/dpart);
+      nypart=(int)floor(LNY/dpart);
+      nzpart=(int)floor(LNZ/dpart);
+      if(nxpart == 0 ) nxpart = 1;
+      if(nypart == 0 ) nypart = 1;
+      if(nzpart == 0 ) nzpart = 1;
+    }
+      ipart=i%nxpart;
+      jpart=(int)ceil(i/nxpart)%nypart;
+      kpart=(int)ceil(i/(nxpart*nypart))%nzpart;
+  
+      (tracer + i)->x = LNX_START + dpart/2. + ipart*dpart;
+      (tracer + i)->y = LNY_START + dpart/2. + jpart*dpart;
+      (tracer + i)->z = LNZ_START + dpart/2. + kpart*dpart;
+      fprintf(stderr,"particle x, y, z = %g , %g ,%g \n", (tracer + i)->x, (tracer + i)->y,  (tracer + i)->z);
+#endif
+      //fprintf(stderr,"particle x, y, z = %g , %g ,%g \n", (tracer + i)->x, (tracer + i)->y,  (tracer + i)->z);
 
 #ifdef LAGRANGE_INITIAL_PAIRS
       if (i % 2 == 0 && i > 0)
@@ -3672,12 +3702,16 @@ radius = 0.0;
   #endif  
   #ifdef LB_LAGRANGE_BC_INELASTIC
     #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
+      #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+      (tracer + ipart)->y += property.SY;
+      #else 
     /* particles falling across the bottom are randomly injected on top (and viceversa)
       (their velocity stays null) */
       (tracer + ipart)->x = property.SX*myrand();
       //(tracer + ipart)->y = property.SY*(1.-FLT_EPSILON);
       (tracer + ipart)->y += property.SY;
       (tracer + ipart)->z = property.SZ*myrand();
+      #endif
     /* setting Stokes velocity */
       #ifdef LAGRANGE_GRAVITY_VARIABLE
       (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
@@ -3735,12 +3769,16 @@ radius = 0.0;
   #endif
   #ifdef LB_LAGRANGE_BC_INELASTIC
     #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
+    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+      (tracer + ipart)->y -= (property.SY - FLT_EPSILON);
+    #else  
     /* particles falling across the bottom are randomly injected on top (and viceversa)
       (their velocity stays null) */
       (tracer + ipart)->x = property.SX*myrand();
       //(tracer + ipart)->y = FLT_EPSILON;
       (tracer + ipart)->y -= (property.SY - FLT_EPSILON);
       (tracer + ipart)->z = property.SZ*myrand();
+    #endif  
     /* setting Stokes velocity */
       #ifdef LAGRANGE_GRAVITY_VARIABLE
       (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;

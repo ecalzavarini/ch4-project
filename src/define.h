@@ -316,6 +316,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
 //#define LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+//#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
 //#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
 //#define LAGRANGE_NUCLEATE
 //#define LAGRANGE_NUCLEATE_REMELT
@@ -337,6 +338,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
 #define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
 #define LB_LAGRANGE_BC_INELASTIC_REINJECT
+//#define LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
 //#define LB_LAGRANGE_BC_RADIUSandDENSITY
 //#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
