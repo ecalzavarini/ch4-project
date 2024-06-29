@@ -13,8 +13,10 @@ void initial_conditions(int restart)
   my_double norm, norm_all;
   char fnamein[128];
   FILE * fin;
-  
 
+#ifdef LB_TEMPERATURE_INITIAL_WAVE
+  my_double y_wave ,  interface_thickness;   
+#endif
 
 #ifdef LB_FLUID
 /* viscosity */
@@ -388,8 +390,15 @@ void initial_conditions(int restart)
   #endif    
  #endif
 
+  #ifdef LB_TEMPERATURE_INITIAL_WAVE
+      /* internal density (or gravity) wave */
+      /* the top bottom temperature interface is a sinusoidal wave with tanh smoothing */ 
+    y_wave = (property.SY/2.0)  + (property.SY/8.0)*sin(two_pi*center_V[IDX(i,j,k)].x/property.SX);
+    interface_thickness = 3.0; /* in grid units */
+    t[IDX(i,j,k)] = 0.5*(property.T_bot - property.T_top)*tanh(-(2.0*(center_V[IDX(i,j,k)].y-y_wave))/interface_thickness);
+  #endif
  
-
+/* from here on these partubation are additive ones */
  #ifdef LB_TEMPERATURE_INITIAL_ADD_PERTURBATION	 
       val = 1.e-3; 
       if(NZ==1){ 
