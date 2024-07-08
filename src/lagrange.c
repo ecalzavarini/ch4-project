@@ -864,7 +864,7 @@ void initial_conditions_particles(int restart)
       (tracer + i)->t_p = property.T_bot;
   #endif
 #endif
-#ifdef LB_LAGRANGE_BC_INELASTIC
+#ifdef LAGRANGE_BC_INELASTIC
       /* Initializing that particles have not sedimented yet */
       (tracer + i)->sediment = 0.0;
 #endif
@@ -963,7 +963,7 @@ phi = two_pi*myrand();
  free(swim_velocity);
 */
 
-#ifdef LB_LAGRANGE_INITIAL_VELOCITY_FLUID
+#ifdef LAGRANGE_INITIAL_VELOCITY_FLUID
     boundary_conditions_hydro();
     interpolate_vector_at_particles(u, 'u');
     if (ROOT)
@@ -2046,7 +2046,7 @@ void output_particles()
 #endif
 #endif
 
-#ifdef LB_LAGRANGE_BC_INELASTIC
+#ifdef LAGRANGE_BC_INELASTIC
     /* WRITE THE NUMBER OF PARTICLE DEPOSITIONS */
     dataset_id = H5Dcreate(group, "sediment", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (i = 0; i < npart; i++)
@@ -2438,7 +2438,7 @@ void output_particles()
 #endif
 #endif
 
-#ifdef LB_LAGRANGE_BC_INELASTIC
+#ifdef LAGRANGE_BC_INELASTIC
       /* number of particle depositions */
       fprintf(fout, "<Attribute Name=\"sediment\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
       fprintf(fout, "<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
@@ -2587,7 +2587,7 @@ void dump_particle_averages()
         out_particle_local[type].t_p = out_particle_all[type].t_p = 0.0;
       #endif
 #endif
-#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+#ifdef LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_local[type].ux = out_particle_all[type].ux = 0.0;
       out_particle_local[type].uy = out_particle_all[type].uy = 0.0;
       out_particle_local[type].uz = out_particle_all[type].uz = 0.0;
@@ -2673,7 +2673,7 @@ void dump_particle_averages()
         out_particle_local[type].t_p += (tracer + ipart)->t_p;
       #endif
 #endif
-#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+#ifdef LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_local[type].ux += (tracer + ipart)->ux;
       out_particle_local[type].uy += (tracer + ipart)->uy;
       out_particle_local[type].uz += (tracer + ipart)->uz;
@@ -2766,7 +2766,7 @@ void dump_particle_averages()
       out_particle_all[type].t_p *= norm;
       #endif
 #endif
-#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+#ifdef LAGRANGE_OUTPUT_FLUID_AVERAGES
       out_particle_all[type].ux *= norm;
       out_particle_all[type].uy *= norm;
       out_particle_all[type].uz *= norm;
@@ -2817,7 +2817,7 @@ void dump_particle_averages()
                 (double)out_particle_all[type].t_p);
                 #endif
 #endif
-#ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+#ifdef LAGRANGE_OUTPUT_FLUID_AVERAGES
         fprintf(fout, "%e %e %e %e %e %e %e %e %e ", 
                 (double)out_particle_all[type].ux, (double)out_particle_all[type].uy, (double)out_particle_all[type].uz,
                 (double)out_particle_all[type].ux2, (double)out_particle_all[type].uy2, (double)out_particle_all[type].uz2,
@@ -3656,7 +3656,7 @@ void move_particles()
 
 //fprintf(stderr,"FLT_EPSILON %e, DBL_EPSILON %e, property.SY - FLT_EPSILON %e\n",FLT_EPSILON, DBL_EPSILON,property.SY-property.SY*FLT_EPSILON);
 
-#ifdef LB_LAGRANGE_BC_INELASTIC
+#ifdef LAGRANGE_BC_INELASTIC
     /* fully inelastic collision */
     /* 1) the position is set exactly on the boundary */
     /* 2) the velocity is set to zero */
@@ -3672,7 +3672,7 @@ void move_particles()
 
 radius = 0.0;
 /* we compute the radius of the particle from tau_drag and beta or density */
-#ifdef LB_LAGRANGE_BC_RADIUSandDENSITY
+#ifdef LAGRANGE_BC_RADIUSandDENSITY
   #ifdef LAGRANGE_RADIUSandDENSITY
   /* yet to to be tested */
   /* we identify the particle type, then we extract its radius */
@@ -3690,7 +3690,7 @@ radius = 0.0;
     /* bottom wall */
     if ((tracer + ipart)->y < radius) 
     {
-  #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT  
+  #ifndef LAGRANGE_BC_INELASTIC_REINJECT  
       /* IF REINJECTION IS NOT DEFINED! */
       /* position */
       //(tracer + ipart)->y *= fac1;
@@ -3700,9 +3700,9 @@ radius = 0.0;
       if ((tracer + ipart)->vy < 0.0) (tracer + ipart)->vy *= fac1;
       (tracer + ipart)->vz *= fac2;
   #endif  
-  #ifdef LB_LAGRANGE_BC_INELASTIC
-    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
-      #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+  #ifdef LAGRANGE_BC_INELASTIC
+    #ifdef LAGRANGE_BC_INELASTIC_REINJECT
+      #ifdef LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
       (tracer + ipart)->y += property.SY;
       #else 
     /* particles falling across the bottom are randomly injected on top (and viceversa)
@@ -3756,7 +3756,7 @@ radius = 0.0;
     /* top wall */
     if ((tracer + ipart)->y >= property.SY-radius)
     {
-  #ifndef LB_LAGRANGE_BC_INELASTIC_REINJECT
+  #ifndef LAGRANGE_BC_INELASTIC_REINJECT
       /* IF REINJECTION IS NOT DEFINED! */
       /* position */
       //(tracer + ipart)->y = property.SY - fac2 * ((tracer + ipart)->y - property.SY) - (1.0 - fac2) * property.SY * FLT_EPSILON;
@@ -3767,9 +3767,9 @@ radius = 0.0;
       if ((tracer + ipart)->vy > 0.0) (tracer + ipart)->vy *= fac1;
       (tracer + ipart)->vz *= fac2;
   #endif
-  #ifdef LB_LAGRANGE_BC_INELASTIC
-    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT
-    #ifdef LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+  #ifdef LAGRANGE_BC_INELASTIC
+    #ifdef LAGRANGE_BC_INELASTIC_REINJECT
+    #ifdef LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
       (tracer + ipart)->y -= (property.SY - FLT_EPSILON);
     #else  
     /* particles falling across the bottom are randomly injected on top (and viceversa)
