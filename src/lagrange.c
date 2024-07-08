@@ -3712,15 +3712,21 @@ radius = 0.0;
       (tracer + ipart)->y += property.SY;
       (tracer + ipart)->z = property.SZ*myrand();
       #endif
-    /* setting Stokes velocity */
-      #ifdef LAGRANGE_GRAVITY_VARIABLE
-      (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+      #ifdef LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
+      (tracer + ipart)->vx = 0.0;
+      (tracer + ipart)->vy = 0.0;
+      (tracer + ipart)->vz = 0.0;
       #else
-      (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        /* setting Stokes velocity */
+        #ifdef LAGRANGE_GRAVITY_VARIABLE
+        (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff *(1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        #else
+        (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        #endif
       #endif
       #ifdef LAGRANGE_TEMPERATURE
       /* the reinjected particle takes the temperature of the wall */
@@ -3778,17 +3784,23 @@ radius = 0.0;
       //(tracer + ipart)->y = FLT_EPSILON;
       (tracer + ipart)->y -= (property.SY - FLT_EPSILON);
       (tracer + ipart)->z = property.SZ*myrand();
-    #endif  
+    #endif
+    #ifdef LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
+      (tracer + ipart)->vx = 0.0;
+      (tracer + ipart)->vy = 0.0;
+      (tracer + ipart)->vz = 0.0;
+      #else  
     /* setting Stokes velocity */
-      #ifdef LAGRANGE_GRAVITY_VARIABLE
-      (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      #else
-      (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
-      #endif
+        #ifdef LAGRANGE_GRAVITY_VARIABLE
+        (tracer + ipart)->vx = -property.gravity_x * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vy = -property.gravity_y * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vz = -property.gravity_z * (tracer + ipart)->gravity_coeff * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        #else
+        (tracer + ipart)->vx = -property.gravity_x * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vy = -property.gravity_y * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
+        #endif
+      #endif  
       #ifdef LAGRANGE_TEMPERATURE 
       /* the reinjected particle takes the temperature of the wall */
       (tracer + ipart)->t_p = property.T_bot;

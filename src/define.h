@@ -315,7 +315,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 //#define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LAGRANGE_OUTPUT_FLUID_AVERAGES
+//#define LAGRANGE_OUTPUT_FLUID_AVERAGES 
 //#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
 //#define LAGRANGE_INITIAL_VELOCITY_FLUID
 //#define LAGRANGE_NUCLEATE
@@ -336,10 +336,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY
 //#define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-//#define LB_LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
-//#define LB_LAGRANGE_BC_INELASTIC_REINJECT
-//#define LB_LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
-//#define LB_LAGRANGE_BC_RADIUSandDENSITY
+//#define LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+//#define LAGRANGE_BC_INELASTIC_REINJECT /* by default particles are injected randomly with their terminal velocity */
+//#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+//#define LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
+//#define LAGRANGE_BC_RADIUSandDENSITY
 //#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_FLOATER
