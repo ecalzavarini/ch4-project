@@ -448,8 +448,10 @@ typedef struct {
   my_double grave;
   my_double age;
 #endif
-#ifdef LB_LAGRANGE_BC_INELASTIC
+#ifdef LAGRANGE_BC_INELASTIC
+  #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
   my_double sediment;
+  #endif
 #endif
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
@@ -511,8 +513,10 @@ typedef struct {
   my_double grave;
   my_double age;
  #endif
- #ifdef LB_LAGRANGE_BC_INELASTIC
+ #ifdef LAGRANGE_BC_INELASTIC
+  #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
   my_double sediment;
+  #endif
  #endif
 } output_particle;
 

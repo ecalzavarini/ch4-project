@@ -865,8 +865,10 @@ void initial_conditions_particles(int restart)
   #endif
 #endif
 #ifdef LAGRANGE_BC_INELASTIC
+  #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
       /* Initializing that particles have not sedimented yet */
       (tracer + i)->sediment = 0.0;
+  #endif    
 #endif
 #ifdef LB_SCALAR
       (tracer + i)->s = (tracer + i)->s_old = (tracer + i)->dt_s = 0.0;
@@ -2047,12 +2049,14 @@ void output_particles()
 #endif
 
 #ifdef LAGRANGE_BC_INELASTIC
+  #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
     /* WRITE THE NUMBER OF PARTICLE DEPOSITIONS */
     dataset_id = H5Dcreate(group, "sediment", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (i = 0; i < npart; i++)
       aux[i] = (tracer + i)->sediment;
     ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
     status = H5Dclose(dataset_id);
+  #endif  
 #endif
 #ifdef LAGRANGE_NUCLEATE
     /* WRITE PARTICLE GRAVEYARD STATUS */
@@ -2439,12 +2443,14 @@ void output_particles()
 #endif
 
 #ifdef LAGRANGE_BC_INELASTIC
+ #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
       /* number of particle depositions */
       fprintf(fout, "<Attribute Name=\"sediment\" AttributeType=\"Scalar\" Center=\"Node\"> \n");
       fprintf(fout, "<DataItem Dimensions=\"%d\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
       fprintf(fout, "%s:/lagrange/sediment\n", NEW_H5FILE_NAME);
       fprintf(fout, "</DataItem>\n");
       fprintf(fout, "</Attribute>\n");
+  #endif    
 #endif
 #ifdef LAGRANGE_NUCLEATE
       /* graveyard status of particles */
@@ -3733,6 +3739,8 @@ radius = 0.0;
       (tracer + ipart)->t_p = property.T_top;
       #endif
     #endif
+
+   #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT
 /* Sedimentation of particles at the bottom boundary */
     #ifdef LAGRANGE_NUCLEATE
       if ((tracer + ipart)->grave <= 0.0)
@@ -3751,6 +3759,7 @@ radius = 0.0;
       //if ((tracer + ipart)->sediment == 0.0)
         (tracer + ipart)->sediment += 1.0;
     #endif
+   #endif 
   #endif
   #ifdef LAGRANGE_ORIENTATION_BC
       /* orientation */
@@ -3806,6 +3815,7 @@ radius = 0.0;
       (tracer + ipart)->t_p = property.T_bot;
       #endif
     #endif  
+   #ifdef LAGRANGE_BC_INELASTIC_SEDIMENT 
 /* Sedimentation of particles at the top boundary */
     #ifdef LAGRANGE_NUCLEATE
       if ((tracer + ipart)->grave <= 0.0)
@@ -3825,6 +3835,7 @@ radius = 0.0;
         //(tracer + ipart)->sediment += 1.0;
         (tracer + ipart)->sediment = time_now;
     #endif
+   #endif
   #endif
   #ifdef LAGRANGE_ORIENTATION_BC
       /* orientation */
