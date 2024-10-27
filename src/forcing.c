@@ -479,6 +479,15 @@ void build_forcing(){
  #endif
 
 
+ #ifdef LB_FORCING_BULK_UNSTEADY
+    /* horizontal force used to create thermal waves , works only if temperature is defined */
+    if(t[IDX(i,j,k)] < (property.T_bot+property.T_top)/2. ){fac=1.0;}else{fac=0.0;}
+    force[IDX(i,j,k)].x += fac*1.e-5*property.Amp_x*sin(two_pi*itime/25000); 
+	  force[IDX(i,j,k)].y += 0.0; 
+	  force[IDX(i,j,k)].z += 0.0;
+ #endif
+
+
  #ifdef LB_FLUID_FORCING_STIRRER
 	my_double stirrer_radius = 8.0;
 	my_double stirrer_height = 4.0;
