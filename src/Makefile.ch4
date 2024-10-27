@@ -16,7 +16,7 @@ endif
 EXECUTABLE= ch4
 
 %.o: %.c $(HEADERS)
-	python define.py
+	python3 define.py
 	$(CC) -c $(CFLAGS) $(MYFLAGS) $(OSFLAGS) $< -o $@ 
 
 $(EXECUTABLE):  main.c $(OBJECTS) $(HEADERS)
