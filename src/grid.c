@@ -2176,7 +2176,7 @@ void read_landscape(){
 				  center.x = property.SX/2.05 ;
     				  center.z = property.SZ/2.0 ;
 				  size.x = 10.0;        //80.0;
-				  size.y = 50.0;           //200.0;
+				  size.y = 10.0;           //200.0;
 				  size.z =  10.0;
 				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
 				}
@@ -2198,7 +2198,7 @@ void read_landscape(){
 				  center.x = property.SX/1.27 ;
     				  center.z = property.SZ/2.0 ;
 				  size.x = 10.0;        //80.0;
-				  size.y = 60.0;           //200.0;
+				  size.y = 35.0;           //200.0;
 				  size.z =  10.0;
 				  landscape[IDX(i, j, k)] += cubic_block(i,j,k, center, size);
 				}
