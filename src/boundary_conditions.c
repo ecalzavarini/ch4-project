@@ -1987,6 +1987,16 @@ if(LNX_START == 0){
 	  T_wall = 0.0;
 #endif
 
+#ifdef LB_TEMPERATURE_BC_X_M_VARIABLE
+	if(center_V[IDX(i,j,k)].x < property.SX/2.0) + (property.SX/10)*sin(two_pi*itime/5000)
+	{
+		T_wall = property.T_bot;
+	}else{
+	    T_wall = property.T_top;
+	}
+
+#endif
+
 #ifdef LB_TEMPERATURE_BC_X_M_OUTLET
 	  /* this is outlet */
 	  T_wall =  t[IDX(i,j,k)] + 0.5*( t[IDX(i,j,k)] - t[IDX(i+1,j,k)]);
