@@ -393,8 +393,8 @@ void initial_conditions(int restart)
   #ifdef LB_TEMPERATURE_INITIAL_WAVE
       /* internal density (or gravity) wave */
       /* the top bottom temperature interface is a sinusoidal wave with tanh smoothing */ 
-    y_wave = (property.SY/2.0)  + (property.SY/8.0)*sin(two_pi*center_V[IDX(i,j,k)].x/property.SX);
-    interface_thickness = 3.0; /* in grid units */
+    y_wave = (property.SY/2.0)+ (property.SY/8.0)*sin(two_pi*center_V[IDX(i,j,k)].x/property.SX);
+    interface_thickness = 2.0; /* in grid units */
     t[IDX(i,j,k)] = 0.5*(property.T_bot - property.T_top)*tanh(-(2.0*(center_V[IDX(i,j,k)].y-y_wave))/interface_thickness);
   #endif
  
