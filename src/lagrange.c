@@ -1831,6 +1831,48 @@ void output_particles()
     ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
     status = H5Dclose(dataset_id);
 #endif
+
+#ifdef LAGRANGE_OUTPUT_FLUID
+ /* WRITE FLUID VELOCITIES @ PARTICLE POSITIONS*/
+    dataset_id = H5Dcreate(group, "ux", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    for (i = 0; i < npart; i++)
+      aux[i] = (tracer + i)->ux;
+    ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+    status = H5Dclose(dataset_id);
+
+    dataset_id = H5Dcreate(group, "uy", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    for (i = 0; i < npart; i++)
+      aux[i] = (tracer + i)->uy;
+    ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+    status = H5Dclose(dataset_id);
+
+    dataset_id = H5Dcreate(group, "uz", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    for (i = 0; i < npart; i++)
+      aux[i] = (tracer + i)->uz;
+    ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+    status = H5Dclose(dataset_id);
+    #ifdef LAGRANGE_ADDEDMASS
+    /* WRITE FLUID ACCELERATION @ PARTICLE POSITIONS*/
+      dataset_id = H5Dcreate(group, "Dt_ux", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      for (i = 0; i < npart; i++)
+        aux[i] = (tracer + i)->Dt_ux;
+      ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+      status = H5Dclose(dataset_id);
+
+      dataset_id = H5Dcreate(group, "Dt_uy", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      for (i = 0; i < npart; i++)
+        aux[i] = (tracer + i)->Dt_uy;
+      ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+      status = H5Dclose(dataset_id);
+
+      dataset_id = H5Dcreate(group, "Dt_uz", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      for (i = 0; i < npart; i++)
+        aux[i] = (tracer + i)->Dt_uz;
+      ret = H5Dwrite(dataset_id, hdf5_type, memspace, filespace, xfer_plist, aux);
+      status = H5Dclose(dataset_id);
+    #endif
+#endif
+
 #ifdef LAGRANGE_ORIENTATION
     /* ORIENTATION VECTOR */
     dataset_id = H5Dcreate(group, "px", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -2033,7 +2075,7 @@ void output_particles()
     status = H5Dclose(dataset_id);
 #endif
 #ifdef LAGRANGE_TEMPERATURE
-    /* WRITE FLUID TEMPERATURE AT PARTICLE POSITION */
+    /* WRITE PARTICLE TEMPERATURE */
     dataset_id = H5Dcreate(group, "temperature_particle", hdf5_type, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (i = 0; i < npart; i++)
       aux[i] = (tracer + i)->t_p;
@@ -2253,6 +2295,38 @@ void output_particles()
       fprintf(fout, "%s:/lagrange/beta_coeff\n", NEW_H5FILE_NAME);
       fprintf(fout, "</DataItem>\n");
       fprintf(fout, "</Attribute>\n");
+#endif
+#ifdef LAGRANGE_OUTPUT_FLUID
+ /* fluid velocity as a vector */
+      fprintf(fout, "<Attribute Name=\"fluid_velocity\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+      fprintf(fout, "<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n", np);
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/ux\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/uy\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/uz\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</Attribute>\n");
+  #ifdef LAGRANGE_ADDEDMASS
+       /* fluid acceleration as a vector */
+      fprintf(fout, "<Attribute Name=\"fluid_acceleration\" AttributeType=\"Vector\" Center=\"Node\"> \n");
+      fprintf(fout, "<DataItem ItemType=\"Function\" Dimensions=\"%d 3\" \n   Function=\"JOIN($0 , $1, $2)\">\n", np);
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/Dt_ux\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/Dt_uy\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "<DataItem Dimensions=\"%d 1\" NumberType=\"Float\" Precision=\"%d\" Format=\"HDF\">\n", np, size);
+      fprintf(fout, "%s:/lagrange/Dt_uz\n", NEW_H5FILE_NAME);
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</DataItem>\n");
+      fprintf(fout, "</Attribute>\n");
+  #endif
 #endif
 #ifdef LAGRANGE_ORIENTATION
       /* orientation vector */
@@ -3343,9 +3417,9 @@ void move_particles()
 
         fac1 = (tracer + ipart)->tau_drag * (1.0 - (tracer + ipart)->beta_coeff + 2./3. * property.beta_t*((tracer + ipart)->t - property.T_ref)); 
         /* note that the orientation of gravity is not included in property.gravity , so we have to add it explicitely */
-        (tracer + ipart)->vx += fac1*(-property.gravity_x - Dt_u.x);
-        (tracer + ipart)->vy += fac1*(-property.gravity_y - Dt_u.y);
-        (tracer + ipart)->vz += fac1*(-property.gravity_z - Dt_u.z);
+        (tracer + ipart)->vx += fac1*(-property.gravity_x - (tracer + ipart)->Dt_ux);
+        (tracer + ipart)->vy += fac1*(-property.gravity_y - (tracer + ipart)->Dt_uy);
+        (tracer + ipart)->vz += fac1*(-property.gravity_z - (tracer + ipart)->Dt_uz);
       }
       #endif /* LAGRANGE_SMALLTAUD_FLOATER  */
     #endif /* LAGRANGE_SMALLTAUD */

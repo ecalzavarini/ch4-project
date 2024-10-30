@@ -317,6 +317,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
+#define LAGRANGE_OUTPUT_FLUID
 //#define LAGRANGE_OUTPUT_FLUID_AVERAGES 
 //#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
 //#define LAGRANGE_INITIAL_VELOCITY_FLUID
