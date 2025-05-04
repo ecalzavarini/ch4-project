@@ -992,7 +992,7 @@ phi = two_pi*myrand();
 #endif
 #ifdef LAGRANGE_INITIAL_TEMPERATURE_FLUID
  #ifdef LAGRANGE_TEMPERATURE
-interpolate_scalar_at_particles(t, "t");
+interpolate_scalar_at_particles(t, 't');
     if (ROOT)
       fprintf(stderr, "Injecting particles with fluid temperature\n");
     for (i = 0; i < npart; i++)
