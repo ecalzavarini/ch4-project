@@ -978,6 +978,17 @@ phi = two_pi*myrand();
       (tracer + i)->vz = (tracer + i)->uz;
     }
 #endif
+#ifdef LAGRANGE_INITIAL_VELOCITY_STOKES
+    if (ROOT)
+      fprintf(stderr, "Injecting particles with Stokes terminal velocity\n");
+    for (i = 0; i < npart; i++)
+    {
+      /* copy just interpolated fluid velocity into particle velocity */
+      (tracer + i)->vx = -property.gravity_x * (1.0 - (tracer + i)->beta_coeff) * (tracer + i)->tau_drag;
+      (tracer + i)->vy = -property.gravity_y * (1.0 - (tracer + i)->beta_coeff) * (tracer + i)->tau_drag;
+      (tracer + i)->vz = -property.gravity_z * (1.0 - (tracer + i)->beta_coeff) * (tracer + i)->tau_drag;
+    }
+#endif
 #ifdef LAGRANGE_NUCLEATE
     if (ROOT)
       fprintf(stderr, "Particles will be nucleated in undercooled regions\n");
@@ -3751,6 +3762,7 @@ void move_particles()
 #endif
 
 radius = 0.0;
+//fprintf(stderr,"radius = %e\n",radius);
 /* we compute the radius of the particle from tau_drag and beta or density */
 #ifdef LAGRANGE_BC_RADIUSandDENSITY
   #ifdef LAGRANGE_RADIUSandDENSITY
@@ -3761,6 +3773,7 @@ radius = 0.0;
 	  #ifdef LAGRANGE_ADDEDMASS
     /* we use tau with added mass \tau = r^2/(3*\beta*\nu) (Note: beta was derived from density assuming that rho_f=1 )*/
 	    radius = sqrt( (tracer + ipart)->tau_drag * property.nu * 3.0 * (tracer + ipart)->beta_coeff );
+      fprintf(stderr,"radius = %e\n",radius);
     #endif
   #endif
 #endif
