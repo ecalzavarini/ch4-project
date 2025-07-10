@@ -93,4 +93,6 @@ This code has been employed in the following published studies:
 
 14) *Residence time of inertial particles in 3D thermal convection: implications for magma reservoirs*, Vojtech Patocka, Nicola Tosi, Enrico Calzavarini,  Earth and Planetary Science Letters **591** (2022) 117622. https://doi.org/10.1016/j.epsl.2022.117622
 
-15) *Sea ice aging by diffusion-driven desalination*, Yihong Du, Feng Wang, Enrico Calzavarini, and Chao Sun, Phys. Rev. Lett. (in press) (2005)
+15) *How turbulence increases the bubble–particle collision rate*, Linfeng Jiang, Dominik J. Krug, Fluid Mech. **1006**,A19 (2025). https://doi:10.1017/jfm.2025.44
+
+16) *Sea ice aging by diffusion-driven desalination*, Yihong Du, Feng Wang, Enrico Calzavarini, and Chao Sun, Phys. Rev. Lett. (in press) (2005)
