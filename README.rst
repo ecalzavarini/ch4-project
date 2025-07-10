@@ -14,7 +14,7 @@ A general purpose *Lattice-Boltzmann* code for fluid-dynamics simulations. It in
 - **temperature dynamics** (advection, diffusion , sink/source or reaction terms)
 - **phase change** (enthalpy formulation for solid/liquid systems)
 - **scalar transport** (same functionalities as temperature)
-- **lagrangian dynamics** (tracers, heavy/light & active  point-like particles; non-shperical Jeffery rotation, gyrotaxis)
+- **lagrangian dynamics** (tracers, heavy/light & active  point-like particles; non-shperical Jeffery rotation, gyrotaxis,two-way coupling)
 - **large eddy simulation** (Smagorinsky, Shear Improved Samgorinsky with Kalman Filter)
 
 Requirements:
@@ -92,3 +92,5 @@ This code has been employed in the following published studies:
 13) *Accumulation and alignment of elongated gyrotactic swimmers in turbulence*, Zehua Liu, Linfeng Jiang, Chao Sun, Physics of Fluids **34**, 033303 (2022). https://doi.org/10.1063/5.0083802
 
 14) *Residence time of inertial particles in 3D thermal convection: implications for magma reservoirs*, Vojtech Patocka, Nicola Tosi, Enrico Calzavarini,  Earth and Planetary Science Letters **591** (2022) 117622. https://doi.org/10.1016/j.epsl.2022.117622
+
+15) *Sea ice aging by diffusion-driven desalination*, Yihong Du, Feng Wang, Enrico Calzavarini, and Chao Sun, Phys. Rev. Lett. (in press) (2005)
