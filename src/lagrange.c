@@ -3773,7 +3773,7 @@ radius = 0.0;
 	  #ifdef LAGRANGE_ADDEDMASS
     /* we use tau with added mass \tau = r^2/(3*\beta*\nu) (Note: beta was derived from density assuming that rho_f=1 )*/
 	    radius = sqrt( (tracer + ipart)->tau_drag * property.nu * 3.0 * (tracer + ipart)->beta_coeff );
-      fprintf(stderr,"radius = %e\n",radius);
+      //fprintf(stderr,"radius = %e\n",radius);
     #endif
   #endif
 #endif

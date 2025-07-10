@@ -504,7 +504,7 @@ typedef struct {
     my_double t_p;   // particle temperature
   #endif 
  #endif
- #ifdef LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+ #ifdef LAGRANGE_OUTPUT_FLUID_AVERAGES
   my_double ux,uy,uz;
   my_double ux2,uy2,uz2;
   my_double ux4,uy4,uz4;

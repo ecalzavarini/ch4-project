@@ -24,7 +24,7 @@
 #define OUTPUT_H5
 #define OUTPUT_H5_GRID /* write the grid in every h5 file, not essential but useful for VisIt visualizations */
 #define OUTPUT_H5_TIMESTAMP_REAL /* enable "time_now" as time stamp on the name of .h5 files instead of itime */
-#define OUTPUT_AT_START /* write down the complete intial state */
+//#define OUTPUT_AT_START /* write down the complete intial state */
 //#define VERBOSE /* if not defined, the amount of output communication is limited */
 
 /* GRID */
@@ -62,7 +62,7 @@
 //#define LB_FLUID_INITIAL_STIRRER
 //#define LB_FLUID_INITIAL_PERTURBATION
 //#define LB_FLUID_INITIAL_LANDSCAPE
-//#define LB_INITIAL_BAROMETRIC
+#define LB_INITIAL_BAROMETRIC
 //#define LB_INITIAL_BULK
 //#define LB_INITIAL_CONSTANT_T_TOP
 #define LB_FLUID_INITIAL_UNIT_DENSITY
@@ -102,8 +102,8 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
 //#define LB_FLUID_BC_Y_M_SLIP
 //#define LB_FLUID_BC_Y_P_SLIP
 //#define LB_FLUID_BC_Y_M_JET
@@ -160,11 +160,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-//#define LB_TEMPERATURE
+#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 #define LB_TEMPERATURE_INITIAL_LINEAR
-#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
+//#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_OCEANMIXEDLAYER
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE_AFTER_READ
@@ -315,10 +315,10 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_DEBUG
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
-//#define LB_LAGRANGE_OUTPUT_FLUID_AVERAGES
+//#define LAGRANGE_OUTPUT_FLUID_AVERAGES
 //#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
-//#define LB_LAGRANGE_INITIAL_VELOCITY_FLUID
-#define LAGRANGE_INITIAL_VELOCITY_STOKES
+#define LAGRANGE_INITIAL_VELOCITY_FLUID
+//#define LAGRANGE_INITIAL_VELOCITY_STOKES
 //#define LAGRANGE_NUCLEATE
 //#define LAGRANGE_NUCLEATE_REMELT
 //#define LAGRANGE_INITIAL_PAIRS
@@ -329,7 +329,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_RADIUSandDENSITY_INCREMENT_LOG_DENSITY
 //#define LAGRANGE_TAUDRAG_INCREMENT_LOG
 #define LAGRANGE_GRADIENT
-//#define LAGRANGE_GRADIENT_BRD2
+#define LAGRANGE_GRADIENT_BRD2
 #define LAGRANGE_ADDEDMASS
 //#define LAGRANGE_ADDEDMASS_INCREMENT_LOG
 //#define LAGRANGE_ADDEDMASS_LIFT
@@ -337,13 +337,13 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE_GRAVITY
 //#define LAGRANGE_GRAVITY_VARIABLE
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
-//#define LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
-//#define LAGRANGE_BC_INELASTIC_REINJECT
+#define LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
+#define LAGRANGE_BC_INELASTIC_REINJECT
 //#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
 //#define LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
-//#define LAGRANGE_BC_RADIUSandDENSITY
-//#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
-//#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
+#define LAGRANGE_BC_RADIUSandDENSITY
+#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_FLOATER
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION

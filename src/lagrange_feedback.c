@@ -67,8 +67,8 @@ void add_particle_feedbacks(){
   /* compute rho_p /rho_f = (3-beta)/(2*beta) */
   density_ratio = (3.0 - (tracer+ipart)->beta_coeff)/(2.0*(tracer+ipart)->beta_coeff);
 
-  /* this is the particle volume normalized byt the total domain volume*/
-  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. )  / (property.SX*property.SY*property.SZ);   
+  /* this is the particle volume */
+  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. ) ;   
 
   /* this is the convention in our code 
    property.gravity_{x,y,z} just indicates the intensity 
@@ -121,8 +121,8 @@ void add_particle_feedbacks(){
   #endif /* end of LAGRANGE_TWO_WAY_MOMENTUM */
   #ifdef LAGRANGE_TWOWAY_TEMPERATURE
 
- /* this is the particle volume normalized byt the total domain volume*/
-  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. )  / (property.SX*property.SY*property.SZ);   
+ /* this is the particle volume */
+  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. );    
 
   /* this term is equivalent to  3 * kappa / radius^2  but here expressed in terms of tau_drag and beta */
   fac2 = property.kappa / ( property.nu * (tracer+ipart)->beta_coeff * (tracer+ipart)->tau_drag ); 
