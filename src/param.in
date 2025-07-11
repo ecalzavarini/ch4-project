@@ -90,12 +90,12 @@ time_dump_lagr 1600
 particle_number 5050 4000
 
 particle_radius_types 1
-particle_radius_min 0.002 0.002 0.217
-particle_radius_max 0.002 0.002 0.217
+particle_radius_min 0.04 0.002 0.217
+particle_radius_max 0.04 0.002 0.217
 
 particle_density_types 1
-particle_density_min 1.1
-particle_density_max 1.1
+particle_density_min 0.9 1.1
+particle_density_max 0.9 1.1
 
 tau_drag_types 1
 tau_drag_min 12

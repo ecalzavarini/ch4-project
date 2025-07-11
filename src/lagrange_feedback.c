@@ -78,9 +78,15 @@ void add_particle_feedbacks(){
   gravity_vector.z =  property.gravity_z;
 
    /* build feedback */
+  #ifdef LAGRANGE_TWOWAY_SMALLTAUD  
+  fp.x = ((tracer+ipart)->Dt_ux - gravity_vector.x)*(1 - density_ratio);
+  fp.y = ((tracer+ipart)->Dt_uy - gravity_vector.y)*(1 - density_ratio);
+  fp.z = ((tracer+ipart)->Dt_uz - gravity_vector.z)*(1 - density_ratio);
+  #else
   fp.x = (tracer+ipart)->Dt_ux - gravity_vector.x + density_ratio*(gravity_vector.x - (tracer+ipart)->ax);
   fp.y = (tracer+ipart)->Dt_uy - gravity_vector.y + density_ratio*(gravity_vector.y - (tracer+ipart)->ay);
   fp.z = (tracer+ipart)->Dt_uz - gravity_vector.z + density_ratio*(gravity_vector.z - (tracer+ipart)->az);
+  #endif
 
 //fprintf(stderr, "fac %e\n",fac);
     /* test  */
