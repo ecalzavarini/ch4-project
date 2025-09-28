@@ -17,6 +17,9 @@ void initial_conditions(int restart)
 #ifdef LB_TEMPERATURE_INITIAL_WAVE
   my_double y_wave ,  interface_thickness;   
 #endif
+#ifdef LB_TEMPERATURE_INITIAL_INTERFACE
+  my_double interface_thickness;   
+#endif
 
 #ifdef LB_FLUID
 /* viscosity */
@@ -396,6 +399,12 @@ void initial_conditions(int restart)
     y_wave = (property.SY/2.0)+ (property.SY/8.0)*sin(two_pi*center_V[IDX(i,j,k)].x/property.SX);
     interface_thickness = 2.0; /* in grid units */
     t[IDX(i,j,k)] = 0.5*(property.T_bot - property.T_top)*tanh(-(2.0*(center_V[IDX(i,j,k)].y-y_wave))/interface_thickness);
+  #endif
+
+  #ifdef LB_TEMPERATURE_INITIAL_INTERFACE
+      /* internal density interface */
+    interface_thickness = 2.0; /* in grid units */
+    t[IDX(i,j,k)] = 0.5*(property.T_bot - property.T_top)*tanh(-(2.0*(center_V[IDX(i,j,k)].y-(property.SY/2.0)))/interface_thickness);
   #endif
  
 /* from here on these partubation are additive ones */
