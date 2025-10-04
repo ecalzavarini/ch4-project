@@ -5,11 +5,11 @@ resume_s 0
 
 NX 120
 NY 240
-NZ 1
+NZ 2
 
 SX 120
 SY 240
-SZ 1
+SZ 2
 
 time_dt 1.0
 time_start 0.
@@ -46,13 +46,13 @@ T_ref2 0.0
 grad_T_bot 0.01  -0.0078125
 grad_T_top -11.7994552008428  -0.0078125
 
-beta_t  0.5 
+beta_t  0.05 
 beta2_t 0.0
 
 noise_t 0.0 1.e-2
 
 gravity_x 0.0
-gravity_y 1.e-6 
+gravity_y 1.e-5 
 gravity_z 0.0
 
 Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333
@@ -87,15 +87,15 @@ phytoplankton_specific_lght_attenuation	3.75E-10
 incident_light_intensity	1.4
 
 time_dump_lagr 1000
-particle_number 40000
+particle_number 57600
 
 particle_radius_types 1
-particle_radius_min 0.2 
-particle_radius_max 0.2 
+particle_radius_min 0.05
+particle_radius_max 0.05 
 
 particle_density_types 1
-particle_density_min 10.0 0.001 
-particle_density_max 10.0 0.001 
+particle_density_min 1.2 0.001 
+particle_density_max 1.2 0.001 
 
 tau_drag_types 1
 tau_drag_min 200

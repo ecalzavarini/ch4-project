@@ -183,4 +183,5 @@ void time_stepping_scalar(my_double *f, my_double *rhs_f, my_double *old_rhs_f);
 void add_particle_feedbacks();
 void add_sendrecv_borders_scalar(my_double *f);
 void add_sendrecv_borders_vector(vector *f);
+my_double cubic_weight(my_double x);
 #endif

@@ -322,6 +322,8 @@ typedef struct {
   #ifdef WENO
    #define BRD 3
   #endif
+#elif defined(LAGRANGE_TWOWAY_TRICUBIC)  /* needed for tricubic extrapolation of feedback*/
+  #define BRD 2
 #else 
   #define BRD 1
 #endif

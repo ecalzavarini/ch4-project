@@ -42,9 +42,9 @@
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D1Q3
-#define GRID_POP_D2Q9
+//#define GRID_POP_D2Q9
 //#define GRID_POP_D3Q15
-//#define GRID_POP_D3Q19
+#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -102,10 +102,10 @@
 //#define LB_FLUID_FORCING_LANDSCAPE_CUBE
 //#define LB_FLUID_FORCING_LANDSCAPE_BUILDINGS
 
-//#define LB_FLUID_BC
-//#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-//#define LB_FLUID_BC_Y_M_SLIP
-//#define LB_FLUID_BC_Y_P_SLIP
+#define LB_FLUID_BC
+#define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
+#define LB_FLUID_BC_Y_M_SLIP
+#define LB_FLUID_BC_Y_P_SLIP
 //#define LB_FLUID_BC_Y_M_JET
 //#define LB_FLUID_BC_Y_M_OUTLET
 //#define LB_FLUID_BC_Y_M_DENSITY
@@ -166,7 +166,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_INITIAL_LINEAR
 //#define LB_TEMPERATURE_INITIAL_ADD_PERTURBATION
 //#define LB_TEMPERATURE_INITIAL_OCEANMIXEDLAYER
-#define LB_TEMPERATURE_INITIAL_ADD_NOISE
+//#define LB_TEMPERATURE_INITIAL_ADD_NOISE
 //#define LB_TEMPERATURE_INITIAL_ADD_NOISE_AFTER_READ
 //#define LB_TEMPERATURE_INITIAL_CONSTANT
 //#define LB_TEMPERATURE_INITIAL_CONSTANT_MEAN
@@ -184,8 +184,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_BUOYANCY_T0_TOP
 //#define LB_TEMPERATURE_BUOYANCY_T0_GRAD
 //#define LB_TEMPERATURE_BUOYANCY_WATER
-//#define LB_TEMPERATURE_BC
-//#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
+#define LB_TEMPERATURE_BC
+#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_FLUX
@@ -318,7 +318,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
 //#define LAGRANGE_OUTPUT_FLUID_AVERAGES
-//#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
+#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
 //#define LAGRANGE_INITIAL_VELOCITY_FLUID
 //#define LAGRANGE_INITIAL_VELOCITY_STOKES
 //#define LAGRANGE_NUCLEATE
@@ -341,11 +341,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
 #define LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
 #define LAGRANGE_BC_INELASTIC_REINJECT
-//#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
 //#define LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
 //#define LAGRANGE_BC_RADIUSandDENSITY
-//#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
-//#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
+#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_FLOATER
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
@@ -371,7 +371,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_POLYMER
 //#define LAGRANGE_POLYMER_FEEDBACK
 #define LAGRANGE_TWOWAY
-//#define LAGRANGE_TWOWAY_SMALLTAUD
+#define LAGRANGE_TWOWAY_TRICUBIC
+#define LAGRANGE_TWOWAY_SMALLTAUD
 #define LAGRANGE_TWOWAY_MOMENTUM
 //#define LAGRANGE_TWOWAY_TEMPERATURE
 
