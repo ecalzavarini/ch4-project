@@ -1139,8 +1139,8 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #ifndef METHOD_EXPONENTIAL
   #ifdef METHOD_TRT
 	/* This is two relaxation time TRT */
-	magic_gamma = 0.25; //3./16.;
-	/* see http://arxiv.org/abs/1508.07982v1 */
+	magic_gamma = 0.25; /* as in https://link.springer.com/article/10.1007/s10955-010-9969-9  Optimal TRT */
+	/* for the lines below see http://arxiv.org/abs/1508.07982v1 */
 	invtau_minus = (4. - 2.*invtau)/(2.+(4.*magic_gamma -1.)*invtau);
 	for (pp=0; pp<NPOP; pp++){
 	    ff_eq_plus.p[pp]  = 0.5*(ff_eq.p[pp] + ff_eq.p[inv[pp]]);

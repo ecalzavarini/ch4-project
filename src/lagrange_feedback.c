@@ -11,17 +11,17 @@ F_p = \Sigma_i^Npart * [ (D_t u - rho_p/rho_f a_p) + (rho_p/rho_f - 1) g  ]
 void add_particle_feedbacks(){
  my_double fac, fac2, sp;
  vector fp , part , gravity_vector;
- my_double density_ratio;
+ my_double density_ratio, squared_radius;
 
  int ipart,im,jm,km,ip,jp,kp;
- double dxm,dxp,dym,dyp,dzm,dzp;
- double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km;
+ my_double dxm,dxp,dym,dyp,dzm,dzp;
+ my_double vol_ip_jp_kp,vol_im_jp_kp , vol_ip_jm_kp , vol_ip_jp_km , vol_im_jm_kp , vol_ip_jm_km , vol_im_jp_km , vol_im_jm_km;
  int i,j,k;
- double f_im_jm_km , f_ip_jm_km , f_im_jp_km , f_im_jm_kp , f_ip_jp_km , f_im_jp_kp , f_ip_jm_kp , f_ip_jp_kp;
- double dx_jm_km , dx_jp_kp , dx_jp_km , dx_jm_kp;
- double dy_im_km , dy_ip_kp , dy_ip_km , dy_im_kp;
- double dz_im_jm , dz_ip_jp , dz_ip_jm , dz_im_jp;
- double wx[4], wy[4], wz[4], w; /* cubic weights */
+ my_double f_im_jm_km , f_ip_jm_km , f_im_jp_km , f_im_jm_kp , f_ip_jp_km , f_im_jp_kp , f_ip_jm_kp , f_ip_jp_kp;
+ my_double dx_jm_km , dx_jp_kp , dx_jp_km , dx_jm_kp;
+ my_double dy_im_km , dy_ip_kp , dy_ip_km , dy_im_kp;
+ my_double dz_im_jm , dz_ip_jp , dz_ip_jm , dz_im_jp;
+ my_double wx[4], wy[4], wz[4], w; /* cubic weights */
  int ii,jj,kk;
  int a,b,c;
   
@@ -54,9 +54,9 @@ void add_particle_feedbacks(){
   dzm = part.z - center_V[IDX(BRD, BRD, km)].z;
   /* compute 1D cubic weights */
   for (int n=-1; n<=2; n++) {
-    wx[n+1] = cubic_weight(dxm - n);
-    wy[n+1] = cubic_weight(dym - n);
-    wz[n+1] = cubic_weight(dzm - n);
+    wx[n+1] = cubic_weight(dxm - (my_double)n);
+    wy[n+1] = cubic_weight(dym - (my_double)n);
+    wz[n+1] = cubic_weight(dzm - (my_double)n);
   }
   #else /* else is TRILINEAR EXTRAPOLATION */
   /* compute difference segments */
@@ -83,8 +83,11 @@ void add_particle_feedbacks(){
   /* compute rho_p /rho_f = (3-beta)/(2*beta) */
   density_ratio = (3.0 - (tracer+ipart)->beta_coeff)/(2.0*(tracer+ipart)->beta_coeff);
 
+  /* compute radius fro tau_drag */
+  squared_radius = 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag;
+
   /* this is the particle volume */
-  fac =  (4./3.)*one_pi*pow( 3.0*property.nu*(tracer+ipart)->beta_coeff *(tracer+ipart)->tau_drag , 3./2. ); //  / (property.SX*property.SY*property.SZ);
+  fac =  (4./3.)*one_pi*pow( squared_radius , 3./2. ); //  / (property.SX*property.SY*property.SZ);
 
   /* this is the convention in our code
    property.gravity_{x,y,z} just indicates the intensity
@@ -112,6 +115,20 @@ void add_particle_feedbacks(){
 
 
 #ifdef LAGRANGE_TWOWAY_TRICUBIC
+ #ifdef GRID_POP_D2Q9
+        /* distribute forcing to 16 neighbors in 2D */
+  for (a = 0; a < 4; a++) 
+    for (b = 0; b < 4; b++){ 
+        ii = im + (a-1);
+        jj = jm + (b-1);
+
+        w = wx[a] * wy[b];
+        
+        force_twoway[IDX(ii,jj,km)].x += fac * fp.x * w;
+        force_twoway[IDX(ii,jj,km)].y += fac * fp.y * w;       
+    }
+  #else
+    /* assuming 3D */
   /* distribute forcing to 64 neighbors */
   for (a=0; a<4; a++) 
     for (b=0; b<4; b++) 
@@ -126,6 +143,7 @@ void add_particle_feedbacks(){
             force_twoway[IDX(ii,jj,kk)].y += fac * fp.y * w;
             force_twoway[IDX(ii,jj,kk)].z += fac * fp.z * w;
         }
+  #endif
  #else /* else is TRILINEAR EXTRAPOLATION */
   /* feedback in x */
   force_twoway[IDX(im, jm, km)].x +=  fac * fp.x * vol_ip_jp_kp;
@@ -171,7 +189,20 @@ void add_particle_feedbacks(){
   sp = ( (tracer+ipart)->t_p - (tracer+ipart)->t ) * fac2;
 
   #ifdef LAGRANGE_TWOWAY_TRICUBIC
-  /* distribute forcing to 64 neighbors */
+    #ifdef GRID_POP_D2Q9
+        /* distribute forcing to 16 neighbors in 2D */
+  for (a = 0; a < 4; a++) 
+    for (b = 0; b < 4; b++) {
+        ii = im + (a - 1);
+        jj = jm + (b - 1);
+
+        w = wx[a] * wy[b];
+
+        t_source_twoway[IDX(ii, jj,km)] += fac * sp * w;
+    }
+    #else
+    /* assuming 3D */
+    /* distribute forcing to 64 neighbors */
   for (a=0; a<4; a++) 
     for (b=0; b<4; b++) 
         for (c=0; c<4; c++) {
@@ -181,8 +212,9 @@ void add_particle_feedbacks(){
 
             w = wx[a] * wy[b] * wz[c];
 
-            t_source_twoway[IDX(ii,jj,kk)].x += fac * sp * w;
+            t_source_twoway[IDX(ii,jj,kk)] += fac * sp * w;
         }
+    #endif
  #else /* else is TRILINEAR EXTRAPOLATION */
   /* feedback in x */
   t_source_twoway[IDX(im, jm, km)] +=  fac * sp * vol_ip_jp_kp;
@@ -203,6 +235,7 @@ void add_particle_feedbacks(){
 /* now we communicate and add the infos on the borders */
   #ifdef LAGRANGE_TWOWAY_MOMENTUM
     add_sendrecv_borders_vector(force_twoway);
+    //sendrecv_borders_vector(force_twoway);
   #endif
   #ifdef LAGRANGE_TWOWAY_TEMPERATURE
     add_sendrecv_borders_scalar(t_source_twoway);

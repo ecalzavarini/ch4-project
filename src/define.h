@@ -12,7 +12,7 @@
 
 /* SYSTEM RELATED */
 #define SYSTEM_RANDOM48  /* does enable drand48 , default is our random number generator */
-#define SYSTEM_TIMING /* measure computetion time */
+#define SYSTEM_TIMING /* measure computation time */
 
 /* PARALLEL (MPI related) */
 #define NEW_SENDRECV  /* improve speed: does not use itermediate transfer buffers */
@@ -42,9 +42,9 @@
 
 /* Our default choice is D3Q19 and is defined at the end of this file */
 //#define GRID_POP_D1Q3
-//#define GRID_POP_D2Q9
+#define GRID_POP_D2Q9
 //#define GRID_POP_D3Q15
-#define GRID_POP_D3Q19
+//#define GRID_POP_D3Q19
 //#define GRID_POP_D3Q27
 
 /* LB */
@@ -104,8 +104,8 @@
 
 #define LB_FLUID_BC
 #define LB_FLUID_BC_Y  /* default fluid bc is no-slip */
-#define LB_FLUID_BC_Y_M_SLIP
-#define LB_FLUID_BC_Y_P_SLIP
+//#define LB_FLUID_BC_Y_M_SLIP
+//#define LB_FLUID_BC_Y_P_SLIP
 //#define LB_FLUID_BC_Y_M_JET
 //#define LB_FLUID_BC_Y_M_OUTLET
 //#define LB_FLUID_BC_Y_M_DENSITY
@@ -136,7 +136,7 @@
 Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_FINITE_VOLUME
 #define METHOD_STREAMING
-//#define METHOD_TRT
+#define METHOD_TRT
 //#define METHOD_REDEFINED_POP
 //#define METHOD_LOG
 //#define METHOD_EXPONENTIAL
@@ -160,7 +160,7 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define METHOD_CORRECTION_LATT
 
 /* TEMPERATURE */
-#define LB_TEMPERATURE
+//#define LB_TEMPERATURE
 //#define LB_TEMPERATURE_PAST
 //#define LB_TEMPERATURE_FLUCTUATION
 //#define LB_TEMPERATURE_INITIAL_LINEAR
@@ -175,17 +175,17 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LB_TEMPERATURE_INITIAL_SPOT
 //#define LB_TEMPERATURE_INITIAL_BL
 //#define LB_TEMPERATURE_INITIAL_BULK
-#define LB_TEMPERATURE_INITIAL_INTERFACE
+//#define LB_TEMPERATURE_INITIAL_INTERFACE
 //#define LB_TEMPERATURE_INITIAL_WAVE
-#define LB_TEMPERATURE_BUOYANCY
-#define LB_TEMPERATURE_BUOYANCY_T0_REF
+//#define LB_TEMPERATURE_BUOYANCY
+//#define LB_TEMPERATURE_BUOYANCY_T0_REF
 //#define LB_TEMPERATURE_BUOYANCY_T0_REF2
 //#define LB_TEMPERATURE_BUOYANCY_T0_BOT
 //#define LB_TEMPERATURE_BUOYANCY_T0_TOP
 //#define LB_TEMPERATURE_BUOYANCY_T0_GRAD
 //#define LB_TEMPERATURE_BUOYANCY_WATER
-#define LB_TEMPERATURE_BC
-#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
+//#define LB_TEMPERATURE_BC
+//#define LB_TEMPERATURE_BC_Y  /* the default bc is fixed temperature value */
 //#define LB_TEMPERATURE_BC_Y_P_OUTLET
 //#define LB_TEMPERATURE_BC_Y_P_NOFLUX
 //#define LB_TEMPERATURE_BC_Y_P_FLUX
@@ -318,8 +318,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 #define LAGRANGE_WRAP
 //#define LAGRANGE_OUTPUT_DEBUG
 //#define LAGRANGE_OUTPUT_FLUID_AVERAGES
-#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
-//#define LAGRANGE_INITIAL_VELOCITY_FLUID
+//#define LAGRANGE_INITIAL_GRID  /* works only it nparticle = ngris points */
+#define LAGRANGE_INITIAL_VELOCITY_FLUID
 //#define LAGRANGE_INITIAL_VELOCITY_STOKES
 //#define LAGRANGE_NUCLEATE
 //#define LAGRANGE_NUCLEATE_REMELT
@@ -341,11 +341,11 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_GRAVITY_VARIABLE_INCREMENT_LOG
 #define LAGRANGE_BC_INELASTIC   /* if not enabled the particle-wall collisions are elastic */
 #define LAGRANGE_BC_INELASTIC_REINJECT
-#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
+//#define LAGRANGE_BC_INELASTIC_REINJECT_NORANDOM
 //#define LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_ZERO
 //#define LAGRANGE_BC_RADIUSandDENSITY
-#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
-#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
+//#define LAGRANGE_SMALLTAUD /* approximate solution for tau_drag < 10.0 */
+//#define LAGRANGE_SMALLTAUD_BETA /* approximate solution for tau_drag < 10.0 */
 //#define LAGRANGE_SMALLTAUD_FLOATER
 //#define LAGRANGE_ORIENTATION
 //#define LAGRANGE_ORIENTATION_SECONDORIENTATION
@@ -371,8 +371,8 @@ Activate either METHOD_FINITE_VOLUME or METHOD_STREAMING */
 //#define LAGRANGE_POLYMER
 //#define LAGRANGE_POLYMER_FEEDBACK
 #define LAGRANGE_TWOWAY
-#define LAGRANGE_TWOWAY_TRICUBIC
-#define LAGRANGE_TWOWAY_SMALLTAUD
+//#define LAGRANGE_TWOWAY_TRICUBIC
+//#define LAGRANGE_TWOWAY_SMALLTAUD
 #define LAGRANGE_TWOWAY_MOMENTUM
 //#define LAGRANGE_TWOWAY_TEMPERATURE
 
