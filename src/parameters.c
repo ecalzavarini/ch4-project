@@ -158,6 +158,14 @@ void assign_parameters(){
     property.time_dump_lagr = (my_double)read_parameter(name);
     fprintf(stderr,"Time dump lagrange: %g\n",(double)property.time_dump_lagr);
     if(property.time_dump_lagr < property.time_dt){ fprintf(stderr," WARNING! property.time_dump_lagr < property.time_dt , please change it.\n"); exit(-1);}
+
+    sprintf(name,"time_dt_lagr_factor");
+    property.time_dt_lagr_factor = (my_double)read_parameter(name);
+    property.time_dt_lagr = property.time_dt/property.time_dt_lagr_factor;
+    fprintf(stderr,"Time step lagrange is  %g smaller than euler time step\n",(double)property.time_dt_lagr_factor);
+    fprintf(stderr,"Time step lagrange: %g\n",(double)property.time_dt_lagr);
+    if(property.time_dt_lagr > property.time_dt){ fprintf(stderr," WARNING! property.time_dt_lagr > property.time_dt , please change it.\n"); exit(-1);}
+
 #endif
 
 #ifdef LB_FLUID

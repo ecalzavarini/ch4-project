@@ -186,7 +186,7 @@ void add_particle_feedbacks(){
   /* this term is equivalent to  3 * kappa / radius^2  but here expressed in terms of tau_drag and beta */
   fac2 = property.kappa / ( property.nu * (tracer+ipart)->beta_coeff * (tracer+ipart)->tau_drag );
 
-  sp = ( (tracer+ipart)->t_p - (tracer+ipart)->t ) * fac2;
+  sp = (tracer+ipart)->Dt_t + ( (tracer+ipart)->t_p - (tracer+ipart)->t ) * fac2;
 
   #ifdef LAGRANGE_TWOWAY_TRICUBIC
     #ifdef GRID_POP_D2Q9

@@ -3001,6 +3001,9 @@ void move_particles()
     {
       (tracer + ipart)->dt_t = ((tracer + ipart)->t - (tracer + ipart)->t_old) / property.time_dt_lagr;
       (tracer + ipart)->t_old = (tracer + ipart)->t;
+      /* the following line is needed for LAGRANGE_TWOWAY_TEMPERATURE */
+      (tracer + ipart)->Dt_t = (tracer + ipart)->dt_t + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_t + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_t + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_t;
+
     }
 #endif
 #ifdef LB_SCALAR

@@ -459,7 +459,8 @@ typedef struct {
 #ifdef LB_TEMPERATURE
   my_double t;  /* temperature value */
   my_double t_old;
-  my_double dt_t;
+  my_double dt_t; /* lagrangian derivative */
+  my_double Dt_t; /* fluid material derivative */
  #ifdef LAGRANGE_GRADIENT
   my_double dx_t,dy_t,dz_t;
  #endif
