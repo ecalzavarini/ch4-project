@@ -166,6 +166,8 @@ int main(int argc, char **argv)
 		shake_ghosts();
 #endif
 		boundary_conditions_hydro();
+		/* if property.time_dt_lagr_factor we integrate particles with a smaller time step */
+		for (i_dt_lagr = 0; i_dt_lagr < (int)property.time_dt_lagr_factor; i_dt_lagr++){
 		interpolate_vector_at_particles(u, 'u');
 #ifdef LB_TEMPERATURE
 		interpolate_scalar_at_particles(t, 't');
@@ -177,6 +179,7 @@ int main(int argc, char **argv)
 		nucleate_particles(t);
 #endif
 		move_particles();
+		}/* end of for loop on lagrangian integration */
 		output_particles();		  /* binary or h5 */
 		dump_particle_averages(); /* ascii diagnostic averages */
 #endif

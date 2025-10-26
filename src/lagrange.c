@@ -2999,7 +2999,7 @@ void move_particles()
     }
     else
     {
-      (tracer + ipart)->dt_t = ((tracer + ipart)->t - (tracer + ipart)->t_old) / property.time_dt;
+      (tracer + ipart)->dt_t = ((tracer + ipart)->t - (tracer + ipart)->t_old) / property.time_dt_lagr;
       (tracer + ipart)->t_old = (tracer + ipart)->t;
     }
 #endif
@@ -3010,7 +3010,7 @@ void move_particles()
     }
     else
     {
-      (tracer + ipart)->dt_s = ((tracer + ipart)->s - (tracer + ipart)->s_old) / property.time_dt;
+      (tracer + ipart)->dt_s = ((tracer + ipart)->s - (tracer + ipart)->s_old) / property.time_dt_lagr;
       (tracer + ipart)->s_old = (tracer + ipart)->s;
     }
 #endif
@@ -3122,7 +3122,7 @@ void move_particles()
       (tracer + ipart)->vz += velocity_amplitude * ((tracer + ipart)->pz_jump);
 
       /* increase time from jump */
-      (tracer + ipart)->time_from_jump += property.time_dt;
+      (tracer + ipart)->time_from_jump += property.time_dt_lagr;
 
       //#endif /* LAGRANGE_ORIENTATION_ACTIVE_JUMP */
 #elif defined(LAGRANGE_ORIENTATION_ACTIVE_BALLISTIC)
@@ -3190,23 +3190,23 @@ void move_particles()
       }
       /* Compute tracer acceleration : if v=u as here, then a = D_t u */
       /* @ENRICO: Why compute it? Only for post-processing, or is it ever used for advecting tracers? */
-      (tracer + ipart)->ax = ((tracer + ipart)->vx - (tracer + ipart)->vx_old) / property.time_dt;
-      (tracer + ipart)->ay = ((tracer + ipart)->vy - (tracer + ipart)->vy_old) / property.time_dt;
-      (tracer + ipart)->az = ((tracer + ipart)->vz - (tracer + ipart)->vz_old) / property.time_dt;
+      (tracer + ipart)->ax = ((tracer + ipart)->vx - (tracer + ipart)->vx_old) / property.time_dt_lagr;
+      (tracer + ipart)->ay = ((tracer + ipart)->vy - (tracer + ipart)->vy_old) / property.time_dt_lagr;
+      (tracer + ipart)->az = ((tracer + ipart)->vz - (tracer + ipart)->vz_old) / property.time_dt_lagr;
 
       if (itime == 1 && resume == 0)
       {
         /* Explicit Euler 1st order */
-        (tracer + ipart)->x += property.time_dt * (tracer + ipart)->vx;
-        (tracer + ipart)->y += property.time_dt * (tracer + ipart)->vy;
-        (tracer + ipart)->z += property.time_dt * (tracer + ipart)->vz;
+        (tracer + ipart)->x += property.time_dt_lagr * (tracer + ipart)->vx;
+        (tracer + ipart)->y += property.time_dt_lagr * (tracer + ipart)->vy;
+        (tracer + ipart)->z += property.time_dt_lagr * (tracer + ipart)->vz;
       }
       else
       {
         /* Adams-Bashforth 2nd order */
-        (tracer + ipart)->x += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vx - (tracer + ipart)->vx_old);
-        (tracer + ipart)->y += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vy - (tracer + ipart)->vy_old);
-        (tracer + ipart)->z += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vz - (tracer + ipart)->vz_old);
+        (tracer + ipart)->x += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vx - (tracer + ipart)->vx_old);
+        (tracer + ipart)->y += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vy - (tracer + ipart)->vy_old);
+        (tracer + ipart)->z += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vz - (tracer + ipart)->vz_old);
       }
       /* copy particle velocity in old */
       (tracer + ipart)->vx_old = (tracer + ipart)->vx;
@@ -3342,11 +3342,11 @@ void move_particles()
         }
 
         /* Here I will write the computation of the fluid material derivative */
-        Dt_u.x = ((tracer + ipart)->ux - (tracer + ipart)->ux_old) / property.time_dt + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_ux + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_ux + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_ux;
+        Dt_u.x = ((tracer + ipart)->ux - (tracer + ipart)->ux_old) / property.time_dt_lagr + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_ux + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_ux + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_ux;
 
-        Dt_u.y = ((tracer + ipart)->uy - (tracer + ipart)->uy_old) / property.time_dt + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_uy + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_uy + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_uy;
+        Dt_u.y = ((tracer + ipart)->uy - (tracer + ipart)->uy_old) / property.time_dt_lagr + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_uy + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_uy + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_uy;
 
-        Dt_u.z = ((tracer + ipart)->uz - (tracer + ipart)->uz_old) / property.time_dt + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_uz + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_uz + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_uz;
+        Dt_u.z = ((tracer + ipart)->uz - (tracer + ipart)->uz_old) / property.time_dt_lagr + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_uz + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_uz + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_uz;
 
         (tracer + ipart)->ax += Dt_u.x * (tracer + ipart)->beta_coeff;
         (tracer + ipart)->ay += Dt_u.y * (tracer + ipart)->beta_coeff;
@@ -3377,17 +3377,39 @@ void move_particles()
       } /* end of if on addedd mass */
 #endif
 
+      /* first I advance the position in time */
       if (itime == 1 && resume == 0)
       {
-        (tracer + ipart)->vx += property.time_dt * (tracer + ipart)->ax;
-        (tracer + ipart)->vy += property.time_dt * (tracer + ipart)->ay;
-        (tracer + ipart)->vz += property.time_dt * (tracer + ipart)->az;
+        (tracer + ipart)->x += property.time_dt_lagr * (tracer + ipart)->vx;
+        (tracer + ipart)->y += property.time_dt_lagr * (tracer + ipart)->vy;
+        (tracer + ipart)->z += property.time_dt_lagr * (tracer + ipart)->vz;
       }
       else
       {
-        (tracer + ipart)->vx += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->ax - (tracer + ipart)->ax_old);
-        (tracer + ipart)->vy += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->ay - (tracer + ipart)->ay_old);
-        (tracer + ipart)->vz += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->az - (tracer + ipart)->az_old);
+        (tracer + ipart)->x += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vx - (tracer + ipart)->vx_old);
+        (tracer + ipart)->y += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vy - (tracer + ipart)->vy_old);
+        (tracer + ipart)->z += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->vz - (tracer + ipart)->vz_old);
+      }
+      (tracer + ipart)->vx_old = (tracer + ipart)->vx;
+      (tracer + ipart)->vy_old = (tracer + ipart)->vy;
+      (tracer + ipart)->vz_old = (tracer + ipart)->vz;
+
+      (tracer + ipart)->ux_old = (tracer + ipart)->ux;
+      (tracer + ipart)->uy_old = (tracer + ipart)->uy;
+      (tracer + ipart)->uz_old = (tracer + ipart)->uz;
+
+      /* second I advance the velocity in time */
+      if (itime == 1 && resume == 0)
+      {
+        (tracer + ipart)->vx += property.time_dt_lagr * (tracer + ipart)->ax;
+        (tracer + ipart)->vy += property.time_dt_lagr * (tracer + ipart)->ay;
+        (tracer + ipart)->vz += property.time_dt_lagr * (tracer + ipart)->az;
+      }
+      else
+      {
+        (tracer + ipart)->vx += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->ax - (tracer + ipart)->ax_old);
+        (tracer + ipart)->vy += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->ay - (tracer + ipart)->ay_old);
+        (tracer + ipart)->vz += property.time_dt_lagr * 0.5 * (3.0 * (tracer + ipart)->az - (tracer + ipart)->az_old);
       }
 
       (tracer + ipart)->ax_old = (tracer + ipart)->ax;
@@ -3434,26 +3456,6 @@ void move_particles()
       }
       #endif /* LAGRANGE_SMALLTAUD_FLOATER  */
     #endif /* LAGRANGE_SMALLTAUD */
-
-      if (itime == 1 && resume == 0)
-      {
-        (tracer + ipart)->x += property.time_dt * (tracer + ipart)->vx;
-        (tracer + ipart)->y += property.time_dt * (tracer + ipart)->vy;
-        (tracer + ipart)->z += property.time_dt * (tracer + ipart)->vz;
-      }
-      else
-      {
-        (tracer + ipart)->x += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vx - (tracer + ipart)->vx_old);
-        (tracer + ipart)->y += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vy - (tracer + ipart)->vy_old);
-        (tracer + ipart)->z += property.time_dt * 0.5 * (3.0 * (tracer + ipart)->vz - (tracer + ipart)->vz_old);
-      }
-      (tracer + ipart)->vx_old = (tracer + ipart)->vx;
-      (tracer + ipart)->vy_old = (tracer + ipart)->vy;
-      (tracer + ipart)->vz_old = (tracer + ipart)->vz;
-
-      (tracer + ipart)->ux_old = (tracer + ipart)->ux;
-      (tracer + ipart)->uy_old = (tracer + ipart)->uy;
-      (tracer + ipart)->uz_old = (tracer + ipart)->uz;
 
     } /* end of if on tau_drag different from zero */
 
@@ -3625,7 +3627,7 @@ void move_particles()
     {
       for (i = 0; i < 3; i++)
       {
-        vecP[i] = vecP[i] + property.time_dt * vecF[i];
+        vecP[i] = vecP[i] + property.time_dt_lagr * vecF[i];
         /* copy the old term */
         vecFold[i] = vecF[i];
       }
@@ -3635,7 +3637,7 @@ void move_particles()
       /* AB 2nd order G = G0 + (DT/2)*(3*F - Fold)  */
       for (i = 0; i < 3; i++)
       {
-        vecP[i] = vecP[i] + 0.5 * property.time_dt * (3. * vecF[i] - vecFold[i]);
+        vecP[i] = vecP[i] + 0.5 * property.time_dt_lagr * (3. * vecF[i] - vecFold[i]);
         /* copy the old term */
         vecFold[i] = vecF[i];
       }
@@ -3648,7 +3650,7 @@ void move_particles()
     {
       for (i = 0; i < 3; i++)
       {
-        vecN[i] = vecN[i] + property.time_dt * vecFN[i];
+        vecN[i] = vecN[i] + property.time_dt_lagr * vecFN[i];
         /* copy the old term */
         vecFNold[i] = vecFN[i];
       }
@@ -3658,7 +3660,7 @@ void move_particles()
       /* AB 2nd order G = G0 + (DT/2)*(3*F - Fold)  */
       for (i = 0; i < 3; i++)
       {
-        vecN[i] = vecN[i] + 0.5 * property.time_dt * (3. * vecFN[i] - vecFNold[i]);
+        vecN[i] = vecN[i] + 0.5 * property.time_dt_lagr * (3. * vecFN[i] - vecFNold[i]);
         /* copy the old term */
         vecFNold[i] = vecFN[i];
       }
@@ -3682,7 +3684,7 @@ void move_particles()
     two_d_r = 2.0 * (tracer + ipart)->rotational_diffusion;
     /* stochastic part of the rotation equation */
     for (i = 0; i < 3; i++)
-      vecP[i] += sqrt(two_d_r * property.time_dt) * vecTMP[i];
+      vecP[i] += sqrt(two_d_r * property.time_dt_lagr) * vecTMP[i];
 #endif /* LAGRANGE_ORIENTATION_DIFFUSION */
 
 #ifdef LAGRANGE_ORIENTATION_RANDOM
@@ -3697,9 +3699,9 @@ void move_particles()
     vecP[2] = vec.z;
 
     /* compute acceleration */
-    vecFold[0] = (vecP[0] - (tracer + ipart)->px) / property.time_dt;
-    vecFold[1] = (vecP[1] - (tracer + ipart)->py) / property.time_dt;
-    vecFold[2] = (vecP[2] - (tracer + ipart)->pz) / property.time_dt;
+    vecFold[0] = (vecP[0] - (tracer + ipart)->px) / property.time_dt_lagr;
+    vecFold[1] = (vecP[1] - (tracer + ipart)->py) / property.time_dt_lagr;
+    vecFold[2] = (vecP[2] - (tracer + ipart)->pz) / property.time_dt_lagr;
 #endif /* LAGRANGE_ORIENTATION_RANDOM */
 
     /* normalize P vector */
@@ -3994,7 +3996,7 @@ radius = 0.0;
   /*  (1/cp_p) * (kappa / nu ) * (2/(3-beta)) * 1/tau_drag  */
   fac1 =  ( property.kappa * 2.0 ) / ( (tracer+ipart)->tau_drag * property.nu * (tracer + ipart)->cp_p * (3 - (tracer+ipart)->beta_coeff )  );
   /* multiplied it by the time step delta_t */
-  fac1 *= property.time_dt;
+  fac1 *= property.time_dt_lagr;
   //fprintf(stderr,"thermal relaxation time not ok fac1 %e",fac1);
   /* first order eq, the exponenttial part is treated explicitly for better accuracy */
   /* the eq is d_t T_p = (T-T_p)/tau_heat  */

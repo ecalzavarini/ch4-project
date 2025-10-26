@@ -170,6 +170,7 @@ typedef struct {
 #endif /* end of LB_FLUID */
 
 #ifdef LAGRANGE
+  my_double time_dt_lagr_factor, time_dt_lagr;
   my_double time_dump_lagr;
   my_double particle_number;
   my_double particle_types; 

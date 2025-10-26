@@ -315,6 +315,7 @@ my_double t1,t2,tick;
 #ifdef LAGRANGE
 point_particle *tracer , *tracer_here, *tracer_there, *all_tracer_there;
 int npart;
+int i_dt_lagr;
     #ifdef LAGRANGE_NUCLEATE 
     my_double sol_frac, delT_ref;
     int ngrave;

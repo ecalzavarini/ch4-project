@@ -314,6 +314,7 @@ extern my_double t1,t2,tick;
 #ifdef LAGRANGE
 extern point_particle *tracer , *tracer_here, *tracer_there, *all_tracer_there;
 extern int npart;
+extern int i_dt_lagr;
   #ifdef LAGRANGE_NUCLEATE
     extern my_double sol_frac, delT_ref;
     extern int ngrave;

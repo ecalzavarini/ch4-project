@@ -13,7 +13,7 @@ SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 100000.
+time_end 200000.
 time_dump_field 1000.
 time_dump_diagn 100.
 
@@ -52,7 +52,7 @@ beta2_t 0.0
 noise_t 0.0 1.e-2
 
 gravity_x 0.0
-gravity_y 1.e-5 
+gravity_y 1.e-6 
 gravity_z 0.0
 
 Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333
@@ -86,24 +86,25 @@ background_turbidity	0.04
 phytoplankton_specific_light_attenuation	3.75E-10
 incident_light_intensity	1.4
 
+time_dt_lagr_factor 5
 time_dump_lagr 1000
-particle_number 1000
+particle_number 10000
 
 particle_radius_types 1
-particle_radius_min 0.125
-particle_radius_max 0.125
+particle_radius_min 0.2
+particle_radius_max 0.2
 
 particle_density_types 1
-particle_density_min 0.8 0.001 
-particle_density_max 0.8 0.001 
+particle_density_min 0.1 1.0 1.2 
+particle_density_max 0.1 1.0 1.2 
 
 tau_drag_types 1
-tau_drag_min 200
-tau_drag_max 200
+tau_drag_min 64
+tau_drag_max 64
 
 beta_coeff_types 1
-beta_coeff_min 0.95
-beta_coeff_max 0.95
+beta_coeff_min 3.0 0.95
+beta_coeff_max 3.0 0.95
 
 gravity_coeff_types 1
 gravity_coeff_min 10.
