@@ -1146,9 +1146,18 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 	    ff_eq_plus.p[pp]  = 0.5*(ff_eq.p[pp] + ff_eq.p[inv[pp]]);
 	    ff_eq_minus.p[pp] = 0.5*(ff_eq.p[pp] - ff_eq.p[inv[pp]]);
 	    ff_plus.p[pp]  = 0.5*(f[IDX(i,j,k)].p[pp] + f[IDX(i,j,k)].p[inv[pp]]);
-	    ff_minus.p[pp] = 0.5*(f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[inv[pp]]);		
-	fcoll.p[pp] = -invtau * (ff_plus.p[pp] - ff_eq_plus.p[pp]) -invtau_minus * (ff_minus.p[pp] - ff_eq_minus.p[pp]);
+	    ff_minus.p[pp] = 0.5*(f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[inv[pp]]);
+      if(which_pop == 'f'){  
+        /* we are dealing with the velocity so the symmetric (=plus) relaxation time is related to the viscosity 
+        through the usual relation nu = (tau-0.5)/3  */  		
+	      fcoll.p[pp] = -invtau * (ff_plus.p[pp] - ff_eq_plus.p[pp]) -invtau_minus * (ff_minus.p[pp] - ff_eq_minus.p[pp]);
+      }else{
+        /* we are dealing with a scalar field so the antisymmetric (=minus) relaxation time is related to the viscosity 
+        through the usual relation kappa = (tau-0.5)/3 , hence we swich the two times 
+        (because for better clarity we want the diffusivity to be relatedto the tau set in param.in) */  
+        fcoll.p[pp] = -invtau_minus * (ff_plus.p[pp] - ff_eq_plus.p[pp]) -invtau * (ff_minus.p[pp] - ff_eq_minus.p[pp]);
       }
+    }
   #else
 	/* This is single relaxation time SRT */
        	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
