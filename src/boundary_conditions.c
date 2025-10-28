@@ -562,7 +562,7 @@ t0 = t0_all = 0.0;
     if(norm !=0.0){
      t0_all *= norm;
     }
-	if(ROOT)fprintf(stderr,"t0_all = %e, property.T_ref = %e\n",t0_all,property.T_ref);
+	//if(ROOT)fprintf(stderr,"t0_all = %e, property.T_ref = %e\n",t0_all,property.T_ref);
 	//property.grad_T_top = property.grad_T_top - t0_all/(property.kappa*property.SX*property.SZ);
 	property.grad_T_top = property.grad_T_top - (t0_all-property.T_ref)/(property.kappa*property.SX*property.SZ);
 
