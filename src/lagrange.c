@@ -1565,6 +1565,7 @@ void interpolate_scalar_at_particles(my_double *f, char which_scalar)
              grad_ip_jp_kp.z * vol_im_jm_km;
 
 #ifdef LB_TEMPERATURE
+  #ifdef LAGRANGE_GRADIENT
     /* if it is the temperature */
     if (which_scalar == 't')
     {
@@ -1572,6 +1573,7 @@ void interpolate_scalar_at_particles(my_double *f, char which_scalar)
       (tracer + ipart)->dy_t = grad.y;
       (tracer + ipart)->dz_t = grad.z;
     }
+  #endif
 #endif
 
 #ifdef LB_SCALAR
@@ -3001,9 +3003,10 @@ void move_particles()
     {
       (tracer + ipart)->dt_t = ((tracer + ipart)->t - (tracer + ipart)->t_old) / property.time_dt_lagr;
       (tracer + ipart)->t_old = (tracer + ipart)->t;
+      #ifdef LAGRANGE_GRADIENT
       /* the following line is needed for LAGRANGE_TWOWAY_TEMPERATURE */
       (tracer + ipart)->Dt_t = (tracer + ipart)->dt_t + ((tracer + ipart)->ux - (tracer + ipart)->vx) * (tracer + ipart)->dx_t + ((tracer + ipart)->uy - (tracer + ipart)->vy) * (tracer + ipart)->dy_t + ((tracer + ipart)->uz - (tracer + ipart)->vz) * (tracer + ipart)->dz_t;
-
+      #endif
     }
 #endif
 #ifdef LB_SCALAR
