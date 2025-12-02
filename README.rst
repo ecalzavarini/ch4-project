@@ -6,7 +6,7 @@ Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann metho
    :widths: 50 50
    :header-rows: 0
 
-   * - .. image:: figs/logoch4.jpg
+   * - .. image:: figs/logoch4_v2.jpg
          :width: 300px
          :alt: visualization of the dissipation field of a passive scalar in turbulence
      - .. image:: figs/passive-scalar.jpg
