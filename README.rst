@@ -1,5 +1,5 @@
 ==========================
-Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann method
+Lattice-Boltzmann–Based Eulerian–Lagrangian CFD Platform
 ==========================
 
 .. list-table:: 
@@ -9,7 +9,7 @@ Eulerian-Lagrangian fluid dynamics platform based on the Lattice-Boltzmann metho
    * - .. image:: figs/logoch4_v2.jpg
          :width: 300px
          :alt: visualization of the dissipation field of a passive scalar in turbulence
-     - .. image:: figs/passive-scalar.jpg
+     - .. image:: figs/logoch4.jpg
          :width: 300px
          :alt: just a logo
 
