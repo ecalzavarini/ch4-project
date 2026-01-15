@@ -3454,7 +3454,9 @@ void move_particles()
         (tracer + ipart)->vy = (tracer + ipart)->uy;
         (tracer + ipart)->vz = (tracer + ipart)->uz;
 
-        fac1 = (tracer + ipart)->tau_drag * (1.0 - (tracer + ipart)->beta_coeff + 2./3. * property.beta_t*((tracer + ipart)->t - property.T_ref)); 
+        //fac1 = (tracer + ipart)->tau_drag * (1.0 - (tracer + ipart)->beta_coeff + 2./3. * property.beta_t*((tracer + ipart)->t - property.T_ref)); 
+        fac1 = (tracer + ipart)->tau_drag * (1.0 - (tracer + ipart)->beta_coeff + 2./3. * property.beta_t*((tracer + ipart)->t - 0.4)); 
+        
         /* note that the orientation of gravity is not included in property.gravity , so we have to add it explicitely */
         (tracer + ipart)->vx += fac1*(-property.gravity_x - (tracer + ipart)->Dt_ux);
         (tracer + ipart)->vy += fac1*(-property.gravity_y - (tracer + ipart)->Dt_uy);
@@ -3829,6 +3831,11 @@ radius = 0.0;
         (tracer + ipart)->vz = -property.gravity_z * (1.0 - (tracer + ipart)->beta_coeff) * (tracer + ipart)->tau_drag;
         #endif
       #endif
+      #ifdef LAGRANGE_BC_INELASTIC_REINJECT_VELOCITY_STOKES_HALF
+        (tracer + ipart)->vx /= 2.0; 
+        (tracer + ipart)->vy /= 2.0;
+        (tracer + ipart)->vz /= 2.0;
+      #endif  
       #ifdef LAGRANGE_TEMPERATURE
       /* the reinjected particle takes the temperature of the wall */
       (tracer + ipart)->t_p = property.T_top;
