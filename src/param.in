@@ -1,62 +1,62 @@
-resume 0
-resume_u 0
-resume_t 0
+resume 1
+resume_u 1
+resume_t 1
 resume_s 0
 
-NX 120
-NY 120
+NX 64
+NY 75
 NZ 1
 
-SX 120
-SY 120
+SX 64
+SY 75
 SZ 1
 
 time_dt 1.0
 time_start 0.
-time_end 200000.
+time_end 2000000.
 time_dump_field 1000.
-time_dump_diagn 100.
+time_dump_diagn 500.
 
-tau_u 0.5005 0.5001 0.500875 0.500125 0.5001
+tau_u 0.536 0.5005 0.5001 0.500875 0.500125 0.5001
 nu_add 0.0001
 
-ym_wall_velocity_x 0.1
+ym_wall_velocity_x 0.
 ym_wall_velocity_z 0
-yp_wall_velocity_x 0.01
+yp_wall_velocity_x 0.
 yp_wall_velocity_z 0
-yp_wall_gradient_velocity_x 5.e-3
+yp_wall_gradient_velocity_x 0
 yp_wall_gradient_velocity_z 0
 
-Amp_x 1.e-2
+Amp_x 0.00
 Amp_y 0.00
 Amp_z 0.00
 
 Omega_x 0.00
-Omega_y 0.01
+Omega_y 0.00
 Omega_z 0.00
 
 noise_u 1.e-1
 
-tau_t 0.500125 0.5001
+tau_t 0.505 0.6 0.500125 0.5001
 
-T_bot  1.0
-T_top -1.0
+T_bot -1.0
+T_top  1.0
 T_ref  0.0
-T_ref2 0.0
-grad_T_bot 0.01  -0.0078125
-grad_T_top -11.7994552008428  -0.0078125
+T_ref2 0.4
+grad_T_bot 0.09375  
+grad_T_top -7.119102e-01 -6.996225e-01  -7.089221e-01   
 
-beta_t  0.05 
+beta_t  0.00016
 beta2_t 0.0
 
-noise_t 0.0 1.e-2
+noise_t 0.0 3.e-5
 
 gravity_x 0.0
-gravity_y 1.e-6 
+gravity_y 1.0 1.e-6 
 gravity_z 0.0
 
-Amp_t 0.02  0.0016  3.91971e-05   0.00005  0.00130208333333333
-attenuation 0.025
+Amp_t 0.0016  3.91971e-05   0.00005  0.00130208333333333
+attenuation 0.1
 
 T_solid -0.5
 latent_heat 1
@@ -86,9 +86,9 @@ background_turbidity	0.04
 phytoplankton_specific_light_attenuation	3.75E-10
 incident_light_intensity	1.4
 
-time_dt_lagr_factor 5
+time_dt_lagr_factor 1
 time_dump_lagr 1000
-particle_number 10000
+particle_number 5000
 
 particle_radius_types 1
 particle_radius_min 0.2
@@ -99,12 +99,12 @@ particle_density_min 0.1 1.0 1.2
 particle_density_max 0.1 1.0 1.2 
 
 tau_drag_types 1
-tau_drag_min 64
-tau_drag_max 64
+tau_drag_min 0.5
+tau_drag_max 0.5
 
 beta_coeff_types 1
-beta_coeff_min 3.0 0.95
-beta_coeff_max 3.0 0.95
+beta_coeff_min 1.0 3.0 0.95
+beta_coeff_max 1.0 3.0 0.95
 
 gravity_coeff_types 1
 gravity_coeff_min 10.

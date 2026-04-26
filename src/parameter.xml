@@ -103,8 +103,6 @@
       <!-- (3) METHOD_REDEFINED_POP_GUO this is a fragile-comment-->
       <core name="GUO" file=""/>
     </core>
-    <!-- (2) METHOD_LOG this is a fragile-comment-->
-    <core name="LOG" file=""/>
     <!-- (2) METHOD_EXPONENTIAL this is a fragile-comment-->
     <core name="EXPONENTIAL" file=""/>
     <!-- (2) METHOD_STEPPING this is a fragile-comment-->

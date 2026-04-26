@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 #f = h5py.File('../Data/RUN/field_500.h5', 'r')
-f = h5py.File('field_5000.h5','r')
+f = h5py.File('field_100000.h5','r')
 t=np.array(f['euler']['temperature'])
 vx=np.array(f['euler']['velocity_x'])
 vy=np.array(f['euler']['velocity_y'])

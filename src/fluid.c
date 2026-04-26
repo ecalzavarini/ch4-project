@@ -1162,11 +1162,6 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 	/* This is single relaxation time SRT */
        	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] = -invtau * (f[IDX(i,j,k)].p[pp] - ff_eq.p[pp]);
   #endif
-
-#ifdef METHOD_LOG
-	for (pp=0; pp<NPOP; pp++) fcoll.p[pp] =  ( exp(invtau*(ff_eq.p[pp] - f[IDX(i,j,k)].p[pp]) ) - 1.0);
-#endif
-
 #endif
      
 #if (defined METHOD_MYQUICK && defined METHOD_TRAPEZOID)

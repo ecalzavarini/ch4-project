@@ -386,11 +386,7 @@ pop equilibrium(pop * f, int i, int j, int k){
 	my_double       cu, u2;
 	pop             f_eq;
 
-#ifdef METHOD_LOG
-	rhof = m(f[IDX(i, j, k)],1./property.tau_u);
-#else
 	rhof = m(f[IDX(i, j, k)]);
-#endif
 	ux = u[IDX(i, j, k)].x;
 	uy = u[IDX(i, j, k)].y;
 	uz = u[IDX(i, j, k)].z;				
@@ -401,12 +397,6 @@ pop equilibrium(pop * f, int i, int j, int k){
 	for (pp = 0; pp < NPOP; pp++) {
 		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
 		f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + invtwocs4 * cu * cu - invtwocs2 * u2);
-
-		
-#ifdef METHOD_LOG
-		f_eq.p[pp] = property.tau_u*log(f_eq.p[pp]);
-#endif
-		
 	}
 
 	//fprintf(stderr,"i %d j %d k %d\n",i,j,k);
@@ -441,12 +431,6 @@ void hydro_fields(char which_pop){
 			   old_u[IDX(i, j, k)].z = u[IDX(i, j, k)].z;
 			   old_dens[IDX(i, j, k)] = dens[IDX(i, j, k)];
  #endif
-#ifdef METHOD_LOG
-			  dens[IDX(i, j, k)] = m(p[IDX(i, j, k)],1./property.tau_u);			       
-			  u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
-			  u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
-			  u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)],1./property.tau_u) / dens[IDX(i, j, k)];
-#else
 				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
 
 				#ifndef METHOD_FORCING_GUO
@@ -470,7 +454,7 @@ void hydro_fields(char which_pop){
 				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
 				 #endif
 				#endif
-#endif
+
 
 			  }
 #endif
