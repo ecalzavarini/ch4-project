@@ -1579,7 +1579,7 @@ void temperature_cht(pop *g1, my_double *liquid_frac, vector * U_vec, my_double 
 	  for(j=BRD;j<LNY+BRD;j++){
 		  for(i=BRD;i<LNX+BRD;i++){  
 		idx0 = IDX (i, j, k);
-		geq=equilibrium(g,i,j,k);
+		geq = equilibrium(g,i,j,k);
 		u=U_vec[idx0].x;
 		v=U_vec[idx0].y;
 		w=U_vec[idx0].z;

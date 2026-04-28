@@ -590,7 +590,7 @@ void time_stepping(pop *f, pop *rhs_f, pop *old_rhs_f, pop *old_old_rhs_f,my_dou
       for(i=BRD;i<LNX+BRD;i++){ 
 
 #ifdef DEBUG_HARD
-	//f_eq=equilibrium(f,i,j,k);
+	//f_eq = equilibrium(f,i,j,k);
 #endif
       
 

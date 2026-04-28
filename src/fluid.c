@@ -55,7 +55,7 @@ void compute_advection(pop *f, pop *rhs_f, my_double tau, pop *f_eq, char which_
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
     for(i=BRD;i<LNX+BRD;i++){ 
-      	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
+      	f_eq[IDX(i,j,k)] = equilibrium(f,i,j,k);
       }
   /* send the borders, needed to compute the advection */ 
  // OUT     sendrecv_borders_pop(f_eq);
@@ -141,7 +141,7 @@ fac = 0.5*property.time_dt;
  for(k=BRD;k<LNZ+BRD;k++)
    for(j=BRD;j<LNY+BRD;j++)
     for(i=BRD;i<LNX+BRD;i++){ 
-      	f_eq[IDX(i,j,k)]=equilibrium(f,i,j,k);
+      	f_eq[IDX(i,j,k)] = equilibrium(f,i,j,k);
       }
 
 #ifdef LB_FLUID_BC
@@ -1122,7 +1122,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
  #else     
-	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+	ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
  #endif
   }  
 #else /* if LB_SCALAR_SETTLING_HUISMAN is NOT defined */
@@ -1130,7 +1130,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
  #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
  #else     
-	ff_eq=equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+	ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
  #endif
 #endif
 
@@ -1147,7 +1147,7 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 	    ff_eq_minus.p[pp] = 0.5*(ff_eq.p[pp] - ff_eq.p[inv[pp]]);
 	    ff_plus.p[pp]  = 0.5*(f[IDX(i,j,k)].p[pp] + f[IDX(i,j,k)].p[inv[pp]]);
 	    ff_minus.p[pp] = 0.5*(f[IDX(i,j,k)].p[pp] - f[IDX(i,j,k)].p[inv[pp]]);
-      if(which_pop == 'f'){  
+      if(which_pop == 'p'){  
         /* we are dealing with the velocity so the symmetric (=plus) relaxation time is related to the viscosity 
         through the usual relation nu = (tau-0.5)/3  */  		
 	      fcoll.p[pp] = -invtau * (ff_plus.p[pp] - ff_eq_plus.p[pp]) -invtau_minus * (ff_minus.p[pp] - ff_eq_minus.p[pp]);

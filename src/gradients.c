@@ -18,7 +18,7 @@ tensor strain_tensor(pop *f,int i, int j, int k){
   S.zx = S.zy = S.zz = 0.0;
 
       /* equilibrium distribution */
-   f_eq=equilibrium(f,i,j,k);
+   f_eq = equilibrium(f,i,j,k);
 
       for (pp=0; pp<NPOP; pp++){
 	S.xx += fac*c[pp].x*c[pp].x*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
@@ -50,7 +50,7 @@ tensor stress_tensor(pop *f,int i, int j, int k){
   S.zx = S.zy = S.zz = 0.0;
 
       /* equilibrium distribution */
-   f_eq=equilibrium(f,i,j,k);
+   f_eq = equilibrium(f,i,j,k);
 
       for (pp=0; pp<NPOP; pp++){
 	S.xx += c[pp].x*c[pp].x*(f[IDX(i,j,k)].p[pp] - f_eq.p[pp]);
