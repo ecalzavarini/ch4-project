@@ -1110,31 +1110,66 @@ void add_collision(pop *f, pop *rhs_f, my_double tau,pop *f_eq,char which_pop){
 #endif
 
   
+  if( which_pop == 'h' ){
+    #ifdef LB_SCALAR_SETTLING_HUISMAN
+        /* compute eq. function for scalar on the sum of two velocities u + settling_velocity */
+        auxiliary_velocity.x = u[IDX(i,j,k)].x;
+        auxiliary_velocity.y = u[IDX(i,j,k)].y - property.settling_velocity;
+        auxiliary_velocity.z = u[IDX(i,j,k)].z;   
+        ff_eq =  equilibrium_given_velocity(auxiliary_velocity , s[IDX(i,j,k)] );
+    #else
+        #ifdef METHOD_REDEFINED_POP
+            ff_eq = f_eq[IDX(i,j,k)];
+        #else     
+            ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+        #endif
+    #endif
+}   
+  
+   if( which_pop == 'g' ){
+        #ifdef METHOD_REDEFINED_POP
+            ff_eq = f_eq[IDX(i,j,k)];
+        #else     
+            ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+        #endif
+ }    
+  
+  if( which_pop == 'p' ){
+        #ifdef METHOD_REDEFINED_POP
+            ff_eq = f_eq[IDX(i,j,k)];
+        #else     
+            ff_eq = equilibrium_fluid(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case 
+                                                    and equilibrium option for fluid such as LB_FLUID_POROSITY */
+        #endif
+ }  
+
+
+/* 
+// OLD implementation (was ok)
 #ifdef LB_SCALAR_SETTLING_HUISMAN
-	/* compute eq. function for scalar on the sum of two velocities u + settling_velocity */
+	// compute eq. function for scalar on the sum of two velocities u + settling_velocity 
   if( which_pop == 'h' ){
     auxiliary_velocity.x = u[IDX(i,j,k)].x;
     auxiliary_velocity.y = u[IDX(i,j,k)].y - property.settling_velocity;
     auxiliary_velocity.z = u[IDX(i,j,k)].z;   
     ff_eq =  equilibrium_given_velocity(auxiliary_velocity , s[IDX(i,j,k)] );
   }else{
-    /* this is for the other populations (velocity and temperature */
+    // this is for the other populations (velocity and temperature 
  #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
  #else     
-	ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+	ff_eq = equilibrium(f,i,j,k);  // this is the calculation in the classic STREAMING algorithm case 
  #endif
   }  
-#else /* if LB_SCALAR_SETTLING_HUISMAN is NOT defined */
-  /* for all the populations */
+#else //  if LB_SCALAR_SETTLING_HUISMAN is NOT defined 
+  //  for all the populations 
  #ifdef METHOD_REDEFINED_POP
 	ff_eq = f_eq[IDX(i,j,k)];
  #else     
-	ff_eq = equilibrium(f,i,j,k);  /* this is the calculation in the classic STREAMING algorithm case */
+	ff_eq = equilibrium(f,i,j,k);  //  this is the calculation in the classic STREAMING algorithm case 
  #endif
 #endif
-
-	
+*/ 
 
 #ifndef METHOD_EXPONENTIAL
   #ifdef METHOD_TRT

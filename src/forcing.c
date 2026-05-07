@@ -18,6 +18,7 @@ void build_forcing(){
   my_double t0,t0_all , temp_linear, t_turnover,phi_diffusivity,t0_coeff;
   my_double s0,s0_all,s0_coeff;
   my_double local_depth, radiation_at_bottom, reflection_ceff,lf; 
+  my_double coeffK;
   //local_depth = property.SY: the depth of the fluid layer; 
   //reflection_ceff: determines the albedo,it shall be given as an external parameter;
   my_double radiation_at_bottom1,radiation_at_bottom2,radiation_at_bottom3,radiation_at_bottom4;
@@ -755,6 +756,31 @@ void build_forcing(){
  
  #endif /* endif of LB_FLUID_FORCING_PENALIZATION */
 
+ #ifdef LB_FLUID_POROSITY 
+  /* we weight (reduce) the value of the forcing according to the local porosity*/
+  force[IDX(i,j,k)].x *= porosity[IDX(i,j,k)];  
+	force[IDX(i,j,k)].y *= porosity[IDX(i,j,k)];
+	force[IDX(i,j,k)].z *= porosity[IDX(i,j,k)];
+  /* copy the force here for future usage */
+   force_without_resistance[IDX(i,j,k)].x = force[IDX(i,j,k)].x;  
+	 force_without_resistance[IDX(i,j,k)].y = force[IDX(i,j,k)].y;
+	 force_without_resistance[IDX(i,j,k)].z = force[IDX(i,j,k)].z;
+  /* Implement Darcy force */
+   coeffK = permeability(i,j,k); 
+   fac = porosity[IDX(i,j,k)]*property.nu*property.nufluid_over_nueff/coeffK; 
+   force[IDX(i,j,k)].x = -fac*u[IDX(i,j,k)].x;  
+	 force[IDX(i,j,k)].y = -fac*u[IDX(i,j,k)].y;
+	 force[IDX(i,j,k)].z = -fac*u[IDX(i,j,k)].z;	
+  #ifdef LB_FLUID_POROSITY_FORCHEIMER 
+   /* Implement Forcheimer non-linear term */
+   fac = porosity[IDX(i,j,k)]*forcheimer_coeff(i,j,k)/sqrt(coeffK); 
+   fac *= sqrt( u[IDX(i,j,k)].x*u[IDX(i,j,k)].x + u[IDX(i,j,k)].y*u[IDX(i,j,k)].y + u[IDX(i,j,k)].z*u[IDX(i,j,k)].z );
+   force[IDX(i,j,k)].x = -fac*u[IDX(i,j,k)].x;  
+	 force[IDX(i,j,k)].y = -fac*u[IDX(i,j,k)].y;
+	 force[IDX(i,j,k)].z = -fac*u[IDX(i,j,k)].z;	 
+  #endif      	
+ #endif /* end LB_FLUID_POROSITY */
+
 
       /* Set forcing to zero if the domain has no thickness (e.g. in 2 dimensions , just 1 grid points in z-direction ) */
       /* TO BE REMOVED, causes problems to 1,50,1 poiseuillle flow */
@@ -1412,6 +1438,22 @@ invtau_s = 1.0/property.tau_s;//tau_s: Parameters for the scalar field
   #endif
  #endif
 
+  #ifdef LB_FLUID_POROSITY
+  /* This is METHOD_FORCING_GUO with POROSITY */
+  rho = dens[IDX(i,j,k)];  
+	ux=u[IDX(i,j,k)].x;
+	uy=u[IDX(i,j,k)].y;
+	uz=u[IDX(i,j,k)].z;
+  my_double inv_porosity = 1.0/porosity[IDX(i, j, k)];
+        cu = (c[pp].x*ux + c[pp].y*uy + c[pp].z*uz);
+        d.x = c[pp].x*invcs2-(ux*invcs2 + c[pp].x*cu*invcs4)*inv_porosity;
+        d.y = c[pp].y*invcs2-(uy*invcs2 + c[pp].y*cu*invcs4)*inv_porosity;
+        d.z = c[pp].z*invcs2-(uz*invcs2 + c[pp].z*cu*invcs4)*inv_porosity;
+		
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
+       rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;
+  #else
 	/* This is METHOD_FORCING_GUO */    
 	rho = dens[IDX(i,j,k)];  
 	ux=u[IDX(i,j,k)].x;
@@ -1425,6 +1467,7 @@ invtau_s = 1.0/property.tau_s;//tau_s: Parameters for the scalar field
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].x*d.x;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].y*d.y;
        rhs_p[IDX(i,j,k)].p[pp] += fac*wgt[pp]*rho*force[IDX(i,j,k)].z*d.z;
+  #endif
 	    
 #endif
 

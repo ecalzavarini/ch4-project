@@ -378,7 +378,7 @@ void design_lb(){
 
 }
 
-
+/* generic LB equilibrium distribution function */
 pop equilibrium(pop * f, int i, int j, int k){
 	int             pp;
 	my_double       ux, uy, uz;
@@ -404,6 +404,53 @@ pop equilibrium(pop * f, int i, int j, int k){
 	return f_eq;
 }
 
+/* specific equilibrium distribution function for the fluid flow populations */
+pop equilibrium_fluid(pop * f, int i, int j, int k){
+	int             pp;
+	my_double       ux, uy, uz;
+	my_double       rhof;
+	my_double       cu, u2;
+	pop             f_eq;
+	#ifdef LB_FLUID_POROSITY
+	    /* porosity=1 means no solid at all, so all liquid */
+	    my_double inv_porosity = 1.0/porosity[IDX(i, j, k)];
+	#endif
+	#ifdef LB_FLUID_INCOMPRESSIBLE
+	my_double pressure;
+	#endif
+
+	rhof = m(f[IDX(i, j, k)]);
+	ux = u[IDX(i, j, k)].x;
+	uy = u[IDX(i, j, k)].y;
+	uz = u[IDX(i, j, k)].z;
+
+	u2 = (ux * ux + uy * uy + uz * uz);
+	#ifdef LB_FLUID_INCOMPRESSIBLE
+	/* implement Guo incompressible scheme
+	Z. Guo, B. Shi, and N. Wang, “Lattice bgk model for incompressible navier–stokes equation,”
+	Journal of Computational Physics, vol. 165, no. 1, pp. 288–306, 2000. 
+	doi: 10.1006/jcph.2000.6616 */
+	 pressure = ( (rhof - f[IDX(i, j, k)].p[0])*cs2 - 0.5*wgt[0]*u2 )/(1.0 - wgt[0]);	
+	#endif 
+
+	/* equilibrium distribution */
+	for (pp = 0; pp < NPOP; pp++) {
+		cu = (c[pp].x * ux + c[pp].y * uy + c[pp].z * uz);
+		#if defined(LB_FLUID_POROSITY)
+		    /* equilibrium function as in "Lattice Boltzmann model for incompressible flows through porous media"
+			   Z.Guo & T.Zhao PHYSICAL REVIEW E 66, 036304 (2002) */
+		    f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + (invtwocs4 * cu * cu - invtwocs2 * u2)*inv_porosity);
+		#elif defined(LB_FLUID_INCOMPRESSIBLE)
+			/* implement Guo incompressible scheme */
+			f_eq.p[pp] = wgt[pp] * (invcs2 * pressure + invcs2 * cu + (invtwocs4 * cu * cu - invtwocs2 * u2));
+			if (pp==0) f_eq.p[pp] -= 1.0;
+		#else
+		    f_eq.p[pp] = rhof * wgt[pp] * (1.0 + invcs2 * cu + (invtwocs4 * cu * cu - invtwocs2 * u2));
+		#endif
+	}
+
+	return f_eq;
+}
 
 
 /**************************************************/
@@ -415,7 +462,7 @@ void hydro_fields(char which_pop){
 	FILE           *fin, *fout;
 #endif
 	vector u0, u0_all;
-	my_double norm;
+	my_double norm, fac, inv_coeff0,coeffK,coeff0,coeff1;
 
 	for (i = BRD; i < LNX+BRD; i++)
 		for (j = BRD; j < LNY+BRD; j++)
@@ -423,38 +470,52 @@ void hydro_fields(char which_pop){
 
 
 #ifdef LB_FLUID
-			  if(which_pop == 'p'){
- #ifdef LB_FLUID_PAST
+		if(which_pop == 'p'){
+	#ifdef LB_FLUID_PAST
 			    /* NOTE: copy element by element is expensive, should be optimized in the future */
 			   old_u[IDX(i, j, k)].x = u[IDX(i, j, k)].x;
 			   old_u[IDX(i, j, k)].y = u[IDX(i, j, k)].y;
 			   old_u[IDX(i, j, k)].z = u[IDX(i, j, k)].z;
 			   old_dens[IDX(i, j, k)] = dens[IDX(i, j, k)];
- #endif
-				dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
-
-				#ifndef METHOD_FORCING_GUO
-				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				#else
-				 #ifdef LB_FLUID_FORCING
-				/* to be used only with METHOD_STREAMING */
-				/* TO BE USED if the force is a force */
-				//u[IDX(i, j, k)].x= ( mvx(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].x )/dens[IDX(i, j, k)];
-   				//u[IDX(i, j, k)].y= ( mvy(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].y )/dens[IDX(i, j, k)];
-				//u[IDX(i, j, k)].z= ( mvz(p[IDX(i, j, k)]) + 0.5*property.time_dt*force[IDX(i, j, k)].z )/dens[IDX(i, j, k)];
-				/* TO BE USED if the force is a force per unit mass i.e. acceleration */
-				u[IDX(i, j, k)].x= mvx(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].x ;
-   				u[IDX(i, j, k)].y= mvy(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].y ;
-				u[IDX(i, j, k)].z= mvz(p[IDX(i, j, k)])/dens[IDX(i, j, k)] + 0.5*property.time_dt*force[IDX(i, j, k)].z ;	
-				 #else
-				u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
-				 #endif
-				#endif
-
+ 	#endif
+	#ifdef LB_FLUID_INCOMPRESSIBLE
+		u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]);
+		u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]);
+		u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]);
+		dens[IDX(i, j, k)] = 1.0; /* in this case the density is constant, must be set to 1 for GUO forcing method to work */
+		/* we should store the pressure here if we want */
+	#else
+	   /* standard LB */
+		dens[IDX(i, j, k)] = m(p[IDX(i, j, k)]);
+		u[IDX(i, j, k)].x = mvx(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+		u[IDX(i, j, k)].y = mvy(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+		u[IDX(i, j, k)].z = mvz(p[IDX(i, j, k)]) / dens[IDX(i, j, k)];
+	#endif
+	#if defined(METHOD_FORCING_GUO) && defined(LB_FLUID_FORCING)
+		fac = 0.5 * property.time_dt;
+		#ifdef LB_FLUID_POROSITY 
+    	u[IDX(i, j, k)].x += fac * force_without_resistance[IDX(i, j, k)].x;
+    	u[IDX(i, j, k)].y += fac * force_without_resistance[IDX(i, j, k)].y;
+    	u[IDX(i, j, k)].z += fac * force_without_resistance[IDX(i, j, k)].z;
+		/* Darcy only */
+		coeffK = permeability(i,j,k);
+		coeff0 = 0.5*(1 + 0.5 * property.time_dt*porosity[IDX(i, j, k)]*property.nu*property.nufluid_over_nueff/coeffK);
+		fac = 1.0/(2.0*coeff0);
+		#ifdef LB_FLUID_POROSITY_FORCHEIMER
+			coeff1 = 0.5*property.time_dt*porosity[IDX(i, j, k)]*forcheimer_coeff(i,j,k)/sqrt(coeffK);
+			norm = sqrt( u[IDX(i,j,k)].x*u[IDX(i,j,k)].x + u[IDX(i,j,k)].y*u[IDX(i,j,k)].y + u[IDX(i,j,k)].z*u[IDX(i,j,k)].z );
+			fac = 1.0/(coeff0 + sqrt(coeff0*coeff0 + coeff1*norm));
+		#endif
+		u[IDX(i, j, k)].x *= fac;
+		u[IDX(i, j, k)].y *= fac;
+		u[IDX(i, j, k)].z *= fac;
+		#else
+	   /* TO BE USED if "force" is a force per unit mass i.e. acceleration */
+    	u[IDX(i, j, k)].x += fac * force[IDX(i, j, k)].x;
+    	u[IDX(i, j, k)].y += fac * force[IDX(i, j, k)].y;
+    	u[IDX(i, j, k)].z += fac * force[IDX(i, j, k)].z;
+		#endif
+	#endif
 
 			  }
 #endif
@@ -1077,6 +1138,21 @@ void copy_pop(pop *f, pop *f_copy){
 
 	}
 }
+
+#ifdef LB_FLUID_POROSITY 
+	my_double permeability(int i,int j, int k){
+		/* Kozeny–Carman permeability equation */
+		my_double por = porosity[IDX(i,j,k)];
+		my_double diameter = 1.0; /* in grid units */
+	return  pow(por, 3.0) * pow(diameter, 2.0) / ( 150 * pow(1.0 - por, 2.0) );
+	}
+
+	my_double forcheimer_coeff(int i,int j, int k){
+		/* Forcheimer geometric function  */
+		my_double por = porosity[IDX(i,j,k)];
+	return  1.75/ sqrt(150 * pow(por, 3.0)) ;
+	}	
+#endif
 
 /*******************/
 /*  END of lb.c    */

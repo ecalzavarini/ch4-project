@@ -240,6 +240,10 @@ my_double invcs, invcs2, invcs4;
   int randomization_itime;
   #endif
  #endif
+ #ifdef LB_FLUID_POROSITY
+  my_double *porosity; /* solid porosity , 1 means all fluid */
+  vector *force_without_resistance;
+ #endif
 
  #ifdef LB_FLUID_LES
   my_double *tau_u_les_total;

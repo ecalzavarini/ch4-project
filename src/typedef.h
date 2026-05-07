@@ -103,6 +103,10 @@ typedef struct {
    my_double Omega_x,Omega_y,Omega_z;
   #endif
  #endif
+ #ifdef LB_FLUID_POROSITY
+  my_double porosity_ref;
+  my_double nufluid_over_nueff;
+ #endif
  #ifdef LB_TEMPERATURE
   my_double tau_t, kappa , kappa_add;
   my_double T_bot,T_top,T_ref,T_ref2,deltaT; /* property.deltaT = property.T_bot-property.T_top; */

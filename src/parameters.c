@@ -272,6 +272,15 @@ void assign_parameters(){
   fprintf(stderr,"Properties: Omega_z %e\n",(double)property.Omega_z);
   #endif
  #endif
+ #ifdef LB_FLUID_POROSITY
+  sprintf(name,"porosity_ref");
+  property.porosity_ref = read_parameter(name);
+  fprintf(stderr,"Properties: porosity_ref %e\n",(double)property.porosity_ref);
+  
+  sprintf(name,"nufluid_over_nueff");
+  property.nufluid_over_nueff = read_parameter(name);
+  fprintf(stderr,"Properties: nufluid_over_nueff %e\n",(double)property.nufluid_over_nueff);
+ #endif
 #endif
 
 #ifdef LB_TEMPERATURE
@@ -1156,6 +1165,15 @@ interp6_xp = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD
  old_dens  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
  if(old_dens == NULL){ fprintf(stderr,"Not enough memory to allocate old_dens\n"); exit(-1);}
  set_to_zero_my_double( old_dens,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+ #endif
+ 
+ #ifdef LB_FLUID_POROSITY
+  porosity  = (my_double*) my_malloc(sizeof(my_double)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+  if(porosity == NULL){ fprintf(stderr,"Not enough memory to allocate porosity\n"); exit(-1);}
+  set_to_zero_scalar( porosity,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
+  force_without_resistance  = (vector*) my_malloc(sizeof(vector)*(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD)); 
+ if(force_without_resistance == NULL){ fprintf(stderr,"Not enough memory to allocate force_without_resistance_terms\n"); exit(-1);}
+ set_to_zero_vector( force_without_resistance,(LNX+TWO_BRD)*(LNY+TWO_BRD)*(LNZ+TWO_BRD));
  #endif
 
  #ifdef LB_FLUID_LES

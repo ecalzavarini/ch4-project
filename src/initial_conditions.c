@@ -249,6 +249,11 @@ void initial_conditions(int restart)
 	}
 #endif
 
+#ifdef LB_FLUID_POROSITY
+  /* 1 is fluid , 0 is solid */
+      /* constant porosity , just a single value */
+      porosity[IDX(i, j, k)]=property.porosity_ref; 
+#endif
 
 }/* for i,j,k */
 

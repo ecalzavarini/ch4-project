@@ -240,6 +240,10 @@ extern vector *u;
   extern int randomization_itime;
   #endif
  #endif
+ #ifdef LB_FLUID_POROSITY
+  extern my_double *porosity; /* solid porosity , 1 means all fluid */
+  extern vector *force_without_resistance;
+ #endif
 
  #ifdef LB_FLUID_LES
   my_double *tau_u_les_total;
