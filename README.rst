@@ -105,3 +105,5 @@ This code has been employed in the following published studies:
 15) *How turbulence increases the bubble–particle collision rate*, Linfeng Jiang, Dominik J. Krug, Fluid Mech. **1006**, A19 (2025). https://doi:10.1017/jfm.2025.44
 
 16) *Sea ice aging by diffusion-driven desalination*, Yihong Du, Feng Wang, Enrico Calzavarini, and Chao Sun, Phys. Rev. Lett. Phys. Rev. Lett. **135**, 104201 (2025). https://doi.org/10.1103/mct1-6hbw
+
+17) *Vertical transport and confinement of weakly buoyant particles in a convective ocean mixed-layer model*, Luz Andrea Silva-Torres, Enrico Calzavarini, Stefano Berti (2026) https://doi.org/10.48550/arXiv.2609.18400
