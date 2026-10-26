@@ -3265,6 +3265,30 @@ void move_particles()
 #endif
 #endif
 
+#ifdef LAGRANGE_ADDEDMASS
+#ifdef LAGRANGE_TWOWAY_MOMENTUM_NOSELF
+      /* Same correction as in M. Esmaily, J.A.K. Horwitz,
+          A correction scheme for two-way coupled point-particle simulations on anisotropic grids,
+          Journal of Computational Physics, Volume 375, 2018, Pages 960-982, ISSN 0021-9991,
+          https://doi.org/10.1016/j.jcp.2018.09.009.
+      */
+
+      /* Here we compute  the particle diameter from \tau */
+      /* tau = r^2/(3*\beta*\nu)  */
+      /* NOTE : this works only if beta != 0. 
+      The case beta=0 leads to diameter_p = 0, for that a specification of the particle density is needed */ 
+      diameter_p = 2.0 * sqrt((tracer + ipart)->tau_drag * 3.0 * (tracer + ipart)->beta_coeff * property.nu);
+
+      fac = (1.0 - 0.75*diameter_p);
+      if(fac>0){
+        /* add correct drag to remove selfinduced velocity */
+        (tracer + ipart)->ax /= fac;
+        (tracer + ipart)->ay /= fac;
+        (tracer + ipart)->az /= fac;
+      }
+#endif
+#endif
+
 #else
       /* Stokes drag force on a NON spherical (axisymmetric ellipsoidal) particle */
       /* same notation as in PRL 119, 254501 (2017) see also its supplementary materials */
