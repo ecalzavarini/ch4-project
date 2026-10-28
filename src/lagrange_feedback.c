@@ -350,18 +350,19 @@ void add_sendrecv_borders_scalar(my_double *f){
 	f[IDX(i,j,k+LNZ)] += zp_scalar[IDX_ZBRD(i,j,k)];
       }
 
-
+#ifdef METHOD_EDGES_AND_CORNERS
   /* First we communicate the 8 corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */
+  /* fold: ghost corners are sent, and added to the real corner of the diagonal neighbour */
 
   brd_size = BRD*BRD*BRD;
 
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_yp_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+LNZ)];
-        xp_yp_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+BRD)];
-        xp_ym_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+LNZ)];
-        xm_yp_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+LNZ)];
+        xp_yp_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)];
+        xp_yp_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k)];
+        xp_ym_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j,k+LNZ+BRD)];
+        xm_yp_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i,j+LNY+BRD,k+LNZ+BRD)];
       }
 
   MPI_Sendrecv( xp_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zp, 10,
@@ -376,14 +377,14 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)] += xm_ym_zm_corner_scalar[IDX_CORNER(i,j,k)];
-        f[IDX(i,j,k+LNZ+BRD)] += xm_ym_zp_corner_scalar[IDX_CORNER(i,j,k)];
-        f[IDX(i,j+LNY+BRD,k)] += xm_yp_zm_corner_scalar[IDX_CORNER(i,j,k)];
-        f[IDX(i+LNX+BRD,j,k)] += xp_ym_zm_corner_scalar[IDX_CORNER(i,j,k)];
-        xm_ym_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+BRD)];
-        xm_ym_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+LNZ)];
-        xm_yp_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+BRD)];
-        xp_ym_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+BRD)];
+        f[IDX(i+BRD,j+BRD,k+BRD)] += xm_ym_zm_corner_scalar[IDX_CORNER(i,j,k)];
+        f[IDX(i+BRD,j+BRD,k+LNZ)] += xm_ym_zp_corner_scalar[IDX_CORNER(i,j,k)];
+        f[IDX(i+BRD,j+LNY,k+BRD)] += xm_yp_zm_corner_scalar[IDX_CORNER(i,j,k)];
+        f[IDX(i+LNX,j+BRD,k+BRD)] += xp_ym_zm_corner_scalar[IDX_CORNER(i,j,k)];
+        xm_ym_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i,j,k)];
+        xm_ym_zp_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
+        xm_yp_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
+        xp_ym_zm_corner_scalar[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
  MPI_Sendrecv( xm_ym_zm_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym_zm, 11,
                xp_yp_zp_corner_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -397,10 +398,10 @@ void add_sendrecv_borders_scalar(my_double *f){
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)] += xp_yp_zp_corner_scalar[IDX_CORNER(i,j,k)];
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k)] += xp_yp_zm_corner_scalar[IDX_CORNER(i,j,k)];
-	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)] += xp_ym_zp_corner_scalar[IDX_CORNER(i,j,k)];
-	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)] += xm_yp_zp_corner_scalar[IDX_CORNER(i,j,k)];
+	f[IDX(i+LNX,j+LNY,k+LNZ)] += xp_yp_zp_corner_scalar[IDX_CORNER(i,j,k)];
+	f[IDX(i+LNX,j+LNY,k+BRD)] += xp_yp_zm_corner_scalar[IDX_CORNER(i,j,k)];
+	f[IDX(i+LNX,j+BRD,k+LNZ)] += xp_ym_zp_corner_scalar[IDX_CORNER(i,j,k)];
+	f[IDX(i+BRD,j+LNY,k+LNZ)] += xm_yp_zp_corner_scalar[IDX_CORNER(i,j,k)];
       }
 
 
@@ -413,8 +414,8 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-        yp_zp_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY,k+LNZ)];
-        yp_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY,k+BRD)];
+        yp_zp_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY+BRD,k+LNZ+BRD)];
+        yp_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
       }
 
   MPI_Sendrecv( yp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zp, 10,
@@ -425,10 +426,10 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++) {
-        f[IDX(i,j,k)] += ym_zm_edge_scalar[IDX_EDGE_X(i,j,k)];
-        f[IDX(i,j,k+LNZ+BRD)] += ym_zp_edge_scalar[IDX_EDGE_X(i,j,k)];
-        ym_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+BRD)];
-        ym_zp_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+LNZ)];
+        f[IDX(i,j+BRD,k+BRD)] += ym_zm_edge_scalar[IDX_EDGE_X(i,j,k)];
+        f[IDX(i,j+BRD,k+LNZ)] += ym_zp_edge_scalar[IDX_EDGE_X(i,j,k)];
+        ym_zm_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j,k)];
+        ym_zp_edge_scalar[IDX_EDGE_X(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
       }
  MPI_Sendrecv( ym_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_ym_zm, 11,
                yp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_yp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -438,8 +439,8 @@ void add_sendrecv_borders_scalar(my_double *f){
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)] += yp_zp_edge_scalar[IDX_EDGE_X(i,j,k)];
-	f[IDX(i,j+LNY+BRD,k)] += yp_zm_edge_scalar[IDX_EDGE_X(i,j,k)];
+	f[IDX(i,j+LNY,k+LNZ)] += yp_zp_edge_scalar[IDX_EDGE_X(i,j,k)];
+	f[IDX(i,j+LNY,k+BRD)] += yp_zm_edge_scalar[IDX_EDGE_X(i,j,k)];
       }
 
  /* along y */
@@ -449,8 +450,8 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_zp_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX,j,k+LNZ)];
-        xp_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX,j,k+BRD)];
+        xp_zp_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX+BRD,j,k+LNZ+BRD)];
+        xp_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
 
   MPI_Sendrecv( xp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zp, 10,
@@ -461,10 +462,10 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)] += xm_zm_edge_scalar[IDX_EDGE_Y(i,j,k)];
-        f[IDX(i,j,k+LNZ+BRD)] += xm_zp_edge_scalar[IDX_EDGE_Y(i,j,k)];
-        xm_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+BRD)];
-        xm_zp_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+LNZ)];
+        f[IDX(i+BRD,j,k+BRD)] += xm_zm_edge_scalar[IDX_EDGE_Y(i,j,k)];
+        f[IDX(i+BRD,j,k+LNZ)] += xm_zp_edge_scalar[IDX_EDGE_Y(i,j,k)];
+        xm_zm_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i,j,k)];
+        xm_zp_edge_scalar[IDX_EDGE_Y(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
       }
  MPI_Sendrecv( xm_zm_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_zm, 11,
                xp_zp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -474,8 +475,8 @@ void add_sendrecv_borders_scalar(my_double *f){
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)] += xp_zp_edge_scalar[IDX_EDGE_Y(i,j,k)];
-	f[IDX(i+LNX+BRD,j,k)] += xp_zm_edge_scalar[IDX_EDGE_Y(i,j,k)];
+	f[IDX(i+LNX,j,k+LNZ)] += xp_zp_edge_scalar[IDX_EDGE_Y(i,j,k)];
+	f[IDX(i+LNX,j,k+BRD)] += xp_zm_edge_scalar[IDX_EDGE_Y(i,j,k)];
       }
 
 
@@ -486,8 +487,8 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_yp_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX,j+LNY,k)];
-        xm_yp_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+LNY,k)];
+        xp_yp_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k)];
+        xm_yp_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
       }
 
   MPI_Sendrecv( xp_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp, 10,
@@ -498,10 +499,10 @@ void add_sendrecv_borders_scalar(my_double *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)] += xm_ym_edge_scalar[IDX_EDGE_Z(i,j,k)];
-        f[IDX(i+LNX+BRD,j,k)] += xp_ym_edge_scalar[IDX_EDGE_Z(i,j,k)];
-        xm_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+BRD,k)];
-        xp_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX,j+BRD,k)];
+        f[IDX(i+BRD,j+BRD,k)] += xm_ym_edge_scalar[IDX_EDGE_Z(i,j,k)];
+        f[IDX(i+LNX,j+BRD,k)] += xp_ym_edge_scalar[IDX_EDGE_Z(i,j,k)];
+        xm_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i,j,k)];
+        xp_ym_edge_scalar[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
  MPI_Sendrecv( xm_ym_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xm_ym, 11,
                xp_yp_edge_scalar, brd_size, MPI_MY_DOUBLE, me_xp_yp, 11, MPI_COMM_WORLD, &status1);
@@ -511,10 +512,11 @@ void add_sendrecv_borders_scalar(my_double *f){
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k)] += xp_yp_edge_scalar[IDX_EDGE_Z(i,j,k)];
-	f[IDX(i,j+LNY+BRD,k)] += xm_yp_edge_scalar[IDX_EDGE_Z(i,j,k)];
+	f[IDX(i+LNX,j+LNY,k)] += xp_yp_edge_scalar[IDX_EDGE_Z(i,j,k)];
+	f[IDX(i+BRD,j+LNY,k)] += xm_yp_edge_scalar[IDX_EDGE_Z(i,j,k)];
       }
 
+#endif /* METHOD_EDGES_AND_CORNERS */
 
 }/* end scalar send rcv function */
 
@@ -533,7 +535,7 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_vector[IDX_XBRD(i,j,k)] = f[IDX(i+LNX,j,k)];
+        xp_vector[IDX_XBRD(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
 
   MPI_Sendrecv( xp_vector, brd_size, MPI_vector_type, me_xp, 10,
@@ -542,10 +544,10 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)].x += xm_vector[IDX_XBRD(i,j,k)].x;
-        f[IDX(i,j,k)].y += xm_vector[IDX_XBRD(i,j,k)].y;
-        f[IDX(i,j,k)].z += xm_vector[IDX_XBRD(i,j,k)].z;
-        xm_vector[IDX_XBRD(i,j,k)] = f[IDX(i+BRD,j,k)];
+        f[IDX(i+BRD,j,k)].x += xm_vector[IDX_XBRD(i,j,k)].x;
+        f[IDX(i+BRD,j,k)].y += xm_vector[IDX_XBRD(i,j,k)].y;
+        f[IDX(i+BRD,j,k)].z += xm_vector[IDX_XBRD(i,j,k)].z;
+        xm_vector[IDX_XBRD(i,j,k)] = f[IDX(i,j,k)];
       }
  MPI_Sendrecv( xm_vector, brd_size, MPI_vector_type, me_xm, 11,
                xp_vector, brd_size, MPI_vector_type, me_xp, 11, MPI_COMM_WORLD, &status1);
@@ -553,9 +555,9 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j,k)].x += xp_vector[IDX_XBRD(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j,k)].y += xp_vector[IDX_XBRD(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j,k)].z += xp_vector[IDX_XBRD(i,j,k)].z;
+	f[IDX(i+LNX,j,k)].x += xp_vector[IDX_XBRD(i,j,k)].x;
+  f[IDX(i+LNX,j,k)].y += xp_vector[IDX_XBRD(i,j,k)].y;
+  f[IDX(i+LNX,j,k)].z += xp_vector[IDX_XBRD(i,j,k)].z;
       }
 
 
@@ -566,7 +568,7 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-        yp_vector[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY,k)];
+        yp_vector[IDX_YBRD(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
       }
 
   MPI_Sendrecv( yp_vector, brd_size, MPI_vector_type, me_yp, 10,
@@ -575,10 +577,10 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++) {
-        f[IDX(i,j,k)].x += ym_vector[IDX_YBRD(i,j,k)].x;
-        f[IDX(i,j,k)].y += ym_vector[IDX_YBRD(i,j,k)].y;
-        f[IDX(i,j,k)].z += ym_vector[IDX_YBRD(i,j,k)].z;
-	ym_vector[IDX_YBRD(i,j,k)] = f[IDX(i,j+BRD,k)];
+        f[IDX(i,j+BRD,k)].x += ym_vector[IDX_YBRD(i,j,k)].x;
+        f[IDX(i,j+BRD,k)].y += ym_vector[IDX_YBRD(i,j,k)].y;
+        f[IDX(i,j+BRD,k)].z += ym_vector[IDX_YBRD(i,j,k)].z;
+	ym_vector[IDX_YBRD(i,j,k)] = f[IDX(i,j,k)];
       }
 
  MPI_Sendrecv( ym_vector, brd_size, MPI_vector_type, me_ym, 13,
@@ -587,9 +589,9 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-       	f[IDX(i,j+LNY+BRD,k)].x += yp_vector[IDX_YBRD(i,j,k)].x;
-        f[IDX(i,j+LNY+BRD,k)].y += yp_vector[IDX_YBRD(i,j,k)].y;
-        f[IDX(i,j+LNY+BRD,k)].z += yp_vector[IDX_YBRD(i,j,k)].z;
+       	f[IDX(i,j+LNY,k)].x += yp_vector[IDX_YBRD(i,j,k)].x;
+        f[IDX(i,j+LNY,k)].y += yp_vector[IDX_YBRD(i,j,k)].y;
+        f[IDX(i,j+LNY,k)].z += yp_vector[IDX_YBRD(i,j,k)].z;
       }
 
 
@@ -599,7 +601,7 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-        zp_vector[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ)];
+        zp_vector[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
       }
 
   MPI_Sendrecv( zp_vector, brd_size, MPI_vector_type, me_zp, 14,
@@ -608,10 +610,10 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++) {
-        f[IDX(i,j,k)].x += zm_vector[IDX_ZBRD(i,j,k)].x;
-        f[IDX(i,j,k)].y += zm_vector[IDX_ZBRD(i,j,k)].y;
-        f[IDX(i,j,k)].z += zm_vector[IDX_ZBRD(i,j,k)].z;
-        zm_vector[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k+BRD)];
+        f[IDX(i,j,k+BRD)].x += zm_vector[IDX_ZBRD(i,j,k)].x;
+        f[IDX(i,j,k+BRD)].y += zm_vector[IDX_ZBRD(i,j,k)].y;
+        f[IDX(i,j,k+BRD)].z += zm_vector[IDX_ZBRD(i,j,k)].z;
+        zm_vector[IDX_ZBRD(i,j,k)] = f[IDX(i,j,k)];
       }
  MPI_Sendrecv( zm_vector, brd_size, MPI_vector_type, me_zm, 15,
                zp_vector, brd_size, MPI_vector_type, me_zp, 15, MPI_COMM_WORLD, &status1);
@@ -619,25 +621,26 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-	f[IDX(i,j,k+LNZ+BRD)].x += zp_vector[IDX_ZBRD(i,j,k)].x;
-  f[IDX(i,j,k+LNZ+BRD)].y += zp_vector[IDX_ZBRD(i,j,k)].y;
-  f[IDX(i,j,k+LNZ+BRD)].z += zp_vector[IDX_ZBRD(i,j,k)].z;
+	f[IDX(i,j,k+LNZ)].x += zp_vector[IDX_ZBRD(i,j,k)].x;
+  f[IDX(i,j,k+LNZ)].y += zp_vector[IDX_ZBRD(i,j,k)].y;
+  f[IDX(i,j,k+LNZ)].z += zp_vector[IDX_ZBRD(i,j,k)].z;
       }
 
 
 #ifdef METHOD_EDGES_AND_CORNERS
 
   /* First we communicate the 8 corner cubes (they are either 1x1x1 or 2x2x2 depending on BRD) */
+  /* fold: ghost corners are sent, and added to the real corner of the diagonal neighbour */
 
   brd_size = BRD*BRD*BRD;
 
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+LNZ)];
-        xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+LNY,k+BRD)];
-        xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+LNZ)];
-        xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+LNZ)];
+        xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)];
+        xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k)];
+        xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j,k+LNZ+BRD)];
+        xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i,j+LNY+BRD,k+LNZ+BRD)];
       }
 
   MPI_Sendrecv( xp_yp_zp_corner_vector, brd_size, MPI_vector_type, me_xp_yp_zp, 10,
@@ -652,22 +655,22 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)].x += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].x;
-        f[IDX(i,j,k)].y += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].y;
-        f[IDX(i,j,k)].z += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].z;
-        f[IDX(i,j,k+LNZ+BRD)].x += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].x;
-        f[IDX(i,j,k+LNZ+BRD)].y += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].y;
-        f[IDX(i,j,k+LNZ+BRD)].z += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].z;
-        f[IDX(i,j+LNY+BRD,k)].x += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].x;
-        f[IDX(i,j+LNY+BRD,k)].y += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].y;
-        f[IDX(i,j+LNY+BRD,k)].z += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].z;
-        f[IDX(i+LNX+BRD,j,k)].x += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].x;
-        f[IDX(i+LNX+BRD,j,k)].y += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].y;
-        f[IDX(i+LNX+BRD,j,k)].z += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].z;
-        xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+BRD)];
-        xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+BRD,k+LNZ)];
-        xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+BRD,j+LNY,k+BRD)];
-        xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX,j+BRD,k+BRD)];
+        f[IDX(i+BRD,j+BRD,k+BRD)].x += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].x;
+        f[IDX(i+BRD,j+BRD,k+BRD)].y += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].y;
+        f[IDX(i+BRD,j+BRD,k+BRD)].z += xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)].z;
+        f[IDX(i+BRD,j+BRD,k+LNZ)].x += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].x;
+        f[IDX(i+BRD,j+BRD,k+LNZ)].y += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].y;
+        f[IDX(i+BRD,j+BRD,k+LNZ)].z += xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)].z;
+        f[IDX(i+BRD,j+LNY,k+BRD)].x += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].x;
+        f[IDX(i+BRD,j+LNY,k+BRD)].y += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].y;
+        f[IDX(i+BRD,j+LNY,k+BRD)].z += xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)].z;
+        f[IDX(i+LNX,j+BRD,k+BRD)].x += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].x;
+        f[IDX(i+LNX,j+BRD,k+BRD)].y += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].y;
+        f[IDX(i+LNX,j+BRD,k+BRD)].z += xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)].z;
+        xm_ym_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i,j,k)];
+        xm_ym_zp_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
+        xm_yp_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
+        xp_ym_zm_corner_vector[IDX_CORNER(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
  MPI_Sendrecv( xm_ym_zm_corner_vector, brd_size, MPI_vector_type, me_xm_ym_zm, 11,
                xp_yp_zp_corner_vector, brd_size, MPI_vector_type, me_xp_yp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -681,18 +684,18 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)].x += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)].y += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k+LNZ+BRD)].z += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].z;
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k)].x += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k)].y += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k)].z += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].z;
-	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].x += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].y += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].z += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].z;
-	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].x += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].x;
-  f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].y += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].y;
-  f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].z += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].z;
+	f[IDX(i+LNX,j+LNY,k+LNZ)].x += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].x;
+  f[IDX(i+LNX,j+LNY,k+LNZ)].y += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].y;
+  f[IDX(i+LNX,j+LNY,k+LNZ)].z += xp_yp_zp_corner_vector[IDX_CORNER(i,j,k)].z;
+	f[IDX(i+LNX,j+LNY,k+BRD)].x += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].x;
+  f[IDX(i+LNX,j+LNY,k+BRD)].y += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].y;
+  f[IDX(i+LNX,j+LNY,k+BRD)].z += xp_yp_zm_corner_vector[IDX_CORNER(i,j,k)].z;
+	f[IDX(i+LNX,j+BRD,k+LNZ)].x += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].x;
+  f[IDX(i+LNX,j+BRD,k+LNZ)].y += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].y;
+  f[IDX(i+LNX,j+BRD,k+LNZ)].z += xp_ym_zp_corner_vector[IDX_CORNER(i,j,k)].z;
+	f[IDX(i+BRD,j+LNY,k+LNZ)].x += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].x;
+  f[IDX(i+BRD,j+LNY,k+LNZ)].y += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].y;
+  f[IDX(i+BRD,j+LNY,k+LNZ)].z += xm_yp_zp_corner_vector[IDX_CORNER(i,j,k)].z;
       }
 
 
@@ -705,8 +708,8 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-        yp_zp_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY,k+LNZ)];
-        yp_zm_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY,k+BRD)];
+        yp_zp_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY+BRD,k+LNZ+BRD)];
+        yp_zm_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
       }
 
   MPI_Sendrecv( yp_zp_edge_vector, brd_size, MPI_vector_type, me_yp_zp, 10,
@@ -717,14 +720,14 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++) {
-        f[IDX(i,j,k)].x += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].x;
-        f[IDX(i,j,k)].y += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].y;
-        f[IDX(i,j,k)].z += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].z;
-        f[IDX(i,j,k+LNZ+BRD)].x += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].x;
-        f[IDX(i,j,k+LNZ+BRD)].y += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].y;
-        f[IDX(i,j,k+LNZ+BRD)].z += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].z;
-        ym_zm_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+BRD)];
-        ym_zp_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j+BRD,k+LNZ)];
+        f[IDX(i,j+BRD,k+BRD)].x += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].x;
+        f[IDX(i,j+BRD,k+BRD)].y += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].y;
+        f[IDX(i,j+BRD,k+BRD)].z += ym_zm_edge_vector[IDX_EDGE_X(i,j,k)].z;
+        f[IDX(i,j+BRD,k+LNZ)].x += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].x;
+        f[IDX(i,j+BRD,k+LNZ)].y += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].y;
+        f[IDX(i,j+BRD,k+LNZ)].z += ym_zp_edge_vector[IDX_EDGE_X(i,j,k)].z;
+        ym_zm_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j,k)];
+        ym_zp_edge_vector[IDX_EDGE_X(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
       }
  MPI_Sendrecv( ym_zm_edge_vector, brd_size, MPI_vector_type, me_ym_zm, 11,
                yp_zp_edge_vector, brd_size, MPI_vector_type, me_yp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -734,12 +737,12 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=0;k<BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=BRD;i<LNX+BRD;i++){
-	f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].x += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].x;
-  f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].y += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].y;
-  f[IDX(i,j+LNY+BRD,k+LNZ+BRD)].z += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].z;
-	f[IDX(i,j+LNY+BRD,k)].x += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].x;
-  f[IDX(i,j+LNY+BRD,k)].y += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].y;
-  f[IDX(i,j+LNY+BRD,k)].z += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].z;
+	f[IDX(i,j+LNY,k+LNZ)].x += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].x;
+  f[IDX(i,j+LNY,k+LNZ)].y += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].y;
+  f[IDX(i,j+LNY,k+LNZ)].z += yp_zp_edge_vector[IDX_EDGE_X(i,j,k)].z;
+	f[IDX(i,j+LNY,k+BRD)].x += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].x;
+  f[IDX(i,j+LNY,k+BRD)].y += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].y;
+  f[IDX(i,j+LNY,k+BRD)].z += yp_zm_edge_vector[IDX_EDGE_X(i,j,k)].z;
       }
 
  /* along y */
@@ -749,8 +752,8 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX,j,k+LNZ)];
-        xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX,j,k+BRD)];
+        xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX+BRD,j,k+LNZ+BRD)];
+        xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
 
   MPI_Sendrecv( xp_zp_edge_vector, brd_size, MPI_vector_type, me_xp_zp, 10,
@@ -761,14 +764,14 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)].x += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].x;
-        f[IDX(i,j,k)].y += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].y;
-        f[IDX(i,j,k)].z += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].z;
-        f[IDX(i,j,k+LNZ+BRD)].x += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].x;
-        f[IDX(i,j,k+LNZ+BRD)].y += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].y;
-        f[IDX(i,j,k+LNZ+BRD)].z += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].z;
-        xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+BRD)];
-        xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i+BRD,j,k+LNZ)];
+        f[IDX(i+BRD,j,k+BRD)].x += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].x;
+        f[IDX(i+BRD,j,k+BRD)].y += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].y;
+        f[IDX(i+BRD,j,k+BRD)].z += xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)].z;
+        f[IDX(i+BRD,j,k+LNZ)].x += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].x;
+        f[IDX(i+BRD,j,k+LNZ)].y += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].y;
+        f[IDX(i+BRD,j,k+LNZ)].z += xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)].z;
+        xm_zm_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i,j,k)];
+        xm_zp_edge_vector[IDX_EDGE_Y(i,j,k)] = f[IDX(i,j,k+LNZ+BRD)];
       }
  MPI_Sendrecv( xm_zm_edge_vector, brd_size, MPI_vector_type, me_xm_zm, 11,
                xp_zp_edge_vector, brd_size, MPI_vector_type, me_xp_zp, 11, MPI_COMM_WORLD, &status1);
@@ -778,12 +781,12 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=0;k<BRD;k++)
     for(j=BRD;j<LNY+BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].x += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].y += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j,k+LNZ+BRD)].z += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].z;
-	f[IDX(i+LNX+BRD,j,k)].x += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j,k)].y += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j,k)].z += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].z;
+	f[IDX(i+LNX,j,k+LNZ)].x += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].x;
+  f[IDX(i+LNX,j,k+LNZ)].y += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].y;
+  f[IDX(i+LNX,j,k+LNZ)].z += xp_zp_edge_vector[IDX_EDGE_Y(i,j,k)].z;
+	f[IDX(i+LNX,j,k+BRD)].x += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].x;
+  f[IDX(i+LNX,j,k+BRD)].y += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].y;
+  f[IDX(i+LNX,j,k+BRD)].z += xp_zm_edge_vector[IDX_EDGE_Y(i,j,k)].z;
       }
 
 
@@ -794,8 +797,8 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-        xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX,j+LNY,k)];
-        xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+LNY,k)];
+        xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX+BRD,j+LNY+BRD,k)];
+        xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i,j+LNY+BRD,k)];
       }
 
   MPI_Sendrecv( xp_yp_edge_vector, brd_size, MPI_vector_type, me_xp_yp, 10,
@@ -806,14 +809,14 @@ void add_sendrecv_borders_vector(vector *f){
   for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++) {
-        f[IDX(i,j,k)].x += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].x;
-        f[IDX(i,j,k)].y += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].y;
-        f[IDX(i,j,k)].z += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].z;
-        f[IDX(i+LNX+BRD,j,k)].x += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].x;
-        f[IDX(i+LNX+BRD,j,k)].y += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].y;
-        f[IDX(i+LNX+BRD,j,k)].z += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].z;
-        xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+BRD,j+BRD,k)];
-        xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX,j+BRD,k)];
+        f[IDX(i+BRD,j+BRD,k)].x += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].x;
+        f[IDX(i+BRD,j+BRD,k)].y += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].y;
+        f[IDX(i+BRD,j+BRD,k)].z += xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)].z;
+        f[IDX(i+LNX,j+BRD,k)].x += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].x;
+        f[IDX(i+LNX,j+BRD,k)].y += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].y;
+        f[IDX(i+LNX,j+BRD,k)].z += xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)].z;
+        xm_ym_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i,j,k)];
+        xp_ym_edge_vector[IDX_EDGE_Z(i,j,k)] = f[IDX(i+LNX+BRD,j,k)];
       }
  MPI_Sendrecv( xm_ym_edge_vector, brd_size, MPI_vector_type, me_xm_ym, 11,
                xp_yp_edge_vector, brd_size, MPI_vector_type, me_xp_yp, 11, MPI_COMM_WORLD, &status1);
@@ -823,12 +826,12 @@ void add_sendrecv_borders_vector(vector *f){
  for(k=BRD;k<LNZ+BRD;k++)
     for(j=0;j<BRD;j++)
       for(i=0;i<BRD;i++){
-	f[IDX(i+LNX+BRD,j+LNY+BRD,k)].x += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].x;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k)].y += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].y;
-  f[IDX(i+LNX+BRD,j+LNY+BRD,k)].z += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].z;
-	f[IDX(i,j+LNY+BRD,k)].x += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].x;
-  f[IDX(i,j+LNY+BRD,k)].y += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].y;
-  f[IDX(i,j+LNY+BRD,k)].z += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].z;
+	f[IDX(i+LNX,j+LNY,k)].x += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].x;
+  f[IDX(i+LNX,j+LNY,k)].y += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].y;
+  f[IDX(i+LNX,j+LNY,k)].z += xp_yp_edge_vector[IDX_EDGE_Z(i,j,k)].z;
+	f[IDX(i+BRD,j+LNY,k)].x += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].x;
+  f[IDX(i+BRD,j+LNY,k)].y += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].y;
+  f[IDX(i+BRD,j+LNY,k)].z += xm_yp_edge_vector[IDX_EDGE_Z(i,j,k)].z;
       }
 
 #endif /* METHOD_EDGES_AND_CORNERS */
