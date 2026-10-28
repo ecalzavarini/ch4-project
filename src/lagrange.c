@@ -2972,7 +2972,7 @@ void move_particles()
 #endif
 #endif
   my_double reactivity;
-  my_double fac1, fac2; /* used to implement BC for particles */
+  my_double fac, fac1, fac2; /* used to implement BC for particles */
 
 #ifdef LAGRANGE_ORIENTATION
 #ifdef LAGRANGE_ORIENTATION_DIFFUSION
