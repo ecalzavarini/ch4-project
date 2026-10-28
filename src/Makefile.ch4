@@ -12,6 +12,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 ifeq ($(UNAME_S),Darwin)
      OSFLAGS = -D SYSTEM_OSX
+     CFLAGS += -arch x86_64
 endif
 EXECUTABLE= ch4
 
